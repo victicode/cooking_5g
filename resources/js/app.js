@@ -1,7 +1,6 @@
 import './bootstrap';
-import '../css/app.css';
-import App from './src/App.vue'
+import './src/main';
+// import App from './src/App.vue'
 
-import { createApp } from 'vue'
-
-createApp(App).mount('#app')
+// import { createApp } from 'vue'
+// createApp(App).mount('#app')
