@@ -1,7 +1,7 @@
 import * as Vue from 'vue';
 import axios from "axios";
 import VueAxios from "vue-axios";
-import JwtService from "@/src/core/services/jwt.service";
+import JwtService from "@/core/services/jwt.service";
 
 /**
  * Service to call HTTP request via Axios

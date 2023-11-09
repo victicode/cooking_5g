@@ -1,5 +1,5 @@
-import ApiService from "@/src/core/services/api.service";
-import JwtService from "@/src/core/services/jwt.service";
+import ApiService from "@/core/services/api.service";
+import JwtService from "@/core/services/jwt.service";
 
 // action types
 export const OPERATIONS_GET_PAGINATED = "operations_get_all";
