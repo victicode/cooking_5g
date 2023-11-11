@@ -166,3 +166,21 @@ h6 span{
     color: #CF6123!important;
   }
 }
+.fv-plugins-message-container{
+  padding: 4px 8px;
+  font-size: 10px;
+  // background-color: #f14f4f75;
+  margin-top: 0.1rem;
+  border-radius: 20px;
+  color: #bb2424;
+  width: 90%;
+}
+.form-floating>.form-control:focus~label::after{
+  background-color: transparent;
+}
+.form-control.is-invalid ~ .addons-input{
+  border-color: #dc3545;
+}
+.btn:disabled{
+  background-color: #5C483A;
+}

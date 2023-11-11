@@ -48,7 +48,6 @@ router.beforeEach(async (to, from, next) => {
     store
   }
   // document.title =`${titlePage[to.name].charAt(0).toUpperCase()}${titlePage[to.name].substring(1)} | DLS Money Plataforma de cambio de dolares a soles online`
-  console.log(middleware)
   return middleware[0]({
     ...context,
     next: middlewarePipeline(context, middleware, 1)
@@ -56,12 +55,15 @@ router.beforeEach(async (to, from, next) => {
 });
 
 // 
+
+
+
+
 const app = createApp(App)
 app.use(VueAxios, axios);
 
 app.use(store)
 app.use(router)
-app.provide('store', store)
 app.axios.defaults.baseURL = import.meta.env.VUE_APP_BACKEND_URL 
 
 app.mount('#app')

@@ -39,39 +39,10 @@ const getters = {
 
 const actions = {
   [LOGIN](context, credentials) {
+    console.log(credentials)
     return new Promise(resolve => {
-      ApiService.post("api/login", credentials)
-        .then(({ data }) => {
-          if (credentials.remember == true ||credentials.remember == 'true') {
-            window.localStorage.setItem("remember", credentials.remember);
-            window.localStorage.setItem("emailRemember", credentials.email);
-            window.localStorage.setItem("passwordRemember", credentials.password);
-          } else{
-            window.localStorage.removeItem("remember");
-            window.localStorage.removeItem("emailRemember");
-            window.localStorage.removeItem("passwordRemember");
-          }
-          if(!data.access_token){
-            throw data;
-          }
-          context.commit(SET_TOKEN, data.access_token);
-          if (JwtService.getToken()) {
-            ApiService.setHeader();
-            ApiService.get("api/user")
-              .then(({ data }) => {
-                context.commit(SET_AUTH, data);
-                context.commit(SET_HAS_ACCOUNT, data);
-                context.commit(SET_IS_ADMIN, data);
-                resolve(data);
-              })
-              .catch(( response ) => {
-                context.commit(SET_ERROR, response.errors);
-              });
-          }
-        })
-        .catch(( { response } ) => {
-          context.commit(SET_ERROR, response.data.errors);
-        });
+      console.log(ApiService.post("api/login",''))
+      
     });
   },
   [LOGOUT](context) {

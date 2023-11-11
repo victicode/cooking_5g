@@ -1,37 +1,19 @@
-import * as Vue from 'vue';
 import axios from "axios";
-import VueAxios from "vue-axios";
-import JwtService from "@/core/services/jwt.service";
+// import VueAxios from "vue-axios";
+// import JwtService from "@/core/services/jwt.service";
 
 /**
  * Service to call HTTP request via Axios
  */
+
 const ApiService = {
-  init() {
-    Vue.use(VueAxios, axios);
-    if (process.env.MIX_ENVIROMENT == "production") {
-      Vue.axios.defaults.baseURL = process.env.MIX_BASE_URL_PRODUCTION
-    } else if (process.env.MIX_ENVIROMENT == "staging") {
-      Vue.axios.defaults.baseURL = process.env.MIX_BASE_URL_STAGING
-    } else {
-      Vue.axios.defaults.baseURL = process.env.MIX_BASE_URL
-    }
-  },
 
   /**
    * Set the default HTTP request headers
    */
-  setHeader() {
-    Vue.axios.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${JwtService.getToken()}`;
-    Vue.axios.defaults.headers.common[
-      "Accept"
-    ] = `application/json`;
-  },
 
   query(resource, params) {
-    return Vue.axios.get(resource, params);
+    return axios.get(resource, params);
   },
 
   /**
@@ -41,7 +23,7 @@ const ApiService = {
    * @returns {*}
    */
   get(resource, slug = "") {
-    return Vue.axios.get(`${resource}/${slug}`);
+    return axios.get(`${resource}/${slug}`);
   },
 
   /**
@@ -51,7 +33,8 @@ const ApiService = {
    * @returns {*}
    */
   post(resource, params) {
-    return Vue.axios.post(`${resource}`, params);
+    return 'hola'
+    // return axios.post(`${resource}`, params);
   },
 
   /**
@@ -62,7 +45,7 @@ const ApiService = {
    * @returns {IDBRequest<IDBValidKey> | Promise<void>}
    */
   update(resource, slug, params) {
-    return Vue.axios.put(`${resource}/${slug}`, params);
+    return axios.put(`${resource}/${slug}`, params);
   },
 
   /**
@@ -72,7 +55,7 @@ const ApiService = {
    * @returns {IDBRequest<IDBValidKey> | Promise<void>}
    */
   put(resource, params) {
-    return Vue.axios.put(`${resource}`, params);
+    return axios.put(`${resource}`, params);
   },
 
   /**
@@ -81,7 +64,7 @@ const ApiService = {
    * @returns {*}
    */
   delete(resource) {
-    return Vue.axios.delete(resource);
+    return axios.delete(resource);
   }
 };
 
