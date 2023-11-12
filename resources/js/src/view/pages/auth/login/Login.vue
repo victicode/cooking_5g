@@ -1,15 +1,19 @@
 <template>
   <div class="container">
-    <div class="row">
-      <div class="col-sm-9 col-md-7 col-lg-6 mx-auto">
+    <div class="row vh-100" >
+      <div class="col-12 col-md-7 col-lg-5  offset-lg-7 offset-0 ">
         <div class="card border-0 shadow rounded-3 my-5">
-          <div class="card-body p-4 p-sm-5">
-            <h5 class="card-title text-center mb-5 fw-light fs-5">Coockin 5G</h5>
-            <form class="mb-3 form" novalidate="novalidate" id="kt_login_signin_form">
+          <div class="card-body py-5 px-4 p-sm-5 row align-items-center">
+            <div class="text-center d-flex justify-content-center">
+              <div class="card-title d-flex ">
+                <div class="form-title__part1">Cooking</div> <div class="form-title__part2">5G</div>
+              </div>
+            </div>
+            <form class="mb-3 form w-100" novalidate="novalidate" id="kt_login_signin_form">
               <div class="login-form-content" id="login-form-content">
                 <div class="form-floating mb-3">
                   <input type="text" ref="user" class="form-control" id="floatingInput" name="email"  placeholder="name@example.com">
-                  <label for="floatingInput">Correo electronico o nombre de usuario</label>
+                  <label for="floatingInput">Correo electronico </label>
                 </div>
                 <div class="form-floating mb-3 input-goup d-flex align-items-center row">
                   <input type="password" name="password" ref="password" class="form-control w-75 border-end-0 input-with-addons" id="floatingPassword" placeholder="Password">
@@ -41,6 +45,14 @@
 <style lang="scss">
   @import "@/assets/sass/login.scss";
  
+</style>
+<style >
+input:-internal-autofill-selected {
+  appearance: menulist-button;
+  background-image: none !important;
+  background-color: rgb(232, 240, 254) !important;
+  color: fieldtext !important;
+}
 </style>
 
 <script>
