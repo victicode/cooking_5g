@@ -3,11 +3,6 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="./fonts/boxicons.css" />
-        <link rel="stylesheet" href="./css/core.css" class="template-customizer-core-css" />
-        <link rel="stylesheet" href="./css/theme-default.css" class="template-customizer-theme-css" />
-        <link rel="stylesheet" href="./css/demo.css" />
-
         <title>Laravel</title>
         <link
         
