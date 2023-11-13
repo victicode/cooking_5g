@@ -7,7 +7,11 @@
             <div class="text-center d-flex justify-content-center">
               <div class="card-title d-flex ">
                 <div class="form-title__part1">Cooking</div> <div class="form-title__part2">5G</div>
+                
               </div>
+            </div>
+            <div :class="'alert alert-dismissible fade show ' + alertType" v-if="alertShow" role="alert">
+              <strong>{{ alertMessage }}</strong> 
             </div>
             <form class="mb-3 form w-100" novalidate="novalidate" id="kt_login_signin_form">
               <div class="login-form-content" id="login-form-content">
@@ -62,15 +66,17 @@ import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
 import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
 import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
 import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
-import { LOGOUT, REGISTER_GOOGLE, LOGIN } from "@/core/services/store/auth.module";
-import remote from '../../../../assets/plugins/formvalidation/src/js/validators/remote';
+import { LOGOUT, LOGIN } from "@/core/services/store/auth.module";
 
 
 export default {
   data() {
     return {
       state: "signin",
-      fv: ""
+      fv: "",
+      alertShow:false,
+      alertMessage:'',
+      alertType:''
     };
   },
   computed: {
@@ -122,34 +128,42 @@ export default {
       const password = this.$refs.password.value
       const remember = 'true'
       // clear existing errors
-      // this.$store.dispatch(LOGOUT);
+      this.$store.dispatch(LOGOUT);
       
       // set spinner to submit button
       const submitButton = this.$refs["kt_login_signin_submit"];
       submitButton.textContent = 'Cargando...'
       
       // dummy delay
-      setTimeout(() => {
-        // send login request
-        console.log('seed')
         this.$store
-          .dispatch(LOGIN, { email, password, remember })
-          .then((data) => {
-           
-           // go to which page after successfully login
-          })
-          .catch((e) => {
-            console.log('dañao')
-            this.kt_login_signin_submit_disabled = false;
+        .dispatch(LOGIN, { email, password, remember })
+        .then((data) => {
+          if(data.code === 500 ){
             submitButton.textContent = 'Ingresar';
-          });
-      }, 500);
+            submitButton.blur();
+            this.showAlert('alert-danger',data.messagge)
+            return
+          }
+          this.showAlert('alert-success','Acceso Exitoso')
+          submitButton.textContent = 'Acceso Exitoso'
+          setTimeout(() => {
+            
+            this.$router.push('/dashboard') 
+          }, 1000);
+        })
+        .catch((e) => {
+
+          // console.log(e)
+        });
    
     }).on("core.form.invalid", () => {
       this.$refs["kt_login_signin_submit"].disabled = true
+      this.alertShow = false;
     }).on("core.field.valid", () => {
       this.$refs["kt_login_signin_submit"].disabled = false
+      this.alertShow = false;
     }).on("core.field.invalid", () => {
+      this.alertShow = false;
       this.$refs["kt_login_signin_submit"].disabled = true
     });
   },
@@ -168,8 +182,10 @@ export default {
       formPasswordToggleIcon.classList.replace('ti-eye-off', 'ti-eye')
       
     },
-    login(){
-      
+    showAlert(type, messagge){
+      this.alertShow = true;
+      this.alertType = type
+      this.alertMessage = messagge
     }
   }
 };

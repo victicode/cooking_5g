@@ -13,6 +13,7 @@ const router = createRouter({
   routes: [
     {
       path: "/",
+      name:"home",
       redirect: "/dashboard",
       component: () => import("@/view/layout/Layout.vue"),
       children: [
@@ -22,8 +23,20 @@ const router = createRouter({
           component: () => import("@/view/pages/dashboard/Dashboard.vue"),
           meta: {
             middleware: [
-              guest
-            ]
+              auth
+            ],
+            title : 'Dashboard'
+          },
+        },
+        {
+          path: "/products",
+          name: "products",
+          component: () => import("@/view/pages/products/Products.vue"),
+          meta: {
+            middleware: [
+              auth
+            ],
+            title : 'Productos'
           },
         },
       ]

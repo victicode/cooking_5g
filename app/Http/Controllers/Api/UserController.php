@@ -8,7 +8,9 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function getUser($id){
-        return User::find($id);
+    public function getUser(Request $request){
+       
+        return response()->json([ 'data'=>['code'=>200,'user' => User::with('rol')->find($request->user()->id)]], 200);
+
     }
 }

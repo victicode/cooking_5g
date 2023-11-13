@@ -39,10 +39,31 @@ const getters = {
 
 const actions = {
   [LOGIN](context, credentials) {
-    console.log(credentials)
     return new Promise(resolve => {
-      console.log(ApiService.post("api/login",''))
-      
+      ApiService.post("api/login", credentials)
+        .then(({ data }) => {
+          if(!data.data.access_token){
+            throw data;
+          }
+          context.commit(SET_TOKEN, data.data.access_token);
+          if (JwtService.getToken()) {
+            ApiService.setHeader();
+            ApiService.get("api/user")
+              .then(({ data }) => {
+                context.commit(SET_AUTH, data.data.user);
+                context.commit(SET_IS_ADMIN, data.data.user);
+                state.user = data.data.user;
+                
+                resolve(data.data);
+              })
+              .catch(( response ) => {
+                context.commit(SET_ERROR, response.data);
+              });
+          }
+        })
+        .catch(( { response } ) => {
+          resolve(response.data.data)
+        });
     });
   },
   [LOGOUT](context) {
@@ -55,88 +76,6 @@ const actions = {
             resolve();
           });
       }
-    });
-  },
-  [REGISTER](context, credentials) {
-    return new Promise(resolve => {
-      ApiService.post("api/register", credentials)
-        .then(({ data:dataRegister }) => {
-          if(dataRegister.status === 'error'){
-            resolve(dataRegister);
-            return;
-          }
-
-          ApiService.post("api/login", credentials)
-          .then(( { data } ) => {
-            if(!data.access_token){
-              throw data;
-            }
-            context.commit(SET_TOKEN, data.access_token);
-            context.commit(SET_AUTH, dataRegister.user);
-            context.commit(SET_HAS_ACCOUNT, dataRegister.user);
-            context.commit(SET_IS_ADMIN, dataRegister.user);
-
-            resolve(dataRegister);
-          })
-          .catch(( { data } ) => {
-            context.commit(SET_ERROR, data.errors);
-          });
-        })
-        .catch(({ data }) => {
-          context.commit(SET_ERROR, data.errors);
-        });
-    });
-  },
-  [REDIRECT_REGISTER_GOOGLE](context,provider) {
-    return new Promise(resolve => {
-      ApiService.get("api/auth/"+provider+"/redirect")
-        .then(({ data }) => {
-          resolve(data);
-        })
-        .catch(({ data }) => {
-          context.commit(SET_ERROR, data.errors);
-        });
-    });
-  },
-  [REGISTER_GOOGLE](context, payload) {
-    return new Promise(resolve => {
-      ApiService.get("api/auth/"+payload.provider+"/callback?code="+payload.code+'&&')
-        .then(({ data:dataRegister }) => {
-          if(dataRegister.status === 'error'){
-            resolve(dataRegister);
-            return;
-          }
-          const email = dataRegister.user.email
-          const password = dataRegister.user.password;
-
-          ApiService.post("api/login", { email, password })
-          .then(( { data } ) => {
-            if(!data.access_token){
-              throw data;
-            }
-            context.commit(SET_TOKEN, data.access_token);
-            context.commit(SET_AUTH, dataRegister.user);
-            context.commit(SET_HAS_ACCOUNT, dataRegister.user);
-            context.commit(SET_IS_ADMIN, dataRegister.user);
-
-            resolve(dataRegister);
-          })
-        })
-        .catch(({ data }) => {
-          context.commit(SET_ERROR, data.errors);
-        });
-    });
-  },
-  [VALIDATE_EMAIL](_, payload) {
-    const data = payload;
-    return new Promise(resolve => {
-        ApiService.setHeader();
-        ApiService.put("api/validate_email/"+data .user, data )
-        .then(({ data }) => {
-          resolve(data);
-          return;
-        });
-      
     });
   },
   [RESET_PASSWORD_EMAIL](context, credentials) {
@@ -161,16 +100,6 @@ const actions = {
           // console.log(data);
           // context.commit(SET_ERROR, data.errors);
         });
-    });
-  },
-  [ALL_USERS](_) {
-
-    return new Promise(resolve => {
-      ApiService.post("api/user/all")
-      .then(({ data }) => {
-        resolve(data);
-        return;
-      });
     });
   },
   [VALIDATE_USER_EXIST](_,query) {
@@ -204,16 +133,12 @@ const mutations = {
   [SET_TOKEN](state, token) {
     JwtService.saveToken(token);
   },
-  [SET_HAS_ACCOUNT](state, user) {
-    let timeInitSesion = Date.parse(new Date())
-    window.localStorage.setItem("has_account", user.active_account_type == 0 || user.active_account_type == 1 ? true : false);
-    window.localStorage.setItem("session_on",timeInitSesion)
-  },
   [SET_IS_ADMIN](state, user) {
-    window.localStorage.setItem("is_admin", user.roles.findIndex(role => role.name == 'admin') > -1 ? true : false);
+    window.localStorage.setItem("is_admin", user.rol_id === 1 ? true : false);
   },
   [SET_AUTH](state, user) {
     state.isAuthenticated = true;
+    console.log(user)
     state.user = user;
     state.errors = {};
   },

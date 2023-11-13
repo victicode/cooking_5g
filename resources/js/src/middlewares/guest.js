@@ -1,3 +1,3 @@
 export default function guest ({ next, store }){
-    next();
+    store.getters.isAuthenticated ? next({ name: 'home' }) : next();
 }

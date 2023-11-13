@@ -3,8 +3,8 @@ import App from "./App.vue";
 import { createApp } from 'vue/dist/vue.esm-bundler';
 import axios from "axios";
 import VueAxios from "vue-axios";
-import store from "@/core/services/store";
-import ApiService from "@/core/services/api.service";
+import store from "@/core/services/store/index.js";
+// import ApiService from "@/core/services/api.service";
 import router from "./router";
 import middlewarePipeline from './middlewares/middlewarePipeline';
 import 'bootstrap';
@@ -57,13 +57,14 @@ router.beforeEach(async (to, from, next) => {
 // 
 
 
-
+// window.localStorage.clear()
+// console.log(store)
 
 const app = createApp(App)
 app.use(VueAxios, axios);
 
-app.use(store)
 app.use(router)
+app.use(store)
 app.axios.defaults.baseURL = import.meta.env.VUE_APP_BACKEND_URL 
 
 app.mount('#app')

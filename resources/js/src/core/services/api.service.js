@@ -1,6 +1,6 @@
 import axios from "axios";
-// import VueAxios from "vue-axios";
-// import JwtService from "@/core/services/jwt.service";
+import VueAxios from "vue-axios";
+import JwtService from "@/core/services/jwt.service";
 
 /**
  * Service to call HTTP request via Axios
@@ -11,6 +11,14 @@ const ApiService = {
   /**
    * Set the default HTTP request headers
    */
+  setHeader() {
+    axios.defaults.headers.common[
+      "Authorization"
+    ] = `Bearer ${JwtService.getToken()}`;
+    axios.defaults.headers.common[
+      "Accept"
+    ] = `application/json`;
+  },
 
   query(resource, params) {
     return axios.get(resource, params);
@@ -33,8 +41,8 @@ const ApiService = {
    * @returns {*}
    */
   post(resource, params) {
-    return 'hola'
-    // return axios.post(`${resource}`, params);
+    // return 'hola'
+    return axios.post(`${resource}`, params);
   },
 
   /**

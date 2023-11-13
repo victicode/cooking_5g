@@ -2,14 +2,14 @@ import ApiService from "@/core/services/api.service";
 import JwtService from "@/core/services/jwt.service";
 
 // action types
-export const USERS_STORE = "users_store";
+export const GET_USER = "GET_USER";
 
 const actions = {
-    [USERS_STORE](_, body) {
+    [GET_USER](_, body='') {
         return new Promise((resolve, reject) => {
             if (JwtService.getToken()) {
                 ApiService.setHeader();
-                ApiService.post("api/user", body)
+                ApiService.get("api/user")
                     .then(( { data } ) => {
                         resolve(data);
                     })
