@@ -11,16 +11,16 @@ import middlewarePipeline from './middlewares/middlewarePipeline'
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    { path: '/', redirect: '/dashboard' },
     {
       path: "/",
       name:"home",
-      redirect: "/dashboard",
-      component: () => import("@/view/layout/Layout.vue"),
+      component: () => import('./layouts/default.vue'),
       children: [
         {
-          path: "/dashboard",
           name: "dashboard",
-          component: () => import("@/view/pages/dashboard/Dashboard.vue"),
+          path: 'dashboard',
+          component: () => import('./pages/dashboard.vue'),
           meta: {
             middleware: [
               auth
@@ -30,8 +30,7 @@ const router = createRouter({
         },
         {
           path: "/products",
-          name: "products",
-          component: () => import("@/view/pages/products/Products.vue"),
+          component: () => import('./pages/cards.vue'),
           meta: {
             middleware: [
               auth
@@ -44,7 +43,7 @@ const router = createRouter({
     {
       path: "/login",
       name: "Login",
-      component: () => import("@/view/pages/auth/login/Login.vue"),
+      component: () => import('./pages/logins.vue'),
       meta: {
         middleware: [
           guest

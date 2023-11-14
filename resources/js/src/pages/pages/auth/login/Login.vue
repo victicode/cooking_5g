@@ -126,6 +126,7 @@ export default {
     this.fv.on("core.form.valid", () => {
       const email = this.$refs.user.value
       const password = this.$refs.password.value
+      const remember = 'true'
       // clear existing errors
       this.$store.dispatch(LOGOUT);
       
@@ -135,7 +136,7 @@ export default {
       
       // dummy delay
         this.$store
-        .dispatch(LOGIN, { email, password })
+        .dispatch(LOGIN, { email, password, remember })
         .then((data) => {
           if(data.code === 500 ){
             submitButton.textContent = 'Ingresar';

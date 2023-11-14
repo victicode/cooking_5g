@@ -43,6 +43,8 @@ const handleNavScroll = evt => {
     :is="props.tag"
     ref="refNav"
     class="layout-vertical-nav"
+    style="background: #cf6123;
+    color: white;"
     :class="[
       {
         'visible': isOverlayNavActive,
@@ -58,13 +60,8 @@ const handleNavScroll = evt => {
           to="/"
           class="app-logo d-flex align-center gap-x-3 app-title-wrapper"
         >
-          <div
-            class="d-flex"
-            v-html="logo"
-          />
-
           <h1 class="leading-normal">
-            sneat
+            Cooking 5G
           </h1>
         </RouterLink>
       </slot>

@@ -78,9 +78,9 @@ const upgradeBanner = computed(() => {
       />
       <VerticalNavLink
         :item="{
-          title: 'Account Settings',
+          title: 'productos',
           icon: 'mdi-account-cog-outline',
-          to: '/account-settings',
+          to: '/products',
         }"
       />
 
@@ -153,24 +153,6 @@ const upgradeBanner = computed(() => {
           to: '/form-layouts',
         }"
       />
-    </template>
-
-    <template #after-vertical-nav-items>
-      <!-- 👉 illustration -->
-      <a
-        href="https://themeselection.com/item/sneat-vuetify-vuejs-admin-template"
-        target="_blank"
-        rel="noopener noreferrer"
-        style="margin-left: 7px;"
-      >
-        <img
-          :src="upgradeBanner"
-          alt="upgrade-banner"
-          transition="scale-transition"
-          class="upgrade-banner mx-auto"
-          style="max-width: 230px;"
-        >
-      </a>
     </template>
 
     <!-- 👉 Pages -->

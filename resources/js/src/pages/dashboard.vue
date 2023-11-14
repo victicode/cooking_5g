@@ -151,3 +151,9 @@ import wallet from '@images/cards/wallet-info.png'
     </VCol>
   </VRow>
 </template>
+
+<style>
+body{
+  background:#b7b7b71f!important;
+}
+</style>
