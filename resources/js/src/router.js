@@ -15,12 +15,12 @@ const router = createRouter({
     {
       path: "/",
       name:"home",
-      component: () => import('./layouts/default.vue'),
+      component: () => import('@/layouts/default.vue'),
       children: [
         {
           name: "dashboard",
           path: 'dashboard',
-          component: () => import('./pages/dashboard.vue'),
+          component: () => import('@/pages/dashboard.vue'),
           meta: {
             middleware: [
               auth
@@ -30,7 +30,7 @@ const router = createRouter({
         },
         {
           path: "/products",
-          component: () => import('./pages/cards.vue'),
+          component: () => import('@/pages/cards.vue'),
           meta: {
             middleware: [
               auth
@@ -38,18 +38,64 @@ const router = createRouter({
             title : 'Productos'
           },
         },
+        {
+          path: 'account-settings',
+          component: () => import('@/pages/account-settings.vue'),
+        },
+        {
+          path: 'typography',
+          component: () => import('@/pages/typography.vue'),
+        },
+        {
+          path: 'icons',
+          component: () => import('@/pages/icons.vue'),
+        },
+        {
+          path: 'cards',
+          component: () => import('@/pages/cards.vue'),
+        },
+        {
+          path: 'tables',
+          component: () => import('@/pages/tables.vue'),
+        },
+        {
+          path: 'form-layouts',
+          component: () => import('@/pages/form-layouts.vue'),
+        },
       ]
     },
     {
       path: "/login",
       name: "Login",
-      component: () => import('./pages/logins.vue'),
+      component: () => import('@/pages/logins.vue'),
       meta: {
         middleware: [
           guest
         ]
       },
     },
+    {
+      path: '/:pathMatch(.*)*',
+      component: () => import('@/pages/[...all].vue'),
+    },
+    // 404 ROUTEs
+    // {
+    //   path: "*",
+    //   redirect: "/404",
+    // },
+    // // 404 ROUTEs
+    // {
+    //   // the 404 route, when none of the above matches
+    //   path: "/404",
+    //   name: "404",
+    //   component: () => import('./pages/[...all].vue'),
+    // },
+    {
+      // the 403 route, no permissions
+      path: "/403",
+      name: "403",
+      component: () => import("@/view/pages/error/403.vue"),
+    }
     
     // // CREATE ACCOUNTS ROUTES
     // {

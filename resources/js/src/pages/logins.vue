@@ -197,14 +197,14 @@ export default {
         });
     
     }).on("core.form.invalid", () => {
-      this.$refs["kt_login_signin_submit"].disabled = true
+      document.getElementById('kt_login_signin_submit').disabled = true
       this.alertShow = false;
     }).on("core.field.valid", () => {
-      this.$refs["kt_login_signin_submit"].disabled = false
+      document.getElementById('kt_login_signin_submit').disabled = false
       this.alertShow = false;
     }).on("core.field.invalid", () => {
       this.alertShow = false;
-      this.$refs["kt_login_signin_submit"].disabled = true
+      document.getElementById('kt_login_signin_submit').disabled = true
     });
   },
   methods: {

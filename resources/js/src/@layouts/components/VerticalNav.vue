@@ -43,8 +43,7 @@ const handleNavScroll = evt => {
     :is="props.tag"
     ref="refNav"
     class="layout-vertical-nav"
-    style="background: #cf6123;
-    color: white;"
+    style=""
     :class="[
       {
         'visible': isOverlayNavActive,

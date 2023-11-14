@@ -1,5 +1,8 @@
+
 <script setup>
 import DefaultLayoutWithVerticalNav from './components/DefaultLayoutWithVerticalNav.vue'
+// import { mapGetters } from "vuex";
+
 </script>
 
 <template>
@@ -22,6 +25,29 @@ import DefaultLayoutWithVerticalNav from './components/DefaultLayoutWithVertical
 </style>
 <style>
 .animate__animated{
-  animation-duration: 0.3s;
+  animation-duration: 0.25s;
 }
 </style>
+<script>
+import { GET_USER } from "@/core/services/store/user.module";
+import { LOGOUT } from "@/core/services/store/auth.module";
+export default {
+  methods:{
+    getUser(){
+      this.$store.dispatch(GET_USER)
+        .then((data) => {
+          console.log(data)
+          if(data.code !== 200){
+            console.log('alert!!!')
+          }
+          this.user = data.user;
+        })
+        .catch((e) => {
+          this.$store.dispatch(LOGOUT);
+        });
+    }
+  },
+  created(){
+    this.getUser()
+  }
+};</script>
