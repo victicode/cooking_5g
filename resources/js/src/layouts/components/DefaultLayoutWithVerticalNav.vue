@@ -1,10 +1,12 @@
 <script setup>
 import { useTheme } from 'vuetify'
-import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTitle.vue'
-import upgradeBannerDark from '@images/pro/upgrade-banner-dark.png'
-import upgradeBannerLight from '@images/pro/upgrade-banner-light.png'
+// import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTitle.vue'
 import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
 import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
+import VerticalDropdownNavLink from '@layouts/components/VerticalDropdownNavLink.vue'
+import VBreadcums from '@layouts/components/Breadcums.vue'
+
+import { mapGetters } from "vuex";
 
 // Components
 import Footer from '@/layouts/components/Footer.vue'
@@ -13,9 +15,6 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
 
 const vuetifyTheme = useTheme()
 
-const upgradeBanner = computed(() => {
-  return vuetifyTheme.global.name.value === 'light' ? upgradeBannerLight : upgradeBannerDark
-})
 </script>
 
 <template>
@@ -32,20 +31,7 @@ const upgradeBanner = computed(() => {
         </IconBtn>
 
         <!-- 👉 Search -->
-        <div
-          class="d-flex align-center cursor-pointer"
-          style="user-select: none;"
-        >
-          <!-- 👉 Search Trigger button -->
-          <IconBtn>
-            <VIcon icon="bx-search" />
-          </IconBtn>
-
-          <span class="d-none d-md-flex align-center text-disabled">
-            <span class="me-3">Search</span>
-            <span class="meta-key">&#8984;K</span>
-          </span>
-        </div>
+        <VBreadcums />
 
         <VSpacer />
 
@@ -70,6 +56,7 @@ const upgradeBanner = computed(() => {
 
     <template #vertical-nav-content>
       <VerticalNavLink
+        class="mt-3"
         :item="{
           title: 'Dashboard',
           icon: 'bx-home',
@@ -77,85 +64,53 @@ const upgradeBanner = computed(() => {
         }"
       />
       <VerticalNavLink
+        class="mt-3"
         :item="{
-          title: 'productos',
-          icon: 'mdi-account-cog-outline',
+          title: 'Productos',
+          icon: 'bx-package',
           to: '/products',
         }"
       />
+      <VerticalDropdownNavLink 
+        class="mt-3"
+        :item="{
+          title: 'Usuarios - Chefs',
+          items:[
+            {
+              title: 'Usuarios',
+              icon: 'mdi-users-group-outline',
+              to: '/user-list',
+            },
+            {
+              title: 'Chef',
+              icon: 'icon-park-twotone:chef-hat',
+              to: '/chef-list',
+            }
+          ],
+        }"
+      />
+      <VerticalNavLink
+        class="mt-3"
+        :item="{
+          title: 'Ordenes',
+          icon: 'bx-task',
+          to: '/user-list',
+        }"
+      />
+      <VerticalNavLink
+        class="mt-3"
+        :item="{
+          title: currentUser.rol_id == 1 ? 'Recetas' : 'Tus Recetas',
+          icon: 'bx-receipt',
+          to: '/user-list',
+        }"
+      />
 
-      <!-- 👉 Pages -->
-      <VerticalNavSectionTitle
-        :item="{
-          heading: 'Pages',
-        }"
-      />
-      <VerticalNavLink
-        :item="{
-          title: 'Login',
-          icon: 'bx-log-in',
-          to: '/login',
-        }"
-      />
-      <VerticalNavLink
-        :item="{
-          title: 'Register',
-          icon: 'bx-user-plus',
-          to: '/register',
-        }"
-      />
-      <VerticalNavLink
-        :item="{
-          title: 'Error',
-          icon: 'bx-info-circle',
-          to: '/no-existence',
-        }"
-      />
-
-      <!-- 👉 User Interface -->
-      <VerticalNavSectionTitle
-        :item="{
-          heading: 'User Interface',
-        }"
-      />
-      <VerticalNavLink
-        :item="{
-          title: 'Typography',
-          icon: 'mdi-alpha-t-box-outline',
-          to: '/typography',
-        }"
-      />
-      <VerticalNavLink
-        :item="{
-          title: 'Icons',
-          icon: 'bx-show',
-          to: '/icons',
-        }"
-      />
-      <VerticalNavLink
-        :item="{
-          title: 'Cards',
-          icon: 'bx-credit-card',
-          to: '/cards',
-        }"
-      />
-      <VerticalNavLink
-        :item="{
-          title: 'Tables',
-          icon: 'bx-table',
-          to: '/tables',
-        }"
-      />
-      <VerticalNavLink
-        :item="{
-          title: 'Form Layouts',
-          icon: 'mdi-form-select',
-          to: '/form-layouts',
-        }"
-      />
+      
     </template>
 
     <!-- 👉 Pages -->
+    
     <slot />
 
     <!-- 👉 Footer -->
@@ -175,3 +130,19 @@ const upgradeBanner = computed(() => {
   padding-inline: 0.25rem;
 }
 </style>
+<script>
+import { mapGetters } from "vuex";
+  export default {
+    methods:{
+    },
+    created(){
+    },
+    computed: {
+      ...mapGetters(["currentUser"]),
+
+      getCurrentAccount() {
+        return this.currentUser;
+      },
+    },
+  };
+</script>

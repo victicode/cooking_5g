@@ -15,8 +15,8 @@ import store from "@/core/services/store/index.js";
 // import ApiService from "@/core/services/api.service";
 import router from "./router.js";
 import middlewarePipeline from './middlewares/middlewarePipeline';
-// import 'bootstrap';
-
+import 'bootstrap';
+// import  "@/assets/sass/_bootstrap.scss";
 loadFonts()
 
 
@@ -43,7 +43,6 @@ router.beforeEach(async (to, from, next) => {
     next,
     store
   }
-  console.log(to)
   // document.title =`${titlePage[to.name].charAt(0).toUpperCase()}${titlePage[to.name].substring(1)} | DLS Money Plataforma de cambio de dolares a soles online`
   return middleware[0]({
     ...context,
@@ -63,5 +62,4 @@ app.use(vuetify)
 app.use(router)
 app.use(store)
 app.axios.defaults.baseURL = import.meta.env.VUE_APP_BACKEND_URL 
-console.log(app)
 app.mount('#app')

@@ -15,6 +15,16 @@
 //     }
 //   }
 // }
+.nav-link.link-father:hover{
+  color: rgb(var(--v-theme-primary)) !important;
+}
+.nav-link.link-son{
+  color: rgb(var(--v-theme-secondary)) !important;
+}
+.nav-link.link-son:hover{
+  color: rgb(var(--v-theme-primary)) !important;
+}
+
 .layout-wrapper.layout-nav-type-vertical {
   &.layout-content-height-fixed {
     .page-content-container {

@@ -28,15 +28,7 @@ const actions = {
                         
                     })
                     .catch(( { response } ) => {
-                        console.log(response)
-                        switch (response.status) {
-                            case 400:
-                                reject(response.data.error)
-                                break;
-                            default:
-                                reject('Ocurrió un error desconocido al intentar guardar el usuario.');
-                                break;
-                        }
+                        reject('Ocurrió un error desconocido al intentar guardar el usuario.');
                     });
             }
         });
@@ -44,7 +36,7 @@ const actions = {
 };
 const mutations = {
     [SET_USER](state, user) {
-        state.account = user;
+        state.user = user;
       },
 }
 export default {

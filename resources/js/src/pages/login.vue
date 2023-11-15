@@ -51,12 +51,6 @@
  
 </style>
 <style >
-input:-internal-autofill-selected {
-  appearance: menulist-button;
-  background-image: none !important;
-  background-color: rgb(232, 240, 254) !important;
-  color: fieldtext !important;
-}
 </style>
 
 <script>

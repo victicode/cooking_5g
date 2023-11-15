@@ -9,7 +9,7 @@ const props = defineProps({
 
 <template>
   <li
-    class="nav-link"
+    class="nav-link link-father"
     :class="{ disabled: item.disable }"
   >
     <Component

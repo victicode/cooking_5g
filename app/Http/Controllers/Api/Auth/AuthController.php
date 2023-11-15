@@ -26,26 +26,6 @@ class AuthController extends Controller
 			}
 			return response()->json([ 'data'=>['code'=>200,'access_token' => $token]], 200);
     }
-    public function Register (Request $request){
-			$validator = Validator::make($request->all(), [
-				'name'=>	'required', 
-				'email'=>			'required',
-				'password'=>	'required'
-			]);
-			if($validator->fails()){
-				return response()->json($validator->errors(),442);
-			}
-			$user = User::create([
-				'name' 			=> 	$request->name,
-				'email'			=>	$request->name,
-				'password' 	=>	bcrypt($request->password)
-			]);
-
-			if(! $token = JWTAuth::attempt($request->only('email','password'))){
-				return response()->json(['error' => 'Unauthorized'], 401);
-			}
-			return $this->createNewToken($token);
-    }
 		public function logout(Request $request)
     {
 			return response()->json([ 'data'=>['code'=>200]], 200);
@@ -53,15 +33,17 @@ class AuthController extends Controller
     }
     protected function createNewToken($token){
         return response()->json([
-            'acces_toke' => $token,
+            'access_token' => $token,
             'token_type' => 'bearer',
             'user' => auth()->user()
         ]);
     }
 		public function getUser(Request $request){
-			return response()->json($request->user());
-		}
-		// public function refresh(){
-		// 	return $this->createNewToken(auth()->refresh());
-		// }
+			// $this->createNewToken(auth()->refresh());
+			return response()->json([ 'data'=>['code'=>200,'user' => User::with('rol')->find($request->user()->id)]], 200);
+
+	}
+	// public function refresh(){
+	// 		return $this->createNewToken(auth()->refresh());
+	// }
 }

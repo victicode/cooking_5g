@@ -18,15 +18,15 @@ const illustrationJohn = computed(() => global.name.value === 'dark' ? illustrat
       >
         <VCardItem>
           <VCardTitle class="text-md-h5 text-primary">
-            Congratulations Sapo! 🎉
+            Bienvenido {{ getCurrentAccount.name }} 🎉
           </VCardTitle>
         </VCardItem>
 
         <VCardText>
           <span>
-            You have done 72% 🤩 more sales today.
+            {{getCurrentAccount.rol_id == 1 ? '¿ Deseas crear un usuario ?' :''}}
             <br>
-            Check your new raising badge in your profile.
+            {{getCurrentAccount.rol_id == 1 ? 'Toma este atajo.' :''}}
           </span>
           <br>
           <VBtn
@@ -34,7 +34,7 @@ const illustrationJohn = computed(() => global.name.value === 'dark' ? illustrat
             class="mt-4"
             size="small"
           >
-            View Badges
+            Vamos!
           </VBtn>
         </VCardText>
       </VCol>
@@ -64,25 +64,18 @@ const illustrationJohn = computed(() => global.name.value === 'dark' ? illustrat
 }
 </style>
 <script>
-import { GET_USER } from "@/core/services/store/user.module";
-import { LOGOUT } from "@/core/services/store/auth.module";
-export default {
-  methods:{
-    getUser(){
-      this.$store.dispatch(GET_USER)
-        .then((data) => {
-          console.log(data)
-          if(data.code !== 200){
-            console.log('alert!!!')
-          }
-          this.user = data.user;
-        })
-        .catch((e) => {
-          this.$store.dispatch(LOGOUT);
-        });
-    }
-  },
-  created(){
-    this.getUser()
-  }
-};</script>
+import { mapGetters } from "vuex";
+  export default {
+    methods:{
+    },
+    created(){
+    },
+    computed: {
+      ...mapGetters(["currentUser"]),
+
+      getCurrentAccount() {
+        return this.currentUser;
+      },
+    },
+  };
+</script>

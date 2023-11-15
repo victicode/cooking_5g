@@ -67,7 +67,7 @@ const moreList = [
 </script>
 
 <template>
-  <VCard title="Transactions">
+  <VCard title="Ordenes Pendientes">
     <template #append>
       <div class="me-n3 mt-n2">
         <MoreBtn :menu-list="moreList" />

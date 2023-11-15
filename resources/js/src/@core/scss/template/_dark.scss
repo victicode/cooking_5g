@@ -2,7 +2,7 @@
   // vertical nav
   &.v-theme--dark .layout-nav-type-vertical,
   .v-theme-provider.v-theme--dark {
-    .layout-vertical-nav {
+    > .layout-vertical-nav {
       // nav-link and nav-group style for dark
       .nav-link .router-link-exact-active,
       .nav-group.active:not(.nav-group .nav-group) > :first-child {
@@ -33,5 +33,6 @@
         }
       }
     }
+    box-shadow:5px 0px 20px 0px rgba(189, 189, 189, 0) !important
   }
 }

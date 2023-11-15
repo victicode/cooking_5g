@@ -50,6 +50,7 @@ const actions = {
             ApiService.setHeader();
             ApiService.get("api/user")
               .then(({ data }) => {
+                console.log(data)
                 context.commit(SET_AUTH, data.data.user);
                 context.commit(SET_IS_ADMIN, data.data.user);
                 state.user = data.data.user;
@@ -57,6 +58,7 @@ const actions = {
                 resolve(data.data);
               })
               .catch(( response ) => {
+                console.log(response)
                 context.commit(SET_ERROR, response.data);
               });
           }
@@ -138,7 +140,6 @@ const mutations = {
   },
   [SET_AUTH](state, user) {
     state.isAuthenticated = true;
-    console.log(user)
     state.user = user;
     state.errors = {};
   },

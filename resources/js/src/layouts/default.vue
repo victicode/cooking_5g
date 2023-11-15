@@ -23,7 +23,10 @@ import DefaultLayoutWithVerticalNav from './components/DefaultLayoutWithVertical
 // As we are using `layouts` plugin we need its styles to be imported
 @use "@layouts/styles/default-layout";
 </style>
-<style>
+<style >
+body{
+  background: #9e9e9e23!important;
+}
 .animate__animated{
   animation-duration: 0.25s;
 }
@@ -43,7 +46,8 @@ export default {
           this.user = data.user;
         })
         .catch((e) => {
-          this.$store.dispatch(LOGOUT);
+          console.log(e)
+          this.$store.dispatch(LOGOUT).then(() => { this.$router.push('/login')});
         });
     }
   },

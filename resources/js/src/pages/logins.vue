@@ -61,15 +61,7 @@
                 @click:append-inner="isPasswordVisible = !isPasswordVisible"
               />
               </VCol>
-              <VCol cols="12" class="pt-0">
-                <!-- remember me checkbox -->
-                <div class="d-flex align-center justify-space-between flex-wrap mt-1 mb-4">
-                  <VCheckbox
-                    v-model="form.remember"
-                    label="Remember me"
-                  />
-                </div>
-
+              <VCol cols="12" class="pt-0 mt-8">
                 <!-- login button -->
                 <VBtn
                   block
@@ -166,7 +158,7 @@ export default {
       const remember = 'true'
 
 
-      console.log(email)
+      // console.log(email)
       // clear existing errors
       this.$store.dispatch(LOGOUT);
       

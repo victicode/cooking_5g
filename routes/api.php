@@ -39,6 +39,6 @@ Route::post('login', [AuthController::class, 'login']);
 Route::middleware('jwt.verify')->post('/logout', [AuthController::class, 'logout']);
 
 Route::middleware('jwt.verify')->prefix('user')->name('user.')->group(function () {
-    Route::get('/', [UserController::class, 'getUser'])->name('getUser');
+    Route::get('/', [AuthController::class, 'getUser'])->name('getUser');
 });
 
