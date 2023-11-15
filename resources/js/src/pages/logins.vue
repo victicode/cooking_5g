@@ -185,7 +185,10 @@ export default {
         })
         .catch((e) => {
 
-          // console.log(e)
+          console.log(e)
+          submitButton.textContent = 'Ingresar';
+          submitButton.blur();
+          this.showAlert('error','Error desconocido')
         });
     
     }).on("core.form.invalid", () => {

@@ -64,6 +64,7 @@ const actions = {
           }
         })
         .catch(( { response } ) => {
+          // console.log(response)
           resolve(response.data.data)
         });
     });

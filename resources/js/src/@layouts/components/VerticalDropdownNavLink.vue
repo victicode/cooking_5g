@@ -61,25 +61,10 @@ const props = defineProps({
     &.on{
       max-height: 140px;
     }
-    & a::after{
-      content: '>';
-      height: 50px;
-      width: 50px;
-      font-size: 20px;
-    }
   }
 }
 </style>
 <script>
-import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
-// import 'bootstrap/scss/bootstrap'
-// FormValidation plugins
-import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
-import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
-import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
-import { LOGOUT, LOGIN } from "@/core/services/store/auth.module";
-
-
 export default {
   data() {
     return {
