@@ -50,7 +50,7 @@ const actions = {
             ApiService.setHeader();
             ApiService.get("api/user")
               .then(({ data }) => {
-                console.log(data)
+                // console.log(data)
                 context.commit(SET_AUTH, data.data.user);
                 context.commit(SET_IS_ADMIN, data.data.user);
                 state.user = data.data.user;

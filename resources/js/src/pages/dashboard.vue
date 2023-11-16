@@ -1,8 +1,7 @@
 <script setup>
 import GreetingsComponent from '@/views/dashboard/GreetingsComponent.vue'
 import AnalyticsFinanceTabs from '@/views/dashboard/AnalyticsFinanceTab.vue'
-import AnalyticsOrderStatistics from '@/views/dashboard/AnalyticsOrderStatistics.vue'
-import AnalyticsTransactions from '@/views/dashboard/AnalyticsTransactions.vue'
+import LastPendingOrders from '@/views/dashboard/LastPendingOrders.vue'
 
 </script>
 
@@ -12,6 +11,7 @@ import AnalyticsTransactions from '@/views/dashboard/AnalyticsTransactions.vue'
     <VCol
       cols="12"
       md="7"
+      class="pe-0"
     >
       <VRow>
         <V-col
@@ -22,17 +22,10 @@ import AnalyticsTransactions from '@/views/dashboard/AnalyticsTransactions.vue'
         </V-col>
         <VCol
           cols="12"
-          md="6"
+          md="12"
+          
         >
-          <AnalyticsOrderStatistics />
-
-        </VCol>
-        <VCol
-          cols="12"
-          md="6"
-        >
-          <AnalyticsFinanceTabs />
-
+          <LastPendingOrders />
         </VCol>
       </VRow>
     </VCol>
@@ -69,46 +62,12 @@ import AnalyticsTransactions from '@/views/dashboard/AnalyticsTransactions.vue'
               <VCol
               class="pa-0"
               cols="12"
-              md="12"
-              sm="12"
-              order="3"
             >
               <AnalyticsFinanceTabs />
             </VCol>
             </v-carousel-item>
           </v-carousel>
         </v-card>
-    </VCol>
-
-
-    <!-- 👉 Order Statistics -->
-    <VCol
-      cols="12"
-      md="4"
-      sm="6"
-      order="3"
-    >
-      <AnalyticsOrderStatistics />
-    </VCol>
-
-    <!-- 👉 Tabs chart -->
-    <VCol
-      cols="12"
-      md="4"
-      sm="6"
-      order="3"
-    >
-      <AnalyticsFinanceTabs />
-    </VCol>
-
-    <!-- 👉 Transactions -->
-    <VCol
-      cols="12"
-      md="4"
-      sm="6"
-      order="3"
-    >
-      <AnalyticsTransactions />
     </VCol>
   </VRow>
 </template>

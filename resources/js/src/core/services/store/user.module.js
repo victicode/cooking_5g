@@ -22,7 +22,7 @@ const actions = {
                 ApiService.setHeader();
                 ApiService.get("api/user")
                     .then(( { data } ) => {
-                        console.log(data.data.user)
+                        // console.log(data.data.user)
                         context.commit(SET_USER, data.data.user);
                         resolve(data.data);
                         

@@ -137,7 +137,7 @@ const moreList = [
   <VCard>
     <VCardItem class="pb-3">
       <VCardTitle class="mb-1">
-        Order Statistics
+        Or
       </VCardTitle>
       <VCardSubtitle>42.82k Total Sales</VCardSubtitle>
 

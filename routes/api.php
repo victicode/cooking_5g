@@ -1,9 +1,10 @@
 <?php
 
 
-
+use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\Auth\AuthController;
+
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -40,5 +41,10 @@ Route::middleware('jwt.verify')->post('/logout', [AuthController::class, 'logout
 
 Route::middleware('jwt.verify')->prefix('user')->name('user.')->group(function () {
     Route::get('/', [AuthController::class, 'getUser'])->name('getUser');
+});
+Route::middleware('jwt.verify')->prefix('order')->name('user.')->group(function () {
+    Route::get('/', [OrderController::class, 'index'])->name('getOrders');
+    Route::get('/get-last-pending', [OrderController::class, 'getLastPending'])->name('getOrders');
+
 });
 
