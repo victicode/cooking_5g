@@ -6,7 +6,7 @@ import paypalError from '@images/cards/paypal-error.png'
 import walletPrimary from '@images/cards/wallet-primary.png'
 import MoreBtn from '@core/components/MoreBtn.vue';
 import moment from 'moment';
-import { GET_ORDERS } from "@/core/services/store/order.module";
+import { GET_LAST_PENDING_ORDERS } from "@/core/services/store/order.module";
 
 const transactions = [
   {
@@ -79,23 +79,6 @@ const moreList = [
 
     <VCardText>
       <VList class="card-list">
-        <!-- <VRow class="pa-0 m-0">
-          <VCol cols="2" class="pa-0">
-            Fecha
-          </VCol>
-          <VCol cols="3" class="pa-0">
-            Tracker ID
-          </VCol>
-          <VCol cols="2" class="pa-0">
-            Cantidad 
-          </VCol>
-          <VCol cols="2" class="pa-0">
-            Creado por
-          </VCol>
-          <VCol cols="3" class="pa-0">
-            Estado
-          </VCol>
-        </VRow> -->
         <VListItem
           class="py-3 border-bottom-4"
         >
@@ -169,7 +152,7 @@ import { mapGetters } from "vuex";
     methods:{
       getOrders(){
         this.$store
-        .dispatch(GET_ORDERS)
+        .dispatch(GET_LAST_PENDING_ORDERS)
         .then((data) => {
           if (data.code !==200) {
             console.log('ha ocurrido un error al intentar obtener las ordenes')  
