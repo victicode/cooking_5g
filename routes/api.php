@@ -45,6 +45,13 @@ Route::middleware('jwt.verify')->prefix('user')->name('user.')->group(function (
 Route::middleware('jwt.verify')->prefix('order')->name('user.')->group(function () {
     Route::get('/', [OrderController::class, 'index'])->name('getOrders');
     Route::get('/get-last-pending', [OrderController::class, 'getLastPending'])->name('getOrders');
+    Route::get('/get-last-sending', [OrderController::class, 'getLastSending'])->name('getOrdersSend');
+
+});
+Route::middleware('jwt.verify')->prefix('order')->name('user.')->group(function () {
+    Route::get('/', [OrderController::class, 'index'])->name('getOrders');
+    Route::get('/get-last-pending', [OrderController::class, 'getLastPending'])->name('getOrders');
+    Route::get('/get-last-sending', [OrderController::class, 'getLastSending'])->name('getOrdersSend');
 
 });
 

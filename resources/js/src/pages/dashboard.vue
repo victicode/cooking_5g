@@ -10,7 +10,7 @@ import LastPendingOrders from '@/views/dashboard/LastPendingOrders.vue'
     <!-- 👉 Congratulations -->
     <VCol
       cols="12"
-      md="7"
+      md="8"
       class="pe-0"
     >
       <VRow>
@@ -33,7 +33,7 @@ import LastPendingOrders from '@/views/dashboard/LastPendingOrders.vue'
 
     <VCol
         cols="12"
-        sm="5"
+        sm="4"
         
         order="1"
         order-sm="2"

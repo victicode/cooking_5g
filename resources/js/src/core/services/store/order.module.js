@@ -3,7 +3,9 @@ import JwtService from "@/core/services/jwt.service";
 
 // action types
 export const GET_ORDERS = "GET_ORDERS";
-export const GET_LAST_PENDING_ORDERS = "GET_LAST_PENDING_ORDERS" 
+export const GET_LAST_PENDING_ORDERS = "GET_LAST_PENDING_ORDERS" ;
+export const GET_LAST_SEND_ORDERS = "GET_LAST_SEND_ORDERS";
+
 const actions = {
     [GET_ORDERS](context) {
         return new Promise((resolve, reject) => {
@@ -22,11 +24,28 @@ const actions = {
             }
         });
     },
-    [GET_ORDERS](context) {
+    [GET_LAST_PENDING_ORDERS](context) {
         return new Promise((resolve, reject) => {
             if (JwtService.getToken()) {
                 ApiService.setHeader();
                 ApiService.get("api/order/get-last-pending")
+                    .then(( { data } ) => {
+                        // console.log(data)
+                        resolve(data);
+                        
+                    })
+                    .catch(( { response } ) => {
+                        // console.log(response )
+                        reject('Ocurrió un error desconocido al intentar obtener las ordenes');
+                    });
+            }
+        });
+    },
+    [GET_LAST_SEND_ORDERS](context) {
+        return new Promise((resolve, reject) => {
+            if (JwtService.getToken()) {
+                ApiService.setHeader();
+                ApiService.get("api/order/get-last-sending")
                     .then(( { data } ) => {
                         // console.log(data)
                         resolve(data);

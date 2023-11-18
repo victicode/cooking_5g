@@ -90,7 +90,7 @@ const moreList = [
               Tracker ID
             </VCol>
             <VCol cols="2" class="text-center">
-              Cantidad 
+              N° Productos 
             </VCol>
             <VCol cols="2" class="text-center">
               Creado por
