@@ -3,7 +3,7 @@
     <v-row
       align="start"
     >
-      <v-col cols="4" offset-md="7"
+      <v-col cols="12" md="4" offset-md="7"
       >
         <VCard
       class="auth-card pa-4 pt-7 vh-70 d-flex flex-column"
@@ -37,7 +37,7 @@
         <VForm @submit.prevent="$router.push('/')" id="kt_login_signin_form">
           <VRow>
             <!-- email -->
-            <VCol cols="12" class="nunito">
+            <VCol cols="12" class="form-group">
               <VTextField
                 v-model="form.email"
                 autofocus
@@ -49,7 +49,7 @@
             </VCol>
 
             <!-- password -->
-            <VCol cols="12" class="nunito pb-0">
+            <VCol cols="12" class="form-group pb-0">
               <VTextField
                 v-model="form.password"
                 label="Password"
@@ -81,17 +81,25 @@
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @use "@core/scss/template/pages/page-auth.scss";
 @import "@/assets/sass/login.scss";
+// @import "@/assets/plugins/formvalidation/src/css/index.scss";
+
+body{
+  background: url('http://127.0.0.1:8000/images/background/login/01.jpg'); 
+}
 </style>
 
 <script>
 import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
+import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
+
 import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
 import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
 import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
 import { LOGOUT, LOGIN } from "@/core/services/store/auth.module";
+import background from '@/assets/media/backgrounds/bg-blanco.jpg';
 
 export default {
   data() {
@@ -111,6 +119,7 @@ export default {
   computed: {
   },
   mounted() {
+    document.querySelector('body').style.background= "url('http://127.0.0.1:8000/images/background/login/01.jpg')";
     this.fv = formValidation(document.getElementById('kt_login_signin_form'), {
       fields: {
         email: {
@@ -147,7 +156,6 @@ export default {
               // Use this for enabling/changing valid/invalid class
               // eleInvalidClass: '',
               eleValidClass: '',
-              rowSelector: '.nunito'
             }),
       }
     });

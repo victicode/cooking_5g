@@ -1,5 +1,6 @@
 <script setup>
 import avatar1 from '@images/avatars/avatar-1.png'
+import { LOGOUT } from "@/core/services/store/auth.module";
 </script>
 
 <template>
@@ -9,14 +10,15 @@ import avatar1 from '@images/avatars/avatar-1.png'
     offset-x="3"
     offset-y="3"
     color="success"
-    bordered
+    bordered 
+    v-if="isReady"
   >
     <VAvatar
       class="cursor-pointer"
       color="primary"
       variant="tonal"
     >
-      <VIcon  icon="box-user" />
+      {{  getCurrentAccount.name.slice(0,1).toUpperCase() }}
 
       <!-- SECTION Menu -->
       <VMenu
@@ -41,14 +43,14 @@ import avatar1 from '@images/avatars/avatar-1.png'
                     color="primary"
                     variant="tonal"
                   >
-                    <VImg :src="avatar1" />
+                  {{  getCurrentAccount.name.slice(0,1).toUpperCase() }}
                   </VAvatar>
                 </VBadge>
               </VListItemAction>
             </template>
 
             <VListItemTitle class="font-weight-semibold">
-              John Doe
+              {{  getCurrentAccount.name }}
             </VListItemTitle>
             <VListItemSubtitle>Admin</VListItemSubtitle>
           </VListItem>
@@ -67,50 +69,11 @@ import avatar1 from '@images/avatars/avatar-1.png'
             <VListItemTitle>Profile</VListItemTitle>
           </VListItem>
 
-          <!-- 👉 Settings -->
-          <VListItem link>
-            <template #prepend>
-              <VIcon
-                class="me-2"
-                icon="bx-cog"
-                size="22"
-              />
-            </template>
-
-            <VListItemTitle>Settings</VListItemTitle>
-          </VListItem>
-
-          <!-- 👉 Pricing -->
-          <VListItem link>
-            <template #prepend>
-              <VIcon
-                class="me-2"
-                icon="bx-dollar"
-                size="22"
-              />
-            </template>
-
-            <VListItemTitle>Pricing</VListItemTitle>
-          </VListItem>
-
-          <!-- 👉 FAQ -->
-          <VListItem link>
-            <template #prepend>
-              <VIcon
-                class="me-2"
-                icon="bx-help-circle"
-                size="22"
-              />
-            </template>
-
-            <VListItemTitle>FAQ</VListItemTitle>
-          </VListItem>
-
           <!-- Divider -->
           <VDivider class="my-2" />
 
           <!-- 👉 Logout -->
-          <VListItem to="/login">
+          <VListItem @click="logout()">
             <template #prepend>
               <VIcon
                 class="me-2"
@@ -127,3 +90,37 @@ import avatar1 from '@images/avatars/avatar-1.png'
     </VAvatar>
   </VBadge>
 </template>
+<script>
+import { mapGetters } from "vuex";
+  export default {
+    data(){
+      return{
+        isReady: false
+      }
+    },
+    mounted(){
+      // this.getCurrentAccount.then((data)=>{
+      //   console.log(data)
+      // })
+      setTimeout(() => {
+        this.isReady = true
+        
+      }, 2000);
+      
+    },
+    methods:{
+      logout(){
+        this.$store.dispatch(LOGOUT)
+        .then(() => { this.$router.go('/login')})
+        .catch(()=>{ this.$router.go('/login')});
+      }
+    },
+    computed: {
+      ...mapGetters(["currentUser"]),
+
+      getCurrentAccount() {
+        return this.currentUser;
+      },
+    },
+  };
+</script>

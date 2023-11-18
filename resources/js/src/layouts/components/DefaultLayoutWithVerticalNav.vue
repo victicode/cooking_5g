@@ -41,7 +41,7 @@ const vuetifyTheme = useTheme()
 
         <NavbarThemeSwitcher class="me-2" />
 
-        <!-- <UserProfile /> -->
+        <UserProfile />
       </div>
     </template>
 

@@ -24,18 +24,18 @@ const illustrationJohn = computed(() => global.name.value === 'dark' ? illustrat
 
         <VCardText>
           <span>
-            {{getCurrentAccount.rol_id == 1 ? '¿ Deseas crear un usuario ?' :''}}
+            {{getCurrentAccount.rol_id == 1 ? 'Te encuentras en el area del dashboard.' :''}}
             <br>
-            {{getCurrentAccount.rol_id == 1 ? 'Toma este atajo.' :''}}
+            {{getCurrentAccount.rol_id == 1 ? 'Aquí te mostraremos las últimas novedades dentro del sistema.' :''}}
           </span>
           <br>
-          <VBtn
+          <!-- <VBtn
             variant="tonal"
             class="mt-4"
             size="small"
           >
             Vamos!
-          </VBtn>
+          </VBtn> -->
         </VCardText>
       </VCol>
 
@@ -44,14 +44,9 @@ const illustrationJohn = computed(() => global.name.value === 'dark' ? illustrat
         sm="4"
         order="1"
         order-sm="2"
-        class="text-center"
+        class="text-center bg-gradient-primary"
       >
-        <img
-          :src="illustrationJohn"
-          :height="$vuetify.display.xs ? '150' : '175'"
-          :class="$vuetify.display.xs ? 'mt-6 mb-n2' : 'position-absolute'"
-          class="john-illustration flip-in-rtl"
-        >
+        
       </VCol>
     </VRow>
   </VCard>

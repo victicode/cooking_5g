@@ -47,7 +47,7 @@ export default {
         })
         .catch((e) => {
           console.log(e)
-          this.$store.dispatch(LOGOUT).then(() => { this.$router.push('/login')});
+          this.$store.dispatch(LOGOUT).then(() => { this.$router.go('/login')});
         });
     }
   },

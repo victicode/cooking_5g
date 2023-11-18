@@ -13,7 +13,17 @@
     opacity: 0 !important;
   }
 }
+.hide-text{
 
+  min-width: 0;
+  overflow-wrap: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: none;
+  white-space: nowrap;
+  word-break: normal;
+  word-wrap: break-word;
+}
 // 👉 Set Elevation
 .v-expansion-panels {
   .v-expansion-panel {
@@ -67,3 +77,4 @@
     border-radius: 0.375rem !important;
   }
 }
+

@@ -1,7 +1,9 @@
 <script setup>
 import GreetingsComponent from '@/views/dashboard/GreetingsComponent.vue'
-import AnalyticsFinanceTabs from '@/views/dashboard/AnalyticsFinanceTab.vue'
+import LastSendingOrders from '@/views/dashboard/LastSendingOrders.vue'
 import LastPendingOrders from '@/views/dashboard/LastPendingOrders.vue'
+import CriticalStockProduct from '@/views/dashboard/CriticalStockProduct.vue'
+
 
 </script>
 
@@ -11,7 +13,7 @@ import LastPendingOrders from '@/views/dashboard/LastPendingOrders.vue'
     <VCol
       cols="12"
       md="8"
-      class="pe-0"
+      class="px-0 px-md-3"
     >
       <VRow>
         <V-col
@@ -37,7 +39,7 @@ import LastPendingOrders from '@/views/dashboard/LastPendingOrders.vue'
         
         order="1"
         order-sm="2"
-        class="text-center"
+        class="text-center px-0 px-md-3"
       >
         <v-card
           elevation="24"
@@ -49,22 +51,27 @@ import LastPendingOrders from '@/views/dashboard/LastPendingOrders.vue'
             :show-arrows="false"
             hide-delimiter-background
             delimiter-icon="mdi-square"
-            height="500"
+            height="450"
             cycle
             direction="vertical"
             progress="primary"
-            interval="4000"
+            interval="8000"
           >
-            <v-carousel-item
-              v-for="(slide, i) in slides"
-              :key="i"
-            >
+            <v-carousel-item>
               <VCol
-              class="pa-0"
-              cols="12"
-            >
-              <AnalyticsFinanceTabs />
-            </VCol>
+                class="pa-0"
+                cols="12 h-100"
+              >
+              <LastSendingOrders />
+              </VCol>
+            </v-carousel-item>
+            <v-carousel-item>
+              <VCol
+                class="pa-0"
+                cols="12 h-100"
+              >
+              <CriticalStockProduct />
+              </VCol>
             </v-carousel-item>
           </v-carousel>
         </v-card>
@@ -72,7 +79,8 @@ import LastPendingOrders from '@/views/dashboard/LastPendingOrders.vue'
   </VRow>
 </template>
 
-<style>
+<style lang="scss">
+@use "@core/scss/template/pages/dashboard.scss";
 body{
   background:#b7b7b71f!important;
 }

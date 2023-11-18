@@ -4,6 +4,7 @@
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\ProductController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -50,8 +51,12 @@ Route::middleware('jwt.verify')->prefix('order')->name('user.')->group(function 
 });
 Route::middleware('jwt.verify')->prefix('order')->name('user.')->group(function () {
     Route::get('/', [OrderController::class, 'index'])->name('getOrders');
-    Route::get('/get-last-pending', [OrderController::class, 'getLastPending'])->name('getOrders');
-    Route::get('/get-last-sending', [OrderController::class, 'getLastSending'])->name('getOrdersSend');
+    Route::get('/get-last', [OrderController::class, 'getLastByType'])->name('getOrders');
+
+});
+Route::middleware('jwt.verify')->prefix('products')->name('user.')->group(function () {
+    Route::get('/', [ProductController::class, 'index'])->name('getOrders');
+    Route::get('/get-critical-stock', [ProductController::class, 'getProductsCriticalStock'])->name('getOrders');
 
 });
 

@@ -2,11 +2,11 @@ import ApiService from "@/core/services/api.service";
 import JwtService from "@/core/services/jwt.service";
 
 // action types
-export const GET_ORDERS = "GET_ORDERS";
-export const GET_LAST_ORDERS = "GET_LAST_SEND_ORDERS";
+export const GET_PRODUCTS = "GET_PRODUCTS";
+export const GET_CRITICAL_STOCK_PRODUCTS = "GET_CRITICAL_STOCK_PRODUCTS";
 
 const actions = {
-    [GET_ORDERS](context) {
+    [GET_PRODUCTS](context) {
         return new Promise((resolve, reject) => {
             if (JwtService.getToken()) {
                 ApiService.setHeader();
@@ -23,11 +23,11 @@ const actions = {
             }
         });
     },
-    [GET_LAST_ORDERS](context,type) {
+    [GET_CRITICAL_STOCK_PRODUCTS](context) {
         return new Promise((resolve, reject) => {
             if (JwtService.getToken()) {
                 ApiService.setHeader();
-                ApiService.get("api/order/get-last?type="+type+'&&')
+                ApiService.get("api/products/get-critical-stock")
                     .then(( { data } ) => {
                         // console.log(data)
                         resolve(data);

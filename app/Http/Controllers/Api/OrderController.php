@@ -30,10 +30,10 @@ class OrderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getLastPending() {
+    public function getLastByType(Request $request) {
         
 
-        $order = Order::withCount('products')->with('user')->take(5)->where('status','1')->get();
+        $order = Order::withCount('products')->with('user')->take(5)->where('status',$request->type)->get();
         foreach ($order as $key ) {
             # code...
             $key->getStatusLabelAttribute();
