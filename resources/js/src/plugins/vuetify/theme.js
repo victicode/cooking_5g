@@ -19,7 +19,7 @@ const theme = {
         'error': '#FF3E1D',
         'background': '#F5F5F9',
         'on-background': '#32475C',
-        'on-surface': '#32475C',
+        'on-surface': '#3f3f3f4d',
         'grey-50': '#FAFAFA',
         'grey-100': '#EBEEF0',
         'grey-200': '#EEEEEE',
@@ -36,7 +36,7 @@ const theme = {
       },
       variables: {
         'code-color': '#d400ff',
-        'overlay-scrim-background': '#32475C',
+        'overlay-scrim-background': '#3f3f3f4d',
         'overlay-scrim-opacity': 0.5,
         'border-color': '#32475C',
         'snackbar-background': '#32475C',

@@ -31,8 +31,8 @@ const vuetifyTheme = useTheme()
         </IconBtn>
 
         <!-- 👉 Search -->
-        <VBreadcums />
-
+        <VBreadcums class="d-none d-md-block" />
+      
         <VSpacer />
 
         <IconBtn class="me-2">
@@ -44,9 +44,10 @@ const vuetifyTheme = useTheme()
         <UserProfile />
       </div>
     </template>
-
+    <VBreadcums class="d-block d-md-none" />
     <template #vertical-nav-content>
       <VerticalNavLink
+        @click="emitter.emit('displayOverlay', true)"
         class="mt-3"
         :item="{
           title: 'Dashboard',
@@ -55,6 +56,7 @@ const vuetifyTheme = useTheme()
         }"
       />
       <VerticalNavLink
+        @click="emitter.emit('displayOverlay', true)"
         class="mt-3"
         :item="{
           title: 'Productos',
@@ -81,6 +83,7 @@ const vuetifyTheme = useTheme()
         }"
       />
       <VerticalNavLink
+        @click="emitter.emit('displayOverlay', true)"
         class="mt-3"
         :item="{
           title: 'Ordenes',
@@ -89,6 +92,7 @@ const vuetifyTheme = useTheme()
         }"
       />
       <VerticalNavLink
+        @click="emitter.emit('displayOverlay', true)"
         class="mt-3"
         :item="{
           title: currentUser.rol_id == 1 ? 'Recetas' : 'Tus Recetas',
@@ -97,7 +101,6 @@ const vuetifyTheme = useTheme()
         }"
       />
 
-      
     </template>
 
     <!-- 👉 Pages -->

@@ -15,6 +15,7 @@ class ProductController extends Controller
      */
     public function index()
     {
+        return $this->returnSuccess(200, Product::all());
         //
     }
     public function getProductsCriticalStock()

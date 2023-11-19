@@ -4,7 +4,7 @@
 
 <template>
 
- <div class="my-4">
+ <div class="mb-4 mx-2 mb-md-0 ">
   <h3>
     APP / {{this.$router.currentRoute.value.meta.title}}
   </h3>     

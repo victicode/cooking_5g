@@ -10,7 +10,7 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
         <VListItem
           class="py-3 border-bottom-4 px-1 px-md-2"
         >
-          <VRow class="pa-0 m-0">
+          <VRow class="pa-0 m-0 align-center">
             <VCol cols="4" md="2" class="text-center hide-text">
               Fecha
             </VCol>
@@ -34,7 +34,7 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
           :key="order.id"
           class="py-3 border-bottom-4 px-1 px-md-2"
         >
-          <VRow class="pa-0 m-0">
+          <VRow class="pa-0 m-0 align-center">
             <VCol cols="4" md="2" class="text-center">
               
                 {{moment(order.created_at ).format('DD/MM/YYYY') }}
@@ -77,7 +77,8 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
   }
 </style>
 <script>
-import { mapGetters } from "vuex";
+
+import { mapGetters } from 'vuex';
   export default {
     data(){
       return{

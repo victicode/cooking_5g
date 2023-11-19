@@ -23,6 +23,9 @@
 // libs
 @use "libs/perfect-scrollbar";
 
+// libs
+@use "libs/vuetify/index";
+
 a {
   color: rgb(var(--v-theme-primary));
   text-decoration: none;

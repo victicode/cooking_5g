@@ -1,41 +1,8 @@
 <script setup>
-const desserts = [
-  {
-    dessert: 'Frozen Yogurt',
-    calories: 159,
-    fat: 6,
-    carbs: 24,
-    protein: 4,
-  },
-  {
-    dessert: 'Ice cream sandwich',
-    calories: 237,
-    fat: 6,
-    carbs: 24,
-    protein: 4,
-  },
-  {
-    dessert: 'Eclair',
-    calories: 262,
-    fat: 6,
-    carbs: 24,
-    protein: 4,
-  },
-  {
-    dessert: 'Cupcake',
-    calories: 305,
-    fat: 6,
-    carbs: 24,
-    protein: 4,
-  },
-  {
-    dessert: 'Gingerbread',
-    calories: 356,
-    fat: 6,
-    carbs: 24,
-    protein: 4,
-  },
-]
+const props = defineProps({
+  products: Object,
+})
+const as = window
 </script>
 
 <template>
@@ -43,42 +10,37 @@ const desserts = [
     <thead>
       <tr>
         <th class="text-uppercase">
-          Desserts (100g Servings)
+          Nombre del producto
         </th>
-        <th>
-          calories
+        <th style="width: 90px; text-align: center;">
+          stock
         </th>
-        <th>
-          Fat(g)
-        </th>
-        <th>
-          Carbs(g)
-        </th>
-        <th>
-          protein(g)
+        <th style="width: 150px; text-align: center;">
+          opciones
         </th>
       </tr>
     </thead>
 
     <tbody>
       <tr
-        v-for="item in desserts"
-        :key="item.dessert"
+        v-for="product in products"
+        :key="product.id"
       >
         <td>
-          {{ item.dessert }}
+          {{ product.title }}
+        </td>
+        <td class="text-center"> 
+          <!-- {{ product.stock}} -->
+          <v-chip :class="product.stock < 15 ? 'bg-error' : product.stock >= 30 ? 'bg-success' : 'bg-warning'">
+            {{ $helper.numberFormat(product.stock) }} {{ product.type_of_unit }}
+          </v-chip>
+
         </td>
         <td class="text-center">
-          {{ item.calories }}
-        </td>
-        <td class="text-center">
-          {{ item.fat }}
-        </td>
-        <td class="text-center">
-          {{ item.carbs }}
-        </td>
-        <td class="text-center">
-          {{ item.protein }}
+          <VIcon class="" icon="bx-show" />
+          <VIcon class="ms-1" icon="heroicons-outline:pencil-alt" />
+          <VIcon class="ms-1" icon="bx-trash" />
+
         </td>
       </tr>
     </tbody>

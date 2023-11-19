@@ -1,7 +1,3 @@
-<script setup>
-// import moment from 'moment';
-import { GET_CRITICAL_STOCK_PRODUCTS } from "@/core/services/store/product.module";
-</script>
 
 <template>
   <VCard title="Productos con poco stock" class="h-100">
@@ -10,7 +6,7 @@ import { GET_CRITICAL_STOCK_PRODUCTS } from "@/core/services/store/product.modul
         <VListItem
           class="py-3 border-bottom-4"
         >
-          <VRow class="pa-0 m-0">
+          <VRow class="pa-0 m-0 align-center">
             <VCol cols="5" class="text-center">
               Producto
             </VCol>
@@ -28,7 +24,7 @@ import { GET_CRITICAL_STOCK_PRODUCTS } from "@/core/services/store/product.modul
           :key="order.id"
           class="py-3 border-bottom-4"
         >
-          <VRow class="pa-0 m-0">
+          <VRow class="pa-0 m-0 align-center">
             <VCol cols="5" class="text-center">
               {{ order.title }}
             </VCol>
@@ -53,7 +49,8 @@ import { GET_CRITICAL_STOCK_PRODUCTS } from "@/core/services/store/product.modul
   }
 </style>
 <script>
-import { mapGetters } from "vuex";
+  import { GET_CRITICAL_STOCK_PRODUCTS } from "@/core/services/store/product.module";
+  import { mapGetters } from "vuex";
   export default {
     data(){
       return{
@@ -73,7 +70,6 @@ import { mapGetters } from "vuex";
           this.product = data.data
         })
         .catch((e) => {
-
           console.log(e)
         });
       }

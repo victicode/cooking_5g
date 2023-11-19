@@ -1,5 +1,5 @@
 <script setup>
-import avatar1 from '@images/avatars/avatar-1.png'
+// import avatar1 from '@images/avatars/avatar-1.png'
 import { LOGOUT } from "@/core/services/store/auth.module";
 </script>
 
@@ -18,7 +18,7 @@ import { LOGOUT } from "@/core/services/store/auth.module";
       color="primary"
       variant="tonal"
     >
-      {{  getCurrentAccount.name.slice(0,1).toUpperCase() }}
+      {{  user.name.slice(0,1).toUpperCase() }}
 
       <!-- SECTION Menu -->
       <VMenu
@@ -43,14 +43,14 @@ import { LOGOUT } from "@/core/services/store/auth.module";
                     color="primary"
                     variant="tonal"
                   >
-                  {{  getCurrentAccount.name.slice(0,1).toUpperCase() }}
+                  {{  user.name.slice(0,1).toUpperCase() }}
                   </VAvatar>
                 </VBadge>
               </VListItemAction>
             </template>
 
             <VListItemTitle class="font-weight-semibold">
-              {{  getCurrentAccount.name }}
+              {{  user.name }}
             </VListItemTitle>
             <VListItemSubtitle>Admin</VListItemSubtitle>
           </VListItem>
@@ -73,7 +73,7 @@ import { LOGOUT } from "@/core/services/store/auth.module";
           <VDivider class="my-2" />
 
           <!-- 👉 Logout -->
-          <VListItem @click="logout()">
+          <VListItem class="logout" @click="logout()">
             <template #prepend>
               <VIcon
                 class="me-2"
@@ -81,46 +81,45 @@ import { LOGOUT } from "@/core/services/store/auth.module";
                 size="22"
               />
             </template>
-
             <VListItemTitle>Cerrar sesion</VListItemTitle>
           </VListItem>
         </VList>
       </VMenu>
-      <!-- !SECTION -->
     </VAvatar>
   </VBadge>
 </template>
+          
+
 <script>
 import { mapGetters } from "vuex";
+import { inject } from "vue";
   export default {
     data(){
       return{
-        isReady: false
+        isReady: false,
       }
     },
     mounted(){
-      // this.getCurrentAccount.then((data)=>{
-      //   console.log(data)
-      // })
       setTimeout(() => {
-        this.isReady = true
-        
-      }, 2000);
+        this.isReady = true;
+      }, 1000);
       
     },
     methods:{
       logout(){
+        this.emitter.emit("displayOverlay", true)
         this.$store.dispatch(LOGOUT)
         .then(() => { this.$router.go('/login')})
         .catch(()=>{ this.$router.go('/login')});
       }
+      
     },
     computed: {
       ...mapGetters(["currentUser"]),
 
-      getCurrentAccount() {
+      user() {
         return this.currentUser;
-      },
-    },
+      }
+    }
   };
 </script>

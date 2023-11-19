@@ -7,16 +7,28 @@ import DefaultLayoutWithVerticalNav from './components/DefaultLayoutWithVertical
 
 <template>
   <DefaultLayoutWithVerticalNav>
-    <router-view v-slot="{Component}">
+    <router-view v-slot="{Component}" >
       <transition 
          mode="out-in" 
          enter-active-class="animate__animated animate__fadeInLeft" 
          leave-active-class="animate__animated animate__fadeOutRight"
        >
-         <component :is="Component"/>
+         <component  :is="Component"/>
       </transition>
    </router-view>
   </DefaultLayoutWithVerticalNav>
+  <v-overlay
+    :model-value="overlay"
+    persistent="true"
+    close-on-back="true"
+    class="align-center justify-center"
+  >
+    <v-progress-circular
+      color="primary"
+      indeterminate
+      size="64"
+    />
+  </v-overlay>
 </template>
 
 <style lang="scss">
@@ -39,19 +51,25 @@ export default {
     getUser(){
       this.$store.dispatch(GET_USER)
         .then((data) => {
-          console.log(data)
           if(data.code !== 200){
             console.log('alert!!!')
           }
           this.user = data.user;
+          this.overlay = false
         })
         .catch((e) => {
           console.log(e)
           this.$store.dispatch(LOGOUT).then(() => { this.$router.go('/login')});
         });
-    }
+    },
   },
+  data: () => ({
+    overlay: true,
+  }),
   created(){
+    this.emitter.on("displayOverlay", (status) => {
+      this.overlay = status
+    })
     this.getUser()
   }
 };</script>

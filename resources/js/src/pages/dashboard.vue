@@ -62,7 +62,7 @@ import CriticalStockProduct from '@/views/dashboard/CriticalStockProduct.vue'
                 class="pa-0"
                 cols="12 h-100"
               >
-              <LastSendingOrders />
+                <CriticalStockProduct />
               </VCol>
             </v-carousel-item>
             <v-carousel-item>
@@ -70,7 +70,7 @@ import CriticalStockProduct from '@/views/dashboard/CriticalStockProduct.vue'
                 class="pa-0"
                 cols="12 h-100"
               >
-              <CriticalStockProduct />
+                <LastSendingOrders />
               </VCol>
             </v-carousel-item>
           </v-carousel>
@@ -81,34 +81,19 @@ import CriticalStockProduct from '@/views/dashboard/CriticalStockProduct.vue'
 
 <style lang="scss">
 @use "@core/scss/template/pages/dashboard.scss";
-body{
-  background:#b7b7b71f!important;
-}
+
 </style>
 <script>
   import { mapGetters } from "vuex";
   export default {
     data () {
       return {
-        colors: [
-          'primary',
-          'secondary',
-          'success',
-          'warning',
-          'info',
-        ],
-        slides: [
-          'First',
-          'Second',
-          'Third',
-          'Fourth',
-          'Fifth',
-        ],
       }
     },
     methods:{
     },
     created(){
+      this.emitter.emit('displayOverlay', false)
     },
     computed: {
       ...mapGetters(["currentUser"]),

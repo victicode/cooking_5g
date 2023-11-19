@@ -159,37 +159,7 @@ h6,
 
   This is because card title gets padding of 20px and list item have padding of 16px. Moreover, list container have padding-bottom as well.
 */
-.card-list {
-  --v-card-list-gap: 20px;
 
-  &.v-list {
-    padding-block: 0;
-  }
-
-  .v-list-item {
-    min-block-size: unset;
-    min-block-size: auto !important;
-    padding-block: 0 !important;
-    padding-inline: 0 !important;
-
-    > .v-ripple__container {
-      opacity: 0;
-    }
-
-    &:not(:last-child) {
-      padding-block-end: var(--v-card-list-gap) !important;
-    }
-  }
-
-  .v-list-item:hover,
-  .v-list-item:focus,
-  .v-list-item:active,
-  .v-list-item.active {
-    > .v-list-item__overlay {
-      opacity: 0 !important;
-    }
-  }
-}
 
 // 👉 Divider
 .v-divider {

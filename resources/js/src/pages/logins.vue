@@ -189,7 +189,7 @@ export default {
           setTimeout(() => {
             
             this.$router.push('/dashboard') 
-          }, 1000);
+          }, 500);
         })
         .catch((e) => {
 
