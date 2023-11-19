@@ -66,7 +66,7 @@ import { LOGOUT } from "@/core/services/store/auth.module";
               />
             </template>
 
-            <VListItemTitle>Profile</VListItemTitle>
+            <VListItemTitle>Perfil</VListItemTitle>
           </VListItem>
 
           <!-- Divider -->
@@ -82,7 +82,7 @@ import { LOGOUT } from "@/core/services/store/auth.module";
               />
             </template>
 
-            <VListItemTitle>Logout</VListItemTitle>
+            <VListItemTitle>Cerrar sesion</VListItemTitle>
           </VListItem>
         </VList>
       </VMenu>

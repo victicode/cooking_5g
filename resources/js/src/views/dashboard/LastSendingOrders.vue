@@ -5,7 +5,7 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
 </script>
 
 <template>
-  <VCard title="Ultimas Ordenes Enviadas" class="h-100">
+  <VCard title="Últimas Ordenes Enviadas" class="h-100">
     <VCardText>
       <VList class="card-list">
         <VListItem
