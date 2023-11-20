@@ -8,7 +8,7 @@
   <VRow>
     <VCol cols="12">
       <VCard title="Listado de productos" class="pa-3">
-        <VRow class="ma-0 justify-end pa-2 mb-5">
+        <VRow class="ma-0  justify-center justify-md-end pa-2 mb-5">
           <VBtn color="primary"><VIcon icon="bx-plus"/> Agregar nuevo producto</VBtn>
         </VRow>
         <DemoSimpleTableBasics v-if="ready" :products="products" />

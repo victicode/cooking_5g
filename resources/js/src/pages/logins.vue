@@ -128,7 +128,7 @@ export default {
   computed: {
   },
   mounted() {
-    document.querySelector('body').style.background= "url('http://127.0.0.1:8000/images/background/login/01.jpg')";
+    document.querySelector('body').style.background= "url('http://10.10.10.69:8000/images/background/login/01.jpg')";
     this.fv = formValidation(document.getElementById('kt_login_signin_form'), {
       fields: {
         email: {
