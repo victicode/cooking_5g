@@ -6,39 +6,42 @@
 
 <template>
   <VRow>
-  <VCol cols="12">
-    <VCard title="Listado de productos" class="pa-3">
-
-      <DemoSimpleTableBasics v-if="ready" :products="products" />
-    </VCard>
-  </VCol>
-</VRow>
+    <VCol cols="12">
+      <VCard title="Listado de productos" class="pa-3">
+        <VRow class="ma-0 justify-end pa-2 mb-5">
+          <VBtn color="primary"><VIcon icon="bx-plus"/> Agregar nuevo producto</VBtn>
+        </VRow>
+        <DemoSimpleTableBasics v-if="ready" :products="products" />
+      </VCard>
+    </VCol>
+  </VRow>
 </template>
 <script>
-export default {
-  methods:{
-    getProducts(){
-      this.$store.dispatch(GET_PRODUCTS)
-        .then((data) => {
-          this.emitter.emit('displayOverlay', false)
-          if (data.code !==200) {
-            console.log('ha ocurrido un error al intentar obtener las ordenes')  
-            return
-          }
-          this.products = data.data;
-          // console.log(this.products)
-          this.ready = true
-        }).catch((e)=>{
-          this.emitter.emit('displayOverlay', false)
+  export default {
+    methods:{
+      getProducts(){
+        this.$store.dispatch(GET_PRODUCTS)
+          .then((data) => {
+            this.emitter.emit('displayOverlay', false)
+            if (data.code !==200) {
+              console.log('ha ocurrido un error al intentar obtener las ordenes')  
+              return
+            }
+            this.products = data.data;
+            // console.log(this.products)
+            this.ready = true
+          }).catch((e)=>{
+            this.emitter.emit('displayOverlay', false)
 
-        })
+          })
+      },
     },
-  },
-  data: () => ({
-   products : {},
-   ready:false,
-  }),
-  mounted(){
-    this.getProducts()
-  }
-};</script>
+    data: () => ({
+    products : {},
+    ready:false,
+    }),
+    mounted(){
+      this.getProducts()
+    }
+  };
+</script>

@@ -77,7 +77,18 @@
         </VCard>
       </v-col>
     </v-row>
-    
+    <v-overlay
+    :model-value="overlay"
+    persistent="true"
+    close-on-back="true"
+    class="align-center justify-center"
+  >
+    <v-progress-circular
+      color="primary"
+      indeterminate
+      size="64"
+    />
+  </v-overlay>
   </div>
 </template>
 
@@ -99,23 +110,21 @@ import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
 import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
 import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
 import { LOGOUT, LOGIN } from "@/core/services/store/auth.module";
-import background from '@/assets/media/backgrounds/bg-blanco.jpg';
 
 export default {
-  data() {
-    return {
-      fv: "",
-      alertShow:false,
-      alertMessage:'',
-      alertType:'',
-      isPasswordVisible: false,
-      form:{
-        email: '',
-        password: '',
-        remember: false,
-      }
-    };
-  },
+  data: () => ({
+    overlay: false,
+    fv: "",
+    alertShow:false,
+    alertMessage:'',
+    alertType:'',
+    isPasswordVisible: false,
+    form:{
+      email: '',
+      password: '',
+      remember: false,
+    }
+  }),
   computed: {
   },
   mounted() {
@@ -184,6 +193,7 @@ export default {
             this.showAlert('error',data.messagge)
             return
           }
+          this.overlay = true
           this.showAlert('success','Acceso Exitoso')
           submitButton.textContent = 'Acceso Exitoso'
           setTimeout(() => {

@@ -90,12 +90,12 @@ const router = createRouter({
     //   name: "404",
     //   component: () => import('./pages/[...all].vue'),
     // },
-    {
-      // the 403 route, no permissions
-      path: "/403",
-      name: "403",
-      component: () => import("@/view/pages/error/403.vue"),
-    }
+    // {
+    //   // the 403 route, no permissions
+    //   path: "/403",
+    //   name: "403",
+    //   component: () => import("@/view/pages/error/403.vue"),
+    // }
     
     // // CREATE ACCOUNTS ROUTES
     // {
