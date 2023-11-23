@@ -1,9 +1,9 @@
 {
     "private": true,
     "scripts": {
-        "dev": "vite",
-        "build": "vite build",
-        "preview": "vite preview --port 8080"
+        "dev": "vite --host 192.168.42.226 --port 8005 ",
+        "build": "vite build ",
+        "preview": "vite preview "
     },
     "devDependencies": {
         "@fullcalendar/core": "^6.1.8",

@@ -1,7 +1,7 @@
 
 <template>
   <VCard title="Productos con poco stock" class="h-100">
-    <VCardText>
+    <VCardText class="px-md-6 px-4">
       <VList class="card-list">
         <VListItem
           class="py-3 border-bottom-4"

@@ -13,7 +13,7 @@ import CriticalStockProduct from '@/views/dashboard/CriticalStockProduct.vue'
     <VCol
       cols="12"
       md="8"
-      class="px-0 px-md-3"
+      class="px-2 px-md-3"
     >
       <VRow>
         <V-col
@@ -39,7 +39,7 @@ import CriticalStockProduct from '@/views/dashboard/CriticalStockProduct.vue'
         
         order="1"
         order-sm="2"
-        class="text-center px-0 px-md-3"
+        class="text-center px-2 px-md-3"
       >
         <v-card
           elevation="24"
