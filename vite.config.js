@@ -1,25 +1,36 @@
 import { defineConfig } from 'vite';
-import path from 'path'
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx'
-import { fileURLToPath } from 'node:url'
 import vuetify from 'vite-plugin-vuetify'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 
-
-console.log(`${path.resolve(__dirname, 'resources/js/src/')}`)
 export default defineConfig({
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: true,
         }),
-        vue(),
+        vue({
+            template: {
+                transformAssetUrls: {
+                    // The Vue plugin will re-write asset URLs, when referenced
+                    // in Single File Components, to point to the Laravel web
+                    // server. Setting this to `null` allows the Laravel plugin
+                    // to instead re-write asset URLs to point to the Vite
+                    // server instead.
+                    base: null,
+ 
+                    // The Vue plugin will parse absolute URLs and treat them
+                    // as absolute paths to files on disk. Setting this to
+                    // `false` will leave absolute URLs un-touched so they can
+                    // reference assets in the public directory as expected.
+                    includeAbsolute: false,
+                },
+            },
+        }),
         vueJsx(),
-
-        // Docs: https://github.com/vuetifyjs/vuetify-loader/tree/master/packages/vite-plugin
         vuetify({
         styles: {
             configFile: 'resources/js/src/styles/variables/_vuetify.scss',
@@ -52,13 +63,6 @@ export default defineConfig({
             '@configured-variables': __dirname + '/resources/js/src/styles/variables/_template.scss', 
             '@axios':__dirname + '/resources/js/src/plugins/axios',
 
-            // '@': fileURLToPath(new URL('./resources/js/src', import.meta.url)),
-            // '@core': fileURLToPath(new URL('./resources/js/src/@core', import.meta.url)),
-            // '@layouts': fileURLToPath(new URL('./resources/js/src/@layouts', import.meta.url)),
-            // '@images': fileURLToPath(new URL('./resources/js/src/assets/images/', import.meta.url)),
-            // '@styles': fileURLToPath(new URL('./resources/js/src/styles/', import.meta.url)),
-            // '@configured-variables': fileURLToPath(new URL('./resources/js/src/styles/variables/_template.scss', import.meta.url)),
-            // '@axios': fileURLToPath(new URL('./resources/js/src/plugins/axios', import.meta.url)),
           },
     },
     build: {

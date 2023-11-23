@@ -31,16 +31,32 @@ const as = window
         </td>
         <td class="text-center"> 
           <!-- {{ product.stock}} -->
-          <v-chip :class="product.stock < 15 ? 'bg-error' : product.stock >= 30 ? 'bg-success' : 'bg-warning'">
+          <v-chip :class="product.stock < 1 ? 'bg-error' : product.stock >= 30 ? 'bg-success' : 'bg-warning'">
             {{ $helper.numberFormat(product.stock) }} {{ product.type_of_unit }}
           </v-chip>
 
         </td>
         <td class="text-center">
-          <VIcon class="" icon="bx-show" />
-          <VIcon class="ms-1" icon="heroicons-outline:pencil-alt" />
-          <VIcon class="ms-1" icon="bx-trash" />
-
+          <v-tooltip text="Ver ficha de producto">
+            <template v-slot:activator="{ props }">
+              <VIcon  v-bind="props" class="" icon="mdi-show-outline" />
+            </template>
+          </v-tooltip>
+          <v-tooltip text="Editar producto">
+            <template v-slot:activator="{ props }">
+              <VIcon class="ms-1" v-bind="props" icon="heroicons-outline:pencil-alt" />
+            </template>
+          </v-tooltip>
+          <v-tooltip text="Agregar stock">
+            <template v-slot:activator="{ props }">
+              <VIcon class="ms-1" v-bind="props" icon="mdi-box-variant-closed-plus" />
+            </template>
+          </v-tooltip>
+          <v-tooltip text="Eliminar producto">
+            <template v-slot:activator="{ props }">
+              <VIcon class="ms-1" v-bind="props" icon="bx-trash" />
+            </template>
+          </v-tooltip>
         </td>
       </tr>
     </tbody>

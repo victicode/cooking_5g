@@ -96,10 +96,6 @@
 @use "@core/scss/template/pages/page-auth.scss";
 @import "@/assets/sass/login.scss";
 // @import "@/assets/plugins/formvalidation/src/css/index.scss";
-
-body{
-  background: url('http://127.0.0.1:8000/images/background/login/01.jpg'); 
-}
 </style>
 
 <script>
@@ -128,6 +124,7 @@ export default {
   computed: {
   },
   mounted() {
+    document.querySelector("body").style.background ="url('http://192.168.42.226:8005/images/background/login/01.jpg')"
     this.fv = formValidation(document.getElementById('kt_login_signin_form'), {
       fields: {
         email: {

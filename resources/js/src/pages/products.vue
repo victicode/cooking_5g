@@ -5,7 +5,7 @@
 </script>
 
 <template>
-  <VRow>
+  <VRow class="">
     <VCol cols="12">
       <VCard title="Listado de productos" class="pa-3">
         <VRow class="ma-0  justify-center justify-md-end pa-2 mb-5">

@@ -55,7 +55,7 @@ export default {
             console.log('alert!!!')
           }
           this.user = data.user;
-          this.overlay = false
+          // this.overlay = false
         })
         .catch((e) => {
           console.log(e)
@@ -64,11 +64,11 @@ export default {
     },
   },
   data: () => ({
-    overlay: true,
+    overlay: false,
   }),
   created(){
     this.emitter.on("displayOverlay", (status) => {
-      this.overlay = status
+      // this.overlay = status
     })
     this.getUser()
   }

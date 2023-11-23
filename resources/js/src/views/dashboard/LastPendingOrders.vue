@@ -5,7 +5,7 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
 
 <template>
   <VCard title="Ordenes Pendientes">
-    <VCardText>
+    <VCardText class="px-md-6 px-4">
       <VList class="card-list">
         <VListItem
           class="py-3 border-bottom-4 px-1 px-md-2"
