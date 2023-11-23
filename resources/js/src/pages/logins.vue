@@ -9,7 +9,7 @@
       class="auth-card pa-4 pt-7 vh-70 d-flex flex-column"
       
     >
-      <VCardItem class="justify-center w-100">
+      <VCardItem class="justify-center w-100  py-2 py-md-6">
 
         <VCardTitle class="text-2xl font-weight-bold">
           <div class="card-title d-flex ">
@@ -19,7 +19,7 @@
         </VCardTitle>
       </VCardItem>
 
-      <VCardText class="pt-2 w-100">
+      <VCardText class="py-2 w-100">
         <h5 class="text-h5 mb-1">
           Bienvenido! 👋🏻
         </h5>
@@ -27,7 +27,7 @@
          Inicia sesion con tu cuenta ahora
         </p>
       </VCardText>
-      <VCardText class="pt-2 w-100 pa-1" v-if="alertShow">
+      <VCardText class="mb-5 mb-md-0 w-100 pa-0" v-if="alertShow">
         <v-alert
           :color="alertType"
           :text="alertMessage"
@@ -124,7 +124,9 @@ export default {
   computed: {
   },
   mounted() {
-    document.querySelector("body").style.background ="url('http://192.168.42.226:8005/images/background/login/01.jpg')"
+    // document.querySelector("body").style.background ="url('http://192.168.42.226:8005/images/background/login/01.jpg')"
+    document.querySelector("body").style.background ="url('http://127.0.0.1:8000/images/background/login/01.jpg')"
+    
     this.fv = formValidation(document.getElementById('kt_login_signin_form'), {
       fields: {
         email: {
@@ -198,11 +200,9 @@ export default {
           }, 500);
         })
         .catch((e) => {
-
-          console.log(e)
           submitButton.textContent = 'Ingresar';
           submitButton.blur();
-          this.showAlert('error','Error desconocido')
+          this.showAlert('error','Error desconocido00')
         });
     
     }).on("core.form.invalid", () => {

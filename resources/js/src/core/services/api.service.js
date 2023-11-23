@@ -41,7 +41,6 @@ const ApiService = {
    * @returns {*}
    */
   post(resource, params) {
-    // return 'hola'
     return axios.post(`${resource}`, params);
   },
 

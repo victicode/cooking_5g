@@ -39,22 +39,22 @@ const as = window
         <td class="text-center">
           <v-tooltip text="Ver ficha de producto">
             <template v-slot:activator="{ props }">
-              <VIcon  v-bind="props" class="" icon="mdi-show-outline" />
+              <VIcon  class="me-2" v-bind="props"  icon="mdi-show-outline" />
             </template>
           </v-tooltip>
           <v-tooltip text="Editar producto">
             <template v-slot:activator="{ props }">
-              <VIcon class="ms-1" v-bind="props" icon="heroicons-outline:pencil-alt" />
+              <VIcon class="me-2" v-bind="props" icon="heroicons-outline:pencil-alt" />
             </template>
           </v-tooltip>
           <v-tooltip text="Agregar stock">
             <template v-slot:activator="{ props }">
-              <VIcon class="ms-1" v-bind="props" icon="mdi-box-variant-closed-plus" />
+              <VIcon class="me-2" v-bind="props" icon="mdi-box-variant-closed-plus" />
             </template>
           </v-tooltip>
           <v-tooltip text="Eliminar producto">
             <template v-slot:activator="{ props }">
-              <VIcon class="ms-1" v-bind="props" icon="bx-trash" />
+              <VIcon class="me-2" v-bind="props" icon="bx-trash" />
             </template>
           </v-tooltip>
         </td>

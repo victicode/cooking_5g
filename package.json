@@ -1,7 +1,7 @@
 {
     "private": true,
     "scripts": {
-        "dev": "vite --host 192.168.42.226 --port 8005 ",
+        "dev": "vite",
         "build": "vite build ",
         "preview": "vite preview "
     },

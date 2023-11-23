@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -14,10 +15,15 @@ class AuthController extends Controller
     //
     public function login(Request $request){
 			// echo 'nada que ver';
-			$validator = Validator::make($request->all(), [
+			try {
+				$validator = Validator::make($request->all(), [
 					'email'=> 'required',
 					'password'=>'required'
 			]);
+			} catch (Exception $e) {
+				return response()->json([ 'data'=>['code'=>200,'access_token' => $e]], 200);
+			}
+			
 			if($validator->fails()){
 					return response()->json($validator->errors(),442);
 			}

@@ -1,1 +1,9 @@
 // Write your overrides
+@media (max-height: 880px), screen{
+  /* … */
+  .v-table > .v-table__wrapper > table > tbody > tr > td{
+    padding: 15px 8px!important;
+    border-bottom: 1px solid rgba(153, 153, 153, 0.61)!important;
+
+  }
+}
