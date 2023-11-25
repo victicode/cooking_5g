@@ -102,7 +102,7 @@ import { inject } from "vue";
     mounted(){
       setTimeout(() => {
         this.isReady = true;
-      }, 1000);
+      }, 2000);
       
     },
     methods:{

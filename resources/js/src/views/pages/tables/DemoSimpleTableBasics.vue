@@ -37,28 +37,95 @@ const as = window
 
         </td>
         <td class="text-center">
-          <v-tooltip text="Ver ficha de producto">
-            <template v-slot:activator="{ props }">
-              <VIcon  class="me-2" v-bind="props"  icon="mdi-show-outline" />
-            </template>
-          </v-tooltip>
-          <v-tooltip text="Editar producto">
-            <template v-slot:activator="{ props }">
-              <VIcon class="me-2" v-bind="props" icon="heroicons-outline:pencil-alt" />
-            </template>
-          </v-tooltip>
-          <v-tooltip text="Agregar stock">
-            <template v-slot:activator="{ props }">
-              <VIcon class="me-2" v-bind="props" icon="mdi-box-variant-closed-plus" />
-            </template>
-          </v-tooltip>
-          <v-tooltip text="Eliminar producto">
-            <template v-slot:activator="{ props }">
-              <VIcon class="me-2" v-bind="props" icon="bx-trash" />
-            </template>
-          </v-tooltip>
+          <template class="d-block d-sm-none">
+
+            <v-menu
+                transition="scale-transition"
+                :location="'top'"
+                class="mb-10 "
+              >
+                <template v-slot:activator="{ props }">
+                  <div
+                    v-bind="props"
+                  >
+                  <VIcon  class="me-2" v-bind="props"  icon="mdi-plus" />
+                </div>
+                </template>
+  
+                <v-list class="d-flex">
+                  <v-list-item
+                  >
+                    <v-tooltip text="Ver ficha de producto">
+                      <template v-slot:activator="{ props }">
+                        <VIcon  class="me-2" v-bind="props"  icon="mdi-show-outline" />
+                      </template>
+                    </v-tooltip>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-tooltip text="Editar producto">
+                      <template v-slot:activator="{ props }">
+                        <VIcon class="me-2" v-bind="props" icon="heroicons-outline:pencil-alt" />
+                      </template>
+                    </v-tooltip>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-tooltip text="Agregar stock">
+                      <template v-slot:activator="{ props }">
+                        <VIcon class="me-2" v-bind="props" icon="mdi-box-variant-closed-plus" />
+                      </template>
+                    </v-tooltip>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-tooltip text="Eliminar producto">
+                      <template v-slot:activator="{ props }">
+                        <VIcon class="me-2" v-bind="props" icon="bx-trash" />
+                      </template>
+                    </v-tooltip>
+                  </v-list-item>
+                </v-list>
+            </v-menu>
+          </template>
+
+          <template class="d-none d-sm-flex">
+            <v-tooltip text="Ver ficha de producto">
+              <template v-slot:activator="{ props }">
+                <VIcon  class="me-2" v-bind="props"  icon="mdi-show-outline" />
+              </template>
+            </v-tooltip>
+            <v-tooltip text="Editar producto">
+              <template v-slot:activator="{ props }">
+                <VIcon class="me-2" v-bind="props" icon="heroicons-outline:pencil-alt" />
+              </template>
+            </v-tooltip>
+            <v-tooltip text="Agregar stock">
+              <template v-slot:activator="{ props }">
+                <VIcon class="me-2" v-bind="props" icon="mdi-box-variant-closed-plus" />
+              </template>
+            </v-tooltip>
+            <v-tooltip text="Eliminar producto">
+              <template v-slot:activator="{ props }">
+                <VIcon class="me-2" v-bind="props" icon="bx-trash" />
+              </template>
+            </v-tooltip>
+          </template>
         </td>
       </tr>
     </tbody>
   </VTable>
 </template>
+
+<style>
+@media only screen and (max-width: 600px){
+  
+  .v-overlay__content{
+    /* top: 275px!important; */
+    left: 28%!important;
+  }
+  .v-menu > .v-overlay__content > .v-list{
+    overflow: visible;
+    box-shadow: 0 5px 5px -3px rgb(63 63 63 / 24%), 0 8px 10px 1px var(--v-shadow-key-penumbra-opacity), 0 3px 14px 2px var(--v-shadow-key-ambient-opacity);
+  }
+}
+
+
+</style>

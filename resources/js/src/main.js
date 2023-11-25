@@ -62,7 +62,9 @@ app.use(vuetify)
 app.use(router)
 app.use(store)
 app.config.globalProperties.emitter = emitter
+
+
 // app.axios.defaults.baseURL = import.meta.env.VUE_APP_BACKEND_URL 
 app.config.globalProperties.$helper = func;
-console.log(app)
+// console.log(app)
 app.mount('#app')

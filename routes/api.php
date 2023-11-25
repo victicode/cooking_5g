@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\Route;
 // });
 
 Route::post('login', [AuthController::class, 'login']);
+Route::post('/xs', [ProductController::class, 'getOperationsForSbsReportDataTable']);
 
 // Route::put('/validate_email/{id}', [UserController::class, 'validateEmail']);
 

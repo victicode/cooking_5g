@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Yajra\DataTables\DataTables;
 
 class ProductController extends Controller
 {
@@ -17,6 +18,19 @@ class ProductController extends Controller
     {
         return $this->returnSuccess(200, Product::all());
         //
+    }
+    public function getOperationsForSbsReportDataTable(Request $request){
+        
+   
+  
+        $operations = Product::query();
+
+        
+        $operations->take(50)->get();
+
+        return DataTables::of($operations)->toJson();
+        
+  
     }
     public function getProductsCriticalStock()
     {
