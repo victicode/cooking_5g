@@ -37,7 +37,7 @@ const as = window
 
         </td>
         <td class="text-center">
-          <template class="d-block d-sm-none">
+          <div class="d-block d-sm-none">
 
             <v-menu
                 transition="scale-transition"
@@ -84,9 +84,9 @@ const as = window
                   </v-list-item>
                 </v-list>
             </v-menu>
-          </template>
+          </div>
 
-          <template class="d-none d-sm-flex">
+          <div class="d-none d-sm-flex">
             <v-tooltip text="Ver ficha de producto">
               <template v-slot:activator="{ props }">
                 <VIcon  class="me-2" v-bind="props"  icon="mdi-show-outline" />
@@ -107,7 +107,7 @@ const as = window
                 <VIcon class="me-2" v-bind="props" icon="bx-trash" />
               </template>
             </v-tooltip>
-          </template>
+          </div>
         </td>
       </tr>
     </tbody>
