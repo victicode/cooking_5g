@@ -27,7 +27,7 @@
          Inicia sesion con tu cuenta ahora
         </p>
       </VCardText>
-      <VCardText class="mb-5 mb-md-0 w-100 pa-0" v-if="alertShow">
+      <VCardText class="mb-5  w-100 pa-0" v-if="alertShow">
         <v-alert
           :color="alertType"
           :text="alertMessage"
@@ -202,7 +202,7 @@ export default {
         .catch((e) => {
           submitButton.textContent = 'Ingresar';
           submitButton.blur();
-          this.showAlert('error','Error desconocido00')
+          this.showAlert('error','Error desconocido')
         });
     
     }).on("core.form.invalid", () => {

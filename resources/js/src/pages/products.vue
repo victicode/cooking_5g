@@ -12,11 +12,17 @@
   <VRow class="">
     <VCol cols="12">
       <VCard title="Listado de productos" class="pa-3">
-        <VRow class="ma-0  justify-center justify-md-end pa-2 mb-5">
-          <VBtn color="primary"><VIcon icon="bx-plus"/> Agregar nuevo producto</VBtn>
+        <VRow class="ma-0  justify-center justify-md-end pa-2 px-0 mb-0">
+          <VCol
+            cols="11"
+            md="3"
+            class="ma-0 px-0 justify-center justify-md-end d-flex"
+          >
+            <VBtn color="primary" class="w-100 "><VIcon icon="bx-plus"/> Agregar nuevo producto</VBtn>
+          </VCol>
         </VRow>
         <!-- <DemoSimpleTableBasics v-if="ready" :products="products" /> -->
-        <table class="display nowrap px-1" id="table">
+        <table class="display px-0 mx-0 cell-border" id="table">
           <thead>
             <tr>
               <th class="text-center">id</th>
@@ -35,7 +41,7 @@
     width: 15%!important;
   }
   #table > tbody > tr > td{
-    padding: 15px ;
+    padding: 15px 10px ;
   }
 </style>
 <script>
@@ -45,8 +51,8 @@
 
         this.tabled = new DataTable('#table', {
           ajax: {
-            // url: 'https://cambio.dlsmoney.com/api/operations-data-table',
-            url: 'http://10.10.10.69:8085/api/xs',
+            url: 'http://192.168.42.226:8085/api/xs',
+            // url: 'http://10.10.10.69:8085/api/xs',
             type: "POST",
             // data: function ( data ) {
             //     data.keyForApi = keyData.data.value
@@ -59,21 +65,22 @@
           dataType:'json',
           processing: true,
           serverSide: true,
+          
           drawCallback: function( settings ) {
             const TableElement = document.getElementById('table');
             const event = new Event("OptionsActionTable")
             TableElement.dispatchEvent(event);
           },
           columnDefs: [
-          { className: 'text-center',
+            { className: 'text-center',
               targets: 0,
               searchable: false,
               visible: false,
               render: function (data, type, full, meta) {
                 return full.title
               }
-          },  
-          { className: '',
+            },  
+            { className: '',
               targets: 1,
               searchable: true,
               visible: true,
@@ -110,7 +117,8 @@
               render: function (data, type, full, meta) {
                 return (
                   `
-                  ----
+                  <div class="d-block d-sm-none"><div aria-haspopup="menu" aria-expanded="false" aria-owns="v-menu-34"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="button" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default v-icon--clickable me-2 iconify iconify--mdi" aria-haspopup="menu" aria-expanded="false" aria-owns="v-menu-34" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z"></path></svg></div><!--teleport start--><!--teleport end--></div>
+                  <div class="d-none d-sm-flex"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-2 iconify iconify--mdi" aria-describedby="v-tooltip-35" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg><!--teleport start--><!--teleport end--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-2 iconify iconify--heroicons-outline" aria-describedby="v-tooltip-36" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5m-1.414-9.414a2 2 0 1 1 2.828 2.828L11.828 15H9v-2.828l8.586-8.586Z"></path></svg><!--teleport start--><!--teleport end--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-2 iconify iconify--mdi" aria-describedby="v-tooltip-37" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M13 19.3v-6.7l6-3.4V13c.7 0 1.4.1 2 .4V7.5c0-.4-.2-.7-.5-.9l-7.9-4.4c-.2-.1-.4-.2-.6-.2s-.4.1-.6.2L3.5 6.6c-.3.2-.5.5-.5.9v9c0 .4.2.7.5.9l7.9 4.4c.2.1.4.2.6.2s.4-.1.6-.2l.9-.5c-.3-.6-.4-1.3-.5-2M12 4.2l6 3.3l-2 1.1l-5.9-3.4l1.9-1m-1 15.1l-6-3.4V9.2l6 3.4v6.7m1-8.5L6 7.5l2-1.2l6 3.5l-2 1m8 4.2v3h3v2h-3v3h-2v-3h-3v-2h3v-3h2Z"></path></svg><!--teleport start--><!--teleport end--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-2 iconify iconify--bx" aria-describedby="v-tooltip-38" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path fill="currentColor" d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg><!--teleport start--><!--teleport end--></div>
                   `
                 );
               }
@@ -244,14 +252,20 @@
 
     },
     data: () => ({
-    products : {},
+    products : [
+      {id:1, title:'porro', stock:30, type_of_unit:'KG'},
+      {id:1, title:'porro', stock:30, type_of_unit:'KG'},
+      {id:1, title:'porro', stock:30, type_of_unit:'KG'}
+
+      
+    ],
     ready:false,
     table:''
     }),
     mounted(){
       // this.getProducts()
       setTimeout(() => {
-        
+        // this.ready = true
         this.getOperationsDataTable()
       }, 1000);
     }
