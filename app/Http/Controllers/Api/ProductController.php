@@ -19,7 +19,7 @@ class ProductController extends Controller
         return $this->returnSuccess(200, Product::all());
         //
     }
-    public function getOperationsForSbsReportDataTable(Request $request){
+    public function getProductsTable(Request $request){
         
    
   

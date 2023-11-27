@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Nette\Utils\Json;
+use Yajra\DataTables\DataTables;
 
 class OrderController extends Controller
 {
@@ -23,6 +23,16 @@ class OrderController extends Controller
         }
 
         return $this->returnSuccess(200, $order );
+    }
+    public function getOrdesTable()
+    {
+        $order = Order::with('user')->get();
+        foreach ($order as $key ) {
+            # code...
+            $key->getStatusLabelAttribute();
+        }
+
+        return DataTables::of($order)->toJson();
     }
 
     /**
