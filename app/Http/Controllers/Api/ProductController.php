@@ -28,7 +28,7 @@ class ProductController extends Controller
         
         $operations->take(50)->get();
 
-        return $this->returnSuccess(200,DataTables::of($operations)->toJson());
+        return DataTables::of($operations)->toJson();
         
   
     }

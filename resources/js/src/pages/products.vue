@@ -333,12 +333,10 @@
           "url": import.meta.env.VITE_VUE_APP_BACKEND_URL+"api/get-products",
           "contentType": "application/json",
           "type": "POST",
-          xhrFields: {
-              withCredentials: true
+          "crossDomain": true,
+          "beforeSend": function (xhr) {
+            xhr.setRequestHeader("Authorization","Bearer" + window.localStorage.getItem('id_token'))
           },
-          "headers": {
-            "Authorization": "Bearer:"+window.localStorage.getItem('id_token')
-          }
         },
       },
       ready:false,
