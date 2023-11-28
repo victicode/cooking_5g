@@ -24,7 +24,7 @@ class OrderController extends Controller
 
         return $this->returnSuccess(200, $order );
     }
-    public function getOrdesTable()
+    public function getOrdersTable()
     {
         $order = Order::with('user')->get();
         foreach ($order as $key ) {

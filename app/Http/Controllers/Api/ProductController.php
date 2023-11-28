@@ -28,7 +28,7 @@ class ProductController extends Controller
         
         $operations->take(50)->get();
 
-        return DataTables::of($operations)->toJson();
+        return $this->returnSuccess(200,DataTables::of($operations)->toJson());
         
   
     }
@@ -53,7 +53,7 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function storeProduct(Request $request)
     {
         //
     }

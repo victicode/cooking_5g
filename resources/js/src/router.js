@@ -39,6 +39,16 @@ const router = createRouter({
           },
         },
         {
+          path: "/orders",
+          component: () => import('@/pages/orders.vue'),
+          meta: {
+            middleware: [
+              auth
+            ],
+            title : 'Ordenes'
+          },
+        },
+        {
           path: 'account-settings',
           component: () => import('@/pages/account-settings.vue'),
         },
@@ -71,7 +81,8 @@ const router = createRouter({
       meta: {
         middleware: [
           guest
-        ]
+        ],
+        title: 'Bienvenido'
       },
     },
     {

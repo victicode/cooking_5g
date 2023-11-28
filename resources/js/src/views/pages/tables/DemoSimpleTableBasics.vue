@@ -16,7 +16,7 @@ const as = window
           stock
         </th>
         <th style="width: 150px; text-align: center;">
-          opciones
+          opcionesaa
         </th>
       </tr>
     </thead>
@@ -64,7 +64,7 @@ const as = window
                   <v-list-item>
                     <v-tooltip text="Editar producto">
                       <template v-slot:activator="{ props }">
-                        <VIcon class="me-2" v-bind="props" icon="heroicons-outline:pencil-alt" />
+                        <VIcon class="me-2" v-bind="props" icon="ic:outline-cancel" />
                       </template>
                     </v-tooltip>
                   </v-list-item>
@@ -78,7 +78,7 @@ const as = window
                   <v-list-item>
                     <v-tooltip text="Eliminar producto">
                       <template v-slot:activator="{ props }">
-                        <VIcon class="me-2" v-bind="props" icon="bx-trash" />
+                        <VIcon class="me-2" v-bind="props" icon="ic:outline-cancel" />
                       </template>
                     </v-tooltip>
                   </v-list-item>
@@ -99,12 +99,12 @@ const as = window
             </v-tooltip>
             <v-tooltip text="Agregar stock">
               <template v-slot:activator="{ props }">
-                <VIcon class="me-2" v-bind="props" icon="mdi-box-variant-closed-plus" />
+                <VIcon class="me-2" v-bind="props" icon="icon-park-outline:update-rotation" />
               </template>
             </v-tooltip>
             <v-tooltip text="Eliminar producto">
               <template v-slot:activator="{ props }">
-                <VIcon class="me-2" v-bind="props" icon="bx-trash" />
+                <VIcon class="me-2" v-bind="props" icon="ic:outline-cancel" />
               </template>
             </v-tooltip>
           </div>
