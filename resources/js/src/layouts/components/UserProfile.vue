@@ -107,7 +107,7 @@ import { inject } from "vue";
     },
     methods:{
       logout(){
-        this.emitter.emit("displayOverlay", true)
+        this.emitter.emit("displayOverlayLoad", true)
         this.$store.dispatch(LOGOUT)
         .then(() => { this.$router.go('/login')})
         .catch(()=>{ this.$router.go('/login')});

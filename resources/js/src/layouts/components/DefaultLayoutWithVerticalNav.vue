@@ -47,7 +47,7 @@ const vuetifyTheme = useTheme()
     <VBreadcums class="d-block d-md-none" />
     <template #vertical-nav-content>
       <VerticalNavLink
-        @click="emitter.emit('displayOverlay', true)"
+        @click="emitter.emit('displayOverlayLoad', true)"
         class="mt-3"
         :item="{
           title: 'Dashboard',
@@ -56,7 +56,7 @@ const vuetifyTheme = useTheme()
         }"
       />
       <VerticalNavLink
-        @click="emitter.emit('displayOverlay', true)"
+        @click="emitter.emit('displayOverlayLoad', true)"
         class="mt-3"
         :item="{
           title: 'Productos',
@@ -83,7 +83,7 @@ const vuetifyTheme = useTheme()
         }"
       />
       <VerticalNavLink
-        @click="emitter.emit('displayOverlay', true)"
+        @click="emitter.emit('displayOverlayLoad', true)"
         class="mt-3"
         :item="{
           title: 'Ordenes',
@@ -92,7 +92,7 @@ const vuetifyTheme = useTheme()
         }"
       />
       <VerticalNavLink
-        @click="emitter.emit('displayOverlay', true)"
+        @click="emitter.emit('displayOverlayLoad', true)"
         class="mt-3"
         :item="{
           title: currentUser.rol_id == 1 ? 'Recetas' : 'Tus Recetas',

@@ -18,10 +18,11 @@ import DefaultLayoutWithVerticalNav from './components/DefaultLayoutWithVertical
    </router-view>
   </DefaultLayoutWithVerticalNav>
   <v-overlay
-    :model-value="overlay"
+    :model-value="overlayLoad"
     persistent="true"
     close-on-back="true"
     class="align-center justify-center"
+    id="overlay-load"
   >
     <v-progress-circular
       color="primary"
@@ -29,6 +30,49 @@ import DefaultLayoutWithVerticalNav from './components/DefaultLayoutWithVertical
       size="64"
     />
   </v-overlay>
+  <v-overlay
+    :model-value="overlayModal"
+    persistent="true"
+    close-on-back="true"
+    class="align-center justify-center"
+    id="overlay-modal"
+  >
+      <div class="v-card v-theme--light v-card--density-default v-card--variant-elevated">
+        <!---->
+        <div class="v-card__loader">
+          <div class="v-progress-linear v-theme--light v-locale--is-ltr" role="progressbar" aria-hidden="true" aria-valuemin="0" aria-valuemax="100" style="top: 0px; height: 0px; --v-progress-linear-height: 2px; left: 50%; transform: translateX(-50%);">
+            <!----><div class="v-progress-linear__background" style="width: 100%;"></div>
+            <div class="v-progress-linear__indeterminate">
+              <div class="v-progress-linear__indeterminate long"></div>
+              <div class="v-progress-linear__indeterminate short"></div>
+            </div><!---->
+          </div>
+        </div><!----><!---->
+        <header class="v-toolbar v-toolbar--density-default bg-primary v-theme--light v-locale--is-ltr">
+          <div class="v-toolbar__content" style="height: 64px;">
+            <div class="v-toolbar-title">
+              <div class="v-toolbar-title__placeholder">
+                Opening from the top<!---->
+              </div>
+            </div>
+          </div>
+        </header>
+        <div class="v-card-text">
+          <div class="text-h2 pa-12">
+            Hello world!
+          </div>
+        </div>
+        <div class="v-card-actions justify-end">
+          <button type="button" class="v-btn v-theme--light text-primary v-btn--density-default v-btn--size-default v-btn--variant-text">
+            <span class="v-btn__overlay"></span>
+            <span class="v-btn__underlay"></span>
+            <span class="v-btn__content" data-no-activator="">Close</span>
+          </button>
+        </div>
+        <span class="v-card__underlay"></span>
+      </div>
+  </v-overlay>
+
 </template>
 
 <style lang="scss">
@@ -55,7 +99,7 @@ export default {
             console.log('alert!!!')
           }
           this.user = data.user;
-          // this.overlay = false
+          this.overlayLoad = false
         })
         .catch((e) => {
           console.log(e)
@@ -64,11 +108,15 @@ export default {
     },
   },
   data: () => ({
-    overlay: false,
+    overlayLoad: false,
+    overlayModal: false,
   }),
   created(){
-    this.emitter.on("displayOverlay", (status) => {
-      // this.overlay = status
+    this.emitter.on("displayOverlayLoad", (status) => {
+      this.overlayLoad = status
+    })
+    this.emitter.on("displayOverlayModal", (status) => {
+      this.overlayModal = status
     })
     this.getUser()
   }

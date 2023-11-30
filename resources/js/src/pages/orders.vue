@@ -4,14 +4,14 @@
   import Button from 'datatables.net-buttons';
   import 'datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css';
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue'
-
+  import ButtonPrint from 'datatables.net-buttons/js/buttons.print';
   import ButtonHTML5 from 'datatables.net-buttons/js/buttons.html5';
   import 'datatables.net-dt/css/jquery.dataTables.min.css';
 
-DataTable.use(DataTablesCore);
-DataTable.use(Button);
-DataTable.use(ButtonHTML5);
-DataTable.use(ButtonPrint);
+  DataTable.use(DataTablesCore);
+  DataTable.use(Button);
+  DataTable.use(ButtonHTML5);
+  DataTable.use(ButtonPrint); 
   
 </script>
 
@@ -29,111 +29,43 @@ DataTable.use(ButtonPrint);
           </VCol>
         </VRow>
         <DataTable
+          id="data-table"
+          ref="table"
           :columns="table.columns"
           :options="table.options"
           :ajax= "table.ajax" 
           class=" display"
-          
         />
       </VCard>
     </VCol>
+    <div>
+
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              ...
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
   </VRow>
 </template>
 <style lang="scss" >
   thead > tr > th.date{
     width: 10%!important;
   }
-  div.bs-tooltip-auto{
-  background: #272727;
-    color: white;
-    padding: 5px 10px;
-    font-size: 85%;
-    border-radius: 10px;
-  }
-  tbody > tr > td{
-    padding: 15px 5px!important ;
-  }
-  .dataTables_filter{
-    width: 100%!important;
-    padding: 0px!important;
-
-    & label{
-      width: 100%!important;
-      display: block;
-    }
-    & input[type="search"]{
-      width: 100%!important;
-      padding: 10px!important;
-      border-radius: 10px!important;
-      border-color: #b4b2b2ea!important;
-      transition: all ease-out 0.5s;
-      &::placeholder{
-        color:#b4b2b2ea
-      }
-      &:focus-visible{
-        outline: none;
-        border-color: orange!important;
-
-      }
-    }
-  }
-  
 </style>
-<style>
-.dropdown-menu{
-  visibility: hidden;
-  position: absolute;
-  background: white;
-  padding: 10px 20px;
-  box-shadow: 0px 5px 10px;
-  border-radius: 10px;
-  position: absolute;
-  inset: unset!important;
-  margin: 0px;
-  top: -50px!important;
-  width: auto;
-  right: -7%!important;
-  display: flex;
-}
-.dropdown-menu.show{
-  visibility: visible;
-  animation: bounceIn 0.3s forwards;
-}
-  @keyframes bounceIn{
-    0%,20%,40%,60%,80%,
-    to{
-      -webkit-animation-timing-function:cubic-bezier(.215,.61,.355,1);
-      animation-timing-function:cubic-bezier(.215,.61,.355,1)
-    }
-    0%{
-      opacity:0;
-      -webkit-transform:scale3d(.3,.3,.3);
-      transform:scale3d(.3,.3,.3)!important;
-    }
-    20% {
-      -webkit-transform:scale3d(1.1,1.1,1.1);
-      transform:scale3d(1.1,1.1,1.1)!important;
-    }
-    40%{
-      -webkit-transform:scale3d(.9,.9,.9);
-      transform:scale3d(.9,.9,.9)!important;
-    }
-    60%{
-      opacity:1;-webkit-transform:scale3d(1.03,1.03,1.03);
-      transform:scale3d(1.03,1.03,1.03)!important;
-    }
-    80%{
-      -webkit-transform:scale3d(.97,.97,.97);
-      transform:scale3d(.97,.97,.97)!important;
-    }
-    to{
-      opacity:1;
-      -webkit-transform:scaleX(1);
-      transform:scaleX(1)!important;
-    }
-  }
-</style>
-
 <script>
   
   import * as bootstrap from 'bootstrap'
@@ -141,10 +73,46 @@ DataTable.use(ButtonPrint);
   import moment from 'moment';
   export default {
     methods:{
+      initOptionsTable(){
+        document.getElementById('data-table').addEventListener('OptionsActionTable', () => this.activeOptionsTable() )	
+      },
+      activeOptionsTable() {
+        document.querySelectorAll('.view').forEach(item => {
+          item.addEventListener('click', event => {
+            console.log('ardilla')
+            // this.emitter.emit('displayOverlayModal', true)
+            this.modal = new bootstrap.Modal(document.getElementById('exampleModal'), {
+              keyboard: false,
+              backdrop:'static'
+            })
+            this.modal.show()
 
+          })	
+        })
+      },
+      // showModal(modal) {
+      //   this.showPass = id;
+      //   setTimeout(() => {
+      //     this.openModal = new bootstrap.Modal(document.getElementById(modal), {
+      //       keyboard: false,
+      //       backdrop:'static'
+      //     })
+      //     this.openModal.show()
+
+      //     if(this.showPass == 2){
+      //       this.textModal= this.selectedOperation.status == 1 ? 'procesar esta operación' :  'finalizar esta operación'
+      //       this.setSelectedOperationChangeStatusData(this.selectedOperation.id, this.selectedOperation.status, this.selectedOperation.status + 1)
+      //     }
+      //     if(this.showPass == 3){
+      //       this.textModal= 'cancelar esta operación' 
+      //       this.setSelectedOperationChangeStatusData(this.selectedOperation.id, this.selectedOperation.status, -1)
+      //     }
+      //   }, 500);
+        
+      // },
     },
     data: () => ({
-      
+      modal: '',
       table:{
         ajax:{
           "url": import.meta.env.VITE_VUE_APP_BACKEND_URL+"api/get-orders",
@@ -156,7 +124,6 @@ DataTable.use(ButtonPrint);
             title: 'Fecha',  
             class:'text-center d-md-table-cell d-none date',
             render: ( data, type, row, meta ) =>{ 
-              console.log(row)
               return `
               ${ moment(row.created_at).format('DD-MM-YYYY') }
               `
@@ -210,7 +177,7 @@ DataTable.use(ButtonPrint);
             render: ( data, type, row, meta ) =>{ 
               return `
               <div class="d-md-flex d-none justify-center ">
-                <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver detalles">
+                <span class="view" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver detalles">
                   <svg  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-5 iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
                 </span>
                 <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Actualizar estado">
@@ -220,13 +187,14 @@ DataTable.use(ButtonPrint);
                   <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default  iconify iconify--ic" aria-describedby="v-tooltip-11" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m3.59-13L12 10.59L8.41 7L7 8.41L10.59 12L7 15.59L8.41 17L12 13.41L15.59 17L17 15.59L13.41 12L17 8.41z"></path></svg>
                 </span>
               </div>
+              <!- Vista en moviles ->
               <div class="d-md-none d-flex justify-center position-relative relative ">
                 <div class="dropdown dropup ">
                   <button type="button dropup" data-bs-toggle="dropdown" aria-expanded="false">
                     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="button" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default v-icon--clickable iconify iconify--mdi" aria-haspopup="menu" aria-expanded="false" aria-owns="v-menu-46" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z"></path></svg>
                   </button>
                   <div class="dropdown-menu animate__animated animate__rubberBand">
-                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver detalles">
+                    <span class="view" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver detalles">
                       <svg  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-5 iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
                     </span>
                     <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Actualizar estado">
@@ -302,19 +270,21 @@ DataTable.use(ButtonPrint);
                     },
                   ]
                 },
-        ],
+          ],
+          drawCallback: function( settings ) {
+            const TableElement = document.getElementById('data-table');
+            const event = new Event("OptionsActionTable")
+            TableElement.dispatchEvent(event);
+            console.log(settings)
+          },
         },
         
       },
-      ready:false,
-      products:[
-        {id:1, title:'perrito', stock:2, type_of_unit:'KG'},
-        {id:2, title:'perrito', stock:2, type_of_unit:'KG'},
-        {id:3, title:'perrito', stock:2, type_of_unit:'KG'}
-      ]
     }),
     mounted(){
-      // console.log(ProductsOptions.render())
+      this.initOptionsTable()
+      this.emitter.emit('displayOverlayLoad', false)
+
       setTimeout(() => {
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
