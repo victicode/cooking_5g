@@ -88,7 +88,7 @@ const vuetifyTheme = useTheme()
         :item="{
           title: 'Ordenes',
           icon: 'bx-task',
-          to: '/user-list',
+          to: '/orders',
         }"
       />
       <VerticalNavLink

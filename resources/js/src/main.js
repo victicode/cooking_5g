@@ -42,6 +42,7 @@ router.beforeEach(async (to, from, next) => {
     store
   }
   // document.title =`${titlePage[to.name].charAt(0).toUpperCase()}${titlePage[to.name].substring(1)} | DLS Money Plataforma de cambio de dolares a soles online`
+  document.title = to.meta.title + ' - Cooking 5G'
   return middleware[0]({
     ...context,
     next: middlewarePipeline(context, middleware, 1)

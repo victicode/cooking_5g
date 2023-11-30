@@ -1,7 +1,6 @@
 <script setup >
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue'
 
-  import { GET_PRODUCTS } from "@/core/services/store/product.module";
   import DataTable from 'datatables.net-vue3';
   import DataTablesCore from 'datatables.net';
   import Button from 'datatables.net-buttons';
@@ -11,60 +10,71 @@
   import ButtonPrint from 'datatables.net-buttons/js/buttons.print';
 
   import 'datatables.net-dt/css/jquery.dataTables.min.css';
-  import ProductsOptions from '@/views/pages/products/ProductsOption.vue'
-DataTable.use(DataTablesCore);
-DataTable.use(Button);
-DataTable.use(ButtonHTML5);
-DataTable.use(ButtonPrint);
+  DataTable.use(DataTablesCore);
+  DataTable.use(Button);
+  DataTable.use(ButtonHTML5);
+  DataTable.use(ButtonPrint);
   
 </script>
-
 <template>
   <VRow class="">
     <VCol cols="12">
-      <VCard title="Listado de productos" class="pa-3 px-1 px-md-3">
+      <VCard title="Listado de productos" class="pa-3 px-2 px-md-3">
         <VRow class="ma-0  justify-center justify-md-end pa-2 px-0 mb-0">
           <VCol
             cols="11"
             md="3"
             class="ma-0 px-0 justify-center justify-md-end d-flex"
           >
-            <VBtn color="primary" class="w-100 "><VIcon icon="bx-plus"/> Agregar nuevo producto</VBtn>
+            <v-dialog width="500">
+              <template v-slot:activator="{ props }">
+                <VBtn v-bind="props" color="primary" class="w-100 "><VIcon icon="bx-plus"/> Agregar nuevo producto</VBtn>
+              </template>
+            
+              <template v-slot:default="{ isActive }">
+                <v-card title="Dialog">
+                  <v-card-text>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  </v-card-text>
+            
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+            
+                    <v-btn
+                      text="Close Dialog"
+                      @click="isActive.value = false"
+                    ></v-btn>
+                  </v-card-actions>
+                </v-card>
+              </template>
+            </v-dialog>
           </VCol>
         </VRow>
         <DataTable
           :columns="table.columns"
           :options="table.options"
           :ajax= "table.ajax" 
+          ref="table"
           class=" display"
           
         />
         <!-- <DemoSimpleTableBasics v-if="ready" :products="products" /> -->
-        <!-- <table class="display px-0 mx-0 " id="table">
-          <thead>
-            <tr>
-              <th class="text-center">id</th>
-              <th class="">Nombre del producto</th>
-              <th class="">Stock</th>
-              <th class="text-center">Acciones</th>
-            </tr>
-          </thead>
-        </table> -->
       </VCard>
     </VCol>
+    
   </VRow>
 </template>
 <style lang="scss">
-// .v-tooltip{
-  
-// }
-div.bs-tooltip-auto{
+  div.bs-tooltip-auto{
   background: #272727;
     color: white;
     padding: 5px 10px;
     font-size: 85%;
     border-radius: 10px;
-}
+  }
+  thead > tr > th.title-th{
+    width: 70%!important;
+  }
   thead > tr > th:nth-child(n+2){
     width: 15%!important;
   }
@@ -95,33 +105,106 @@ div.bs-tooltip-auto{
       }
     }
   }
-  .dropdown-menu{
-    visibility: hidden;
-    position: absolute;
+  
+</style>
+<style>
+.dropdown-menu{
+  visibility: hidden;
+  position: absolute;
+  background: white;
+  padding: 10px 20px;
+  box-shadow: 0px 5px 10px;
+  border-radius: 10px;
+  position: absolute;
+  inset: unset!important;
+  margin: 0px;
+  top: -50px!important;
+  width: 160px;
+  right: -7%!important;
+}
+.dropdown-menu.show{
+  visibility: visible;
+  animation: bounceIn 0.3s forwards;
+}
+  @keyframes bounceIn{
+    0%,20%,40%,60%,80%,
+    to{
+      -webkit-animation-timing-function:cubic-bezier(.215,.61,.355,1);
+      animation-timing-function:cubic-bezier(.215,.61,.355,1)
+    }
+    0%{
+      opacity:0;
+      -webkit-transform:scale3d(.3,.3,.3);
+      transform:scale3d(.3,.3,.3)!important;
+    }
+    20% {
+      -webkit-transform:scale3d(1.1,1.1,1.1);
+      transform:scale3d(1.1,1.1,1.1)!important;
+    }
+    40%{
+      -webkit-transform:scale3d(.9,.9,.9);
+      transform:scale3d(.9,.9,.9)!important;
+    }
+    60%{
+      opacity:1;-webkit-transform:scale3d(1.03,1.03,1.03);
+      transform:scale3d(1.03,1.03,1.03)!important;
+    }
+    80%{
+      -webkit-transform:scale3d(.97,.97,.97);
+      transform:scale3d(.97,.97,.97)!important;
+    }
+    to{
+      opacity:1;
+      -webkit-transform:scaleX(1);
+      transform:scaleX(1)!important;
+    }
   }
 </style>
 
 <script>
+  import * as bootstrap from 'bootstrap';
+  import { STORE_PRODUCTS } from "@/core/services/store/product.module";
   
-  import * as bootstrap from 'bootstrap'
-
   export default {
-    template:{
-      options: ProductsOptions 
-    },
     methods:{
-    initOptionsTable(){
-          // document.querySelector('.dt-buttons').classList.add('justify-content-end')
-          const TableElementContent = document.getElementById('table');
-          // this.activeFilterInputs()
-          TableElementContent .addEventListener('OptionsActionTable', () => this.ready = true )	
-        },
+      addItem(){
+        this.$store
+          .dispatch(STORE_PRODUCTS, { email, password })
+          .then((data) => {
+            if(data.code === 500 ){
+              submitButton.textContent = 'Ingresar';
+              submitButton.blur();
+              this.showAlert('alert-danger',data.messagge)
+              return
+            }
+            this.showAlert('alert-success','Acceso Exitoso')
+            submitButton.textContent = 'Acceso Exitoso'
+            setTimeout(() => {
+              
+              this.$router.push('/dashboard') 
+            }, 1000);
+          })
+          .catch((e) => {
+
+            // console.log(e)
+          });
+      },
+      initOptionsTable(){
+            // document.querySelector('.dt-buttons').classList.add('justify-content-end')
+            const TableElementContent = document.getElementById('table');
+            // this.activeFilterInputs()
+            TableElementContent .addEventListener('OptionsActionTable', () => this.ready = true )	
+      },
 
     },
     data: () => ({
       table:{
         columns: [
-          { title: 'Nombre del producto', data: 'title', class:'text-start'  },
+          { title: 'Nombre del producto', class:'text-start title-th',
+          render: ( data, type, row, meta ) =>{ 
+              return row.title
+            }   
+          },
           { 
             title: 'Stock',
             class:'text-center',
@@ -144,7 +227,7 @@ div.bs-tooltip-auto{
             class:'text-center',
             render: ( data, type, row, meta ) =>{ 
               return `
-              <div class="d-md-flex d-none ">
+              <div class="d-md-flex d-none justify-center">
                 
                 <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver ficha de producto">
                   <svg  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-2 iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
@@ -159,12 +242,12 @@ div.bs-tooltip-auto{
                   <svg  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--bx" aria-describedby="v-tooltip-22" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path fill="currentColor" d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg>
                 </span>
               </div>
-              <div class="d-md-none d-flex justify-center">
-                <div class="dropdown">
-                  <button type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="button" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default v-icon--clickable me-4 iconify iconify--mdi" aria-haspopup="menu" aria-expanded="false" aria-owns="v-menu-46" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z"></path></svg>
+              <div class="d-md-none d-flex justify-center position-relative relative ">
+                <div class="dropdown dropup ">
+                  <button type="button dropup" data-bs-toggle="dropdown" aria-expanded="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="button" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default v-icon--clickable iconify iconify--mdi" aria-haspopup="menu" aria-expanded="false" aria-owns="v-menu-46" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z"></path></svg>
                   </button>
-                  <div class="dropdown-menu ">
+                  <div class="dropdown-menu animate__animated animate__rubberBand">
                     <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver ficha de producto">
                       <svg  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
                     </span>
@@ -247,9 +330,13 @@ div.bs-tooltip-auto{
         ],
         },
         ajax:{
-          "url": "http://10.10.10.69:8085/api/get-products",
+          "url": import.meta.env.VITE_VUE_APP_BACKEND_URL+"api/get-products",
           "contentType": "application/json",
           "type": "POST",
+          "crossDomain": true,
+          "beforeSend": function (xhr) {
+            xhr.setRequestHeader("Authorization","Bearer" + window.localStorage.getItem('id_token'))
+          },
         },
       },
       ready:false,
