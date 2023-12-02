@@ -93,7 +93,7 @@ import CriticalStockProduct from '@/views/dashboard/CriticalStockProduct.vue'
     methods:{
     },
     created(){
-      this.emitter.emit('displayOverlay', false)
+      this.emitter.emit('displayOverlayLoad', false)
     },
     computed: {
       ...mapGetters(["currentUser"]),

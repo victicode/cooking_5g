@@ -58,7 +58,6 @@
           class=" display"
           
         />
-        <!-- <DemoSimpleTableBasics v-if="ready" :products="products" /> -->
       </VCard>
     </VCol>
     

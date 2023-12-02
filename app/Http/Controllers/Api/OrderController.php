@@ -32,7 +32,12 @@ class OrderController extends Controller
             $key->getStatusLabelAttribute();
         }
 
-        return DataTables::of($order)->toJson();
+        return DataTables::of($order)->filter(function ($query) {
+                
+            if(!empty(request('filter_start_date'))){
+              $query->whereBetween('created_at', [request('filter_start_date'), request('filter_end_date')]);
+            }
+          })->toJson();
     }
 
     /**
@@ -48,6 +53,13 @@ class OrderController extends Controller
             # code...
             $key->getStatusLabelAttribute();
         }
+        return $this->returnSuccess(200, $order );
+    }
+    public function getOrderById($id) {
+        
+
+        $order = Order::withCount('products')->with(['user', 'products'])->find($id);
+        $order->getStatusLabelAttribute();
         return $this->returnSuccess(200, $order );
     }
     public function create()

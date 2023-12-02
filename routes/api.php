@@ -34,7 +34,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('login', [AuthController::class, 'login']);
 Route::middleware('jwt.verify')->post('/get-products', [ProductController::class, 'getProductsTable']);
-Route::post('/get-orders', [OrderController::class, 'getOrdersTable']);
+Route::middleware('jwt.verify')->post('/get-orders', [OrderController::class, 'getOrdersTable']);
 Route::post('/get-recipes', [ProductController::class, 'getProductsTable']);
 
 
@@ -51,7 +51,7 @@ Route::middleware('jwt.verify')->prefix('user')->name('user.')->group(function (
 Route::middleware('jwt.verify')->prefix('order')->name('user.')->group(function () {
     Route::get('/', [OrderController::class, 'index'])->name('getOrders');
     Route::get('/get-last', [OrderController::class, 'getLastByType']);
-
+    Route::get('/get-by-id/{id}',[OrderController::class, 'getOrderById']);
 });
 Route::middleware('jwt.verify')->prefix('products')->name('user.')->group(function () {
     Route::get('/', [ProductController::class, 'index']);

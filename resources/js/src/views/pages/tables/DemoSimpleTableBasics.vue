@@ -57,7 +57,7 @@ const as = window
                   >
                     <v-tooltip text="Ver ficha de producto">
                       <template v-slot:activator="{ props }">
-                        <VIcon  class="me-2" v-bind="props"  icon="mdi-show-outline" />
+                        <VIcon  class="me-2" v-bind="props"  icon="line-md:circle-to-confirm-circle-transition" />
                       </template>
                     </v-tooltip>
                   </v-list-item>
