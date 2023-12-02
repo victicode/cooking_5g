@@ -1,6 +1,6 @@
 
+// import 'bootstrap/dist/css/bootstrap.min.css';
 import '@/@iconify/icons-bundle'
-import 'bootstrap/dist/css/bootstrap.min.css';
 import App from '@/App.vue'
 import vuetify from '@/plugins/vuetify'
 import { loadFonts } from '@/plugins/webfontloader'
@@ -14,7 +14,7 @@ import VueAxios from "vue-axios";
 import store from "@/core/services/store/index.js";
 import router from "./router.js";
 import middlewarePipeline from './middlewares/middlewarePipeline';
-
+import "bootstrap";
 import mitt from 'mitt'
 loadFonts()
 

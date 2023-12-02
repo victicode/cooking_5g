@@ -74,7 +74,7 @@ const handleNavScroll = evt => {
     >
       <PerfectScrollbar
         tag="ul"
-        class="nav-items"
+        class="nav-items px-0"
         :options="{ wheelPropagation: false }"
         @ps-scroll-y="handleNavScroll"
       >

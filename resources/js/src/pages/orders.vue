@@ -19,13 +19,15 @@
   <VRow class="">
     <VCol cols="12">
       <VCard title="Listado de Ordenes" class="pa-3 px-2 px-md-3">
-        <VRow class="ma-0  justify-center justify-md-end pa-2 px-0 mb-0">
-          <VCol
-            cols="11"
-            md="3"
-            class="ma-0 px-0 justify-center justify-md-end d-flex"
-          >
-            <!-- <VBtn color="primary" class="w-100 "><VIcon icon="bx-plus"/> Crear nueva orden</VBtn> -->
+        <VRow class="ma-0  justify-center justify-md-start pa-2 px-0 mb-0">
+          <VCol cols="4" class="form-group">
+            <VTextField
+              autofocus
+              placeholder="Buscar por Track ID"
+              label="Track ID"
+              type="text"
+              name="email"
+            />
           </VCol>
         </VRow>
         <DataTable
@@ -40,19 +42,42 @@
     </VCol>
     <div>
 
-      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+      <div class="modal animate__animated animate__bounceInDown" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
           <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              ...
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Save changes</button>
+            <div class="v-card v-theme--light v-card--density-default v-card--variant-elevated">
+              <!---->
+              <div class="v-card__loader">
+                <div class="v-progress-linear v-theme--light v-locale--is-ltr" role="progressbar" aria-hidden="true" aria-valuemin="0" aria-valuemax="100" style="top: 0px; height: 0px; --v-progress-linear-height: 2px; left: 50%; transform: translateX(-50%);">
+                  <!----><div class="v-progress-linear__background" style="width: 100%;"></div>
+                  <div class="v-progress-linear__indeterminate">
+                    <div class="v-progress-linear__indeterminate long"></div>
+                    <div class="v-progress-linear__indeterminate short"></div>
+                  </div><!---->
+                </div>
+              </div><!----><!---->
+              <header class="v-toolbar v-toolbar--density-default bg-primary v-theme--light v-locale--is-ltr">
+                <div class="v-toolbar__content" style="height: 64px;">
+                  <div class="v-toolbar-title">
+                    <div class="v-toolbar-title__placeholder">
+                      Opening from the top<!---->
+                    </div>
+                  </div>
+                </div>
+              </header>
+              <div class="v-card-text">
+                <div class="text-h2 pa-12">
+                  Hello world!
+                </div>
+              </div>
+              <div class="v-card-actions justify-end">
+                <button type="button" class="v-btn v-theme--light text-primary v-btn--density-default v-btn--size-default v-btn--variant-text">
+                  <span class="v-btn__overlay"></span>
+                  <span class="v-btn__underlay"></span>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </button>
+              </div>
+              <span class="v-card__underlay"></span>
             </div>
           </div>
         </div>
@@ -64,6 +89,9 @@
 <style lang="scss" >
   thead > tr > th.date{
     width: 10%!important;
+  }
+  .modal{
+    animation-duration: 0.8s; /* don't forget to set a duration! */
   }
 </style>
 <script>
@@ -79,10 +107,10 @@
       activeOptionsTable() {
         document.querySelectorAll('.view').forEach(item => {
           item.addEventListener('click', event => {
-            console.log('ardilla')
+            // console.log('ardilla')
             // this.emitter.emit('displayOverlayModal', true)
             this.modal = new bootstrap.Modal(document.getElementById('exampleModal'), {
-              keyboard: false,
+              keyboard: false,              
               backdrop:'static'
             })
             this.modal.show()
@@ -220,7 +248,7 @@
           lengthChange: false,
           dom:
             '<"v-row mx-0 mb-md-5"' +
-            '<"v-col v-col-md-6 v-col-12 mb-5 mb-md-0"f>' +
+            // '<"v-col v-col-md-6 v-col-12 mb-5 mb-md-0"f>' +
             // '<"v-col v-col-md-6 v-col-12 "<" justify-center justify-md-end  d-flex "B>>' +
             '>t' +
             '<"v-row  mt-2 mx-2"' +
