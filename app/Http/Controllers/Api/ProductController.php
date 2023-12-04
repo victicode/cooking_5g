@@ -46,7 +46,9 @@ class ProductController extends Controller
     {
         //
     }
-
+    public function getProductById($id){
+        return $this->returnSuccess(200, Product::find($id));
+    }
     /**
      * Store a newly created resource in storage.
      *

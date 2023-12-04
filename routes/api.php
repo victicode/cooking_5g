@@ -57,6 +57,7 @@ Route::middleware('jwt.verify')->prefix('products')->name('user.')->group(functi
     Route::get('/', [ProductController::class, 'index']);
     Route::get('/store', [ProductController::class, 'storeProduct']);
     Route::get('/get-critical-stock', [ProductController::class, 'getProductsCriticalStock']);
+    Route::get('/get-by-id/{id}',[ProductController::class, 'getProductById']);
 
 });
 

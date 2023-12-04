@@ -63,6 +63,7 @@ app.use(VueAxios, axios);
 app.use(vuetify)
 app.use(router)
 app.use(store)
+app.use(func)
 app.config.globalProperties.emitter = emitter
 
 

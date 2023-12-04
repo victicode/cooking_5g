@@ -26,18 +26,23 @@ class OrderController extends Controller
     }
     public function getOrdersTable()
     {
-        $order = Order::with('user')->get();
-        foreach ($order as $key ) {
+        $order = Order::query()->with('user');
+
+        if(!empty(request('filter_start_date'))){
+            $order->whereBetween('created_at', [request('filter_start_date'), request('filter_end_date')]);
+        }
+        if(!empty(request('filter_tracker_id'))){
+            $order->where('trancker', 'like', '%'.request('filter_tracker_id').'%');
+        }
+
+        $order = $order->get(); 
+
+        foreach ($order  as $key ) {
             # code...
             $key->getStatusLabelAttribute();
         }
 
-        return DataTables::of($order)->filter(function ($query) {
-                
-            if(!empty(request('filter_start_date'))){
-              $query->whereBetween('created_at', [request('filter_start_date'), request('filter_end_date')]);
-            }
-          })->toJson();
+        return DataTables::of($order)->toJson();
     }
 
     /**

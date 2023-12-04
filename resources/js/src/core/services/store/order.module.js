@@ -42,7 +42,6 @@ const actions = {
       });
     },
     [GET_ORDER_BY_ID](context,orderID){
-      console.log(orderID)
       return new Promise((resolve, reject) => {
         if (JwtService.getToken()) {
           ApiService.setHeader();

@@ -20,16 +20,16 @@
          
         </VListItem>
         <VListItem
-          v-for="order in product"
-          :key="order.id"
+          v-for="product in products"
+          :key="product.id"
           class="py-3 border-bottom-4"
         >
           <VRow class="pa-0 m-0 align-center">
             <VCol cols="5" class="text-center">
-              {{ order.title }}
+              {{ product.title }}
             </VCol>
             <VCol cols="3" class="text-center">
-              <v-chip :class="order.stock > 10 ? 'bg-warning' : 'bg-error'">{{ order.stock }}</v-chip>
+              <v-chip :class="product.stock > 10 ? 'bg-warning' : 'bg-error'">{{ product.stock }}</v-chip>
             </VCol>
             <VCol cols="4" class="text-center">
               <VIcon icon="bx-link-external" />
@@ -54,7 +54,7 @@
   export default {
     data(){
       return{
-        product:[]
+        products:[]
       }
     },
     methods:{
@@ -67,7 +67,7 @@
             return
           }
           console.log(data)
-          this.product = data.data
+          this.products = data.data
         })
         .catch((e) => {
           console.log(e)
