@@ -16,7 +16,7 @@ const as = window
           stock
         </th>
         <th style="width: 150px; text-align: center;">
-          opcionesaa
+          opcionesa
         </th>
       </tr>
     </thead>

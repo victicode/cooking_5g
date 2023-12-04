@@ -4,6 +4,7 @@
   import Button from 'datatables.net-buttons';
   import 'datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css';
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue'
+  import OrderProductsTables from '@/views/pages/tables/OrderProductsTables.vue'
   import ButtonPrint from 'datatables.net-buttons/js/buttons.print';
   import ButtonHTML5 from 'datatables.net-buttons/js/buttons.html5';
   import 'datatables.net-dt/css/jquery.dataTables.min.css';
@@ -70,48 +71,227 @@
       </VCard>
     </VCol>
     <div v-if="Object.keys(selectedOrder).length > 2">
-      <div class="modal animate__animated animate__fadeInDown" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+      <div class="modal animate__animated animate__fadeInDown" id="viewOrder" tabindex="-1" aria-labelledby="viewOrderLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl mt-10">
           <div class="modal-content">
             <VCol
-              sm="6"
               cols="12"
+              class="pa-0"
             >
               <VCard>
-                <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column flex-md-row">
-                  <div class="ma-auto pa-5">
-                    <VImg
-                      width="137"
-                      height="176"
-                      :src="eCommerce2"
-                    />
-                  </div>
+                <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column pa-2 pa-md-5 ">
+                  <VRow  class="mb-2 ma-0">
+                    <VCol
+                      cols="12"
+                      md="6"
+                      class="py-0"
+                    >
+                      <div class="my-md-4 my-2 text-center text-md-start">
+                        <h2>Orden de productos</h2>
+                        <h3 class="mt-2">
+                          <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
+                            {{ selectedOrder.status_info.status }}
+                          </v-chip>
 
-                  <VDivider :vertical="$vuetify.display.mdAndUp" />
-
+                        </h3>
+                      </div>
+                      <div class="my-3 my-md-0  d-block d-md-none text-center text-md-end ">
+                        <h4 class="font-400">
+                          Orden N°: 
+                          <b>
+                            {{ '0000000'.slice(0, 6-selectedOrder.id)+ selectedOrder.id }}
+                          </b> 
+                        </h4>
+                      </div>
+                      <div >
+                        <div class="my-2  text-start">
+                          Solicitante: {{ selectedOrder.user.name.toUpperCase() }}
+                        </div>
+                        <div class="my-2 text-start">
+                          Dirección de destino: {{ selectedOrder.other_address }}
+                        </div>
+                      </div>
+                    
+                    </VCol>
+                    <VCol
+                      cols="12"
+                      md="6"
+                      class="py-0"
+                    >
+                      <div class="my-md-4 my-0  d-none d-md-block text-center text-md-end ">
+                        <h4 class="font-400">
+                          Orden N°: 
+                          <b>
+                            {{ orderNumberFormat(selectedOrder.id) }}
+                          </b> 
+                        </h4>
+                      </div>
+                      <div >
+                        <div class="my-2  text-start text-md-end">
+                          Fecha: {{ moment(selectedOrder.created_at).format('DD/MM/YYYY HH:mm:ss') }}
+                        </div>
+                        <div class="my-2  text-start text-md-end">
+                          Tracker ID: {{ selectedOrder.trancker }}
+                        </div>
+                      </div>
+                    
+                    </VCol>
+                  </VRow>
                   <div>
-                    <VCardItem>
-                      <VCardTitle>Apple iPhone 11 Pro</VCardTitle>
-                    </VCardItem>
-
-                    <VCardText>
-                      Apple iPhone 11 Pro smartphone. Announced Sep 2019. Features 5.8″ display Apple A13 Bionic
-                    </VCardText>
-
-                    <VCardText class="text-subtitle-1">
-                      <span>Price :</span> <span class="font-weight-medium">$899</span>
-                    </VCardText>
-
-                    <VCardActions class="justify-space-between">
-                      <VBtn>
-                        <VIcon icon="bx-cart-add" />
-                        <span class="ms-2">Add to cart</span>
-                      </VBtn>
-
+                    <OrderProductsTables :products="selectedOrder.products" />
+                  </div>
+                  <VDivider  />
+                  <div class="mt-5 w-100 d-flex  justify-center">
+                    <VCardActions class=" justify-center w-75">
                       <VBtn
-                        color="secondary"
-                        icon="bx-share-alt"
-                      />
+                        color="white"
+                        class="bg-secondary text-white w-50"
+                        @click="modal.hide()"
+                      >
+                        <VIcon icon="mingcute:close-fill" />
+                        <span class="ms-2">Cerrar</span>
+                      </VBtn>
+                    </VCardActions>
+                  </div>
+                </div>
+              </VCard>
+            </VCol>
+          </div>
+        </div>
+      </div>
+      <div class="modal animate__animated animate__fadeInDown" id="changeStatusOrder" tabindex="-1" aria-labelledby="changeStatusOrderLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl mt-10">
+          <div class="modal-content">
+            <VCol
+              cols="12"
+              class="pa-0"
+            >
+              <VCard>
+                <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
+                  <VRow  class="mb-2 ma-0">
+                    <VCol
+                      cols="12"
+                      class="py-0"
+                    >
+                      <div class="my-md-4 my-2 text-center">
+                        <h2>Linea de tiempo Orden #{{ orderNumberFormat(selectedOrder.id) }}</h2>
+                        <h3 class="mt-2">
+                          <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
+                            {{ selectedOrder.status_info.status }}
+                          </v-chip>
+
+                        </h3>
+                      </div>
+                    </VCol>
+                    <VCol
+                      cols="12"
+                      class="px-md-10 px-0 overflow-scroll"
+                      style=""
+                    >
+                      <v-timeline direction="horizontal"  class="timelapse ">
+                        <v-timeline-item
+                          dot-color="#d06427"
+                          icon="ic:outline-pending-actions"
+                          fill-dot
+                          size="large"
+                        >
+                          <template v-slot:opposite>
+                            <h3>
+                              Orden creada
+                            </h3>
+                          </template>
+    
+                          <div class="text-h6">
+                            <h4>
+                              {{  moment(selectedOrder.created_at).format('DD/MM/YYYY') }}
+                            </h4>
+                          </div>
+    
+                        </v-timeline-item>
+                        <v-timeline-item
+                          :dot-color="selectedOrder.status > 1 ? '#d06427' :'#fff' "
+                          icon="carbon:delivery-parcel"
+                          fill-dot
+                          size="large"
+                        >
+                          <template v-slot:opposite v-if="selectedOrder.status > 1">
+                            <h3>
+                              En transito
+                            </h3>
+                          </template>
+                            <div class="text-h6" v-if="selectedOrder.status == 2">
+                              <h4>
+                                {{  moment(selectedOrder.updated_at).format('DD/MM/YYYY') }}
+                              </h4>
+                            </div>
+                        </v-timeline-item>
+                        <v-timeline-item
+                          :dot-color="selectedOrder.status == 3 ? '#d06427' :'#fff' "
+                          icon="line-md:confirm-circle"
+                          fill-dot
+                          size="large"
+                        >
+                          <template v-slot:opposite v-if="selectedOrder.status == 3">
+                            <h3>
+                              Completado
+                            </h3>
+                          </template>
+                            <div class="text-h6" v-if="selectedOrder.status == 3">
+                              <h4>
+                                {{  moment(selectedOrder.updated_at).format('DD/MM/YYYY') }}
+                              </h4>  
+                            </div>
+                        </v-timeline-item>
+                        <v-timeline-item
+                          dot-color="#ff5538"
+                          icon="ic:outline-cancel"
+                          fill-dot
+                          size="large"
+                          v-if="selectedOrder.status == 0"
+                        >
+                          <template v-slot:opposite>
+                            <h3>
+                              Cancelada
+                            </h3>
+                          </template>
+                            <div class="text-h6">
+                              <h4>
+                                {{  moment(selectedOrder.updated_at).format('DD/MM/YYYY') }}
+                              </h4>  
+                            </div>
+                        </v-timeline-item>
+                    
+                      </v-timeline>
+                    </VCol>
+                  </VRow>
+                    
+
+                  <VDivider  />
+                  <div class="mt-5 w-100 d-md-flex  d-block justify-center">
+                    <VCardActions class=" justify-center w-100 d-md-flex  d-block">
+                      <VBtn
+                        color="white"
+                        class="bg-error text-white w-30 mx-0 mx-md-5 my-2"
+                        @click="modal.hide()"
+                        v-if="selectedOrder.status == 1 || selectedOrder.status == 2"
+                      >
+                        <span class="">Cancelar</span>
+                      </VBtn>
+                      <VBtn
+                        color="white"
+                        class="bg-secondary text-white w-30 mx-0 mx-md-5 my-2"
+                        @click="modal.hide()"
+                      >
+                        <span class="">Cerrar</span>
+                      </VBtn>
+                      <VBtn
+                        color="white"
+                        class=" text-white w-30 bg-success mx-0 mx-md-5 my-2"
+                        @click="modal.hide()"
+                        v-if="selectedOrder.status == 1 || selectedOrder.status == 2 "
+                      >
+                        <span class="">{{ selectedOrder.status == 1 ? 'En transito' : selectedOrder.status == 2 ? 'Entregado' : ''}}</span>
+                      </VBtn>
                     </VCardActions>
                   </div>
                 </div>
@@ -130,6 +310,21 @@
   }
   .modal{
     animation-duration: 1.2s; /* don't forget to set a duration! */
+  }
+  .v-timeline-divider__inner-dot > svg{
+    color: #fff!important;
+  }
+  @media screen and (max-width: 780px){
+    .timelapse{
+      max-width: 800px!important;
+      width: 480px!important;
+    }
+    .overflow-scroll{
+      overflow: scroll;
+    }
+    .w-30{
+      width:  100%!important;
+    }
   }
 </style>
 <script>
@@ -196,7 +391,7 @@
             render: ( data, type, row, meta ) =>{ 
               return `
               <span 
-                class="  v-chip v-theme--light v-chip--density-comfortable elevation-0 v-chip--size-default v-chip--variant-tonal ${row.status == 1 ? 'bg-warning' : row.status == 2 ? 'bg-secondary' : 'bg-success'}" 
+                class="  v-chip v-theme--light v-chip--density-comfortable elevation-0 v-chip--size-default v-chip--variant-tonal ${row.status == 1 ? 'bg-warning' : row.status == 2 ? 'bg-secondary' :row.status == 3 ? 'bg-success' : 'bg-error' }" 
                 draggable="false"
                 >
                   <span class="v-chip__underlay"></span>
@@ -225,8 +420,8 @@
                   <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-5 iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
                     <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
                 </span>
-                <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Actualizar estado">
-                  <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-5 iconify iconify--icon-park-outline" aria-describedby="v-tooltip-35" width="1em" height="1em" viewBox="0 0 48 48">
+                <span data-bs-toggle="tooltip" class="change" data-bs-placement="top" data-bs-title="Actualizar estado">
+                  <svg data-id="${row.id}"  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-5 iconify iconify--icon-park-outline" aria-describedby="v-tooltip-35" width="1em" height="1em" viewBox="0 0 48 48">
                     <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"><path d="M24 44c11.046 0 20-8.954 20-20S35.046 4 24 4S4 12.954 4 24s8.954 20 20 20"></path><path d="M33.542 27c-1.274 4.057-5.064 7-9.542 7c-4.477 0-8.268-2.943-9.542-7v6m19.084-18v6c-1.274-4.057-5.064-7-9.542-7c-4.477 0-8.268 2.943-9.542 7"></path></g></svg>
                 </span>
                 <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Cancelar Orden">
@@ -242,11 +437,11 @@
                   </button>
                   <div class="dropdown-menu animate__animated animate__rubberBand">
                     <span  data-id="${row.id}" class="view" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver detalles">
-                      <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-5 iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
+                      <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-8 iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
                         <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
                     </span>
-                    <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Actualizar estado">
-                      <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-5 iconify iconify--icon-park-outline" aria-describedby="v-tooltip-35" width="1em" height="1em" viewBox="0 0 48 48">
+                    <span data-bs-toggle="tooltip"  class="change"  data-bs-placement="top" data-bs-title="Actualizar estado">
+                      <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-8 iconify iconify--icon-park-outline" aria-describedby="v-tooltip-35" width="1em" height="1em" viewBox="0 0 48 48">
                         <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"><path d="M24 44c11.046 0 20-8.954 20-20S35.046 4 24 4S4 12.954 4 24s8.954 20 20 20"></path><path d="M33.542 27c-1.274 4.057-5.064 7-9.542 7c-4.477 0-8.268-2.943-9.542-7v6m19.084-18v6c-1.274-4.057-5.064-7-9.542-7c-4.477 0-8.268 2.943-9.542 7"></path></g></svg>
                     </span>
                     <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Cancelar Orden">
@@ -341,13 +536,20 @@
           item.addEventListener('click', event => {
             this.selectAccountToAction(event.target.dataset.id).finally((data)=>{
               console.log(data)
-            setTimeout(() => {
-              this.showModal('exampleModal')
-            }, 500);
-          })
-            // this.emitter.emit('displayOverlayModal', true)
-            
-
+              setTimeout(() => {
+                this.showModal('viewOrder')
+              }, 500);
+            })
+          })	
+        })
+        document.querySelectorAll('.change').forEach(item => {
+          item.addEventListener('click', event => {
+            this.selectAccountToAction(event.target.dataset.id).finally((data)=>{
+              console.log(data)
+              setTimeout(() => {
+                this.showModal('changeStatusOrder')
+              }, 500);
+            })
           })	
         })
       },
@@ -391,6 +593,7 @@
           .dispatch(GET_ORDER_BY_ID, idAccount)
           .then((response) => {
             this.selectedOrder = Object.assign({}, response.data);
+            console.log(response.data)
             return new Promise((resolve) => {
                 resolve(response.data);
             });
@@ -421,8 +624,11 @@
           backdrop:'static'
         })
         this.modal.show()
-        
       },
+      orderNumberFormat(id){
+        console.log(id.length)
+        return '0000000'.slice( 0, 6 - id.length ) + id 
+      }
     },
     mounted(){
       this.initOptionsTable()
