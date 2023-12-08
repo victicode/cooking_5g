@@ -7,6 +7,11 @@ import hasAccount from './middlewares/hasAccount'
 import isAdmin from './middlewares/isAdmin'
 import middlewarePipeline from './middlewares/middlewarePipeline'
 
+// components
+import defaultComponent from '@/layouts/default.vue';
+import productsComponent from '@/pages/products.vue';
+import ordersComponent from '@/pages/orders.vue';
+
 
 const router = createRouter({
   history: createWebHistory(),
@@ -15,7 +20,7 @@ const router = createRouter({
     {
       path: "/",
       name:"home",
-      component: () => import('@/layouts/default.vue'),
+      component: defaultComponent,
       children: [
         {
           name: "dashboard",
@@ -30,7 +35,7 @@ const router = createRouter({
         },
         {
           path: "/products",
-          component: () => import('@/pages/products.vue'),
+          component: productsComponent,
           meta: {
             middleware: [
               auth
@@ -40,7 +45,7 @@ const router = createRouter({
         },
         {
           path: "/orders",
-          component: () => import('@/pages/orders.vue'),
+          component: ordersComponent,
           meta: {
             middleware: [
               auth

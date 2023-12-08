@@ -288,7 +288,7 @@
                         @click="modal.hide()"
                         v-if="selectedOrder.status == 1 || selectedOrder.status == 2 "
                       >
-                        <span class="">{{ selectedOrder.status == 1 ? 'En transito' : selectedOrder.status == 2 ? 'Entregado' : ''}}</span>
+                        <span class="">Cambiar estado</span>
                       </VBtn>
                     </VCardActions>
                   </div>
@@ -327,7 +327,7 @@
                       class="px-md-10 px-0 text-center"
                       style=""
                     >
-                      <h2>¿Estas Seguro que deseas cancelar la orden #{{orderNumberFormat(selectedOrder.id)}}?</h2>
+                      <h2>¿Seguro que deseas cancelar la orden #{{orderNumberFormat(selectedOrder.id)}}?</h2>
                     </VCol>
                   </VRow>
                     

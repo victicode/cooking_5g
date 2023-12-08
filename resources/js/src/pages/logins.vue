@@ -6,74 +6,73 @@
       <v-col cols="12" md="4" offset-md="7"
       >
         <VCard
-      class="auth-card pa-4 pt-7 vh-70 d-flex flex-column"
-      
-    >
-      <VCardItem class="justify-center w-100  py-2 py-md-6">
+          class="auth-card pa-4 pt-7 vh-70 d-flex flex-column"
+        >
+          <VCardItem class="justify-center w-100  py-2 py-md-6">
 
-        <VCardTitle class="text-2xl font-weight-bold">
-          <div class="card-title d-flex ">
-            <div class="form-title__part1">Cooking</div> <div class="form-title__part2">5G</div>
-            
-          </div>
-        </VCardTitle>
-      </VCardItem>
+            <VCardTitle class="text-2xl font-weight-bold">
+              <div class="card-title d-flex ">
+                <div class="form-title__part1">Cooking</div> <div class="form-title__part2">5G</div>
+                
+              </div>
+            </VCardTitle>
+          </VCardItem>
 
-      <VCardText class="py-2 w-100">
-        <h5 class="text-h5 mb-1">
-          Bienvenido! 👋🏻
-        </h5>
-        <p class="mb-0">
-         Inicia sesion con tu cuenta ahora
-        </p>
-      </VCardText>
-      <VCardText class="mb-5  w-100 pa-0" v-if="alertShow">
-        <v-alert
-          :color="alertType"
-          :text="alertMessage"
-        ></v-alert>
-      </VCardText>
-      <VCardText class="w-100">
-        <VForm @submit.prevent="$router.push('/')" id="kt_login_signin_form">
-          <VRow>
-            <!-- email -->
-            <VCol cols="12" class="form-group">
-              <VTextField
-                v-model="form.email"
-                autofocus
-                placeholder="johndoe@email.com"
-                label="Email"
-                type="text"
-                name="email"
-              />
-            </VCol>
+          <VCardText class="py-2 w-100">
+            <h5 class="text-h5 mb-1">
+              Bienvenido! 👋🏻
+            </h5>
+            <p class="mb-0">
+            Inicia sesion con tu cuenta ahora
+            </p>
+          </VCardText>
+          <VCardText class="mb-5  w-100 pa-0" v-if="alertShow">
+            <v-alert
+              :color="alertType"
+              :text="alertMessage"
+            ></v-alert>
+          </VCardText>
+          <VCardText class="w-100">
+            <VForm @submit.prevent="$router.push('/')" id="kt_login_signin_form">
+              <VRow>
+                <!-- email -->
+                <VCol cols="12" class="form-group">
+                  <VTextField
+                    v-model="form.email"
+                    autofocus
+                    placeholder="johndoe@email.com"
+                    label="Email"
+                    type="text"
+                    name="email"
+                  />
+                </VCol>
 
-            <!-- password -->
-            <VCol cols="12" class="form-group pb-0">
-              <VTextField
-                v-model="form.password"
-                label="Password"
-                placeholder="············"
-                autocomplete="off"
-                name="password"
-                :type="isPasswordVisible ? 'text' : 'password'"
-                :append-inner-icon="isPasswordVisible ? 'bx-hide' : 'bx-show'"
-                @click:append-inner="isPasswordVisible = !isPasswordVisible"
-              />
-              </VCol>
-              <VCol cols="12" class="pt-0 mt-8">
-                <!-- login button -->
-                <VBtn
-                  block
-                  type="submit"
-                  id="kt_login_signin_submit"
-                >
-                  Iniciar sesion
-                </VBtn>
-              </VCol>
-          </VRow>
-        </VForm>
-      </VCardText>
+                <!-- password -->
+                <VCol cols="12" class="form-group pb-0">
+                  <VTextField
+                    v-model="form.password"
+                    label="Password"
+                    placeholder="············"
+                    autocomplete="off"
+                    name="password"
+                    :type="isPasswordVisible ? 'text' : 'password'"
+                    :append-inner-icon="isPasswordVisible ? 'bx-hide' : 'bx-show'"
+                    @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                  />
+                  </VCol>
+                  <VCol cols="12" class="pt-0 mt-8">
+                    <!-- login button -->
+                    <VBtn
+                      block
+                      type="submit"
+                      id="kt_login_signin_submit"
+                    >
+                      Iniciar sesion
+                    </VBtn>
+                  </VCol>
+              </VRow>
+            </VForm>
+          </VCardText>
         </VCard>
       </v-col>
     </v-row>

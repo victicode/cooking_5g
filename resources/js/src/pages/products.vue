@@ -21,7 +21,7 @@
   <VRow class="">
     <VCol cols="12">
       <VCard title="Listado de productos" class="pa-3 px-2 px-md-3">
-        <VRow class="ma-0  justify-center justify-md-end pa-2 px-0 mb-0">
+        <VRow class="ma-0  justify-center justify-md-end pa-2 px-0 mb-0 pb-0">
           <VCol
             cols="11"
             md="3"
@@ -49,6 +49,27 @@
                 </v-card>
               </template>
             </v-dialog>
+          </VCol>
+        </VRow>
+        <VRow class="ma-0  justify-center align-center justify-md-start pa-2 px-0 mb-10 mb-md-2 py-0 my-0">
+          <VCol cols="7" md="4" class="form-group mx-0 px-0 px-md-3">
+            <VTextField
+              placeholder="Buscar producto"
+              label="Buscar producto"
+              type="text"
+              ref="product_title"
+              name="product_title"
+              @keyup="filterColumn()"
+            />
+          </VCol>
+          <VCol cols="5" md="4" class="my-0 py-0 mx-0 ">
+            <VBtn
+              color="white"
+              class="bg-primary text-white w-30 mx-2 mx-md-5 my-2"
+              @click="clearFilters()"
+            >
+              <span class="">Restaurar</span>
+            </VBtn>
           </VCol>
         </VRow>
         <div class="card-datatable table-responsive">
@@ -115,10 +136,251 @@
           </div>
         </div>
       </div>
+      <div class="modal animate__animated animate__fadeInDown"  id="editProduct" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl mt-10" >
+          <div class="modal-content">
+            <VCol
+              cols="12"
+              class="pa-0 d-flex justify-center"
+            >
+            
+              <VCol
+                sm="8"
+                cols="12"
+              >
+                <VCard class="modal__content">
+                  <div class="modal__close-button" >
+                    <v-col cols="auto">
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="modal.hide()" ></v-btn>
+                    </v-col>
+                  </div>
+                  <div>
+                    <VCardItem class="justify-center w-100  py-2 py-md-6">
+
+                      <VCardTitle class="text-2xl font-weight-bold">
+                        <div class="card-title d-flex ">
+                          <div class="form-title__part1">Edita Producto</div>
+                          
+                        </div>
+                      </VCardTitle>
+                    </VCardItem>
+                    <VCardText class="mb-5  w-100 pa-0" v-if="alertShow">
+                      <v-alert
+                        :color="alertType"
+                        :text="alertMessage"
+                      ></v-alert>
+                    </VCardText>
+                    <VCardText class="w-100">
+                      <VForm @submit.prevent="$router.push('/')" id="kt_login_signin_form">
+                        <VRow>
+                          <!-- email -->
+                          <VCol cols="6" class="form-group">
+                            <VTextField
+                              placeholder="Nombre del producto"
+                              label="Nombre del producto"
+                              type="text"
+                              name="product.title"
+                              v-model="selectedProduct.title"
+                              
+                            />
+                          </VCol>
+                          <VCol cols="6" class="form-group">
+                            <VTextField
+                              placeholder="johndoe@email.com"
+                              label="Email"
+                              type="text"
+                              name="email"
+                            />
+                          </VCol>
+                          <VCol cols="6" class="form-group">
+                            <VTextField
+                              placeholder="johndoe@email.com"
+                              label="Email"
+                              type="text"
+                              name="email"
+                            />
+                          </VCol>
+                          <VCol cols="6" class="form-group">
+                            <VTextField
+                              placeholder="johndoe@email.com"
+                              label="Email"
+                              type="text"
+                              name="email"
+                            />
+                          </VCol>
+                        </VRow>
+                      </VForm>
+                    </VCardText>
+                  </div>
+                </VCard>
+              </VCol>
+            </VCol>
+          </div>
+        </div>
+      </div>
+      <div class="modal animate__animated animate__fadeInDown"  id="addStockProduct" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl mt-10" >
+          <div class="modal-content">
+            <VCol
+              cols="12"
+              class="pa-0 d-flex justify-center"
+            >
+            
+
+                <VCard class="modal__content">
+                  <div class="modal__close-button" >
+                  <v-col cols="auto">
+                    <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="modal.hide()" ></v-btn>
+                  </v-col>
+                </div>
+                  <div class="d-flex  flex-wrap align-center flex-md-nowrap flex-column flex-md-row">
+                    <div class="ma-auto mx-0 pa-5">
+                      <VImg
+                        width="200"
+                        height="200"
+                        class="rounded"
+                        :src="'images/'+ selectedProduct.img "
+                      />
+                    </div>
+
+                    <VDivider :vertical="$vuetify.display.mdAndUp" />
+
+                    <div class="w-100">
+                      <VCardItem>
+                        <VCardTitle>{{ selectedProduct.title }}</VCardTitle>
+                      </VCardItem>
+
+                      <VCardText>
+                        {{ selectedProduct.description}}
+                      </VCardText>
+
+                      <VCardText class="text-subtitle-1">
+                        <span>Stock:</span> <span class="font-weight-medium">{{func.numberFormat(selectedProduct.stock)}} {{selectedProduct.type_of_unit }}</span>
+                      </VCardText>
+
+                      <VCardActions class="justify-space-between">
+                        <VBtn
+                          color="secondary"
+                          icon="bx-share-alt"
+                        />
+                      </VCardActions>
+                    </div>
+                  </div>
+                </VCard>
+            </VCol>
+          </div>
+        </div>
+      </div>
+      <div class="modal animate__animated animate__fadeInDown" id="deleteProduct" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl mt-10">
+          <div class="modal-content">
+            <VCol
+              cols="12"
+              class="pa-0"
+            >
+              <VCard>
+                <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
+                  <VRow  class="mb-2 ma-0">
+                    <VCol
+                      cols="12"
+                      class="py-0"
+                    >
+                      <div class="my-md-4 my-2 text-center">
+                        <h2>Eliminar Producto</h2>
+                      </div>
+                    </VCol>
+                    <VCol
+                      cols="12"
+                      class="px-md-10 px-0 text-center"
+                      style=""
+                    >
+                      <h2>¿Seguro que deseas eliminar {{selectedProduct.title}}?</h2>
+                    </VCol>
+                  </VRow>
+                    
+
+                  <VDivider  />
+                  <div class="mt-5 w-100 d-md-flex  d-block justify-center">
+                    <VCardActions class=" justify-center w-100 d-md-flex  d-block">
+                      <VBtn
+                        color="white"
+                        class="bg-secondary text-white w-30 mx-0 mx-md-5 my-2"
+                        @click="modal.hide()"
+                      >
+                        <span class="">Cerrar</span>
+                      </VBtn>
+                    </VCardActions>
+                  </div>
+                </div>
+              </VCard>
+            </VCol>
+          </div>
+        </div>
+      </div>
+      <div class="modal animate__animated animate__fadeInDown"  id="createProduct" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl mt-10" >
+          <div class="modal-content">
+            <VCol
+              cols="12"
+              class="pa-0 d-flex justify-center"
+            >
+            
+              <VCol
+                sm="8"
+                cols="12"
+              >
+                <VCard class="modal__content">
+                  <div class="modal__close-button" >
+                    <v-col cols="auto">
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="modal.hide()" ></v-btn>
+                    </v-col>
+                  </div>
+                  <div class="d-flex  flex-wrap align-center flex-md-nowrap flex-column flex-md-row" style="background: transparent;">
+                    <div class="ma-auto mx-0 pa-5">
+                      <VImg
+                        width="200"
+                        height="200"
+                        class="rounded"
+                        :src="'images/'+ selectedProduct.img "
+                      />
+                    </div>
+
+                    <VDivider :vertical="$vuetify.display.mdAndUp" />
+
+                    <div class="w-100">
+                      <VCardItem>
+                        <VCardTitle>{{ selectedProduct.title }}</VCardTitle>
+                      </VCardItem>
+
+                      <VCardText>
+                        {{ selectedProduct.description}}
+                      </VCardText>
+
+                      <VCardText class="text-subtitle-1">
+                        <span>Stock:</span> <span class="font-weight-medium">{{func.numberFormat(selectedProduct.stock)}} {{selectedProduct.type_of_unit }}</span>
+                      </VCardText>
+
+                      <VCardActions class="justify-space-between">
+                        <VBtn
+                          color="secondary"
+                          icon="bx-share-alt"
+                        />
+                      </VCardActions>
+                    </div>
+                  </div>
+                </VCard>
+              </VCol>
+            </VCol>
+          </div>
+        </div>
+      </div>
     </div>
   </VRow>
 </template>
 <style lang="scss">
+  input{
+    font-weight: bold;
+  }
   thead > tr > th.title-th{
     width: 70%!important;
   }
@@ -141,85 +403,11 @@
 
 <script>
   export default {
-    methods:{
-      initOptionsTable(){
-        document.getElementById('data-table').addEventListener('OptionsActionTable', () => this.activeOptionsTable() )	
-      },
-      activeOptionsTable() {
-        document.querySelectorAll('.view').forEach(item => {
-          item.addEventListener('click', event => {
-            console.log(event.target.dataset.id)
-            this.selectProduct(event.target.dataset.id).finally((data)=>{
-              setTimeout(() => {
-                this.showModal('viewProduct')
-              }, 500);
-            })
-          })	
-        })
-        document.querySelectorAll('.edit').forEach(item => {
-          item.addEventListener('click', event => {
-            this.selectProduct(event.target.dataset.id).finally((data)=>{
-              setTimeout(() => {
-                this.showModal('changeStatusOrder')
-              }, 500);
-            })
-          })	
-        })
-        document.querySelectorAll('.stock').forEach(item => {
-          item.addEventListener('click', event => {
-            this.selectProduct(event.target.dataset.id).finally((data)=>{
-              setTimeout(() => {
-                this.showModal('changeStatusOrder')
-              }, 500);
-            })
-          })	
-        })
-        document.querySelectorAll('.delete').forEach(item => {
-          item.addEventListener('click', event => {
-            this.selectProduct(event.target.dataset.id).finally((data)=>{
-              setTimeout(() => {
-                this.showModal('cancelOrder')
-              }, 500);
-            })
-          })	
-        })
-      },
-      async selectProduct(idAccount){
-        this.$store
-          .dispatch(GET_PRODUCT_BY_ID, idAccount)
-          .then((response) => {
-            console.log(response.data )
-            this.selectedProduct = Object.assign({}, response.data);
-            return new Promise((resolve) => {
-                resolve(response.data);
-            });
-          })
-          .catch((err) => {
-            console.log(err)
-            return new Promise((resolve) => {
-              resolve(false);
-            });
-          });
-      },
-      bootstrapOptions(){
-        setTimeout(() => {
-          const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-          const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-          const dropdownElementList = document.querySelectorAll('.dropdown-toggle')
-          const dropdownList = [...dropdownElementList].map(dropdownToggleEl => new bootstrap.Dropdown(dropdownToggleEl))
-        }, 2000);
-      },
-      showModal(modal) {
-        this.modal = new bootstrap.Modal(document.getElementById(modal), {
-          keyboard: false,              
-          backdrop:'static'
-        })
-        this.modal.show()
-      },
-
-    },
     data: () => ({
       modal: '',
+      alertShow:false,
+      alertMessage:'',
+      alertType:'',
       inputDate: '',
       selectedProduct:{},
       table:'',
@@ -227,6 +415,9 @@
         ajax:{
           "url": import.meta.env.VITE_VUE_APP_BACKEND_URL+"api/get-products",
           "type": "POST",
+          data: function ( data ) {
+            data.filter_product_title = document.querySelector('[name="product_title"]').value;
+          },
           "crossDomain": true,
           "beforeSend": function (xhr) {
             xhr.setRequestHeader("Authorization","Bearer" + window.localStorage.getItem('id_token'))
@@ -320,7 +511,7 @@
         lengthChange: false,
         dom:
           '<"v-row mx-0 mb-md-5"' +
-          '<"v-col v-col-md-6 v-col-12 mb-5 mb-md-0"f>' +
+          // '<"v-col v-col-md-6 v-col-12 mb-5 mb-md-0"f>' +
           // '<"v-col v-col-md-6 v-col-12 "<" justify-center justify-md-end  d-flex "B>>' +
           '>t' +
           '<"v-row  mt-2 mx-2"' +
@@ -378,6 +569,97 @@
         },
       },
     }),
+    methods:{
+      initOptionsTable(){
+        document.getElementById('data-table').addEventListener('OptionsActionTable', () => this.activeOptionsTable() )	
+      },
+      activeOptionsTable() {
+        document.querySelectorAll('.view').forEach(item => {
+          item.addEventListener('click', event => {
+            console.log(event.target.dataset.id)
+            this.selectProduct(event.target.dataset.id).finally((data)=>{
+              setTimeout(() => {
+                this.showModal('viewProduct')
+              }, 500);
+            })
+          })	
+        })
+        document.querySelectorAll('.edit').forEach(item => {
+          item.addEventListener('click', event => {
+            this.selectProduct(event.target.dataset.id).finally((data)=>{
+              setTimeout(() => {
+                this.showModal('editProduct')
+              }, 500);
+            })
+          })	
+        })
+        document.querySelectorAll('.stock').forEach(item => {
+          item.addEventListener('click', event => {
+            this.selectProduct(event.target.dataset.id).finally((data)=>{
+              setTimeout(() => {
+                this.showModal('addStockProduct')
+              }, 500);
+            })
+          })	
+        })
+        document.querySelectorAll('.delete').forEach(item => {
+          item.addEventListener('click', event => {
+            this.selectProduct(event.target.dataset.id).finally((data)=>{
+              setTimeout(() => {
+                this.showModal('deleteProduct')
+              }, 500);
+            })
+          })	
+        })
+      },
+      async selectProduct(idAccount){
+        this.$store
+          .dispatch(GET_PRODUCT_BY_ID, idAccount)
+          .then((response) => {
+            console.log(response.data )
+            this.selectedProduct = Object.assign({}, response.data);
+            return new Promise((resolve) => {
+                resolve(response.data);
+            });
+          })
+          .catch((err) => {
+            console.log(err)
+            return new Promise((resolve) => {
+              resolve(false);
+            });
+          });
+      },
+      bootstrapOptions(){
+        setTimeout(() => {
+          const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+          const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+          const dropdownElementList = document.querySelectorAll('.dropdown-toggle')
+          const dropdownList = [...dropdownElementList].map(dropdownToggleEl => new bootstrap.Dropdown(dropdownToggleEl))
+        }, 2000);
+      },
+      showModal(modal) {
+        this.modal = new bootstrap.Modal(document.getElementById(modal), {
+          keyboard: false,              
+          backdrop:'static'
+        })
+        this.modal.show()
+      },
+      filterColumn(){
+        this.table.clear();
+        this.table.draw('full-hold');
+      },
+      clearFilters(){
+        document.querySelector('[name="product_title"]').value = '';
+        this.table.clear();
+        this.table.columns().search('').draw('full-hold')
+      },
+      showAlert(type, messagge){
+        this.alertShow = true;
+        this.alertType = type
+        this.alertMessage = messagge
+      }
+
+    },
     mounted(){
       this.initOptionsTable()
       this.table = new DataTablesCore('#data-table', this.tableData)

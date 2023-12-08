@@ -39,10 +39,13 @@ import DefaultLayoutWithVerticalNav from './components/DefaultLayoutWithVertical
 </style>
 <style >
 body{
-  background: #9e9e9e23!important;
+  background: #9e9e9e23;
 }
 .animate__animated{
   animation-duration: 0.25s;
+}
+.v-overlay__content{
+  position: static;
 }
 </style>
 <script>
@@ -70,6 +73,7 @@ export default {
     overlayModal: false,
   }),
   created(){
+    document.querySelector("body").style.background ="#9e9e9e23"
     this.emitter.on("displayOverlayLoad", (status) => {
       this.overlayLoad = status
     })

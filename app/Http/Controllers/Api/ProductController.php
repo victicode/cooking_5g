@@ -23,13 +23,16 @@ class ProductController extends Controller
         
    
   
-        $operations = Product::query();
+        $products = Product::query();
 
-        
-        $operations->take(50)->get();
+    
 
-        return DataTables::of($operations)->toJson();
-        
+        return DataTables::of($products)->filter(function ($query) {
+              
+            if (!empty(request('filter_product_title'))) {
+              $query->where('title','like','%'.request('filter_product_title').'%');
+            }
+          })->toJson();
   
     }
     public function getProductsCriticalStock()
