@@ -6,6 +6,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Yajra\DataTables\DataTables;
+use Exception;
 
 class ProductController extends Controller
 {
@@ -16,19 +17,12 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return $this->returnSuccess(200, Product::all());
-        //
+        return $this->returnSuccess(200, Product::with(['dismantling.products_pieces'])->get());
     }
     public function getProductsTable(Request $request){
-        
-   
-  
         $products = Product::query();
 
-    
-
         return DataTables::of($products)->filter(function ($query) {
-              
             if (!empty(request('filter_product_title'))) {
               $query->where('title','like','%'.request('filter_product_title').'%');
             }
@@ -50,7 +44,7 @@ class ProductController extends Controller
         //
     }
     public function getProductById($id){
-        return $this->returnSuccess(200, Product::find($id));
+        return $this->returnSuccess(200, Product::with(['dismantling.products_pieces'])->find($id));
     }
     /**
      * Store a newly created resource in storage.

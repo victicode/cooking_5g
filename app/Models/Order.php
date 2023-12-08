@@ -15,19 +15,19 @@ class Order extends Model
     protected $statuses = array(
         0   =>  [
             'status' => 'Cancelado',
-            'svg'    => 'http://10.10.10.69:8085/images/status/cancel.svg',
+            'svg'    => 'http://192.168.42.226:8085/images/status/cancel.svg',
         ],
         1   =>  [
             'status' => 'Pendiente',
-            'svg'    => 'http://10.10.10.69:8085/images/status/pending.svg',
+            'svg'    => 'http://192.168.42.226:8085/images/status/pending.svg',
         ],
         2   =>  [
             'status' => 'En transito',
-            'svg'    => 'http://10.10.10.69:8085/images/status/in_transit.svg',
+            'svg'    => 'http://192.168.42.226:8085/images/status/in_transit.svg',
         ],
         3   =>  [
             'status' => 'Entregado', 
-            'svg'    => 'http://10.10.10.69:8085/images/status/confirm.svg',
+            'svg'    => 'http://192.168.42.226:8085/images/status/confirm.svg',
         ],
     );
 

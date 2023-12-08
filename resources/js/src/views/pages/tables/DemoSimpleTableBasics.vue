@@ -114,18 +114,3 @@ const as = window
   </VTable>
 </template>
 
-<style>
-@media only screen and (max-width: 600px){
-  
-  .v-overlay__content{
-    /* top: 275px!important; */
-    left: 28%!important;
-  }
-  .v-menu > .v-overlay__content > .v-list{
-    overflow: visible;
-    box-shadow: 0 5px 5px -3px rgb(63 63 63 / 24%), 0 8px 10px 1px var(--v-shadow-key-penumbra-opacity), 0 3px 14px 2px var(--v-shadow-key-ambient-opacity);
-  }
-}
-
-
-</style>

@@ -88,11 +88,6 @@ import { LOGOUT } from "@/core/services/store/auth.module";
     </VAvatar>
   </VBadge>
 </template>
-<style >
-  .v-overlay__content{
-    position: absolute!important;
-  }
-</style>
 
 <script>
 import { mapGetters } from "vuex";

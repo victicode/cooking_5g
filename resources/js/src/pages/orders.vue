@@ -275,21 +275,28 @@
                   <VDivider  />
                   <div class="mt-5 w-100 d-md-flex  d-block justify-center">
                     <VCardActions class=" justify-center w-100 d-md-flex  d-block">
-                      <VBtn
-                        color="white"
-                        class="bg-secondary text-white w-30 mx-0 mx-md-5 my-2"
-                        @click="modal.hide()"
-                      >
-                        <span class="">Cerrar</span>
-                      </VBtn>
-                      <VBtn
-                        color="white"
-                        class=" text-white w-30 bg-success mx-0 mx-md-5 my-2"
-                        @click="modal.hide()"
-                        v-if="selectedOrder.status == 1 || selectedOrder.status == 2 "
-                      >
-                        <span class="">Cambiar estado</span>
-                      </VBtn>
+                      <VRow class="ma-0 pa-0 justify-center align-center">
+                        <VCol :cols="selectedOrder.status == 1 ? '5' : selectedOrder.status == 2 ? '5' : '12' "  md="3" offset-md="3" class="">
+                          <VBtn
+                            color="white"
+                            class="bg-secondary text-white w-100 mx-0  my-2 "
+                            @click="modal.hide()"
+                          >
+                            <span class="">Cerrar</span>
+                          </VBtn>
+                        </VCol>
+                        <VCol cols="7" md="3" class="">
+                          <VBtn
+                            color="white"
+                            class=" text-white w-100 bg-success mx-0  my-2 "
+                            @click="modal.hide()"
+                            v-if="selectedOrder.status == 1 || selectedOrder.status == 2 "
+                          >
+                            <span class="">Cambiar estado</span>
+                          </VBtn>
+                        </VCol>
+                      </VRow>
+                      
                     </VCardActions>
                   </div>
                 </div>
@@ -484,7 +491,8 @@
                 </span>
                 <span data-bs-toggle="tooltip" data-id="${row.id}" class="change" data-bs-placement="top" data-bs-title="Actualizar estado">
                   <svg data-id="${row.id}"  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-5 iconify iconify--icon-park-outline" aria-describedby="v-tooltip-35" width="1em" height="1em" viewBox="0 0 48 48">
-                    <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"><path d="M24 44c11.046 0 20-8.954 20-20S35.046 4 24 4S4 12.954 4 24s8.954 20 20 20"></path><path d="M33.542 27c-1.274 4.057-5.064 7-9.542 7c-4.477 0-8.268-2.943-9.542-7v6m19.084-18v6c-1.274-4.057-5.064-7-9.542-7c-4.477 0-8.268 2.943-9.542 7"></path></g></svg>
+                    <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
+                      <path data-id="${row.id}" d="M24 44c11.046 0 20-8.954 20-20S35.046 4 24 4S4 12.954 4 24s8.954 20 20 20"></path><path d="M33.542 27c-1.274 4.057-5.064 7-9.542 7c-4.477 0-8.268-2.943-9.542-7v6m19.084-18v6c-1.274-4.057-5.064-7-9.542-7c-4.477 0-8.268 2.943-9.542 7"></path></g></svg>
                 </span>
                 <span data-bs-toggle="tooltip"  data-id="${row.id}"class="cancel data-bs-placement="top" data-bs-title="Cancelar Orden">
                   <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default  iconify iconify--ic" aria-describedby="v-tooltip-11" width="1em" height="1em" viewBox="0 0 24 24">
@@ -504,7 +512,8 @@
                     </span>
                     <span data-bs-toggle="tooltip" data-id="${row.id}" class="change"  data-bs-placement="top" data-bs-title="Actualizar estado">
                       <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-8 iconify iconify--icon-park-outline" aria-describedby="v-tooltip-35" width="1em" height="1em" viewBox="0 0 48 48">
-                        <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"><path d="M24 44c11.046 0 20-8.954 20-20S35.046 4 24 4S4 12.954 4 24s8.954 20 20 20"></path><path d="M33.542 27c-1.274 4.057-5.064 7-9.542 7c-4.477 0-8.268-2.943-9.542-7v6m19.084-18v6c-1.274-4.057-5.064-7-9.542-7c-4.477 0-8.268 2.943-9.542 7"></path></g></svg>
+                        <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
+                          <path data-id="${row.id}" d="M24 44c11.046 0 20-8.954 20-20S35.046 4 24 4S4 12.954 4 24s8.954 20 20 20"></path><path d="M33.542 27c-1.274 4.057-5.064 7-9.542 7c-4.477 0-8.268-2.943-9.542-7v6m19.084-18v6c-1.274-4.057-5.064-7-9.542-7c-4.477 0-8.268 2.943-9.542 7"></path></g></svg>
                     </span>
                     <span data-bs-toggle="tooltip" data-id="${row.id}" class="cancel" data-bs-placement="top" data-bs-title="Cancelar Orden">
                       <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--ic" aria-describedby="v-tooltip-11" width="1em" height="1em" viewBox="0 0 24 24">

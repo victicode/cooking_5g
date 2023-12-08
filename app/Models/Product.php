@@ -25,4 +25,8 @@ class Product extends Model
     {
         return $this->belongsToMany(Order::class, 'products_x_orders');
     }
+    
+    public function dismantling(){
+        return $this->hasMany(Dismantling::class, 'product_id', 'id');
+    }
 }

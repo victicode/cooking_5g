@@ -7,8 +7,7 @@
   import ButtonHTML5 from 'datatables.net-buttons/js/buttons.html5';
   import 'datatables.net-dt/css/jquery.dataTables.min.css';
   import * as bootstrap from 'bootstrap'
-  import { GET_PRODUCT_BY_ID } from "@/core/services/store/product.module";
-  import eCommerce2 from '@images/eCommerce/2.png'
+  import { GET_PRODUCT_BY_ID, GET_PRODUCTS } from "@/core/services/store/product.module";
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue'
   import { func } from '@/core/services/utils/utils.js'
   DataTable.use(DataTablesCore);
@@ -80,15 +79,15 @@
     </VCol>
     <div v-if="Object.keys(selectedProduct).length > 2" >
       <div class="modal animate__animated animate__fadeInDown"  id="viewProduct" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl mt-10" >
+        <div class="modal-dialog modal-lg mt-10" >
           <div class="modal-content">
             <VCol
               cols="12"
               class="pa-0 d-flex justify-center"
+              style="position: relative;"
             >
             
               <VCol
-                sm="8"
                 cols="12"
               >
                 <VCard class="modal__content">
@@ -117,17 +116,28 @@
                       <VCardText>
                         {{ selectedProduct.description}}
                       </VCardText>
+                      <div style="border-top: 1px solid rgba(119, 119, 119, 0.356)">
 
-                      <VCardText class="text-subtitle-1">
-                        <span>Stock:</span> <span class="font-weight-medium">{{func.numberFormat(selectedProduct.stock)}} {{selectedProduct.type_of_unit }}</span>
-                      </VCardText>
+                        <VCardText class="text-subtitle-1">
+                          <span>Stock actual:</span> <span class="font-weight-medium">{{func.numberFormat(selectedProduct.stock)}} {{selectedProduct.type_of_unit }}</span>
+                        </VCardText>
+                        <VCardText class="text-subtitle-1">
+                          <span>Cantidad de despices:</span> <span class="font-weight-medium">{{ selectedProduct.dismantling.length}}</span>
+                        </VCardText>
+                      </div>
+                      <div style="border-top: 1px solid rgba(119, 119, 119, 0.356)" v-if="selectedProduct.is_dismantling">
 
-                      <VCardActions class="justify-space-between">
-                        <VBtn
-                          color="secondary"
-                          icon="bx-share-alt"
-                        />
-                      </VCardActions>
+                        <VCardText class="text-subtitle-1">
+                          <p class="mb-0">Despieces:</p> 
+                          <b v-for="item in selectedProduct.dismantling" v-bind:key="item.id">
+                            <p class="mb-0 ms-2 mt-3" >  
+                              * {{ item.products_pieces.title}}: {{item.quantity}}
+                            </p> 
+                          </b>
+
+                        </VCardText>
+                      </div>
+                      
                     </div>
                   </div>
                 </VCard>
@@ -137,15 +147,14 @@
         </div>
       </div>
       <div class="modal animate__animated animate__fadeInDown"  id="editProduct" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl mt-10" >
+        <div class="modal-dialog modal-lg mt-10" >
           <div class="modal-content">
             <VCol
               cols="12"
               class="pa-0 d-flex justify-center"
+              style="position: relative;"
             >
-            
               <VCol
-                sm="8"
                 cols="12"
               >
                 <VCard class="modal__content">
@@ -155,11 +164,10 @@
                     </v-col>
                   </div>
                   <div>
-                    <VCardItem class="justify-center w-100  py-2 py-md-6">
-
+                    <VCardItem class="justify-center w-100  py-md-6  py-4   ">
                       <VCardTitle class="text-2xl font-weight-bold">
                         <div class="card-title d-flex ">
-                          <div class="form-title__part1">Edita Producto</div>
+                          <div class="form-title__part1">Editar Producto</div>
                           
                         </div>
                       </VCardTitle>
@@ -174,40 +182,89 @@
                       <VForm @submit.prevent="$router.push('/')" id="kt_login_signin_form">
                         <VRow>
                           <!-- email -->
-                          <VCol cols="6" class="form-group">
+                          <VCol cols="12" md="6" class="form-group">
                             <VTextField
                               placeholder="Nombre del producto"
                               label="Nombre del producto"
                               type="text"
-                              name="product.title"
+                              name="product_title"
                               v-model="selectedProduct.title"
                               
                             />
                           </VCol>
-                          <VCol cols="6" class="form-group">
+                          <VCol cols="12" md="6" class="form-group">
                             <VTextField
-                              placeholder="johndoe@email.com"
-                              label="Email"
+                              placeholder="Descripción corta"
+                              label="Descripción corta"
                               type="text"
-                              name="email"
+                              name="product_description_short"
+                              v-model="selectedProduct.short_description"
                             />
                           </VCol>
-                          <VCol cols="6" class="form-group">
+                          <VCol cols="12" class="form-group">
+                            <v-textarea
+                              label="Descripcion larga"
+                              auto-grow
+                              variant="outlined"
+                              rows="3"
+                              row-height="25"
+                              shaped
+                              v-model="selectedProduct.description"
+                            ></v-textarea>
+                          </VCol>
+                          
+                          <VCol cols="6" md="4" class="form-group">
                             <VTextField
-                              placeholder="johndoe@email.com"
-                              label="Email"
+                              placeholder="Stock Actual"
+                              label="Stock Actual"
                               type="text"
-                              name="email"
+                              name="product_stock"
+                              v-model="selectedProduct.stock"
+                              readonly
                             />
                           </VCol>
-                          <VCol cols="6" class="form-group">
-                            <VTextField
-                              placeholder="johndoe@email.com"
-                              label="Email"
-                              type="text"
-                              name="email"
-                            />
+                          <VCol cols="6" md="4" class="form-group">
+                            <v-combobox
+                              label="Tipo de unidad"
+                              :items="['Selecion una opción','KG', 'UNI', 'PZAS']"
+                              variant="outlined"
+                              v-model="selectedProduct.type_of_unit"
+                            ></v-combobox>
                           </VCol>
+                          <VCol cols="12" md="4">
+
+                            <v-switch color="primary"
+                            label="Tiene despieces" v-model="selectedProduct.is_dismantling" :value="1" ></v-switch>
+                          </VCol>
+                          <VRow class="ma-0 pa-0" v-if="selectedProduct.is_dismantling">
+                            <VCol cols="12" class="form-group">
+
+                              <h3>Despieces:</h3>
+                            </VCol>
+                            <template v-for="(item,index) in selectedProduct.dismantling"  v-bind:key="item.id">
+                              <VCol cols="6"  class="form-group">
+                                <VTextField
+                                  placeholder="Nombre del producto "
+                                  label="Nombre del producto"
+                                  type="text"
+                                  :name="'product_desmantling_title_'+index"
+                                  v-model="item.products_pieces.title"
+                                  readonly
+                                />
+                              </VCol>
+                              <VCol cols="6"  class="form-group">
+                                <VTextField
+                                  placeholder="Unidades que trae"
+                                  label="Unidades que trae"
+                                  type="text"
+                                  :name="'product_desmantling_quantity_'+index"
+                                  v-model="item.quantity"
+                                  readonly
+                                />
+                              </VCol>
+                            </template>
+                            
+                          </VRow>
                         </VRow>
                       </VForm>
                     </VCardText>
@@ -224,55 +281,54 @@
             <VCol
               cols="12"
               class="pa-0 d-flex justify-center"
+              style="position: relative;"
             >
-            
-
-                <VCard class="modal__content">
-                  <div class="modal__close-button" >
+              <VCard class="modal__content">
+                <div class="modal__close-button" >
                   <v-col cols="auto">
                     <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="modal.hide()" ></v-btn>
                   </v-col>
                 </div>
-                  <div class="d-flex  flex-wrap align-center flex-md-nowrap flex-column flex-md-row">
-                    <div class="ma-auto mx-0 pa-5">
-                      <VImg
-                        width="200"
-                        height="200"
-                        class="rounded"
-                        :src="'images/'+ selectedProduct.img "
-                      />
-                    </div>
-
-                    <VDivider :vertical="$vuetify.display.mdAndUp" />
-
-                    <div class="w-100">
-                      <VCardItem>
-                        <VCardTitle>{{ selectedProduct.title }}</VCardTitle>
-                      </VCardItem>
-
-                      <VCardText>
-                        {{ selectedProduct.description}}
-                      </VCardText>
-
-                      <VCardText class="text-subtitle-1">
-                        <span>Stock:</span> <span class="font-weight-medium">{{func.numberFormat(selectedProduct.stock)}} {{selectedProduct.type_of_unit }}</span>
-                      </VCardText>
-
-                      <VCardActions class="justify-space-between">
-                        <VBtn
-                          color="secondary"
-                          icon="bx-share-alt"
-                        />
-                      </VCardActions>
-                    </div>
+                <div class="d-flex  flex-wrap align-center flex-md-nowrap flex-column flex-md-row">
+                  <div class="ma-auto mx-0 pa-5">
+                    <VImg
+                      width="200"
+                      height="200"
+                      class="rounded"
+                      :src="'images/'+ selectedProduct.img "
+                    />
                   </div>
-                </VCard>
+
+                  <VDivider :vertical="$vuetify.display.mdAndUp" />
+
+                  <div class="w-100">
+                    <VCardItem>
+                      <VCardTitle>{{ selectedProduct.title }}</VCardTitle>
+                    </VCardItem>
+
+                    <VCardText>
+                      {{ selectedProduct.description}}
+                    </VCardText>
+
+                    <VCardText class="text-subtitle-1">
+                      <span>Stock:</span> <span class="font-weight-medium">{{func.numberFormat(selectedProduct.stock)}} {{selectedProduct.type_of_unit }}</span>
+                    </VCardText>
+
+                    <VCardActions class="justify-space-between">
+                      <VBtn
+                        color="secondary"
+                        icon="bx-share-alt"
+                      />
+                    </VCardActions>
+                  </div>
+                </div>
+              </VCard>
             </VCol>
           </div>
         </div>
       </div>
       <div class="modal animate__animated animate__fadeInDown" id="deleteProduct" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl mt-10">
+        <div class="modal-dialog modal-lg mt-10">
           <div class="modal-content">
             <VCol
               cols="12"
@@ -294,7 +350,7 @@
                       class="px-md-10 px-0 text-center"
                       style=""
                     >
-                      <h2>¿Seguro que deseas eliminar {{selectedProduct.title}}?</h2>
+                      <h2>¿Seguro que deseas eliminar <b class="text-primary">{{selectedProduct.title}}</b>?</h2>
                     </VCol>
                   </VRow>
                     
@@ -323,6 +379,7 @@
             <VCol
               cols="12"
               class="pa-0 d-flex justify-center"
+              style="position: relative;"
             >
             
               <VCol
@@ -378,8 +435,11 @@
   </VRow>
 </template>
 <style lang="scss">
-  input{
-    font-weight: bold;
+  input,textarea, select{
+    font-weight: 600;
+  }
+  .v-switch__track{
+    box-shadow: 0px 0px 17px 2px #727272;
   }
   thead > tr > th.title-th{
     width: 70%!important;
@@ -388,14 +448,14 @@
     width: 15%!important;
   }
   .modal__close-button{
-    position: absolute; right: -4%; top:-10%
+    position: absolute; right: -2%; top:0%
   }
   .modal__content{
-    position: relative; overflow: visible!important;
+    position: initial!important; overflow: visible!important;
   }
   @media screen and (max-width: 780px){
     .modal__close-button{
-      position: absolute; right: -8%; top: -8%
+      position: absolute; right: -3%; top: -2%
     }
 
   }
@@ -470,7 +530,7 @@
                 </span>
                 <span data-bs-toggle="tooltip" data-id="${row.id}" class="delete" data-bs-placement="top" data-bs-title="Eliminar producto">
                   <svg  xmlns="http://www.w3.org/2000/svg" data-id="${row.id}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--bx" aria-describedby="v-tooltip-22" width="1em" height="1em" viewBox="0 0 24 24">
-                    <path data-id="${row.id}"  fill="currentColor" d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path fill="currentColor" d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg>
+                    <path data-id="${row.id}"  fill="currentColor" d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path data-id="${row.id}" fill="currentColor" d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg>
                 </span>
               </div>
               <div class="d-md-none d-flex justify-center position-relative relative ">
@@ -493,7 +553,7 @@
                     </span>
                     <span data-bs-toggle="tooltip" data-id="${row.id}" class="delete" data-bs-placement="top" data-bs-title="Eliminar producto">
                       <svg  xmlns="http://www.w3.org/2000/svg" data-id="${row.id}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--bx" aria-describedby="v-tooltip-22" width="1em" height="1em" viewBox="0 0 24 24">
-                        <path data-id="${row.id}"  fill="currentColor" d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path fill="currentColor" d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg>
+                        <path data-id="${row.id}"  fill="currentColor" d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path data-id="${row.id}" fill="currentColor" d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg>
                     </span>
                   </div>
                 </div>
@@ -638,6 +698,13 @@
         }, 2000);
       },
       showModal(modal) {
+        try {
+          this.modal.hide()
+        } catch (error) {
+          
+        }
+
+
         this.modal = new bootstrap.Modal(document.getElementById(modal), {
           keyboard: false,              
           backdrop:'static'
@@ -664,6 +731,15 @@
       this.initOptionsTable()
       this.table = new DataTablesCore('#data-table', this.tableData)
       this.bootstrapOptions();
+
+      this.$store
+          .dispatch(GET_PRODUCTS)
+          .then((response) => {
+            console.log(response.data )
+          })
+          .catch((err) => {
+            console.log(err)
+          });
     },
     created(){
       this.emitter.emit('displayOverlayLoad', false)

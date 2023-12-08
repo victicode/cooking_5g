@@ -44,9 +44,7 @@ body{
 .animate__animated{
   animation-duration: 0.25s;
 }
-.v-overlay__content{
-  position: static;
-}
+
 </style>
 <script>
 import { GET_USER } from "@/core/services/store/user.module";
