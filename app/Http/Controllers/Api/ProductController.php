@@ -46,6 +46,15 @@ class ProductController extends Controller
     public function getProductById($id){
         return $this->returnSuccess(200, Product::with(['dismantling.products_pieces'])->find($id));
     }
+    public function getProductBySearch(Request $request){
+        $products = Product::query()->with(['dismantling.products_pieces']);
+
+        if(!empty($request->title)){
+            $products->where('title', 'like', '%'.$request->title.'%');
+        }
+
+        return $this->returnSuccess(200, $products->take(10)->get());
+    }
     /**
      * Store a newly created resource in storage.
      *

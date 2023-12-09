@@ -7,7 +7,7 @@
   import ButtonHTML5 from 'datatables.net-buttons/js/buttons.html5';
   import 'datatables.net-dt/css/jquery.dataTables.min.css';
   import * as bootstrap from 'bootstrap'
-  import { GET_PRODUCT_BY_ID, GET_PRODUCTS } from "@/core/services/store/product.module";
+  import { GET_PRODUCT_BY_ID, GET_PRODUCTS, GET_PRODUCT_BY_SEARCH } from "@/core/services/store/product.module";
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue'
   import { func } from '@/core/services/utils/utils.js'
   DataTable.use(DataTablesCore);
@@ -92,7 +92,7 @@
               >
                 <VCard class="modal__content">
                   <div class="modal__close-button" >
-                  <v-col cols="auto">
+                  <v-col  class="pa-0 pe-4">
                     <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="modal.hide()" ></v-btn>
                   </v-col>
                 </div>
@@ -159,7 +159,7 @@
               >
                 <VCard class="modal__content">
                   <div class="modal__close-button" >
-                    <v-col cols="auto">
+                    <v-col class="pa-0 pe-4">
                       <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="modal.hide()" ></v-btn>
                     </v-col>
                   </div>
@@ -212,7 +212,6 @@
                               v-model="selectedProduct.description"
                             ></v-textarea>
                           </VCol>
-                          
                           <VCol cols="6" md="4" class="form-group">
                             <VTextField
                               placeholder="Stock Actual"
@@ -232,38 +231,75 @@
                             ></v-combobox>
                           </VCol>
                           <VCol cols="12" md="4">
-
-                            <v-switch color="primary"
-                            label="Tiene despieces" v-model="selectedProduct.is_dismantling" :value="1" ></v-switch>
+                            <v-switch
+                              color="primary"
+                              label="Tiene despieces" 
+                              v-model="selectedProduct.is_dismantling" :value="1" 
+                            />
                           </VCol>
-                          <VRow class="ma-0 pa-0" v-if="selectedProduct.is_dismantling">
+                          <VRow class="ma-0 pa-0 align-center" v-if="selectedProduct.is_dismantling">
                             <VCol cols="12" class="form-group">
-
                               <h3>Despieces:</h3>
                             </VCol>
-                            <template v-for="(item,index) in selectedProduct.dismantling"  v-bind:key="item.id">
-                              <VCol cols="6"  class="form-group">
-                                <VTextField
-                                  placeholder="Nombre del producto "
-                                  label="Nombre del producto"
-                                  type="text"
-                                  :name="'product_desmantling_title_'+index"
-                                  v-model="item.products_pieces.title"
-                                  readonly
-                                />
-                              </VCol>
-                              <VCol cols="6"  class="form-group">
-                                <VTextField
-                                  placeholder="Unidades que trae"
-                                  label="Unidades que trae"
-                                  type="text"
-                                  :name="'product_desmantling_quantity_'+index"
-                                  v-model="item.quantity"
-                                  readonly
-                                />
-                              </VCol>
-                            </template>
-                            
+                            <VCol cols="12" md="4" class="mt-0 pt-0 px-0">
+                              <v-tooltip text="Agregar nuevo despiece">
+                                  <template v-slot:activator="{ props }">
+                                    <v-col cols="auto" class="">
+                                      <VBtn v-bind="props" color="primary" class="w-100 " @click="addDismantling()"><VIcon icon="bx-plus"/> Agregar despiece</VBtn>
+                                    </v-col>
+                                  </template>
+                                </v-tooltip>
+                            </VCol>
+                            <div id="desmantling_items" class="pa-0 ma-0 align-center w-100" >
+                              <v-autocomplete
+                                :model-value="selectedProduct.dismantling[0].title"
+                                :loading="loading"
+                                :items="productOption"
+                                :search="search"
+                                chips
+                                active
+                                label="Nombre del producto"
+                                hide-no-data
+                                hide-selected
+                                no-filter
+                                item-title="title"
+                                item-value="id"
+                                placeholder="Nombre del producto"
+                                variant="outlined"
+                                return-object
+                              ></v-autocomplete>
+                              <VRow  v-for="(item,index) in selectedProduct.dismantling"  v-bind:key="item.id" class="pa-0 ma-0 align-center w-100 mt-5"  :id="'product_desmantling_'+index">
+                                <VCol cols="12"  md="6" class="form-group">
+                                  <VTextField
+                                    placeholder="Nombre del producto "
+                                    label="Nombre del producto"
+                                    type="text"
+                                    :name="'product_desmantling_title_'+index"
+                                    v-model="item.products_pieces.title"
+                                    readonly
+                                  />
+                                </VCol>
+                                <VCol cols="8"  md="4" class="form-group">
+                                  <VTextField
+                                    placeholder="Unidades que trae"
+                                    label="Unidades que trae"
+                                    type="text"
+                                    :name="'product_desmantling_quantity_'+index"
+                                    v-model="item.quantity"
+                                    readonly
+                                  />
+                                </VCol>
+                                <VCol cols="4" md="1" class="form-group pa-0">
+                                  <v-tooltip text="Eliminar despiece">
+                                    <template v-slot:activator="{ props }">
+                                      <v-col cols="auto" class="">
+                                        <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeDismantling(index)"></v-btn>
+                                      </v-col>
+                                    </template>
+                                  </v-tooltip>
+                                </VCol> 
+                              </VRow>
+                            </div>
                           </VRow>
                         </VRow>
                       </VForm>
@@ -285,7 +321,7 @@
             >
               <VCard class="modal__content">
                 <div class="modal__close-button" >
-                  <v-col cols="auto">
+                  <v-col class="pa-0 pe-4">
                     <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="modal.hide()" ></v-btn>
                   </v-col>
                 </div>
@@ -388,7 +424,7 @@
               >
                 <VCard class="modal__content">
                   <div class="modal__close-button" >
-                    <v-col cols="auto">
+                    <v-col class="pa-0 pe-4">
                       <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="modal.hide()" ></v-btn>
                     </v-col>
                   </div>
@@ -455,7 +491,10 @@
   }
   @media screen and (max-width: 780px){
     .modal__close-button{
-      position: absolute; right: -3%; top: -2%
+      position: absolute; right: -5%; top: 0%
+    }
+    div.dropdown-menu.large{
+      width:max-content;
     }
 
   }
@@ -465,6 +504,10 @@
   export default {
     data: () => ({
       modal: '',
+      product:'',
+      productOption:[],
+      search:'',
+      loading: false,
       alertShow:false,
       alertMessage:'',
       alertType:'',
@@ -538,17 +581,17 @@
                   <button type="button dropup" data-bs-toggle="dropdown" aria-expanded="false">
                     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="button" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default v-icon--clickable iconify iconify--mdi" aria-haspopup="menu" aria-expanded="false" aria-owns="v-menu-46" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z"></path></svg>
                   </button>
-                  <div class="dropdown-menu animate__animated animate__rubberBand">
-                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="view" data-bs-placement="top" data-bs-title="Ver ficha de producto">
-                      <svg  xmlns="http://www.w3.org/2000/svg" data-id="${row.id}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
+                  <div class="dropdown-menu animate__animated animate__rubberBand large">
+                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="view me-5" data-bs-placement="top" data-bs-title="Ver ficha de producto">
+                      <svg  xmlns="http://www.w3.org/2000/svg" data-id="${row.id}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
                         <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
                     </span>
-                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="edit" data-bs-placement="top" data-bs-title="Editar producto">
-                      <svg  xmlns="http://www.w3.org/2000/svg" data-id="${row.id}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--heroicons-outline" aria-describedby="v-tooltip-20" width="1em" height="1em" viewBox="0 0 24 24">
+                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="edit me-5" data-bs-placement="top" data-bs-title="Editar producto">
+                      <svg  xmlns="http://www.w3.org/2000/svg" data-id="${row.id}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--heroicons-outline" aria-describedby="v-tooltip-20" width="1em" height="1em" viewBox="0 0 24 24">
                         <path data-id="${row.id}"  fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5m-1.414-9.414a2 2 0 1 1 2.828 2.828L11.828 15H9v-2.828l8.586-8.586Z"></path></svg>
                     </span>
-                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="stock" data-bs-placement="top" data-bs-title="Agregar stock">
-                      <svg  xmlns="http://www.w3.org/2000/svg" data-id="${row.id}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--mdi" aria-describedby="v-tooltip-21" width="1em" height="1em" viewBox="0 0 24 24">
+                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="stock me-5" data-bs-placement="top" data-bs-title="Agregar stock">
+                      <svg  xmlns="http://www.w3.org/2000/svg" data-id="${row.id}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" aria-describedby="v-tooltip-21" width="1em" height="1em" viewBox="0 0 24 24">
                         <path data-id="${row.id}"  fill="currentColor" d="M13 19.3v-6.7l6-3.4V13c.7 0 1.4.1 2 .4V7.5c0-.4-.2-.7-.5-.9l-7.9-4.4c-.2-.1-.4-.2-.6-.2s-.4.1-.6.2L3.5 6.6c-.3.2-.5.5-.5.9v9c0 .4.2.7.5.9l7.9 4.4c.2.1.4.2.6.2s.4-.1.6-.2l.9-.5c-.3-.6-.4-1.3-.5-2M12 4.2l6 3.3l-2 1.1l-5.9-3.4l1.9-1m-1 15.1l-6-3.4V9.2l6 3.4v6.7m1-8.5L6 7.5l2-1.2l6 3.5l-2 1m8 4.2v3h3v2h-3v3h-2v-3h-3v-2h3v-3h2Z"></path></svg>
                     </span>
                     <span data-bs-toggle="tooltip" data-id="${row.id}" class="delete" data-bs-placement="top" data-bs-title="Eliminar producto">
@@ -558,10 +601,6 @@
                   </div>
                 </div>
               </div> 
-
-              
-              
-              
               `
             } 
           },
@@ -575,8 +614,8 @@
           // '<"v-col v-col-md-6 v-col-12 "<" justify-center justify-md-end  d-flex "B>>' +
           '>t' +
           '<"v-row  mt-2 mx-2"' +
-          '<"v-col v-col-md-6 v-col-12 mt-0 text-primary"i>' +
-          '<"v-col v-col-md-6 v-col-12 mt-0 text-primary"p>' +
+          '<"v-col v-col-md-5 v-col-12 mt-0 text-primary"i>' +
+          '<"v-col v-col-md-7 v-col-12 mt-0 text-primary"p>' +
           '>',	   
         language: {
           sLengthMenu: '_MENU_',
@@ -628,6 +667,7 @@
           TableElement.dispatchEvent(event);
         },
       },
+      items:[],
     }),
     methods:{
       initOptionsTable(){
@@ -636,7 +676,6 @@
       activeOptionsTable() {
         document.querySelectorAll('.view').forEach(item => {
           item.addEventListener('click', event => {
-            console.log(event.target.dataset.id)
             this.selectProduct(event.target.dataset.id).finally((data)=>{
               setTimeout(() => {
                 this.showModal('viewProduct')
@@ -676,7 +715,6 @@
         this.$store
           .dispatch(GET_PRODUCT_BY_ID, idAccount)
           .then((response) => {
-            console.log(response.data )
             this.selectedProduct = Object.assign({}, response.data);
             return new Promise((resolve) => {
                 resolve(response.data);
@@ -688,6 +726,30 @@
               resolve(false);
             });
           });
+      },
+      getProducts(search = "", self){
+        if (!search) {
+          self.productOption = [];
+          self.product = '';
+        }
+        // Items have already been requested
+        if (self.loading) {
+          return
+        }
+        self.loading = true
+        this.$store
+          .dispatch(GET_PRODUCT_BY_SEARCH, search)
+          .then((response) => {
+            console.log(response)
+            self.productOption = response.data
+          })
+          .catch((err) => {
+            console.log(err)
+            return new Promise((resolve) => {
+              resolve(false);
+            });
+          })
+          .finally(() => (self.loading = false))
       },
       bootstrapOptions(){
         setTimeout(() => {
@@ -703,8 +765,6 @@
         } catch (error) {
           
         }
-
-
         this.modal = new bootstrap.Modal(document.getElementById(modal), {
           keyboard: false,              
           backdrop:'static'
@@ -724,14 +784,36 @@
         this.alertShow = true;
         this.alertType = type
         this.alertMessage = messagge
+      },
+      removeDismantling(item){
+        document.getElementById('product_desmantling_'+item).blur()
+        setTimeout(() => {
+          
+          document.getElementById('product_desmantling_'+item).remove()
+        }, 200);
+      },
+      addDismantling(){
+        let newItem = {
+          id:'',
+          piece_product_id: '',
+          product_id: '',
+          products_pieces: { title: '' },
+          quantity: '',
+        }
+        this.selectedProduct.dismantling.push(newItem)
       }
 
+    },
+    watch: {
+      search(newQuestion){
+      cosnole.log(newQuestion)
+    }
     },
     mounted(){
       this.initOptionsTable()
       this.table = new DataTablesCore('#data-table', this.tableData)
       this.bootstrapOptions();
-
+      this.getProducts(' ', this);
       this.$store
           .dispatch(GET_PRODUCTS)
           .then((response) => {

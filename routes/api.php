@@ -52,12 +52,15 @@ Route::middleware('jwt.verify')->prefix('order')->name('user.')->group(function 
     Route::get('/', [OrderController::class, 'index'])->name('getOrders');
     Route::get('/get-last', [OrderController::class, 'getLastByType']);
     Route::get('/get-by-id/{id}',[OrderController::class, 'getOrderById']);
+    
 });
 Route::middleware('jwt.verify')->prefix('products')->name('user.')->group(function () {
     Route::get('/', [ProductController::class, 'index']);
     Route::get('/store', [ProductController::class, 'storeProduct']);
     Route::get('/get-critical-stock', [ProductController::class, 'getProductsCriticalStock']);
     Route::get('/get-by-id/{id}',[ProductController::class, 'getProductById']);
+    Route::get('/get-by-search',[ProductController::class, 'getProductBySearch']);
+
 
 });
 
