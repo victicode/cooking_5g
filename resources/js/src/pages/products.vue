@@ -7,7 +7,8 @@
   import ButtonHTML5 from 'datatables.net-buttons/js/buttons.html5';
   import 'datatables.net-dt/css/jquery.dataTables.min.css';
   import * as bootstrap from 'bootstrap'
-  import { GET_PRODUCT_BY_ID, GET_PRODUCTS, GET_PRODUCT_BY_SEARCH } from "@/core/services/store/product.module";
+  import debounce from 'debounce';
+  import { GET_PRODUCT_BY_ID, GET_PRODUCT_BY_SEARCH } from "@/core/services/store/product.module";
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue'
   import { func } from '@/core/services/utils/utils.js'
   DataTable.use(DataTablesCore);
@@ -26,28 +27,8 @@
             md="3"
             class="ma-0 px-0 justify-center justify-md-end d-flex"
           >
-            <v-dialog width="500">
-              <template v-slot:activator="{ props }">
-                <VBtn v-bind="props" color="primary" class="w-100 "><VIcon icon="bx-plus"/> Agregar nuevo producto</VBtn>
-              </template>
-            
-              <template v-slot:default="{ isActive }">
-                <v-card title="Dialog">
-                  <v-card-text>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  </v-card-text>
-            
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-            
-                    <v-btn
-                      text="Close Dialog"
-                      @click="isActive.value = false"
-                    ></v-btn>
-                  </v-card-actions>
-                </v-card>
-              </template>
-            </v-dialog>
+          <VBtn @click=" showModal('createProduct')" color="primary" class="w-100 "><VIcon icon="bx-plus"/> Agregar nuevo producto</VBtn>
+
           </VCol>
         </VRow>
         <VRow class="ma-0  justify-center align-center justify-md-start pa-2 px-0 mb-10 mb-md-2 py-0 my-0">
@@ -102,7 +83,7 @@
                         width="200"
                         height="200"
                         class="rounded"
-                        :src="'images/'+ selectedProduct.img "
+                        :src="selectedProduct.img "
                       />
                     </div>
 
@@ -178,10 +159,27 @@
                         :text="alertMessage"
                       ></v-alert>
                     </VCardText>
-                    <VCardText class="w-100">
+                    <VCardText class="w-100 pb-5 px-3 px-md-6">
                       <VForm @submit.prevent="$router.push('/')" id="kt_login_signin_form">
                         <VRow>
-                          <!-- email -->
+                          
+                          <VCol cols="12"  class=" ">
+                            <div class="img-content mx-auto">
+                              <label for="image-input">
+                                <VImg
+                                  width="200"
+                                  height="200"
+                                  class="rounded "
+                                  :src="selectedProduct.img "
+                                  style="border-radius:10%!important"
+                                />
+                                <div class="overlay-img">
+                                  <VIcon color="white" size="x-large" icon="majesticons:image-plus"/>
+                                </div>
+                              </label>
+                              <input type="file"  id="image-input" class="d-none" @change="onFileChange" >
+                            </div>
+                          </VCol>
                           <VCol cols="12" md="6" class="form-group">
                             <VTextField
                               placeholder="Nombre del producto"
@@ -237,70 +235,69 @@
                               v-model="selectedProduct.is_dismantling" :value="1" 
                             />
                           </VCol>
-                          <VRow class="ma-0 pa-0 align-center" v-if="selectedProduct.is_dismantling">
-                            <VCol cols="12" class="form-group">
-                              <h3>Despieces:</h3>
-                            </VCol>
-                            <VCol cols="12" md="4" class="mt-0 pt-0 px-0">
-                              <v-tooltip text="Agregar nuevo despiece">
-                                  <template v-slot:activator="{ props }">
-                                    <v-col cols="auto" class="">
-                                      <VBtn v-bind="props" color="primary" class="w-100 " @click="addDismantling()"><VIcon icon="bx-plus"/> Agregar despiece</VBtn>
-                                    </v-col>
-                                  </template>
-                                </v-tooltip>
-                            </VCol>
-                            <div id="desmantling_items" class="pa-0 ma-0 align-center w-100" >
-                              <v-autocomplete
-                                :model-value="selectedProduct.dismantling[0].title"
-                                :loading="loading"
-                                :items="productOption"
-                                :search="search"
-                                chips
-                                active
-                                label="Nombre del producto"
-                                hide-no-data
-                                hide-selected
-                                no-filter
-                                item-title="title"
-                                item-value="id"
-                                placeholder="Nombre del producto"
-                                variant="outlined"
-                                return-object
-                              ></v-autocomplete>
-                              <VRow  v-for="(item,index) in selectedProduct.dismantling"  v-bind:key="item.id" class="pa-0 ma-0 align-center w-100 mt-5"  :id="'product_desmantling_'+index">
-                                <VCol cols="12"  md="6" class="form-group">
-                                  <VTextField
-                                    placeholder="Nombre del producto "
-                                    label="Nombre del producto"
-                                    type="text"
-                                    :name="'product_desmantling_title_'+index"
-                                    v-model="item.products_pieces.title"
-                                    readonly
-                                  />
-                                </VCol>
-                                <VCol cols="8"  md="4" class="form-group">
-                                  <VTextField
-                                    placeholder="Unidades que trae"
-                                    label="Unidades que trae"
-                                    type="text"
-                                    :name="'product_desmantling_quantity_'+index"
-                                    v-model="item.quantity"
-                                    readonly
-                                  />
-                                </VCol>
-                                <VCol cols="4" md="1" class="form-group pa-0">
-                                  <v-tooltip text="Eliminar despiece">
+                        </VRow>
+                        <VRow class="ma-0 pa-0  mt-4 align-center" v-if="selectedProduct.is_dismantling">
+                              <VCol cols="12" class="form-group">
+                                <h3>Despieces:</h3>
+                              </VCol>
+                              <VCol cols="12" md="4" class="mt-0 py-0 px-0">
+                                <v-tooltip text="Agregar nuevo despiece">
                                     <template v-slot:activator="{ props }">
                                       <v-col cols="auto" class="">
-                                        <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeDismantling(index)"></v-btn>
+                                        <VBtn v-bind="props" color="primary" class="w-100 " @click="addDismantling()"><VIcon icon="bx-plus"/> Agregar despiece</VBtn>
                                       </v-col>
                                     </template>
                                   </v-tooltip>
-                                </VCol> 
-                              </VRow>
-                            </div>
-                          </VRow>
+                              </VCol>
+                              <div id="desmantling_items" class="pa-0 ma-0 align-center w-100" >
+                                <VRow  v-for="(item,index) in selectedProduct.dismantling"  v-bind:key="item.id" class="pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'product_desmantling_'+index">
+                                  <VCol cols="12"  md="6" class="form-group">
+                                    <v-autocomplete
+                                      :model-value="item.products_pieces.id"
+                                      :loading="loading"
+                                      :items="productOption[index] ?  productOption[index] : [ {id: item.products_pieces.id, title: item.products_pieces.title}]"
+                                      label="Nombre del producto"
+                                      item-props="stock"
+                                      item-title="title"
+                                      item-value="id"
+                                      placeholder="Nombre del producto"
+                                      variant="outlined"
+                                      clearable
+                                      no-filter
+                                      no-data-text="No se encontraron resultados"
+                                      @keyup="searchDismantling($event,index)"
+                                      @change="selectDismantling($event)"
+                                      @click:clear="clearDismantling(index)"
+                                    ></v-autocomplete>
+                                  </VCol>
+                                  <VCol cols="8"  md="4" class="form-group">
+                                    <VTextField
+                                      placeholder="Unidades que trae"
+                                      label="Unidades que trae"
+                                      type="text"
+                                      :name="'product_desmantling_quantity_'+index"
+                                      v-model="item.quantity"
+                                      
+                                    />
+                                  </VCol>
+                                  <VCol cols="4" md="1" class="form-group pa-0">
+                                    <v-tooltip text="Eliminar despiece">
+                                      <template v-slot:activator="{ props }">
+                                        <v-col cols="auto" class="">
+                                          <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeDismantling(index)"></v-btn>
+                                        </v-col>
+                                      </template>
+                                    </v-tooltip>
+                                  </VCol> 
+                                </VRow>
+                              </div>
+                        </VRow>
+                        <VRow class="ma-0 pa-0  mt-8 align-center">
+                          <VCol cols="12" md="4" offset-md="4" class="mt-0 py-0 px-0">
+                            <v-col cols="auto" class="">
+                              <VBtn  color="primary" class="w-100 " @click="updateProduct()"> Guardar Cambios</VBtn>
+                            </v-col>
+                          </VCol>
                         </VRow>
                       </VForm>
                     </VCardText>
@@ -312,53 +309,98 @@
         </div>
       </div>
       <div class="modal animate__animated animate__fadeInDown"  id="addStockProduct" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl mt-10" >
+        <div class="modal-dialog modal-lg mt-10" >
           <div class="modal-content">
             <VCol
               cols="12"
               class="pa-0 d-flex justify-center"
               style="position: relative;"
             >
-              <VCard class="modal__content">
-                <div class="modal__close-button" >
-                  <v-col class="pa-0 pe-4">
-                    <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="modal.hide()" ></v-btn>
-                  </v-col>
-                </div>
-                <div class="d-flex  flex-wrap align-center flex-md-nowrap flex-column flex-md-row">
-                  <div class="ma-auto mx-0 pa-5">
-                    <VImg
-                      width="200"
-                      height="200"
-                      class="rounded"
-                      :src="'images/'+ selectedProduct.img "
-                    />
+              <VCol
+                cols="12"
+              >
+                <VCard class="modal__content">
+                  <div class="modal__close-button" >
+                    <v-col class="pa-0 pe-4">
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="modal.hide()" ></v-btn>
+                    </v-col>
                   </div>
-
-                  <VDivider :vertical="$vuetify.display.mdAndUp" />
-
-                  <div class="w-100">
-                    <VCardItem>
-                      <VCardTitle>{{ selectedProduct.title }}</VCardTitle>
+                  <div>
+                    <VCardItem class="justify-center w-100  py-md-6  py-4   ">
+                      <VCardTitle class="text-2xl font-weight-bold">
+                        <div class="card-title d-flex ">
+                          <div class="form-title__part1">Agregar stock Producto</div>
+                          
+                        </div>
+                      </VCardTitle>
                     </VCardItem>
+                    <VCardItem class="w-100  py-md-6  py-4 text-center">
+                      <VCardTitle class="text-2xl font-weight-bold">
+                        <div class="card-title  ">
+                          <div class="form-title__part1 mx-4">
+                              {{ selectedProduct.title }}
+                          </div>
+                          <div class="form-title__part1 mx-4 d-flex align-center justify-center">
+                            Stock actual:
+                            <span class=" ms-2">
+                              <v-chip :class="selectedProduct.stock > 10 ? 'bg-warning' : 'bg-error'">
+                                {{ selectedProduct.stock }}
+                              </v-chip>
 
-                    <VCardText>
-                      {{ selectedProduct.description}}
+                            </span>
+                          </div>
+
+                        </div>
+                      </VCardTitle>
+                    </VCardItem>
+                    <VCardText class="mb-5  w-100 pa-0" v-if="alertShow">
+                      <v-alert
+                        :color="alertType"
+                        :text="alertMessage"
+                      ></v-alert>
                     </VCardText>
-
-                    <VCardText class="text-subtitle-1">
-                      <span>Stock:</span> <span class="font-weight-medium">{{func.numberFormat(selectedProduct.stock)}} {{selectedProduct.type_of_unit }}</span>
+                    <VCardText class="w-100 pb-5 px-3 px-md-6">
+                      <VForm @submit.prevent="$router.push('/')" id="kt_login_signin_form">
+                        <VRow>
+                          <VCol cols="12" md="12" class="form-group">
+                            <v-combobox
+                              label="Tipo de unidad"
+                              :items="['Selecion una opción','Agregar', 'Disminuir']"
+                              variant="outlined"
+                              
+                            ></v-combobox>
+                          </VCol>
+                          <VCol cols="12" md="6" class="form-group">
+                            <VTextField
+                              placeholder="Nombre del producto"
+                              label="Nombre del producto"
+                              type="text"
+                              name="product_title"
+                              
+                            />
+                          </VCol>
+                          <VCol cols="12" md="6" class="form-group">
+                            <VTextField
+                              placeholder="Descripción corta"
+                              label="Descripción corta"
+                              type="text"
+                              name="product_description_short"
+                            />
+                          </VCol>
+                          
+                        </VRow>
+                        <VRow class="ma-0 pa-0  mt-8 align-center">
+                          <VCol cols="12" md="4" offset-md="4" class="mt-0 py-0 px-0">
+                            <v-col cols="auto" class="">
+                              <VBtn  color="primary" class="w-100 " @click="updateProduct()"> Guardar Cambios</VBtn>
+                            </v-col>
+                          </VCol>
+                        </VRow>
+                      </VForm>
                     </VCardText>
-
-                    <VCardActions class="justify-space-between">
-                      <VBtn
-                        color="secondary"
-                        icon="bx-share-alt"
-                      />
-                    </VCardActions>
                   </div>
-                </div>
-              </VCard>
+                </VCard>
+              </VCol>
             </VCol>
           </div>
         </div>
@@ -409,70 +451,240 @@
           </div>
         </div>
       </div>
-      <div class="modal animate__animated animate__fadeInDown"  id="createProduct" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl mt-10" >
-          <div class="modal-content">
+      
+    </div>
+    <div class="modal animate__animated animate__fadeInDown"  id="createProduct" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg mt-10" >
+        <div class="modal-content">
+          <VCol
+            cols="12"
+            class="pa-0 d-flex justify-center"
+            style="position: relative;"
+          >
             <VCol
               cols="12"
-              class="pa-0 d-flex justify-center"
-              style="position: relative;"
             >
-            
-              <VCol
-                sm="8"
-                cols="12"
-              >
-                <VCard class="modal__content">
-                  <div class="modal__close-button" >
-                    <v-col class="pa-0 pe-4">
-                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="modal.hide()" ></v-btn>
-                    </v-col>
-                  </div>
-                  <div class="d-flex  flex-wrap align-center flex-md-nowrap flex-column flex-md-row" style="background: transparent;">
-                    <div class="ma-auto mx-0 pa-5">
-                      <VImg
-                        width="200"
-                        height="200"
-                        class="rounded"
-                        :src="'images/'+ selectedProduct.img "
-                      />
-                    </div>
-
-                    <VDivider :vertical="$vuetify.display.mdAndUp" />
-
-                    <div class="w-100">
-                      <VCardItem>
-                        <VCardTitle>{{ selectedProduct.title }}</VCardTitle>
-                      </VCardItem>
-
-                      <VCardText>
-                        {{ selectedProduct.description}}
-                      </VCardText>
-
-                      <VCardText class="text-subtitle-1">
-                        <span>Stock:</span> <span class="font-weight-medium">{{func.numberFormat(selectedProduct.stock)}} {{selectedProduct.type_of_unit }}</span>
-                      </VCardText>
-
-                      <VCardActions class="justify-space-between">
-                        <VBtn
-                          color="secondary"
-                          icon="bx-share-alt"
-                        />
-                      </VCardActions>
-                    </div>
-                  </div>
-                </VCard>
-              </VCol>
+              <VCard class="modal__content">
+                <div class="modal__close-button" >
+                  <v-col class="pa-0 pe-4">
+                    <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="modal.hide()" ></v-btn>
+                  </v-col>
+                </div>
+                <div>
+                  <VCardItem class="justify-center w-100  py-md-6  py-4   ">
+                    <VCardTitle class="text-2xl font-weight-bold">
+                      <div class="card-title d-flex ">
+                        <div class="form-title__part1">Crear Nuevo Producto</div>
+                        
+                      </div>
+                    </VCardTitle>
+                  </VCardItem>
+                  <VCardText class="mb-5  w-100 pa-0" v-if="alertShow">
+                    <v-alert
+                      :color="alertType"
+                      :text="alertMessage"
+                    ></v-alert>
+                  </VCardText>
+                  <VCardText class="w-100 pb-5 px-3 px-md-6">
+                    <VForm @submit.prevent="$router.push('/')" id="create-product">
+                      <VRow>
+                        
+                        <VCol cols="12"  class=" ">
+                          <div class="img-content mx-auto">
+                            <label for="image-input">
+                              <VImg
+                                width="200"
+                                height="200"
+                                class="rounded  xxx"
+                                src="images/product/default.png "
+                                style="border-radius:10%!important"
+                                id="newProduct__img"
+                              />
+                              <div class="overlay-img">
+                                <VIcon color="white" size="x-large" icon="majesticons:image-plus"/>
+                              </div>
+                            </label>
+                            <input type="file"  id="image-input" class="d-none" @change="onFileChange" >
+                          </div>
+                        </VCol>
+                        <VCol cols="12" md="6" class="form-group">
+                          <VTextField
+                            placeholder="Nombre del producto"
+                            label="Nombre del producto"
+                            type="text"
+                            name="product_title"
+                          />
+                        </VCol>
+                        <VCol cols="12" md="6" class="form-group">
+                          <VTextField
+                            placeholder="Descripción corta"
+                            label="Descripción corta"
+                            type="text"
+                            name="product_description_short"
+                          />
+                        </VCol>
+                        <VCol cols="12" class="form-group">
+                          <v-textarea
+                            label="Descripcion larga"
+                            auto-grow
+                            variant="outlined"
+                            rows="3"
+                            row-height="25"
+                            shaped
+                          ></v-textarea>
+                        </VCol>
+                        <VCol cols="6" md="4" class="form-group">
+                          <VTextField
+                            placeholder="Stock Actual"
+                            label="Stock Actual"
+                            type="text"
+                            name="product_stock"
+                            readonly
+                          />
+                        </VCol>
+                        <VCol cols="6" md="4" class="form-group">
+                          <v-combobox
+                            label="Tipo de unidad"
+                            :items="['Selecion una opción','KG', 'UNI', 'PZAS']"
+                            variant="outlined"
+                          ></v-combobox>
+                        </VCol>
+                        <VCol cols="12" md="4">
+                          <v-switch
+                            color="primary"
+                            label="Tiene despieces" 
+                            :value="1" 
+                            v-model="newProduct.isDismantling"
+                          />
+                        </VCol>
+                      </VRow>
+                      <VRow 
+                        class="ma-0 pa-0  mt-4 align-center" 
+                        v-if="newProduct.isDismantling"
+                        >
+                            <VCol cols="12" class="form-group">
+                              <h3>Despieces:</h3>
+                            </VCol>
+                            <VCol cols="12" md="4" class="mt-0 py-0 px-0">
+                              <v-tooltip text="Agregar nuevo despiece">
+                                  <template v-slot:activator="{ props }">
+                                    <v-col cols="auto" class="">
+                                      <VBtn v-bind="props" color="primary" class="w-100 " @click="addNewDismantling()"><VIcon icon="bx-plus"/> Agregar despiece</VBtn>
+                                    </v-col>
+                                  </template>
+                                </v-tooltip>
+                            </VCol>
+                            <div id="desmantling_items" class="pa-0 ma-0 align-center w-100" >
+                              <VRow  v-for="(item,index) in newProduct.dismantling"  v-bind:key="item.id" class="pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'new_product_desmantling_'+index">
+                                <VCol cols="12"  md="6" class="form-group">
+                                  <v-autocomplete
+                                    :model-value="item.products_pieces.id"
+                                    :loading="loading"
+                                    :items="productOption[index] ?  productOption[index] : [ {id: item.products_pieces.id, title: item.products_pieces.title}]"
+                                    label="Nombre del producto"
+                                    item-props="stock"
+                                    item-title="title"
+                                    item-value="id"
+                                    placeholder="Nombre del producto"
+                                    variant="outlined"
+                                    clearable
+                                    no-filter
+                                    no-data-text="No se encontraron resultados"
+                                    @keyup="searchDismantling($event,index)"
+                                    @change="selectDismantling($event)"
+                                    @click:clear="clearDismantling(index)"
+                                  ></v-autocomplete>
+                                </VCol>
+                                <VCol cols="8"  md="4" class="form-group">
+                                  <VTextField
+                                    placeholder="Unidades que trae"
+                                    label="Unidades que trae"
+                                    type="text"
+                                    :name="'product_desmantling_quantity_'+index"
+                                    v-model="item.quantity"
+                                    
+                                  />
+                                </VCol>
+                                <VCol cols="4" md="1" class="form-group pa-0">
+                                  <v-tooltip text="Eliminar despiece">
+                                    <template v-slot:activator="{ props }">
+                                      <v-col cols="auto" class="">
+                                        <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeDismantling(index)"></v-btn>
+                                      </v-col>
+                                    </template>
+                                  </v-tooltip>
+                                </VCol> 
+                              </VRow>
+                            </div>
+                      </VRow>
+                      <VRow class="ma-0 pa-0  mt-8 align-center">
+                        <VCol cols="12" md="4" offset-md="4" class="mt-0 py-0 px-0">
+                          <v-col cols="auto" class="">
+                            <VBtn  color="primary" class="w-100 " @click="updateProduct()"> Guardar</VBtn>
+                          </v-col>
+                        </VCol>
+                      </VRow>
+                    </VForm>
+                  </VCardText>
+                </div>
+              </VCard>
             </VCol>
-          </div>
+          </VCol>
         </div>
       </div>
     </div>
+    <v-snackbar
+      v-model="alertShow"
+      color="success"
+      rounded="pill"
+      timeout="20000"
+      width="100%"
+      class="text-center"
+    >
+     <h4 class="text-white w-100 text-center">
+
+       {{alertMessage}}
+     </h4>
+        <template
+          v-slot:actions
+        >
+        <VBtn  color="white" class="text-white" @click="alertShow=false"> Cerrar</VBtn>
+        </template>
+    </v-snackbar>
   </VRow>
 </template>
 <style lang="scss">
   input,textarea, select{
     font-weight: 600;
+  }
+  .img-content{
+    position:relative;
+    width: auto;
+    max-width: fit-content;
+    border-radius: 10px;
+    &:hover > label > .overlay-img{
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  .overlay-img{
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: #3f3f3f70;
+    border-radius: 20px;
+    opacity: 0;
+    transform: scale(0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s ease-in;
+  }
+  .v-autocomplete__selection > span.v-chip{
+    color: white;
+    background: rgb(var(--v-theme-primary)) !important;
   }
   .v-switch__track{
     box-shadow: 0px 0px 17px 2px #727272;
@@ -488,6 +700,9 @@
   }
   .modal__content{
     position: initial!important; overflow: visible!important;
+  }
+  #newProduct__img{
+    filter: opacity(0.4);
   }
   @media screen and (max-width: 780px){
     .modal__close-button{
@@ -514,6 +729,10 @@
       inputDate: '',
       selectedProduct:{},
       table:'',
+      newProduct:{
+        isDismantling: false ,
+        dismantling:[],
+      },
       tableData:{
         ajax:{
           "url": import.meta.env.VITE_VUE_APP_BACKEND_URL+"api/get-products",
@@ -670,6 +889,16 @@
       items:[],
     }),
     methods:{
+      clearDismantling(index){
+        this.getProducts('',index)
+      },
+      searchDismantling(e, index){ 
+        console.log(e.target.value)
+        debounce(this.getProducts, 200)(e.target.value, index)
+      },
+      selectDismantling(e){
+        console.log(e)
+      },
       initOptionsTable(){
         document.getElementById('data-table').addEventListener('OptionsActionTable', () => this.activeOptionsTable() )	
       },
@@ -727,29 +956,23 @@
             });
           });
       },
-      getProducts(search = "", self){
-        if (!search) {
-          self.productOption = [];
-          self.product = '';
-        }
-        // Items have already been requested
-        if (self.loading) {
-          return
-        }
-        self.loading = true
+      getProducts(search = "", index){
         this.$store
           .dispatch(GET_PRODUCT_BY_SEARCH, search)
           .then((response) => {
-            console.log(response)
-            self.productOption = response.data
+          console.log(response.data)
+            this.productOption[index] = response.data
           })
           .catch((err) => {
-            console.log(err)
             return new Promise((resolve) => {
               resolve(false);
             });
           })
-          .finally(() => (self.loading = false))
+
+      },
+      onFileChange(e) {
+        const file = e.target.files[0];
+        this.selectedProduct.img = URL.createObjectURL(file);
       },
       bootstrapOptions(){
         setTimeout(() => {
@@ -801,27 +1024,34 @@
           quantity: '',
         }
         this.selectedProduct.dismantling.push(newItem)
+      },
+      addNewDismantling(){
+        let newItem = {
+          id:'',
+          piece_product_id: '',
+          product_id: '',
+          products_pieces: { title: '' },
+          quantity: '',
+        }
+        this.newProduct.dismantling.push(newItem)
+      },
+      hideModal(){
+        this.modal.hide()
+      },
+      updateProduct(){
+        this.hideModal()
+        this.showAlert('succes', 'Producto actualizado con exito')
+      },
+      showAlert(type, messagge){
+        this.alertShow = true;
+        this.alertMessage = messagge
       }
 
-    },
-    watch: {
-      search(newQuestion){
-      cosnole.log(newQuestion)
-    }
     },
     mounted(){
       this.initOptionsTable()
       this.table = new DataTablesCore('#data-table', this.tableData)
       this.bootstrapOptions();
-      this.getProducts(' ', this);
-      this.$store
-          .dispatch(GET_PRODUCTS)
-          .then((response) => {
-            console.log(response.data )
-          })
-          .catch((err) => {
-            console.log(err)
-          });
     },
     created(){
       this.emitter.emit('displayOverlayLoad', false)
