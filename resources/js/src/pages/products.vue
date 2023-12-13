@@ -1,20 +1,19 @@
 <script setup >
-  import DataTable from 'datatables.net-vue3';
+
   import DataTablesCore from 'datatables.net';
-  import Button from 'datatables.net-buttons';
   import 'datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css';
-  import ButtonPrint from 'datatables.net-buttons/js/buttons.print';
-  import ButtonHTML5 from 'datatables.net-buttons/js/buttons.html5';
   import 'datatables.net-dt/css/jquery.dataTables.min.css';
   import * as bootstrap from 'bootstrap'
   import debounce from 'debounce';
   import { GET_PRODUCT_BY_ID, GET_PRODUCT_BY_SEARCH } from "@/core/services/store/product.module";
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue'
   import { func } from '@/core/services/utils/utils.js'
-  DataTable.use(DataTablesCore);
-  DataTable.use(Button);
-  DataTable.use(ButtonHTML5);
-  DataTable.use(ButtonPrint); 
+  import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
+  import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
+  import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
+  import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
+  import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
+
   
 </script>
 <template>
@@ -74,7 +73,7 @@
                 <VCard class="modal__content">
                   <div class="modal__close-button" >
                   <v-col  class="pa-0 pe-4">
-                    <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="modal.hide()" ></v-btn>
+                    <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
                   </v-col>
                 </div>
                   <div class="d-flex  flex-wrap align-center flex-md-nowrap flex-column flex-md-row">
@@ -141,7 +140,7 @@
                 <VCard class="modal__content">
                   <div class="modal__close-button" >
                     <v-col class="pa-0 pe-4">
-                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="modal.hide()" ></v-btn>
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
                     </v-col>
                   </div>
                   <div>
@@ -160,7 +159,7 @@
                       ></v-alert>
                     </VCardText>
                     <VCardText class="w-100 pb-5 px-3 px-md-6">
-                      <VForm @submit.prevent="$router.push('/')" id="kt_login_signin_form">
+                      <VForm  id="edit_product_form">
                         <VRow>
                           
                           <VCol cols="12"  class=" ">
@@ -223,7 +222,7 @@
                           <VCol cols="6" md="4" class="form-group">
                             <v-combobox
                               label="Tipo de unidad"
-                              :items="['Selecion una opción','KG', 'UNI', 'PZAS']"
+                              :items="['Selecciona uno','KG', 'UNI', 'PZAS']"
                               variant="outlined"
                               v-model="selectedProduct.type_of_unit"
                             ></v-combobox>
@@ -244,7 +243,7 @@
                                 <v-tooltip text="Agregar nuevo despiece">
                                     <template v-slot:activator="{ props }">
                                       <v-col cols="auto" class="">
-                                        <VBtn v-bind="props" color="primary" class="w-100 " @click="addDismantling()"><VIcon icon="bx-plus"/> Agregar despiece</VBtn>
+                                        <VBtn v-bind="props" color="primary" class="w-100 " @click="addDismantlingInput(1)"><VIcon icon="bx-plus"/> Agregar despiece</VBtn>
                                       </v-col>
                                     </template>
                                   </v-tooltip>
@@ -266,8 +265,8 @@
                                       no-filter
                                       no-data-text="No se encontraron resultados"
                                       @keyup="searchDismantling($event,index)"
-                                      @change="selectDismantling($event)"
-                                      @click:clear="clearDismantling(index)"
+                                      @click:clear="clearSeachDismantling(index)"
+                                      @update:modelValue="selectDismantling($event,index,1)"
                                     ></v-autocomplete>
                                   </VCol>
                                   <VCol cols="8"  md="4" class="form-group">
@@ -284,7 +283,7 @@
                                     <v-tooltip text="Eliminar despiece">
                                       <template v-slot:activator="{ props }">
                                         <v-col cols="auto" class="">
-                                          <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeDismantling(index)"></v-btn>
+                                          <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeDismantlingInput(1,index)"></v-btn>
                                         </v-col>
                                       </template>
                                     </v-tooltip>
@@ -295,7 +294,7 @@
                         <VRow class="ma-0 pa-0  mt-8 align-center">
                           <VCol cols="12" md="4" offset-md="4" class="mt-0 py-0 px-0">
                             <v-col cols="auto" class="">
-                              <VBtn  color="primary" class="w-100 " @click="updateProduct()"> Guardar Cambios</VBtn>
+                              <VBtn  color="primary" class="w-100 " type="submit" disabled id="edit_product_form_button" > Guardar Cambios</VBtn>
                             </v-col>
                           </VCol>
                         </VRow>
@@ -322,7 +321,7 @@
                 <VCard class="modal__content">
                   <div class="modal__close-button" >
                     <v-col class="pa-0 pe-4">
-                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="modal.hide()" ></v-btn>
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
                     </v-col>
                   </div>
                   <div>
@@ -336,18 +335,29 @@
                     </VCardItem>
                     <VCardItem class="w-100  py-md-6  py-4 text-center">
                       <VCardTitle class="text-2xl font-weight-bold">
-                        <div class="card-title  ">
+                        <div class="card-title ">
                           <div class="form-title__part1 mx-4">
                               {{ selectedProduct.title }}
                           </div>
-                          <div class="form-title__part1 mx-4 d-flex align-center justify-center">
-                            Stock actual:
-                            <span class=" ms-2">
-                              <v-chip :class="selectedProduct.stock > 10 ? 'bg-warning' : 'bg-error'">
-                                {{ selectedProduct.stock }}
-                              </v-chip>
-
-                            </span>
+                          <div class="d-flex mt-4 justify-center w-100 flex-wrap">
+                            <div class="form-title__part1 mx-4 d-flex align-center justify-center">
+                              Stock actual:
+                              <span class=" ms-2" >
+                                <v-chip :class="selectedProduct.stock < 1 ? 'bg-error' : selectedProduct.stock >= 30 ? 'bg-success' : 'bg-warning'">
+                                  {{ selectedProduct.stock }}
+                                </v-chip>
+  
+                              </span>
+                            </div>
+                            <div class="form-title__part1 mx-4 d-flex align-center justify-center" >
+                              Stock nuevo:
+                              <span class=" ms-2" v-if="!isNaN(selectedProduct.newStock) ">
+                                <v-chip :class="selectedProduct.newStock < 1 ? 'bg-error' : selectedProduct.newStock >= 30 ? 'bg-success' : 'bg-warning'">
+                                  {{ selectedProduct.newStock }}
+                                </v-chip>
+  
+                              </span>
+                            </div>
                           </div>
 
                         </div>
@@ -360,31 +370,28 @@
                       ></v-alert>
                     </VCardText>
                     <VCardText class="w-100 pb-5 px-3 px-md-6">
-                      <VForm @submit.prevent="$router.push('/')" id="kt_login_signin_form">
+                      <VForm  id="add_stock_form">
                         <VRow>
-                          <VCol cols="12" md="12" class="form-group">
-                            <v-combobox
-                              label="Tipo de unidad"
-                              :items="['Selecion una opción','Agregar', 'Disminuir']"
+                          <VCol cols="12" md="6" class="form-group">
+                            <v-select
+                              item-title="title"
+                              item-value="value"
+                              label="Tipo de operación"
+                              :items=" [{ title:'Agregar stock', value: 1 }, { title:'Disminuir stock', value: 2 }]"
                               variant="outlined"
+                              v-model="stockOperation.type"
+                              @update:modelValue="stockCalculate()"
                               
-                            ></v-combobox>
+                          ></v-select>
                           </VCol>
                           <VCol cols="12" md="6" class="form-group">
                             <VTextField
-                              placeholder="Nombre del producto"
-                              label="Nombre del producto"
-                              type="text"
+                              placeholder="Cantidad"
+                              label="Cantidad"
+                              type="Number"
                               name="product_title"
-                              
-                            />
-                          </VCol>
-                          <VCol cols="12" md="6" class="form-group">
-                            <VTextField
-                              placeholder="Descripción corta"
-                              label="Descripción corta"
-                              type="text"
-                              name="product_description_short"
+                              v-model="stockOperation.quantity"
+                              @keyup="stockCalculate()"
                             />
                           </VCol>
                           
@@ -392,7 +399,7 @@
                         <VRow class="ma-0 pa-0  mt-8 align-center">
                           <VCol cols="12" md="4" offset-md="4" class="mt-0 py-0 px-0">
                             <v-col cols="auto" class="">
-                              <VBtn  color="primary" class="w-100 " @click="updateProduct()"> Guardar Cambios</VBtn>
+                              <VBtn  color="primary" class="w-100 " type="submit" disabled id="add_stock_form_button"> Guardar Cambios</VBtn>
                             </v-col>
                           </VCol>
                         </VRow>
@@ -406,52 +413,61 @@
         </div>
       </div>
       <div class="modal animate__animated animate__fadeInDown" id="deleteProduct" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+        
         <div class="modal-dialog modal-lg mt-10">
           <div class="modal-content">
             <VCol
               cols="12"
-              class="pa-0"
+              class="pa-0 d-flex justify-center"
+              style="position: relative;"
             >
-              <VCard>
-                <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
-                  <VRow  class="mb-2 ma-0">
-                    <VCol
-                      cols="12"
-                      class="py-0"
-                    >
-                      <div class="my-md-4 my-2 text-center">
-                        <h2>Eliminar Producto</h2>
-                      </div>
-                    </VCol>
-                    <VCol
-                      cols="12"
-                      class="px-md-10 px-0 text-center"
-                      style=""
-                    >
-                      <h2>¿Seguro que deseas eliminar <b class="text-primary">{{selectedProduct.title}}</b>?</h2>
-                    </VCol>
-                  </VRow>
-                    
-
-                  <VDivider  />
-                  <div class="mt-5 w-100 d-md-flex  d-block justify-center">
-                    <VCardActions class=" justify-center w-100 d-md-flex  d-block">
-                      <VBtn
-                        color="white"
-                        class="bg-secondary text-white w-30 mx-0 mx-md-5 my-2"
-                        @click="modal.hide()"
-                      >
-                        <span class="">Cerrar</span>
-                      </VBtn>
-                    </VCardActions>
+              <VCol
+                cols="12"
+              >
+                <VCard class="modal__content">
+                  <div class="modal__close-button" >
+                    <v-col class="pa-0 pe-4">
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                    </v-col>
                   </div>
-                </div>
-              </VCard>
+                  <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
+                    <VRow  class="mb-2 ma-0">
+                      <VCol
+                        cols="12"
+                        class="py-0"
+                      >
+                        <div class="my-md-4 my-2 text-center">
+                          <h2>Eliminar Producto</h2>
+                        </div>
+                      </VCol>
+                      <VCol
+                        cols="12"
+                        class="px-md-10 px-0 text-center"
+                        style=""
+                      >
+                        <h2>¿Seguro que deseas eliminar <b class="text-primary">{{selectedProduct.title}}</b>?</h2>
+                      </VCol>
+                    </VRow>
+                      
+                    <VDivider  />
+                    <div class="mt-5 w-100 d-md-flex  d-block justify-center">
+                      <VCardActions class=" justify-center w-100 d-md-flex  d-block">
+                        <VBtn
+                          color="white"
+                          class="bg-error text-white w-50 mx-0 mx-md-5 my-2"
+                          @click="deleteProduct()"
+                        >
+                          <span class="">Eliminar</span>
+                        </VBtn>
+                      </VCardActions>
+                    </div>
+                  </div>
+                </VCard>
+              </VCol>
             </VCol>
           </div>
         </div>
       </div>
-      
     </div>
     <div class="modal animate__animated animate__fadeInDown"  id="createProduct" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg mt-10" >
@@ -467,7 +483,7 @@
               <VCard class="modal__content">
                 <div class="modal__close-button" >
                   <v-col class="pa-0 pe-4">
-                    <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="modal.hide()" ></v-btn>
+                    <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
                   </v-col>
                 </div>
                 <div>
@@ -486,7 +502,7 @@
                     ></v-alert>
                   </VCardText>
                   <VCardText class="w-100 pb-5 px-3 px-md-6">
-                    <VForm @submit.prevent="$router.push('/')" id="create-product">
+                    <VForm  id="new_product_form">
                       <VRow>
                         
                         <VCol cols="12"  class=" ">
@@ -512,7 +528,8 @@
                             placeholder="Nombre del producto"
                             label="Nombre del producto"
                             type="text"
-                            name="product_title"
+                            name="new_product_title"
+                            v-model="newProduct.title"
                           />
                         </VCol>
                         <VCol cols="12" md="6" class="form-group">
@@ -520,7 +537,8 @@
                             placeholder="Descripción corta"
                             label="Descripción corta"
                             type="text"
-                            name="product_description_short"
+                            name="new_product_short_description"
+                            v-model="newProduct.short_description"
                           />
                         </VCol>
                         <VCol cols="12" class="form-group">
@@ -531,23 +549,26 @@
                             rows="3"
                             row-height="25"
                             shaped
+                            name="new_product_description"
+                            v-model="newProduct.description"
                           ></v-textarea>
                         </VCol>
                         <VCol cols="6" md="4" class="form-group">
                           <VTextField
-                            placeholder="Stock Actual"
-                            label="Stock Actual"
-                            type="text"
-                            name="product_stock"
-                            readonly
+                            placeholder="Stock"
+                            label="Stock"
+                            type="number"
+                            name="new_product_stock"
+                            v-model="newProduct.stock"
                           />
                         </VCol>
                         <VCol cols="6" md="4" class="form-group">
-                          <v-combobox
-                            label="Tipo de unidad"
-                            :items="['Selecion una opción','KG', 'UNI', 'PZAS']"
-                            variant="outlined"
-                          ></v-combobox>
+                          <v-select
+                              label="Tipo de operación"
+                              :items="['KG', 'UNI', 'PZAS']"
+                              variant="outlined"
+                              v-model="newProduct.unit"
+                          ></v-select>
                         </VCol>
                         <VCol cols="12" md="4">
                           <v-switch
@@ -569,7 +590,7 @@
                               <v-tooltip text="Agregar nuevo despiece">
                                   <template v-slot:activator="{ props }">
                                     <v-col cols="auto" class="">
-                                      <VBtn v-bind="props" color="primary" class="w-100 " @click="addNewDismantling()"><VIcon icon="bx-plus"/> Agregar despiece</VBtn>
+                                      <VBtn v-bind="props" color="primary" class="w-100 " @click="addDismantlingInput(2)"><VIcon icon="bx-plus"/> Agregar despiece</VBtn>
                                     </v-col>
                                   </template>
                                 </v-tooltip>
@@ -591,8 +612,8 @@
                                     no-filter
                                     no-data-text="No se encontraron resultados"
                                     @keyup="searchDismantling($event,index)"
-                                    @change="selectDismantling($event)"
-                                    @click:clear="clearDismantling(index)"
+                                    @click:clear="clearSeachDismantling(index)"
+                                    @update:modelValue="selectDismantling($event,index,2)"
                                   ></v-autocomplete>
                                 </VCol>
                                 <VCol cols="8"  md="4" class="form-group">
@@ -609,7 +630,7 @@
                                   <v-tooltip text="Eliminar despiece">
                                     <template v-slot:activator="{ props }">
                                       <v-col cols="auto" class="">
-                                        <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeDismantling(index)"></v-btn>
+                                        <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeDismantlingInput(2, index)"></v-btn>
                                       </v-col>
                                     </template>
                                   </v-tooltip>
@@ -620,7 +641,7 @@
                       <VRow class="ma-0 pa-0  mt-8 align-center">
                         <VCol cols="12" md="4" offset-md="4" class="mt-0 py-0 px-0">
                           <v-col cols="auto" class="">
-                            <VBtn  color="primary" class="w-100 " @click="updateProduct()"> Guardar</VBtn>
+                            <VBtn  color="primary" class="w-100 " type="submit" disabled id="new_product_form_button"> Guardar</VBtn>
                           </v-col>
                         </VCol>
                       </VRow>
@@ -634,21 +655,21 @@
       </div>
     </div>
     <v-snackbar
-      v-model="alertShow"
-      color="success"
+      v-model="snackShow"
+      :color="snackType"
       rounded="pill"
-      timeout="20000"
-      width="100%"
+      :timeout="snacktimeOut"
+      width="max-content"
       class="text-center"
     >
      <h4 class="text-white w-100 text-center">
 
-       {{alertMessage}}
+       {{snackMessage}}
      </h4>
         <template
           v-slot:actions
         >
-        <VBtn  color="white" class="text-white" @click="alertShow=false"> Cerrar</VBtn>
+        <VBtn  color="white" class="text-white" @click="snackShow=false"> Cerrar</VBtn>
         </template>
     </v-snackbar>
   </VRow>
@@ -726,12 +747,25 @@
       alertShow:false,
       alertMessage:'',
       alertType:'',
-      inputDate: '',
+      snackShow:false,
+      snackMessage:'',
+      snackType:'',
+      snacktimeOut:5000,
       selectedProduct:{},
+      forms:[],
       table:'',
       newProduct:{
+        title:'',
+        description:'',
+        short_description:'',
+        stock:'',
+        unit:'KG',
         isDismantling: false ,
         dismantling:[],
+      },
+      stockOperation:{
+        type:1,
+        quantity:''
       },
       tableData:{
         ajax:{
@@ -751,7 +785,7 @@
         columns: [
           { title: 'Nombre del producto', class:'text-start title-th',
           render: ( data, type, row, meta ) =>{ 
-              return row.title
+              return `${row.title}`
             }   
           },
           { 
@@ -889,15 +923,13 @@
       items:[],
     }),
     methods:{
-      clearDismantling(index){
-        this.getProducts('',index)
-      },
-      searchDismantling(e, index){ 
-        console.log(e.target.value)
-        debounce(this.getProducts, 200)(e.target.value, index)
-      },
-      selectDismantling(e){
-        console.log(e)
+      stockCalculate(){
+        this.selectedProduct.newStock = this.stockOperation.type == -1
+        ? NaN
+        : this.stockOperation.type == 1
+          ? parseInt(this.selectedProduct.stock)  + parseInt(this.stockOperation.quantity)
+          : parseInt(this.selectedProduct.stock)  - parseInt(this.stockOperation.quantity)
+
       },
       initOptionsTable(){
         document.getElementById('data-table').addEventListener('OptionsActionTable', () => this.activeOptionsTable() )	
@@ -908,7 +940,7 @@
             this.selectProduct(event.target.dataset.id).finally((data)=>{
               setTimeout(() => {
                 this.showModal('viewProduct')
-              }, 500);
+              }, 800);
             })
           })	
         })
@@ -917,7 +949,7 @@
             this.selectProduct(event.target.dataset.id).finally((data)=>{
               setTimeout(() => {
                 this.showModal('editProduct')
-              }, 500);
+              }, 800);
             })
           })	
         })
@@ -926,7 +958,7 @@
             this.selectProduct(event.target.dataset.id).finally((data)=>{
               setTimeout(() => {
                 this.showModal('addStockProduct')
-              }, 500);
+              }, 800);
             })
           })	
         })
@@ -935,7 +967,7 @@
             this.selectProduct(event.target.dataset.id).finally((data)=>{
               setTimeout(() => {
                 this.showModal('deleteProduct')
-              }, 500);
+              }, 800);
             })
           })	
         })
@@ -960,7 +992,6 @@
         this.$store
           .dispatch(GET_PRODUCT_BY_SEARCH, search)
           .then((response) => {
-          console.log(response.data)
             this.productOption[index] = response.data
           })
           .catch((err) => {
@@ -1008,14 +1039,18 @@
         this.alertType = type
         this.alertMessage = messagge
       },
-      removeDismantling(item){
-        document.getElementById('product_desmantling_'+item).blur()
-        setTimeout(() => {
-          
-          document.getElementById('product_desmantling_'+item).remove()
-        }, 200);
+      showSnackbar(type, messagge){
+        this.snackShow = true;
+        this.snackType = type
+        this.snackMessage = messagge
       },
-      addDismantling(){
+      removeDismantlingInput(type, index){
+        return type == 2 
+        ? this.newProduct.dismantling.splice(index, 1)
+        : this.selectedProduct.dismantling.splice(index, 1);
+        
+      },
+      addDismantlingInput(type){
         let newItem = {
           id:'',
           piece_product_id: '',
@@ -1023,35 +1058,264 @@
           products_pieces: { title: '' },
           quantity: '',
         }
-        this.selectedProduct.dismantling.push(newItem)
+        return type == 2 
+        ? this.newProduct.dismantling.push(newItem)
+        : this.selectedProduct.dismantling.push(newItem);
       },
-      addNewDismantling(){
-        let newItem = {
-          id:'',
-          piece_product_id: '',
-          product_id: '',
-          products_pieces: { title: '' },
-          quantity: '',
-        }
-        this.newProduct.dismantling.push(newItem)
+      searchDismantling(e, index){ 
+        debounce(this.getProducts, 200)(e.target.value, index)
+      },
+      clearSeachDismantling(index){
+        this.getProducts('',index)
+      },
+      selectDismantling(e,index,type){
+        return type == 2 
+        ? this.newProduct.dismantling[index].id = e
+        : this.selectedProduct.dismantling[index].products_pieces.id = e
       },
       hideModal(){
         this.modal.hide()
       },
-      updateProduct(){
-        this.hideModal()
-        this.showAlert('succes', 'Producto actualizado con exito')
+      resetStockForm(){
+        this.stockOperation = {
+          type:-1,
+          quantity:''
+        }
       },
-      showAlert(type, messagge){
-        this.alertShow = true;
-        this.alertMessage = messagge
-      }
+      resetNewProductForm(){
+        this.stockOperation = {
+          type:-1,
+          quantity:''
+        }
+      },
+      createdProduct(){
+        this.hideModal()
+        this.showSnackbar('success', 'Producto creado con exito')
+      },
+      updatedProduct(){
+        this.hideModal()
+        this.showSnackbar('success', 'Producto actualizado con exito')
+      },
+      updatedStockProduct(){
+        this.hideModal()
+        this.showSnackbar('success', 'Stock actualizado con exito')
+        this.resetStockForm()
+      },
+      deleteProduct(){
+        this.hideModal()
+        this.showSnackbar('error', 'Producto Eliminado con exito')
+      },
+      validateFormItem(id){
+        const fieldToValidate = this.itemsValidateByForm(id)
+        this.forms[id] = formValidation(document.getElementById(id), {
+          fields: fieldToValidate,
+          plugins: {
+            trigger: new Trigger(),
+            submitButton: new SubmitButton(),
+            bootstrap: new Bootstrap({
+                  // Use this for enabling/changing valid/invalid class
+                  // eleInvalidClass: '',
+                  // eleValidClass: '',
+                }),
+          }
+        });
+        setTimeout( ()=>this.formsActions(id), 500)
+      },
+      itemsValidateByForm(id){
+        let fieldByForm = {}
+        switch (id) {
+          case 'new_product_form':
+            fieldByForm = {
+              new_product_title: {
+                validators: {
+                  notEmpty: {
+                    message: "El campo de titulo es obligatorio"
+                  },
+                  regexp: {
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@$_ñ_ ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+              new_product_description: {
+                validators: {
+                  notEmpty: {
+                    message: "La descripción es necesaria"
+                  },
+                  regexp: {
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@$_ñ_ ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+              new_product_short_description: {
+                validators: {
+                  notEmpty: {
+                    message: "La descripción corta es necesaria"
+                  },
+                  regexp: {
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@$_ñ_ ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+              new_product_stock: {
+                validators: {
+                  notEmpty: {
+                    message: "Debes agregar un stock Inicial"
+                  },
+                  regexp: {
+                    regexp: /^[0-9]+$/i,
+                    message: "Debe ser númerico",
+                  },
+                }
+              },
+            }
+            break;
+          case 'edit_product_form':
+            fieldByForm = {
+              new_product_title: {
+                validators: {
+                  notEmpty: {
+                    message: "El campo de titulo es obligatorio"
+                  },
+                  regexp: {
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@$_ñ_ ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+              new_product_description: {
+                validators: {
+                  notEmpty: {
+                    message: "La descripción es necesaria"
+                  },
+                  regexp: {
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@$_ñ_ ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+              new_product_short_description: {
+                validators: {
+                  notEmpty: {
+                    message: "La descripción corta es necesaria"
+                  },
+                  regexp: {
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@$_ñ_ ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+              new_product_stock: {
+                validators: {
+                  notEmpty: {
+                    message: "Debes agregar un stock Inicial"
+                  },
+                  regexp: {
+                    regexp: /^[0-9]+$/i,
+                    message: 'Debe ser númerico',
+                  },
+                }
+              }
+            }
+            break;
+          case 'add_stock_form':
+            fieldByForm = {
+              new_product_title: {
+                validators: {
+                  notEmpty: {
+                    message: "El campo de titulo es obligatorio"
+                  },
+                  regexp: {
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@$_ñ_ ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+              new_product_description: {
+                validators: {
+                  notEmpty: {
+                    message: "La descripción es necesaria"
+                  },
+                  regexp: {
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@$_ñ_ ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+              new_product_short_description: {
+                validators: {
+                  notEmpty: {
+                    message: "La descripción corta es necesaria"
+                  },
+                  regexp: {
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@$_ñ_ ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+              new_product_stock: {
+                validators: {
+                  notEmpty: {
+                    message: "Debes agregar un stock Inicial"
+                  },
+                  regexp: {
+                    regexp: /^[0-9]+$/i,
+                    message: 'Debe ser númerico',
+                  },
+                }
+              }
+            }
+            break;
+          default:
+            break;
+        }
+        return fieldByForm
+      },
+      formsActions(id){
+        const sendButton = document.getElementById(id+'_button')
+        this.forms[id].on("core.form.valid", () => {
+
+          console.log('good')
+          switch (id) {
+            case 'new_product_form':
+              this.createdProduct()
+              break;
+            case 'edit_product_form':
+              this.updatedProduct()
+              break;
+            case 'add_stock_form':
+              this.updatedStockProduct()
+              break;
+            default:
+              break;
+          }
+
+        }).on("core.field.valid", () => {
+          sendButton.disabled = false
+          sendButton.classList.remove('v-btn--disabled')
+          console.log('good2')
+
+        }).on("core.form.invalid", () => {
+          sendButton.disabled = true
+          sendButton.classList.add('v-btn--disabled')
+          console.log('error')
+
+        }).on("core.field.invalid", () => {
+          sendButton.disabled = true
+          sendButton.classList.add('v-btn--disabled')
+          console.log('error2')
+
+        });
+      },
 
     },
     mounted(){
       this.initOptionsTable()
       this.table = new DataTablesCore('#data-table', this.tableData)
       this.bootstrapOptions();
+      this.validateFormItem('new_product_form')
     },
     created(){
       this.emitter.emit('displayOverlayLoad', false)

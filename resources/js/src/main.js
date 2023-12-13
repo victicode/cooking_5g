@@ -20,30 +20,39 @@ loadFonts()
 
 
 // Create vue app
-
+window.popStateDetected = false
+window.addEventListener('popstate', () => {
+  window.popStateDetected = true
+})
 router.beforeEach(async (to, from, next) => {
-
-  // const titlePage = {
-  //   login: 'Inicio de sesion',
-  //   dashboard: 'Bienvenidos',
-  //   'create-account': 'Bienvenidos',
-  // };
-
-
+  // Caso 1
+  document.title = to.meta.title + ' - Cooking 5G'
   if (!to.meta.middleware) {
     return next()
   }
 
-  const middleware = to.meta.middleware
+  setTimeout(() => {
+    let trashElement = [document.querySelectorAll('.modal-backdrop'), document.querySelectorAll('.tooltip')];
 
+    trashElement.forEach((item)=>{
+      item.forEach(element => document.querySelector('body').removeChild(element))
+    })
+  }, 200);
+  // // Caso 2
+
+  // if (window.event.type == 'popstate'){  
+  //   next(false);
+  // }else{  
+  //     next(); 
+  // }
+  // Caso 3 
+  const middleware = to.meta.middleware
   const context = {
     to,
     from,
     next,
     store
   }
-  // document.title =`${titlePage[to.name].charAt(0).toUpperCase()}${titlePage[to.name].substring(1)} | DLS Money Plataforma de cambio de dolares a soles online`
-  document.title = to.meta.title + ' - Cooking 5G'
   return middleware[0]({
     ...context,
     next: middlewarePipeline(context, middleware, 1)

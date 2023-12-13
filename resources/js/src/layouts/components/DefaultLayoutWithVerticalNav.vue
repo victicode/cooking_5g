@@ -97,7 +97,7 @@ const vuetifyTheme = useTheme()
         :item="{
           title: currentUser.rol_id == 1 ? 'Recetas' : 'Tus Recetas',
           icon: 'bx-receipt',
-          to: '/user-list',
+          to: '/recipes',
         }"
       />
 
