@@ -12,6 +12,9 @@ import defaultComponent from '@/layouts/default.vue';
 import productsComponent from '@/pages/products.vue';
 import ordersComponent from '@/pages/orders.vue';
 import recipesComponent from '@/pages/recipes.vue';
+import clientComponent from '@/pages/users/client.vue';
+import chefComponent from '@/pages/users/chef.vue';
+
 
 
 const router = createRouter({
@@ -56,7 +59,7 @@ const router = createRouter({
         },
         {
           path: "/user-list",
-          component: recipesComponent,
+          component: clientComponent,
           meta: {
             middleware: [
               auth
@@ -66,7 +69,7 @@ const router = createRouter({
         },
         {
           path: "/chef-list",
-          component: recipesComponent,
+          component: chefComponent,
           meta: {
             middleware: [
               auth

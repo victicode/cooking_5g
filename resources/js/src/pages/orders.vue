@@ -215,12 +215,12 @@
     
                         </v-timeline-item>
                         <v-timeline-item
-                          :dot-color="selectedOrder.status > 1 ? '#d06427' :'#fff' "
-                          icon="carbon:delivery-parcel"
-                          fill-dot
-                          size="large"
+                        :dot-color="selectedOrder.status > 1 ? '#d06427' :'#ebebeb' "
+                        icon="carbon:delivery-parcel"
+                        fill-dot
+                        size="large"
                         >
-                          <template v-slot:opposite v-if="selectedOrder.status > 1">
+                          <template v-slot:opposite >
                             <h3>
                               En transito
                             </h3>
@@ -231,6 +231,7 @@
                               </h4>
                             </div>
                         </v-timeline-item>
+                        
                         <v-timeline-item
                           :dot-color="selectedOrder.status == 3 ? '#d06427' :'#fff' "
                           icon="line-md:confirm-circle"
@@ -596,6 +597,9 @@
     methods:{
       initOptionsTable(){
         document.getElementById('data-table').addEventListener('OptionsActionTable', () => this.activeOptionsTable() )	
+      },
+      hola(){
+        console.log('hola')
       },
       activeOptionsTable() {
         document.querySelectorAll('.view').forEach(item => {

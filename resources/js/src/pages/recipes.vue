@@ -15,17 +15,13 @@
   import { Spanish } from "flatpickr/dist/l10n/es.js"
   import { GET_ORDER_BY_ID } from "@/core/services/store/order.module";
 
-  DataTable.use(DataTablesCore);
-  DataTable.use(Button);
-  DataTable.use(ButtonHTML5);
-  DataTable.use(ButtonPrint); 
 </script>
 
 <template>
   <VRow class="">
     <VCol cols="12">
-      <VCard title="Listado de Ordenes" class="pa-3 px-1 px-md-3">
-        <VRow class="ma-0  justify-center align-center justify-md-start pa-2 px-0 mb-10 mb-md-2">
+      <VCard title="Listado de recetas" class="pa-3 px-1 px-md-3">
+        <VRow class="ma-0 d-none justify-center align-center justify-md-start pa-2 px-0 mb-10 mb-md-2">
           <VCol cols="12" md="4" class="form-group">
             <VTextField
               placeholder="Desde - Hasta"
@@ -70,7 +66,7 @@
             </VBtn>
           </VCol>
         </VRow>
-        <div class="card-datatable table-responsive">
+        <div class="card-datatable table-responsive d-none">
           <table class="datatables-basic table" id="data-table">
           </table>
         </div>

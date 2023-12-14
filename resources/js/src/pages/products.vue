@@ -184,7 +184,7 @@
                               placeholder="Nombre del producto"
                               label="Nombre del producto"
                               type="text"
-                              name="product_title"
+                              name="edit_product_title"
                               v-model="selectedProduct.title"
                               
                             />
@@ -194,7 +194,7 @@
                               placeholder="Descripción corta"
                               label="Descripción corta"
                               type="text"
-                              name="product_description_short"
+                              name="edit_product_description_short"
                               v-model="selectedProduct.short_description"
                             />
                           </VCol>
@@ -206,6 +206,7 @@
                               rows="3"
                               row-height="25"
                               shaped
+                              name="edit_product_description"
                               v-model="selectedProduct.description"
                             ></v-textarea>
                           </VCol>
@@ -214,7 +215,7 @@
                               placeholder="Stock Actual"
                               label="Stock Actual"
                               type="text"
-                              name="product_stock"
+                              name="edit_product_stock"
                               v-model="selectedProduct.stock"
                               readonly
                             />
@@ -389,7 +390,7 @@
                               placeholder="Cantidad"
                               label="Cantidad"
                               type="Number"
-                              name="product_title"
+                              name="stock_form"
                               v-model="stockOperation.quantity"
                               @keyup="stockCalculate()"
                             />
@@ -977,6 +978,11 @@
           .dispatch(GET_PRODUCT_BY_ID, idAccount)
           .then((response) => {
             this.selectedProduct = Object.assign({}, response.data);
+            setTimeout(() => {
+              this.validateFormItem('add_stock_form')
+              this.validateFormItem('edit_product_form')
+
+            }, 200);
             return new Promise((resolve) => {
                 resolve(response.data);
             });
@@ -1075,17 +1081,23 @@
       },
       hideModal(){
         this.modal.hide()
+        this.destroyFormVal()
+        this.resetStockForm()
       },
       resetStockForm(){
         this.stockOperation = {
-          type:-1,
+          type:1,
           quantity:''
         }
       },
       resetNewProductForm(){
-        this.stockOperation = {
-          type:-1,
-          quantity:''
+        this.newProduct = {
+          title:'',
+          short_description:'',
+          stock:'',
+          unit:'KG',
+          isDismantling: false ,
+          dismantling:[],
         }
       },
       createdProduct(){
@@ -1174,7 +1186,7 @@
             break;
           case 'edit_product_form':
             fieldByForm = {
-              new_product_title: {
+              edit_product_title: {
                 validators: {
                   notEmpty: {
                     message: "El campo de titulo es obligatorio"
@@ -1185,7 +1197,7 @@
                   },
                 }
               },
-              new_product_description: {
+              edit_product_description: {
                 validators: {
                   notEmpty: {
                     message: "La descripción es necesaria"
@@ -1196,7 +1208,7 @@
                   },
                 }
               },
-              new_product_short_description: {
+              edit_product_short_description: {
                 validators: {
                   notEmpty: {
                     message: "La descripción corta es necesaria"
@@ -1207,65 +1219,21 @@
                   },
                 }
               },
-              new_product_stock: {
-                validators: {
-                  notEmpty: {
-                    message: "Debes agregar un stock Inicial"
-                  },
-                  regexp: {
-                    regexp: /^[0-9]+$/i,
-                    message: 'Debe ser númerico',
-                  },
-                }
-              }
             }
             break;
           case 'add_stock_form':
             fieldByForm = {
-              new_product_title: {
+              stock_form: {
                 validators: {
                   notEmpty: {
                     message: "El campo de titulo es obligatorio"
                   },
                   regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@$_ñ_ ]+$/i,
-                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
-                  },
-                }
-              },
-              new_product_description: {
-                validators: {
-                  notEmpty: {
-                    message: "La descripción es necesaria"
-                  },
-                  regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@$_ñ_ ]+$/i,
-                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
-                  },
-                }
-              },
-              new_product_short_description: {
-                validators: {
-                  notEmpty: {
-                    message: "La descripción corta es necesaria"
-                  },
-                  regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@$_ñ_ ]+$/i,
-                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
-                  },
-                }
-              },
-              new_product_stock: {
-                validators: {
-                  notEmpty: {
-                    message: "Debes agregar un stock Inicial"
-                  },
-                  regexp: {
                     regexp: /^[0-9]+$/i,
-                    message: 'Debe ser númerico',
+                    message: 'Debe ser numerico',
                   },
                 }
-              }
+              },
             }
             break;
           default:
@@ -1276,8 +1244,6 @@
       formsActions(id){
         const sendButton = document.getElementById(id+'_button')
         this.forms[id].on("core.form.valid", () => {
-
-          console.log('good')
           switch (id) {
             case 'new_product_form':
               this.createdProduct()
@@ -1295,21 +1261,26 @@
         }).on("core.field.valid", () => {
           sendButton.disabled = false
           sendButton.classList.remove('v-btn--disabled')
-          console.log('good2')
 
         }).on("core.form.invalid", () => {
           sendButton.disabled = true
           sendButton.classList.add('v-btn--disabled')
-          console.log('error')
 
         }).on("core.field.invalid", () => {
           sendButton.disabled = true
           sendButton.classList.add('v-btn--disabled')
-          console.log('error2')
 
         });
       },
+      destroyFormVal(){
+        try{
+          this.forms['edit_product_form'].destroy()
+          this.forms['add_stock_form'].destroy()
+        } catch{
+          
+        }
 
+      }
     },
     mounted(){
       this.initOptionsTable()
