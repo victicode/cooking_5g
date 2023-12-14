@@ -48,18 +48,19 @@ Route::middleware('jwt.verify')->post('/logout', [AuthController::class, 'logout
 Route::middleware('jwt.verify')->prefix('user')->name('user.')->group(function () {
     Route::get('/', [AuthController::class, 'getUser'])->name('getUser');
 });
-Route::middleware('jwt.verify')->prefix('order')->name('user.')->group(function () {
+Route::middleware('jwt.verify')->prefix('order')->name('order.')->group(function () {
     Route::get('/', [OrderController::class, 'index'])->name('getOrders');
     Route::get('/get-last', [OrderController::class, 'getLastByType']);
     Route::get('/get-by-id/{id}',[OrderController::class, 'getOrderById']);
     
 });
-Route::middleware('jwt.verify')->prefix('products')->name('user.')->group(function () {
+Route::middleware('jwt.verify')->prefix('products')->name('product.')->group(function () {
     Route::get('/', [ProductController::class, 'index']);
-    Route::get('/store', [ProductController::class, 'storeProduct']);
+    Route::post('/',[ProductController::class, 'storeProduct']);
     Route::get('/get-critical-stock', [ProductController::class, 'getProductsCriticalStock']);
     Route::get('/get-by-id/{id}',[ProductController::class, 'getProductById']);
     Route::get('/get-by-search',[ProductController::class, 'getProductBySearch']);
+
 
 
 });

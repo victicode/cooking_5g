@@ -75,10 +75,6 @@ export default {
   }),
   created(){
     document.querySelector("body").style.background ="#9e9e9e23"
-
-    window.onbeforeunload = function(e) {
-      console.log("hola");
-    };
     this.emitter.on("displayOverlayLoad", (status) => {
       this.overlayLoad = status
     })

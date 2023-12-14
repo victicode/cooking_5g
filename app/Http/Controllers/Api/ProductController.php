@@ -39,9 +39,39 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function storeProduct(Request $request)
     {
-        //
+        $imgPath = '';
+        if ($request->img) {
+            $imgPath = 'images/product/' . trim(str_replace(' ', '_', $request->title ));
+            $request->file('img')->move(public_path() . '/images/product/', $imgPath);
+        }
+
+        // $validated = $this->validateRequiredFields($request->all());
+
+        // if (!$validated['validated']) {
+        //     return $this->returnFail(400, $validated['message']);
+        // }
+
+
+
+            $product = Product::create([
+                'title'             => $request->title,
+                'description'       => $request->description,
+                'short_description' => $request->short_description,
+                'stock'             => $request->initial_stock,
+                'type_of_unit'      => $request->type_unit,
+                'img'               => $imgPath,
+                'is_dismantling'    => 1,
+                'created_by'        => 1,
+                'updated_by'        => 1
+        
+                ]);
+
+        
+
+        return $this->returnSuccess(200, $product );
+
     }
     public function getProductById($id){
         return $this->returnSuccess(200, Product::with(['dismantling.products_pieces'])->find($id));
@@ -61,10 +91,6 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function storeProduct(Request $request)
-    {
-        //
-    }
 
     /**
      * Display the specified resource.
@@ -109,5 +135,51 @@ class ProductController extends Controller
     public function destroy($id)
     {
         //
+    }
+    private function validateRequiredFields($inputRequest)
+    {
+
+ 
+
+        if (!array_key_exists('title', $inputRequest) && empty($inputRequest['title']) )  {
+            return [
+                'validated' => false,
+                'message' => 'El titulo del producto es requerido.',
+            ];
+        }
+        if (!array_key_exists('description', $inputRequest) && empty($inputRequest['description']) ) {
+            return [
+                'validated' => false,
+                'message' => 'La descripción del producto es requerida.',
+            ];
+        }
+        if (!array_key_exists('short_description', $inputRequest) && empty($inputRequest['short_description']) ){
+            return [
+                'validated' => false,
+                'message' => 'La descripción corta es requerida.',
+            ];
+        }
+        if ( !array_key_exists('initial_stock', $inputRequest) && empty($inputRequest['initial_stock']) ){ 
+            return [
+                'validated' => false,
+                'message' => 'El stock inicial es requerido.',
+            ];
+        }
+        if (!array_key_exists('type_unit', $inputRequest) && empty($inputRequest['type_unit'])) {
+            return [
+                'validated' => false,
+                'message' => 'El tipo de unidad es requerido.',
+            ];
+        }
+        if (!array_key_exists('is_dismantling', $inputRequest) ){
+            return [
+                'validated' => false,
+                'message' => 'Se requiere que especifique si trae despecies.',
+            ];
+        }
+
+        return [
+            'validated' => true,
+        ];
     }
 }

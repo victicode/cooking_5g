@@ -14,6 +14,7 @@ class Product extends Model
         'description',
         'short_description',
         'stock',
+        'type_of_unit',
         'img',
         'is_dismantling',
         'created_by',

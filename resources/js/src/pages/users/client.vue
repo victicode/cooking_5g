@@ -70,11 +70,7 @@
             </VBtn>
           </VCol>
         </VRow>
-<<<<<<< HEAD
         <div class="card-datatable table-responsive d-none">
-=======
-        <div class="card-datatable table-responsive">
->>>>>>> b2d0ed98a39057e8591a25ebc2dbf90adbcce70e
           <table class="datatables-basic table" id="data-table">
           </table>
         </div>

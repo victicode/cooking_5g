@@ -266,7 +266,7 @@
                                       no-filter
                                       no-data-text="No se encontraron resultados"
                                       @keyup="searchDismantling($event,index)"
-                                      @click:clear="clearSeachDismantling(index)"
+                                      @click:clear="clearSearchDismantling(index)"
                                       @update:modelValue="selectDismantling($event,index,1)"
                                     ></v-autocomplete>
                                   </VCol>
@@ -508,20 +508,20 @@
                         
                         <VCol cols="12"  class=" ">
                           <div class="img-content mx-auto">
-                            <label for="image-input">
+                            <label for="newProduct-img">
                               <VImg
                                 width="200"
                                 height="200"
                                 class="rounded  xxx"
-                                src="images/product/default.png "
+                                :src="newProduct.img"
                                 style="border-radius:10%!important"
-                                id="newProduct__img"
+                                id="newProduct-img-content"
                               />
                               <div class="overlay-img">
                                 <VIcon color="white" size="x-large" icon="majesticons:image-plus"/>
                               </div>
                             </label>
-                            <input type="file"  id="image-input" class="d-none" @change="onFileChange" >
+                            <input type="file"  id="newProduct-img" ref="newProductImg" class="d-none" @change="onFileChange" >
                           </div>
                         </VCol>
                         <VCol cols="12" md="6" class="form-group">
@@ -613,7 +613,7 @@
                                     no-filter
                                     no-data-text="No se encontraron resultados"
                                     @keyup="searchDismantling($event,index)"
-                                    @click:clear="clearSeachDismantling(index)"
+                                    @click:clear="clearSearchDismantling(index)"
                                     @update:modelValue="selectDismantling($event,index,2)"
                                   ></v-autocomplete>
                                 </VCol>
@@ -756,6 +756,7 @@
       forms:[],
       table:'',
       newProduct:{
+        img:'images/product/default.png',
         title:'',
         description:'',
         short_description:'',
@@ -1009,7 +1010,11 @@
       },
       onFileChange(e) {
         const file = e.target.files[0];
-        this.selectedProduct.img = URL.createObjectURL(file);
+        console.log(e)
+
+       return e.target.id == 'newProduct-img' 
+       ? this.newProduct.img = URL.createObjectURL(file)
+       : this.selectedProduct.img = URL.createObjectURL(file)
       },
       bootstrapOptions(){
         setTimeout(() => {
@@ -1071,18 +1076,19 @@
       searchDismantling(e, index){ 
         debounce(this.getProducts, 200)(e.target.value, index)
       },
-      clearSeachDismantling(index){
+      clearSearchDismantling(index){
         this.getProducts('',index)
       },
       selectDismantling(e,index,type){
         return type == 2 
-        ? this.newProduct.dismantling[index].id = e
+        ? this.newProduct.dismantling[index].products_pieces.id = e
         : this.selectedProduct.dismantling[index].products_pieces.id = e
       },
       hideModal(){
         this.modal.hide()
-        this.destroyFormVal()
-        this.resetStockForm()
+        this.destroyFormVal();
+        this.resetStockForm();
+        this.resetNewProductForm()
       },
       resetStockForm(){
         this.stockOperation = {
@@ -1092,6 +1098,7 @@
       },
       resetNewProductForm(){
         this.newProduct = {
+          img:'images/product/default.png',
           title:'',
           short_description:'',
           stock:'',
@@ -1186,6 +1193,14 @@
             break;
           case 'edit_product_form':
             fieldByForm = {
+              
+              edit_product_title: {
+                validators: {
+                  notEmpty: {
+                    message: "Debes subir una imagen"
+                  },
+                }
+              },
               edit_product_title: {
                 validators: {
                   notEmpty: {
