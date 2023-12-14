@@ -17,7 +17,8 @@ import middlewarePipeline from './middlewares/middlewarePipeline';
 import "bootstrap";
 import mitt from 'mitt'
 loadFonts()
-
+const emitter = mitt()
+const app = createApp(App)
 
 // Create vue app
 window.popStateDetected = false
@@ -46,6 +47,7 @@ router.beforeEach(async (to, from, next) => {
   //     next(); 
   // }
   // Caso 3 
+  emitter.emit('displayOverlayLoad', true)
   const middleware = to.meta.middleware
   const context = {
     to,
@@ -66,8 +68,7 @@ router.beforeEach(async (to, from, next) => {
 // console.log(store)
 
 
-const emitter = mitt()
-const app = createApp(App)
+
 app.use(VueAxios, axios);
 app.use(vuetify)
 app.use(router)

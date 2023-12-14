@@ -78,295 +78,348 @@
     </VCol>
     <div v-if="Object.keys(selectedOrder).length > 2">
       <div class="modal animate__animated animate__fadeInDown" id="viewOrder" tabindex="-1" aria-labelledby="viewOrderLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl mt-10">
+        <div class="modal-dialog modal-xl mt-10" >
           <div class="modal-content">
             <VCol
               cols="12"
-              class="pa-0"
+              class="pa-0 d-flex justify-center"
+              style="position: relative;"
             >
-              <VCard>
-                <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column pa-2 pa-md-5 ">
-                  <VRow  class="mb-2 ma-0">
-                    <VCol
-                      cols="12"
-                      md="6"
-                      class="py-0"
-                    >
-                      <div class="my-md-4 my-2 text-center text-md-start">
-                        <h2>Orden de productos</h2>
-                        <h3 class="mt-2">
-                          <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
-                            {{ selectedOrder.status_info.status }}
-                          </v-chip>
-
-                        </h3>
-                      </div>
-                      <div class="my-3 my-md-0  d-block d-md-none text-center text-md-end ">
-                        <h4 class="font-400">
-                          Orden N°: 
-                          <b>
-                            {{ '0000000'.slice(0, 6-selectedOrder.id)+ selectedOrder.id }}
-                          </b> 
-                        </h4>
-                      </div>
-                      <div >
-                        <div class="my-2  text-start">
-                          Solicitante: {{ selectedOrder.user.name.toUpperCase() }}
-                        </div>
-                        <div class="my-2 text-start">
-                          Dirección de destino: {{ selectedOrder.other_address }}
-                        </div>
-                      </div>
-                    
-                    </VCol>
-                    <VCol
-                      cols="12"
-                      md="6"
-                      class="py-0"
-                    >
-                      <div class="my-md-4 my-0  d-none d-md-block text-center text-md-end ">
-                        <h4 class="font-400">
-                          Orden N°: 
-                          <b>
-                            {{ orderNumberFormat(selectedOrder.id) }}
-                          </b> 
-                        </h4>
-                      </div>
-                      <div >
-                        <div class="my-2  text-start text-md-end">
-                          Fecha: {{ moment(selectedOrder.created_at).format('DD/MM/YYYY HH:mm:ss') }}
-                        </div>
-                        <div class="my-2  text-start text-md-end">
-                          Tracker ID: {{ selectedOrder.trancker }}
-                        </div>
-                      </div>
-                    
-                    </VCol>
-                  </VRow>
-                  <div>
-                    <OrderProductsTables :products="selectedOrder.products" />
+            
+              <VCol
+                cols="12"
+              >
+                <VCard class="modal__content">
+                  <div class="modal__close-button" >
+                    <v-col  class="pa-0 pe-4">
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                    </v-col>
                   </div>
-                  <VDivider  />
-                  <div class="mt-5 w-100 d-flex  justify-center">
-                    <VCardActions class=" justify-center w-75">
-                      <VBtn
-                        color="white"
-                        class="bg-secondary text-white w-50"
-                        @click="modal.hide()"
+                  <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column pa-2 pa-md-5 ">
+                    <VRow  class="mb-2 ma-0">
+                      <VCol
+                        cols="12"
+                        md="6"
+                        class="py-0"
                       >
-                        <VIcon icon="mingcute:close-fill" />
-                        <span class="ms-2">Cerrar</span>
-                      </VBtn>
-                    </VCardActions>
+                        <div class="my-md-4 my-2 text-center text-md-start">
+                          <h2>Orden de productos</h2>
+                          <h3 class="mt-2">
+                            <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
+                              {{ selectedOrder.status_info.status }}
+                            </v-chip>
+
+                          </h3>
+                        </div>
+                        <div class="my-3 my-md-0  d-block d-md-none text-center text-md-end ">
+                          <h4 class="font-400">
+                            Orden N°: 
+                            <b>
+                              {{ '0000000'.slice(0, 6-selectedOrder.id)+ selectedOrder.id }}
+                            </b> 
+                          </h4>
+                        </div>
+                        <div >
+                          <div class="my-2  text-start">
+                            Solicitante: {{ selectedOrder.user.name.toUpperCase() }}
+                          </div>
+                          <div class="my-2 text-start">
+                            Dirección de destino: {{ selectedOrder.other_address }}
+                          </div>
+                        </div>
+                      
+                      </VCol>
+                      <VCol
+                        cols="12"
+                        md="6"
+                        class="py-0"
+                      >
+                        <div class="my-md-4 my-0  d-none d-md-block text-center text-md-end ">
+                          <h4 class="font-400">
+                            Orden N°: 
+                            <b>
+                              {{ orderNumberFormat(selectedOrder.id) }}
+                            </b> 
+                          </h4>
+                        </div>
+                        <div >
+                          <div class="my-2  text-start text-md-end">
+                            Fecha: {{ moment(selectedOrder.created_at).format('DD/MM/YYYY HH:mm:ss') }}
+                          </div>
+                          <div class="my-2  text-start text-md-end">
+                            Tracker ID: {{ selectedOrder.trancker }}
+                          </div>
+                        </div>
+                      
+                      </VCol>
+                    </VRow>
+                    <div>
+                      <OrderProductsTables :products="selectedOrder.products" />
+                    </div>
+                    <VDivider  />
+                    <div class="mt-5 w-100 d-flex  justify-center">
+                      <VCardActions class=" justify-center w-75">
+                        <VBtn
+                          color="white"
+                          class="bg-secondary text-white w-50"
+                          @click="hideModal()"
+                        >
+                          <VIcon icon="mingcute:close-fill" />
+                          <span class="ms-2">Cerrar</span>
+                        </VBtn>
+                      </VCardActions>
+                    </div>
                   </div>
-                </div>
-              </VCard>
+                </VCard>
+              </VCol>
             </VCol>
           </div>
         </div>
       </div>
       <div class="modal animate__animated animate__fadeInDown" id="changeStatusOrder" tabindex="-1" aria-labelledby="changeStatusOrderLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl mt-10">
+        <div class="modal-dialog modal-xl mt-10" >
           <div class="modal-content">
             <VCol
               cols="12"
-              class="pa-0"
+              class="pa-0 d-flex justify-center"
+              style="position: relative;"
             >
-              <VCard>
-                <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
-                  <VRow  class="mb-2 ma-0">
-                    <VCol
-                      cols="12"
-                      class="py-0"
-                    >
-                      <div class="my-md-4 my-2 text-center">
-                        <h2>Linea de tiempo Orden #{{ orderNumberFormat(selectedOrder.id) }}</h2>
-                        <h3 class="mt-2">
-                          <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
-                            {{ selectedOrder.status_info.status }}
-                          </v-chip>
-
-                        </h3>
-                      </div>
-                    </VCol>
-                    <VCol
-                      cols="12"
-                      class="px-md-10 px-0 overflow-scroll"
-                      style=""
-                    >
-                      <v-timeline direction="horizontal"  class="timelapse ">
-                        <v-timeline-item
-                          dot-color="#d06427"
-                          icon="ic:outline-pending-actions"
-                          fill-dot
-                          size="large"
-                        >
-                          <template v-slot:opposite>
-                            <h3>
-                              Orden creada
-                            </h3>
-                          </template>
-    
-                          <div class="text-h6">
-                            <h4>
-                              {{  moment(selectedOrder.created_at).format('DD/MM/YYYY') }}
-                            </h4>
-                          </div>
-    
-                        </v-timeline-item>
-                        <v-timeline-item
-                          :dot-color="selectedOrder.status > 1 ? '#d06427' :'#fff' "
-                          icon="carbon:delivery-parcel"
-                          fill-dot
-                          size="large"
-                        >
-                          <template v-slot:opposite v-if="selectedOrder.status > 1">
-                            <h3>
-                              En transito
-                            </h3>
-                          </template>
-                            <div class="text-h6" v-if="selectedOrder.status == 2">
-                              <h4>
-                                {{  moment(selectedOrder.updated_at).format('DD/MM/YYYY') }}
-                              </h4>
-                            </div>
-                        </v-timeline-item>
-                        <v-timeline-item
-                          :dot-color="selectedOrder.status == 3 ? '#d06427' :'#fff' "
-                          icon="line-md:confirm-circle"
-                          fill-dot
-                          size="large"
-                        >
-                          <template v-slot:opposite v-if="selectedOrder.status == 3">
-                            <h3>
-                              Completado
-                            </h3>
-                          </template>
-                            <div class="text-h6" v-if="selectedOrder.status == 3">
-                              <h4>
-                                {{  moment(selectedOrder.updated_at).format('DD/MM/YYYY') }}
-                              </h4>  
-                            </div>
-                        </v-timeline-item>
-                        <v-timeline-item
-                          dot-color="#ff5538"
-                          icon="ic:outline-cancel"
-                          fill-dot
-                          size="large"
-                          v-if="selectedOrder.status == 0"
-                        >
-                          <template v-slot:opposite>
-                            <h3>
-                              Cancelada
-                            </h3>
-                          </template>
-                            <div class="text-h6">
-                              <h4>
-                                {{  moment(selectedOrder.updated_at).format('DD/MM/YYYY') }}
-                              </h4>  
-                            </div>
-                        </v-timeline-item>
-                    
-                      </v-timeline>
-                    </VCol>
-                  </VRow>
-                    
-
-                  <VDivider  />
-                  <div class="mt-5 w-100 d-md-flex  d-block justify-center">
-                    <VCardActions class=" justify-center w-100 d-md-flex  d-block">
-                      <VRow class="ma-0 pa-0 justify-center align-center">
-                        <VCol :cols="selectedOrder.status == 1 ? '5' : selectedOrder.status == 2 ? '5' : '12' "  md="3" offset-md="3" class="">
-                          <VBtn
-                            color="white"
-                            class="bg-secondary text-white w-100 mx-0  my-2 "
-                            @click="modal.hide()"
-                          >
-                            <span class="">Cerrar</span>
-                          </VBtn>
-                        </VCol>
-                        <VCol cols="7" md="3" class="">
-                          <VBtn
-                            color="white"
-                            class=" text-white w-100 bg-success mx-0  my-2 "
-                            @click="modal.hide()"
-                            v-if="selectedOrder.status == 1 || selectedOrder.status == 2 "
-                          >
-                            <span class="">Cambiar estado</span>
-                          </VBtn>
-                        </VCol>
-                      </VRow>
-                      
-                    </VCardActions>
+            
+              <VCol
+                cols="12"
+              >
+                <VCard class="modal__content">
+                  <div class="modal__close-button" >
+                    <v-col  class="pa-0 pe-4">
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                    </v-col>
                   </div>
-                </div>
-              </VCard>
+                  <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
+                    <VRow  class="mb-2 ma-0">
+                      <VCol
+                        cols="12"
+                        class="py-0"
+                      >
+                        <div class="my-md-4 my-2 text-center">
+                          <h2>Linea de tiempo Orden #{{ orderNumberFormat(selectedOrder.id) }}</h2>
+                          <h3 class="mt-2">
+                            <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
+                              {{ selectedOrder.status_info.status }}
+                            </v-chip>
+
+                          </h3>
+                        </div>
+                      </VCol>
+                      <VCol
+                        cols="12"
+                        class="px-md-10 px-0 overflow-scroll relative position-relative py-10 "
+                        style=""
+                      >
+                        <div class="my-8">
+                          <div class="">
+                            <div class="timeline__content">
+                                <div class="d-flex justify-center align-center timeline__content--items">
+                                  <div class="timeline__divider"></div>
+                                  <div class="timeline__content--item-center bg-primary">
+                                    <div class="timeline__content--item-text up">
+                                      <h3>
+                                        Orden creada
+                                      </h3>
+                                    </div>
+      
+                                    <v-icon size="large" color="white" icon="ic:outline-pending-actions"></v-icon>  
+                                    
+                                    <div class="text-h6 timeline__content--item-text down">
+                                      <h4>
+                                        {{  moment(selectedOrder.created_at).format('DD/MM/YYYY') }}
+                                      </h4>
+                                    </div>
+                                  </div>
+                                  <div class="timeline__divider"></div>
+                                </div>
+                                <div class="d-flex justify-center align-center timeline__content--items" v-if="selectedOrder.status >= 1 ">
+                                  <div class="timeline__divider"></div>
+                                  <div class="timeline__middle">
+                                    <input type="checkbox" value="2" id="in-transit" name="newStatus" ref="newStatus" class="d-none" v-if="selectedOrder.status == 1"  @input="validateChangeStatus()">
+                                    <label for="in-transit">
+                                      <div class="timeline__content--item-center " :class="selectedOrder.status > 1 ? 'bg-primary' :'bg-unavailable'">
+                                        <div class="timeline__content--item-text up" :class="{'opacity-0' : selectedOrder.status == 1 } " >
+                                          <h3>
+                                            En transito
+                                          </h3>
+                                        </div>
+          
+                                        <v-icon size="large" color="white" icon="carbon:delivery-parcel"></v-icon>
+                                        
+                                        <div class="text-h6 timeline__content--item-text down" v-if="selectedOrder.status == 2">
+                                          <h4>
+                                            {{  moment(selectedOrder.updated_at).format('DD/MM/YYYY') }}
+                                          </h4>
+                                        </div>
+                                      </div>
+                                    </label>
+                                  </div>
+                                  <div class="timeline__divider"></div>
+                                </div>
+                                <div class="d-flex justify-center align-center timeline__content--items" v-if="selectedOrder.status >= 1" >
+                                  <div class="timeline__divider"></div>
+                                  <div class="timeline__middle">
+                                    <input type="checkbox" value="3" id="complete" name="newStatus" ref="newStatus" class="d-none" v-if="selectedOrder.status == 2"  @input="validateChangeStatus()">
+                                    <label for="complete">
+                                      <div class="timeline__content--item-center " :class="selectedOrder.status > 2 ? 'bg-primary' :'bg-unavailable'">
+                                        <div class="timeline__content--item-text up" :class="{'opacity-0' : selectedOrder.status <= 2 } " >
+                                          <h3>
+                                            Orden entregada
+                                          </h3>
+                                        </div>
+                                        <v-icon size="large" color="white" icon="line-md:confirm-circle"></v-icon>
+                                        <div class="text-h6 timeline__content--item-text down" v-if="selectedOrder.status == 3">
+                                          <h4>
+                                            {{  moment(selectedOrder.updated_at).format('DD/MM/YYYY') }}
+                                          </h4>
+                                        </div>
+                                      </div>
+                                    </label>
+                                  </div>
+                                  <div class="timeline__divider"></div>
+                                </div>
+                                <div class="d-flex justify-center align-center timeline__content--items" v-if="selectedOrder.status == 0" >
+                                  <div class="timeline__divider"></div>
+                                  <div class="timeline__content--item-center bg-error">
+                                    
+                                    <div class="timeline__content--item-text up"  >
+                                          <h3>
+                                            Orden Cancelada
+                                          </h3>
+                                        </div>
+                                        <v-icon size="large" icon="ic:outline-cancel"></v-icon>
+                                        <div class="text-h6 timeline__content--item-text down">
+                                          <h4>
+                                            {{  moment(selectedOrder.updated_at).format('DD/MM/YYYY') }}
+                                          </h4>
+                                        </div>
+                                  </div>
+                                  <div class="timeline__divider"></div>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                      </VCol>
+                    </VRow>
+                    <VDivider  />
+                    <div class="mt-5 w-100 d-md-flex  d-block justify-center">
+                      <VCardActions class=" justify-center w-100 d-md-flex  d-block">
+                        <VRow class="ma-0 pa-0  mt-0 align-center">
+                          <VCol cols="12" md="6" offset-md="3" class="mt-0 py-0 px-0">
+                            <v-col cols="auto" class="">
+                              <VBtn
+                                color="white"
+                                class=" text-white w-100 bg-success mx-0  my-2 "
+                                :class='selectedOrder.status >= 1  ? "v-btn--disabled" : "" '
+                                
+                                @click="orderChangeStatus()"
+                                :disabled="selectedOrder.status >= 2  ? true : false"
+                                id="change-status-order-button"
+                                ref="changeStatusOrderButton"
+                                v-if="selectedOrder.status == 1 || selectedOrder.status == 2 "
+                              >
+                                <span class="">Cambiar estado</span>
+                              </VBtn>
+                            </v-col>
+                          </VCol>
+                        </VRow>
+                      </VCardActions>
+                    </div>
+                  </div>
+                </VCard>
+              </VCol>
             </VCol>
           </div>
         </div>
       </div>
       <div class="modal animate__animated animate__fadeInDown" id="cancelOrder" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl mt-10">
+        <div class="modal-dialog modal-lg mt-10" >
           <div class="modal-content">
             <VCol
               cols="12"
-              class="pa-0"
+              class="pa-0 d-flex justify-center"
+              style="position: relative;"
             >
-              <VCard>
-                <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
-                  <VRow  class="mb-2 ma-0">
-                    <VCol
-                      cols="12"
-                      class="py-0"
-                    >
-                      <div class="my-md-4 my-2 text-center">
-                        <h2>Cancelar orden #{{ orderNumberFormat(selectedOrder.id) }}</h2>
-                        <h3 class="mt-2">
-                          <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
-                            {{ selectedOrder.status_info.status }}
-                          </v-chip>
-
-                        </h3>
-                      </div>
-                    </VCol>
-                    <VCol
-                      cols="12"
-                      class="px-md-10 px-0 text-center"
-                      style=""
-                    >
-                      <h2>¿Seguro que deseas cancelar la orden #{{orderNumberFormat(selectedOrder.id)}}?</h2>
-                    </VCol>
-                  </VRow>
-                    
-
-                  <VDivider  />
-                  <div class="mt-5 w-100 d-md-flex  d-block justify-center">
-                    <VCardActions class=" justify-center w-100 d-md-flex  d-block">
-                      <VBtn
-                        color="white"
-                        class="bg-error text-white w-30 mx-0 mx-md-5 my-2"
-                        @click="modal.hide()"
-                        v-if="selectedOrder.status == 1 || selectedOrder.status == 2"
-                      >
-                        <span class="">Cancelar</span>
-                      </VBtn>
-                      <VBtn
-                        color="white"
-                        class="bg-secondary text-white w-30 mx-0 mx-md-5 my-2"
-                        @click="modal.hide()"
-                      >
-                        <span class="">Cerrar</span>
-                      </VBtn>
-                    </VCardActions>
+            
+              <VCol
+                cols="12"
+              >
+                <VCard class="modal__content">
+                  <div class="modal__close-button" >
+                    <v-col  class="pa-0 pe-4">
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                    </v-col>
                   </div>
-                </div>
-              </VCard>
+                  <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
+                    <VRow  class="mb-2 ma-0">
+                      <VCol
+                        cols="12"
+                        class="py-0"
+                      >
+                        <div class="my-md-4 my-2 text-center">
+                          <h2>Cancelar orden #{{ orderNumberFormat(selectedOrder.id) }}</h2>
+                          <h3 class="mt-2">
+                            <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
+                              {{ selectedOrder.status_info.status }}
+                            </v-chip>
+
+                          </h3>
+                        </div>
+                      </VCol>
+                      <VCol
+                        cols="12"
+                        class="px-md-10 px-0 text-center"
+                        style=""
+                      >
+                        <h2>¿Seguro que deseas cancelar la orden #{{orderNumberFormat(selectedOrder.id)}}?</h2>
+                      </VCol>
+                    </VRow>
+                      
+
+                    <VDivider  />
+                    <div class="mt-5 w-100 d-md-flex  d-block justify-center">
+                      <VCardActions class=" justify-center w-100 d-md-flex  d-block">
+                        <VBtn
+                          color="white"
+                          class="bg-error text-white w-30 mx-0 mx-md-5 my-2"
+                          @click="cancelOrder()"
+                          v-if="selectedOrder.status == 1 || selectedOrder.status == 2"
+                        >
+                          <span class="">Cancelar</span>
+                        </VBtn>
+                      </VCardActions>
+                    </div>
+                  </div>
+                </VCard>
+              </VCol>
             </VCol>
           </div>
         </div>
       </div>
     </div>
-    
+    <v-snackbar
+      v-model="snackShow"
+      :color="snackType"
+      rounded="pill"
+      :timeout="snacktimeOut"
+      width="max-content"
+      class="text-center"
+    >
+     <h4 class="text-white w-100 text-center">
+
+       {{snackMessage}}
+     </h4>
+        <template
+          v-slot:actions
+        >
+        <VBtn  color="white" class="text-white" @click="snackShow=false"> Cerrar</VBtn>
+        </template>
+    </v-snackbar>
   </VRow>
 </template>
 <style lang="scss" >
@@ -379,10 +432,63 @@
   .v-timeline-divider__inner-dot > svg{
     color: #fff!important;
   }
+  .timeline__content{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .timeline__divider{
+    height: 1px; width: calc(50% - 25px);position:relative;  background:#9b9b9b6e
+  }
+  .timeline__content--item-center{
+    display: flex;
+    height: 50px; 
+    width: 50px;
+    border-radius: 50%; 
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s ease-in;
+    &:hover{
+      cursor: pointer;
+    }
+  }
+  
+  .timeline__content--items {
+      width: 100%;
+      & > div > input:checked + label > .timeline__content--item-center{
+        background-color: #d06427!important;
+      }
+      & > div > input:checked + label > .timeline__content--item-center > .up{
+        opacity: 1;
+      }
+  }
+  .timeline__content--item-text{
+    width: 160px;
+    position: absolute;
+    text-align: center;
+    transition: all 0.2s ease-in;
+    &.up{
+      top: 15%;
+    }
+    &.down{
+      bottom: 15%;
+    }
+
+  }
+  .opacity-0{
+    opacity: 0;
+  }
+  .opacity-1{
+    opacity: 1;
+  }
   @media screen and (max-width: 780px){
-    .timelapse{
+    .timeline__content--items{
+
+      width: 180px;
+    }
+    .timelapse, .timeline__content{
       max-width: 800px!important;
-      width: 480px!important;
+      width: max-content;
     }
     .overflow-scroll{
       overflow: scroll;
@@ -398,6 +504,10 @@
     data: () => ({
       modal: '',
       inputDate: '',
+      snackShow:false,
+      snackMessage:'',
+      snackType:'',
+      snacktimeOut:5000,
       selectedOrder:{},
       table:'',
       tableData:{
@@ -483,50 +593,62 @@
             searchable: false, 
             class:'text-center px-0 px-md-3',
             render: ( data, type, row, meta ) =>{ 
-              return `
-              <div class="d-md-flex d-none justify-center ">
-                <span data-id="${row.id}" class="view" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver detalles">
-                  <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-5 iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
-                    <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
-                </span>
-                <span data-bs-toggle="tooltip" data-id="${row.id}" class="change" data-bs-placement="top" data-bs-title="Actualizar estado">
-                  <svg data-id="${row.id}"  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-5 iconify iconify--icon-park-outline" aria-describedby="v-tooltip-35" width="1em" height="1em" viewBox="0 0 48 48">
+              let html = `
+                <div class="d-md-flex d-none justify-center ">
+                  <span data-id="${row.id}" class="view mx-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver detalles">
+                    <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
+                      <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
+                  </span>
+                  <span data-bs-toggle="tooltip" data-id="${row.id}" class="change mx-2" data-bs-placement="top" data-bs-title="Actualizar estado">
+                  <svg data-id="${row.id}"  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--icon-park-outline" aria-describedby="v-tooltip-35" width="1em" height="1em" viewBox="0 0 48 48">
                     <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
-                      <path data-id="${row.id}" d="M24 44c11.046 0 20-8.954 20-20S35.046 4 24 4S4 12.954 4 24s8.954 20 20 20"></path><path d="M33.542 27c-1.274 4.057-5.064 7-9.542 7c-4.477 0-8.268-2.943-9.542-7v6m19.084-18v6c-1.274-4.057-5.064-7-9.542-7c-4.477 0-8.268 2.943-9.542 7"></path></g></svg>
+                      <path data-id="${row.id}" d="M24 44c11.046 0 20-8.954 20-20S35.046 4 24 4S4 12.954 4 24s8.954 20 20 20"></path>
+                      <path data-id="${row.id}" d="M33.542 27c-1.274 4.057-5.064 7-9.542 7c-4.477 0-8.268-2.943-9.542-7v6m19.084-18v6c-1.274-4.057-5.064-7-9.542-7c-4.477 0-8.268 2.943-9.542 7"></path></g></svg>
                 </span>
-                <span data-bs-toggle="tooltip"  data-id="${row.id}"class="cancel data-bs-placement="top" data-bs-title="Cancelar Orden">
+              `
+              if(row.status != 0 && row.status != 3){
+                html += `
+                <span data-bs-toggle="tooltip"  data-id="${row.id}" class="cancel mx-2" data-bs-placement="top" data-bs-title="Cancelar Orden">
                   <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default  iconify iconify--ic" aria-describedby="v-tooltip-11" width="1em" height="1em" viewBox="0 0 24 24">
                     <path data-id="${row.id}" fill="currentColor" d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m3.59-13L12 10.59L8.41 7L7 8.41L10.59 12L7 15.59L8.41 17L12 13.41L15.59 17L17 15.59L13.41 12L17 8.41z"></path></svg>
                 </span>
-              </div>
-              <!- Vista en moviles ->
-              <div class="d-md-none d-flex justify-center position-relative relative ">
-                <div class="dropdown dropup ">
-                  <button type="button dropup" data-bs-toggle="dropdown" aria-expanded="false">
-                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="button" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default v-icon--clickable iconify iconify--mdi" aria-haspopup="menu" aria-expanded="false" aria-owns="v-menu-46" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z"></path></svg>
-                  </button>
-                  <div class="dropdown-menu animate__animated animate__rubberBand">
-                    <span  data-id="${row.id}" class="view me-5" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver detalles">
-                      <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
-                        <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
-                    </span>
-                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="change me-5"  data-bs-placement="top" data-bs-title="Actualizar estado">
-                      <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--icon-park-outline" aria-describedby="v-tooltip-35" width="1em" height="1em" viewBox="0 0 48 48">
-                        <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
-                          <path data-id="${row.id}" d="M24 44c11.046 0 20-8.954 20-20S35.046 4 24 4S4 12.954 4 24s8.954 20 20 20"></path><path d="M33.542 27c-1.274 4.057-5.064 7-9.542 7c-4.477 0-8.268-2.943-9.542-7v6m19.084-18v6c-1.274-4.057-5.064-7-9.542-7c-4.477 0-8.268 2.943-9.542 7"></path></g></svg>
-                    </span>
-                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="cancel" data-bs-placement="top" data-bs-title="Cancelar Orden">
+                `
+              }
+              html +=`</div>`
+
+              html +=`
+                <div class="d-md-none d-flex justify-center position-relative relative ">
+                  <div class="dropdown dropup ">
+                    <button type="button dropup" data-bs-toggle="dropdown" aria-expanded="false">
+                      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="button" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default v-icon--clickable iconify iconify--mdi" aria-haspopup="menu" aria-expanded="false" aria-owns="v-menu-46" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z"></path></svg>
+                    </button>
+                    <div class="dropdown-menu animate__animated animate__rubberBand">
+                      <span  data-id="${row.id}" class="view mx-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver detalles">
+                        <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
+                          <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
+                      </span>
+                      <span data-bs-toggle="tooltip" data-id="${row.id}" class="change mx-3"  data-bs-placement="top" data-bs-title="Actualizar estado">
+                        <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--icon-park-outline" aria-describedby="v-tooltip-35" width="1em" height="1em" viewBox="0 0 48 48">
+                          <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
+                            <path data-id="${row.id}" d="M24 44c11.046 0 20-8.954 20-20S35.046 4 24 4S4 12.954 4 24s8.954 20 20 20"></path>
+                            <path data-id="${row.id}" d="M33.542 27c-1.274 4.057-5.064 7-9.542 7c-4.477 0-8.268-2.943-9.542-7v6m19.084-18v6c-1.274-4.057-5.064-7-9.542-7c-4.477 0-8.268 2.943-9.542 7"></path></g></svg>
+                      </span>
+              `
+              if(row.status != 0 && row.status!= 3){
+                  html += `
+                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="cancel mx-3" data-bs-placement="top" data-bs-title="Cancelar Orden">
                       <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--ic" aria-describedby="v-tooltip-11" width="1em" height="1em" viewBox="0 0 24 24">
                         <path data-id="${row.id}" fill="currentColor" d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m3.59-13L12 10.59L8.41 7L7 8.41L10.59 12L7 15.59L8.41 17L12 13.41L15.59 17L17 15.59L13.41 12L17 8.41z"></path></svg>
                     </span>
+                  `
+                }
+              html +=`
+                    </div>
                   </div>
-                </div>
-              </div> 
-
-              
-              
-              
+                </div> 
               `
+
+              return html
             } 
           },
 
@@ -594,6 +716,11 @@
       },
     }),
     methods:{
+      validateChangeStatus(){
+        document.getElementById('change-status-order-button').disabled = !this.$refs.newStatus.checked;
+        document.getElementById('change-status-order-button').classList.toggle('v-btn--disabled')
+
+      },
       initOptionsTable(){
         document.getElementById('data-table').addEventListener('OptionsActionTable', () => this.activeOptionsTable() )	
       },
@@ -700,7 +827,27 @@
       },
       orderNumberFormat(id){
         return '0000000'.slice( 0, 6 - id.toString().length ) + id 
-      }
+      },
+      showSnackbar(type, messagge){
+        this.snackShow = true;
+        this.snackType = type
+        this.snackMessage = messagge
+      },
+      hideModal(){
+        this.modal.hide()
+      },
+      orderChangeStatus(){
+        this.hideModal()
+        const message = this.$refs.newStatus.value == 2 ? 'Orden colocada en transito' : 'Orden completada exitosamente';
+        const type = this.$refs.newStatus.value == 2 ? 'secondary' : 'success';
+
+        this.showSnackbar(type, message)
+      },
+      cancelOrder(){
+        this.hideModal()
+        this.showSnackbar('error','Orden cancelada')
+      },
+      
     },
     mounted(){
       this.initOptionsTable()
