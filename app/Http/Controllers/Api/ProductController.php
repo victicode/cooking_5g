@@ -76,9 +76,13 @@ class ProductController extends Controller
     }
     public function updateProduct(Request $request, $id)
     {
-        $imgPath = '';
-        if ($request->img) {
-            $imgPath = 'images/product/' . trim(str_replace(' ', '_', $request->title ));
+        $product = Product::find($id);
+
+        if(!$product) return $this->returnFail(400, 'Producto no encontrado');
+
+        $imgPath = $product->img;
+        if ($request->img !== 'undefined') {
+            $imgPath = 'images/product/' . trim(str_replace(' ', '_', $request->title )).'_2';
             $request->file('img')->move(public_path() . '/images/product/', $imgPath);
         }
 
@@ -86,9 +90,7 @@ class ProductController extends Controller
 
         if (!$validated['validated']) return $this->returnFail(400, $validated['message']);
         
-        $product = Product::find($id);
-
-        if(!$product) return $this->returnFail(400, 'Producto no encontrado');
+        
 
         try {
             $product->title             = $request->title;
@@ -102,10 +104,27 @@ class ProductController extends Controller
             $product->save();
             
         } catch (Exception $th) {
-            return $this->returnSuccess(400, $th->getMessage() );
+            return $this->returnSuccess(400, $th->getMessage());
         }
     
-        return $this->returnSuccess(200, [ 'data' => $product,  'data2' => [$request->dismantling, $request->title ] ]);
+        return $this->returnSuccess(200, Product::with(['dismantling.products_pieces'])->find($product->id));
+    }
+    public function addStock(Request $request, $id)
+    {
+        $product = Product::find($id);
+        if(!$product) return $this->returnFail(400, 'Producto no encontrado');
+
+        try {
+            $product->stock            = $request->type == 1 
+            ? $product->stock  + $request->stock
+            : $product->stock  - $request->stock;
+            $product->save();
+            
+        } catch (Exception $th) {
+            return $this->returnSuccess(400, $th->getMessage());
+        }
+    
+        return $this->returnSuccess(200, [$request->type, $request->stock]);
     }
     public function getProductById($id){
         return $this->returnSuccess(200, Product::with(['dismantling.products_pieces'])->find($id));
@@ -118,6 +137,9 @@ class ProductController extends Controller
         }
 
         return $this->returnSuccess(200, $products->take(10)->get());
+    }
+    public function getProductBySearchs(Request $request){
+        Product::where('id', '>' ,'6')->delete();
     }
     private function addDismantling($productId, $dismantlingsProducts){
         $dismantlingsProductsArrayFormat = json_decode($dismantlingsProducts,true); 

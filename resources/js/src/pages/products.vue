@@ -5,7 +5,7 @@
   import 'datatables.net-dt/css/jquery.dataTables.min.css';
   import * as bootstrap from 'bootstrap'
   import debounce from 'debounce';
-  import { GET_PRODUCT_BY_ID, GET_PRODUCT_BY_SEARCH, STORE_PRODUCT } from "@/core/services/store/product.module";
+  import { GET_PRODUCT_BY_ID, GET_PRODUCT_BY_SEARCH, STORE_PRODUCT, UPDATE_PRODUCT, ADD_STOCK} from "@/core/services/store/product.module";
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue'
   import { func } from '@/core/services/utils/utils.js'
   import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
@@ -13,6 +13,7 @@
   import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
   import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
   import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
+import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/js/utils/closest';
 
   
 </script>
@@ -164,7 +165,7 @@
                           
                           <VCol cols="12"  class=" ">
                             <div class="img-content mx-auto">
-                              <label for="image-input">
+                              <label for="editProduct-img">
                                 <VImg
                                   width="200"
                                   height="200"
@@ -177,8 +178,7 @@
                                 </div>
                               </label>
                               <VCol cols="12" md="6" class="form-group">
-
-                                <input type="file"  id="image-input" class="d-none" @change="onFileChange" >
+                                <input type="file" id="editProduct-img" ref="editProductImg" name="edit_product_img"  class="d-none" @change="onFileChange" >
                               </VCol>
                             </div>
                           </VCol>
@@ -236,6 +236,7 @@
                               color="primary"
                               label="Tiene despieces" 
                               v-model="selectedProduct.is_dismantling" :value="1" 
+                              @change="validateSwitch($event)"
                             />
                           </VCol>
                         </VRow>
@@ -277,7 +278,7 @@
                                     <VTextField
                                       placeholder="Unidades que trae"
                                       label="Unidades que trae"
-                                      type="text"
+                                      type="number"
                                       :name="'product_desmantling_quantity_'+index"
                                       v-model="item.quantity"
                                       
@@ -586,6 +587,7 @@
                             label="Tiene despieces" 
                             :value="1" 
                             v-model="newProduct.isDismantling"
+                            @change="validateSwitch($event)"
                           />
                         </VCol>
                       </VRow>
@@ -629,7 +631,7 @@
                                   <VTextField
                                     placeholder="Unidades que trae"
                                     label="Unidades que trae"
-                                    type="text"
+                                    type="number"
                                     :name="'product_desmantling_quantity_'+index"
                                     v-model="item.quantity"
                                     
@@ -1113,6 +1115,7 @@
           isDismantling: 0 ,
           dismantling:[],
         }
+        this.$refs.newProductImg.value =''
       },
       createdProduct(){
         this.sendingButton('new_product_form_button')
@@ -1145,31 +1148,24 @@
           })
         
       },
-      sendingButton(id){
-        document.getElementById(id).disabled = true
-        document.getElementById(id).textContent = 'Cargando...'
-      },
-      readyButton(id){
-        document.getElementById(id).disabled = false
-        document.getElementById(id).textContent = 'Guardar'
-      },
       updatedProduct(){
 
         this.sendingButton('edit_product_form_button')
         let formData = new FormData();
-        formData.append('title', this.newProduct.title);
-        formData.append('description', this.newProduct.description);
-        formData.append('short_description', this.newProduct.short_description);
-        formData.append('type_unit', this.newProduct.unit);
-        formData.append('img', this.$refs.newProductImg.files[0]);
-        formData.append('is_dismantling', this.newProduct.isDismantling ? 1 : 0);
+        formData.append('title', this.selectedProduct.title);
+        formData.append('description', this.selectedProduct.description);
+        formData.append('short_description', this.selectedProduct.short_description);
+        formData.append('type_unit', this.selectedProduct.type_of_unit);
+        formData.append('img', this.$refs.editProductImg.files[0]);
+        formData.append('is_dismantling', this.selectedProduct.is_dismantling ? 1 : 0);
 
-        if (this.newProduct.isDismantling) {
-          formData.append('dismantling', JSON.stringify(this.newProduct.dismantling) );
+        console.log(this.selectedProduct.is_dismantling)
+        if (this.selectedProduct.isDismantling) {
+          formData.append('dismantling', JSON.stringify(this.selectedProduct.dismantling) );
         }
 
         this.$store
-          .dispatch(STORE_PRODUCT, {id:1, data:formData})
+          .dispatch(UPDATE_PRODUCT, {id:this.selectedProduct.id, data:formData})
           .then((response) => {
             this.filterColumn()
             this.hideModal()
@@ -1185,9 +1181,27 @@
 
       },
       updatedStockProduct(){
-        this.hideModal()
-        this.showSnackbar('success', 'Stock actualizado con exito')
-        this.resetStockForm()
+        this.sendingButton('add_stock_form_button')
+        let formData = new FormData();
+        formData.append('type', this.stockOperation.type);
+        formData.append('stock', this.stockOperation.quantity);
+
+        this.$store
+          .dispatch(ADD_STOCK, {id:this.selectedProduct.id, data:formData})
+          .then((response) => {
+            this.filterColumn()
+            this.hideModal()
+            this.showSnackbar('success', 'Stock actualizado con exito')
+            this.resetStockForm()
+            this.readyButton('add_stock_form_button')
+          })
+          .catch((err) => {
+            console.log(err)
+            this.hideModal()
+            this.showSnackbar('error', err )
+            this.readyButton('add_stock_form_button')
+          })
+        
       },
       deleteProduct(){
         this.hideModal()
@@ -1365,12 +1379,29 @@
       },
       destroyFormVal(){
         try{
+          this.forms['new_product_form'].resetForm()
           this.forms['edit_product_form'].destroy()
           this.forms['add_stock_form'].destroy()
+          
         } catch{
           
         }
 
+      },
+      sendingButton(id){
+        document.getElementById(id).disabled = true
+        document.getElementById(id).textContent = 'Cargando...'
+      },
+      readyButton(id){
+        document.getElementById(id).disabled = true
+        document.getElementById(id).textContent = 'Guardar'
+        document.getElementById(id).setAttribute('class','v-btn v-btn--disabled v-theme--light bg-primary v-btn--density-default v-btn--size-default v-btn--variant-elevated w-100')
+      },
+      validateSwitch(e){
+        let button = document.getElementById(e.target.closest('form').id+'_button')
+        button.disabled = !button.disabled;
+        button.classList.toggle('v-btn--disabled')
+        
       }
     },
     mounted(){
