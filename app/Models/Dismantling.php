@@ -10,7 +10,6 @@ class Dismantling extends Model
     use HasFactory;
     protected $table = "dismantling";
     protected $fillable = [
-        'title',
         'product_id',
         'piece_product_id',
         'quantity',

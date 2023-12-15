@@ -5,7 +5,7 @@
   import 'datatables.net-dt/css/jquery.dataTables.min.css';
   import * as bootstrap from 'bootstrap'
   import debounce from 'debounce';
-  import { GET_PRODUCT_BY_ID, GET_PRODUCT_BY_SEARCH } from "@/core/services/store/product.module";
+  import { GET_PRODUCT_BY_ID, GET_PRODUCT_BY_SEARCH, STORE_PRODUCT } from "@/core/services/store/product.module";
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue'
   import { func } from '@/core/services/utils/utils.js'
   import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
@@ -176,7 +176,10 @@
                                   <VIcon color="white" size="x-large" icon="majesticons:image-plus"/>
                                 </div>
                               </label>
-                              <input type="file"  id="image-input" class="d-none" @change="onFileChange" >
+                              <VCol cols="12" md="6" class="form-group">
+
+                                <input type="file"  id="image-input" class="d-none" @change="onFileChange" >
+                              </VCol>
                             </div>
                           </VCol>
                           <VCol cols="12" md="6" class="form-group">
@@ -253,9 +256,9 @@
                                 <VRow  v-for="(item,index) in selectedProduct.dismantling"  v-bind:key="item.id" class="pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'product_desmantling_'+index">
                                   <VCol cols="12"  md="6" class="form-group">
                                     <v-autocomplete
-                                      :model-value="item.products_pieces.id"
+                                      :model-value="item.piece_product_id"
                                       :loading="loading"
-                                      :items="productOption[index] ?  productOption[index] : [ {id: item.products_pieces.id, title: item.products_pieces.title}]"
+                                      :items="productOption[index] ?  productOption[index] : [ {id: item.piece_product_id, title: item.products_pieces.title}]"
                                       label="Nombre del producto"
                                       item-props="stock"
                                       item-title="title"
@@ -295,7 +298,7 @@
                         <VRow class="ma-0 pa-0  mt-8 align-center">
                           <VCol cols="12" md="4" offset-md="4" class="mt-0 py-0 px-0">
                             <v-col cols="auto" class="">
-                              <VBtn  color="primary" class="w-100 " type="submit" disabled id="edit_product_form_button" > Guardar Cambios</VBtn>
+                              <VBtn  color="primary" class="w-100 " type="submit" disabled id="edit_product_form_button" > Guardar </VBtn>
                             </v-col>
                           </VCol>
                         </VRow>
@@ -400,7 +403,7 @@
                         <VRow class="ma-0 pa-0  mt-8 align-center">
                           <VCol cols="12" md="4" offset-md="4" class="mt-0 py-0 px-0">
                             <v-col cols="auto" class="">
-                              <VBtn  color="primary" class="w-100 " type="submit" disabled id="add_stock_form_button"> Guardar Cambios</VBtn>
+                              <VBtn  color="primary" class="w-100 " type="submit" disabled id="add_stock_form_button"> Guardar </VBtn>
                             </v-col>
                           </VCol>
                         </VRow>
@@ -521,7 +524,10 @@
                                 <VIcon color="white" size="x-large" icon="majesticons:image-plus"/>
                               </div>
                             </label>
-                            <input type="file"  id="newProduct-img" ref="newProductImg" class="d-none" @change="onFileChange" >
+                            <VCol cols="12" md="12"  class="form-group text-center ma-0 mt-0 pa-0">
+
+                              <input type="file"  id="newProduct-img" ref="newProductImg" name="new_product_img" class="d-none" @change="onFileChange" >
+                            </VCol>
                           </div>
                         </VCol>
                         <VCol cols="12" md="6" class="form-group">
@@ -530,6 +536,7 @@
                             label="Nombre del producto"
                             type="text"
                             name="new_product_title"
+                            autocomplete="off"
                             v-model="newProduct.title"
                           />
                         </VCol>
@@ -539,6 +546,7 @@
                             label="Descripción corta"
                             type="text"
                             name="new_product_short_description"
+                            autocomplete="off"
                             v-model="newProduct.short_description"
                           />
                         </VCol>
@@ -560,6 +568,7 @@
                             label="Stock"
                             type="number"
                             name="new_product_stock"
+                            autocomplete="off"
                             v-model="newProduct.stock"
                           />
                         </VCol>
@@ -600,9 +609,8 @@
                               <VRow  v-for="(item,index) in newProduct.dismantling"  v-bind:key="item.id" class="pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'new_product_desmantling_'+index">
                                 <VCol cols="12"  md="6" class="form-group">
                                   <v-autocomplete
-                                    :model-value="item.products_pieces.id"
-                                    :loading="loading"
-                                    :items="productOption[index] ?  productOption[index] : [ {id: item.products_pieces.id, title: item.products_pieces.title}]"
+                                    :model-value="item.piece_product_id"
+                                    :items="productOption[index] ?  productOption[index] : [ {id: item.piece_product_id, title: item.products_pieces.title}]"
                                     label="Nombre del producto"
                                     item-props="stock"
                                     item-title="title"
@@ -762,7 +770,7 @@
         short_description:'',
         stock:'',
         unit:'KG',
-        isDismantling: false ,
+        isDismantling: 0 ,
         dismantling:[],
       },
       stockOperation:{
@@ -1010,8 +1018,6 @@
       },
       onFileChange(e) {
         const file = e.target.files[0];
-        console.log(e)
-
        return e.target.id == 'newProduct-img' 
        ? this.newProduct.img = URL.createObjectURL(file)
        : this.selectedProduct.img = URL.createObjectURL(file)
@@ -1056,6 +1062,7 @@
         this.snackMessage = messagge
       },
       removeDismantlingInput(type, index){
+        this.productOption.splice(index, 1)
         return type == 2 
         ? this.newProduct.dismantling.splice(index, 1)
         : this.selectedProduct.dismantling.splice(index, 1);
@@ -1064,7 +1071,7 @@
       addDismantlingInput(type){
         let newItem = {
           id:'',
-          piece_product_id: '',
+          piece_product_id: null,
           product_id: '',
           products_pieces: { title: '' },
           quantity: '',
@@ -1081,8 +1088,8 @@
       },
       selectDismantling(e,index,type){
         return type == 2 
-        ? this.newProduct.dismantling[index].products_pieces.id = e
-        : this.selectedProduct.dismantling[index].products_pieces.id = e
+        ? this.newProduct.dismantling[index].piece_product_id = e
+        : this.selectedProduct.dismantling[index].piece_product_id = e
       },
       hideModal(){
         this.modal.hide()
@@ -1103,17 +1110,79 @@
           short_description:'',
           stock:'',
           unit:'KG',
-          isDismantling: false ,
+          isDismantling: 0 ,
           dismantling:[],
         }
       },
       createdProduct(){
-        this.hideModal()
-        this.showSnackbar('success', 'Producto creado con exito')
+        this.sendingButton('new_product_form_button')
+        let formData = new FormData();
+        formData.append('title', this.newProduct.title);
+        formData.append('description', this.newProduct.description);
+        formData.append('short_description', this.newProduct.short_description);
+        formData.append('initial_stock', this.newProduct.stock);
+        formData.append('type_unit', this.newProduct.unit);
+        formData.append('img', this.$refs.newProductImg.files[0]);
+        formData.append('is_dismantling', this.newProduct.isDismantling ? 1 : 0);
+
+        if (this.newProduct.isDismantling) {
+          formData.append('dismantling', JSON.stringify(this.newProduct.dismantling) );
+        }
+
+        this.$store
+          .dispatch(STORE_PRODUCT, formData)
+          .then((response) => {
+            this.filterColumn()
+            this.hideModal()
+            this.showSnackbar('success', 'Producto creado con exito')
+            this.readyButton('new_product_form_button')
+          })
+          .catch((err) => {
+            console.log(err)
+            this.hideModal()
+            this.showSnackbar('error', err )
+            this.readyButton('new_product_form_button')
+          })
+        
+      },
+      sendingButton(id){
+        document.getElementById(id).disabled = true
+        document.getElementById(id).textContent = 'Cargando...'
+      },
+      readyButton(id){
+        document.getElementById(id).disabled = false
+        document.getElementById(id).textContent = 'Guardar'
       },
       updatedProduct(){
-        this.hideModal()
-        this.showSnackbar('success', 'Producto actualizado con exito')
+
+        this.sendingButton('edit_product_form_button')
+        let formData = new FormData();
+        formData.append('title', this.newProduct.title);
+        formData.append('description', this.newProduct.description);
+        formData.append('short_description', this.newProduct.short_description);
+        formData.append('type_unit', this.newProduct.unit);
+        formData.append('img', this.$refs.newProductImg.files[0]);
+        formData.append('is_dismantling', this.newProduct.isDismantling ? 1 : 0);
+
+        if (this.newProduct.isDismantling) {
+          formData.append('dismantling', JSON.stringify(this.newProduct.dismantling) );
+        }
+
+        this.$store
+          .dispatch(STORE_PRODUCT, {id:1, data:formData})
+          .then((response) => {
+            this.filterColumn()
+            this.hideModal()
+            this.showSnackbar('success', 'Producto actualizado con exito')
+            this.readyButton('edit_product_form_button')
+          })
+          .catch((err) => {
+            console.log(err)
+            this.hideModal()
+            this.showSnackbar('error', err )
+            this.readyButton('edit_product_form_button')
+          })
+
       },
       updatedStockProduct(){
         this.hideModal()
@@ -1145,6 +1214,13 @@
         switch (id) {
           case 'new_product_form':
             fieldByForm = {
+              new_product_img: {
+                validators: {
+                  notEmpty: {
+                    message: "Debes subir una foto"
+                  },
+                }
+              },
               new_product_title: {
                 validators: {
                   notEmpty: {

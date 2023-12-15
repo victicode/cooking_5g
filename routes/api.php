@@ -57,6 +57,7 @@ Route::middleware('jwt.verify')->prefix('order')->name('order.')->group(function
 Route::middleware('jwt.verify')->prefix('products')->name('product.')->group(function () {
     Route::get('/', [ProductController::class, 'index']);
     Route::post('/',[ProductController::class, 'storeProduct']);
+    Route::post('/{id}',[ProductController::class, 'updateProduct']);
     Route::get('/get-critical-stock', [ProductController::class, 'getProductsCriticalStock']);
     Route::get('/get-by-id/{id}',[ProductController::class, 'getProductById']);
     Route::get('/get-by-search',[ProductController::class, 'getProductBySearch']);

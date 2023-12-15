@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Dismantling;
 use Yajra\DataTables\DataTables;
 use Exception;
 
@@ -47,14 +48,11 @@ class ProductController extends Controller
             $request->file('img')->move(public_path() . '/images/product/', $imgPath);
         }
 
-        // $validated = $this->validateRequiredFields($request->all());
+        $validated = $this->validateRequiredFields($request->all());
 
-        // if (!$validated['validated']) {
-        //     return $this->returnFail(400, $validated['message']);
-        // }
-
-
-
+        if (!$validated['validated']) return $this->returnFail(400, $validated['message']);
+        
+        try {
             $product = Product::create([
                 'title'             => $request->title,
                 'description'       => $request->description,
@@ -62,16 +60,52 @@ class ProductController extends Controller
                 'stock'             => $request->initial_stock,
                 'type_of_unit'      => $request->type_unit,
                 'img'               => $imgPath,
-                'is_dismantling'    => 1,
-                'created_by'        => 1,
-                'updated_by'        => 1
+                'is_dismantling'    => $request->is_dismantling,
+                'created_by'        => $request->user()->id,
+                'updated_by'        => $request->user()->id
+            ]);
+        } catch (Exception $th) {
+            return $this->returnSuccess(400, $th->getMessage() );
+        }
+    
+        if($request->is_dismantling){
+             $this->addDismantling($product->id, $request->dismantling);
+        }
+        return $this->returnSuccess(200, $product);
+
+    }
+    public function updateProduct(Request $request, $id)
+    {
+        $imgPath = '';
+        if ($request->img) {
+            $imgPath = 'images/product/' . trim(str_replace(' ', '_', $request->title ));
+            $request->file('img')->move(public_path() . '/images/product/', $imgPath);
+        }
+
+        $validated = $this->validateRequiredFields($request->all(), 'update');
+
+        if (!$validated['validated']) return $this->returnFail(400, $validated['message']);
         
-                ]);
+        $product = Product::find($id);
 
-        
+        if(!$product) return $this->returnFail(400, 'Producto no encontrado');
 
-        return $this->returnSuccess(200, $product );
+        try {
+            $product->title             = $request->title;
+            $product->description       = $request->description;
+            $product->short_description = $request->short_description;
+            $product->type_of_unit      = $request->type_unit;
+            $product->img               = $imgPath;
+            $product->is_dismantling    = $request->is_dismantling;
+            $product->updated_by        = $request->user()->id;
 
+            $product->save();
+            
+        } catch (Exception $th) {
+            return $this->returnSuccess(400, $th->getMessage() );
+        }
+    
+        return $this->returnSuccess(200, [ 'data' => $product,  'data2' => [$request->dismantling, $request->title ] ]);
     }
     public function getProductById($id){
         return $this->returnSuccess(200, Product::with(['dismantling.products_pieces'])->find($id));
@@ -85,6 +119,17 @@ class ProductController extends Controller
 
         return $this->returnSuccess(200, $products->take(10)->get());
     }
+    private function addDismantling($productId, $dismantlingsProducts){
+        $dismantlingsProductsArrayFormat = json_decode($dismantlingsProducts,true); 
+        foreach ($dismantlingsProductsArrayFormat as $dismantlingProduct) {
+
+            Dismantling::create([
+                'product_id'        => $productId,
+                'piece_product_id'  => $dismantlingProduct['piece_product_id'],
+                'quantity'          => $dismantlingProduct['quantity'],
+            ]);
+        }
+    }   
     /**
      * Store a newly created resource in storage.
      *
@@ -136,11 +181,11 @@ class ProductController extends Controller
     {
         //
     }
-    private function validateRequiredFields($inputRequest)
+    private function validateRequiredFields($inputRequest, $type = "create" )
     {
 
  
-
+        
         if (!array_key_exists('title', $inputRequest) && empty($inputRequest['title']) )  {
             return [
                 'validated' => false,
@@ -159,7 +204,7 @@ class ProductController extends Controller
                 'message' => 'La descripción corta es requerida.',
             ];
         }
-        if ( !array_key_exists('initial_stock', $inputRequest) && empty($inputRequest['initial_stock']) ){ 
+        if ( !array_key_exists('initial_stock', $inputRequest) && empty($inputRequest['initial_stock']) && $type == "create"){ 
             return [
                 'validated' => false,
                 'message' => 'El stock inicial es requerido.',
