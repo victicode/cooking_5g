@@ -78,46 +78,56 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                   </v-col>
                 </div>
                   <div class="d-flex  flex-wrap align-center flex-md-nowrap flex-column flex-md-row">
-                    <div class="ma-auto mx-0 pa-5">
-                      <VImg
-                        width="200"
-                        height="200"
-                        class="rounded"
-                        :src="selectedProduct.img "
-                      />
-                    </div>
-
                     <VDivider :vertical="$vuetify.display.mdAndUp" />
 
                     <div class="w-100">
-                      <VCardItem>
-                        <VCardTitle>{{ selectedProduct.title }}</VCardTitle>
-                      </VCardItem>
+                      <VRow class="ma-0 pa-0">
+                        <VCol cols="12" md="4" class="justify-center d-grid">
+                          <div class="ma-auto mx-0 pa-5 pb-0">
+                            <VImg
+                              width="200"
+                              height="200"
+                              class="rounded"
+                              :src="selectedProduct.img "
+                            />
+                          </div>
+                        </VCol>
+                        <VCol cols="12" md="8" class="mt-0 pt-0">
 
-                      <VCardText>
-                        {{ selectedProduct.description}}
-                      </VCardText>
-                      <div style="border-top: 1px solid rgba(119, 119, 119, 0.356)">
+                          <VCardItem>
+                            <VCardTitle>{{ selectedProduct.title }}</VCardTitle>
+                          </VCardItem>
+    
+                          <VCardText>
+                            {{ selectedProduct.description}}
+                          </VCardText>
+                          <div class="mt-0">
 
-                        <VCardText class="text-subtitle-1">
-                          <span>Stock actual:</span> <span class="font-weight-medium">{{func.numberFormat(selectedProduct.stock)}} {{selectedProduct.type_of_unit }}</span>
-                        </VCardText>
-                        <VCardText class="text-subtitle-1">
-                          <span>Cantidad de despices:</span> <span class="font-weight-medium">{{ selectedProduct.dismantling.length}}</span>
-                        </VCardText>
-                      </div>
+                          <VCardText class="text-subtitle-1 pt-0">
+                            <span class="font-weight-medium">Stock actual:</span> <span class="font-weight-bold">{{func.numberFormat(selectedProduct.stock)}} {{selectedProduct.type_of_unit }}</span>
+                            </VCardText>
+                            <VCardText class="text-subtitle-1 pt-0">
+                              <span class="font-weight-medium">Cantidad de despices:</span> <span class="font-weight-bold">{{ selectedProduct.dismantling.length}}</span>
+                            </VCardText>
+                          </div>
+                        </VCol>
+                      </VRow>
+                      
                       <div style="border-top: 1px solid rgba(119, 119, 119, 0.356)" v-if="selectedProduct.is_dismantling">
 
                         <VCardText class="text-subtitle-1">
                           <p class="mb-0">Despieces:</p> 
+                        <div class="d-block d-md-flex">
                           <b v-for="item in selectedProduct.dismantling" v-bind:key="item.id">
                             <p class="mb-0 ms-2 mt-3" >  
-                              * {{ item.products_pieces.title}}: {{item.quantity}}
+                              <b class="d-inline-flex d-md-none">*</b> {{ item.products_pieces.title}}: {{item.quantity}} <b class="d-none d-md-inline-flex">||</b>
                             </p> 
                           </b>
+                        </div>
 
                         </VCardText>
                       </div>
+                      
                       
                     </div>
                   </div>
@@ -248,12 +258,12 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                                 <v-tooltip text="Agregar nuevo despiece">
                                     <template v-slot:activator="{ props }">
                                       <v-col cols="auto" class="">
-                                        <VBtn v-bind="props" color="primary" class="w-100 " @click="addDismantlingInput(1)"><VIcon icon="bx-plus"/> Agregar despiece</VBtn>
+                                        <VBtn v-bind="props" color="primary" class="w-100 " @click="addDismantlingInput($event, 1)"><VIcon icon="bx-plus"/> Agregar despiece</VBtn>
                                       </v-col>
                                     </template>
                                   </v-tooltip>
                               </VCol>
-                              <div id="desmantling_items" class="pa-0 ma-0 align-center w-100" >
+                              <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
                                 <VRow  v-for="(item,index) in selectedProduct.dismantling"  v-bind:key="item.id" class="pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'product_desmantling_'+index">
                                   <VCol cols="12"  md="6" class="form-group">
                                     <v-autocomplete
@@ -269,6 +279,7 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                                       clearable
                                       no-filter
                                       no-data-text="No se encontraron resultados"
+                                      :name="'product_desmantling_id_'+index"
                                       @keyup="searchDismantling($event,index)"
                                       @click:clear="clearSearchDismantling(index)"
                                       @update:modelValue="selectDismantling($event,index,1)"
@@ -602,12 +613,12 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                               <v-tooltip text="Agregar nuevo despiece">
                                   <template v-slot:activator="{ props }">
                                     <v-col cols="auto" class="">
-                                      <VBtn v-bind="props" color="primary" class="w-100 " @click="addDismantlingInput(2)"><VIcon icon="bx-plus"/> Agregar despiece</VBtn>
+                                      <VBtn v-bind="props" color="primary" class="w-100 " @click="addDismantlingInput($event, 2)"><VIcon icon="bx-plus"/> Agregar despiece</VBtn>
                                     </v-col>
                                   </template>
                                 </v-tooltip>
                             </VCol>
-                            <div id="desmantling_items" class="pa-0 ma-0 align-center w-100" >
+                            <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
                               <VRow  v-for="(item,index) in newProduct.dismantling"  v-bind:key="item.id" class="pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'new_product_desmantling_'+index">
                                 <VCol cols="12"  md="6" class="form-group">
                                   <v-autocomplete
@@ -621,6 +632,7 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                                     variant="outlined"
                                     clearable
                                     no-filter
+                                    :name="'product_desmantling_id_'+index"
                                     no-data-text="No se encontraron resultados"
                                     @keyup="searchDismantling($event,index)"
                                     @click:clear="clearSearchDismantling(index)"
@@ -686,6 +698,9 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
   </VRow>
 </template>
 <style lang="scss">
+  .d-grid{
+    display: grid!important;
+  }
   input,textarea, select{
     font-weight: 600;
   }
@@ -992,6 +1007,7 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
             setTimeout(() => {
               this.validateFormItem('add_stock_form')
               this.validateFormItem('edit_product_form')
+              this.addValidate('edit_product_form', 'update')
 
             }, 200);
             return new Promise((resolve) => {
@@ -1065,12 +1081,28 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
       },
       removeDismantlingInput(type, index){
         this.productOption.splice(index, 1)
-        return type == 2 
-        ? this.newProduct.dismantling.splice(index, 1)
-        : this.selectedProduct.dismantling.splice(index, 1);
+        const idButton = type == 2 
+          ? 'new_product_form_button'
+          : 'edit_product_form_button'
+
+        const button = document.getElementById(idButton)
+
+        this.disabledButton( button, 'remove')
+
+        this.removeValidate(type == 2 
+            ? 'new_product_form'
+            : 'edit_product_form')
+
+        setTimeout(() => {
+            return type == 2 
+          ? this.newProduct.dismantling.splice(index, 1)
+          : this.selectedProduct.dismantling.splice(index, 1);
+        }, 300);
+
+        
         
       },
-      addDismantlingInput(type){
+      addDismantlingInput(e, type){
         let newItem = {
           id:'',
           piece_product_id: null,
@@ -1078,6 +1110,23 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
           products_pieces: { title: '' },
           quantity: '',
         }
+
+
+        const idButton = type == 2 
+          ? 'new_product_form_button'
+          : 'edit_product_form_button'
+
+        const button = document.getElementById(idButton)
+
+        this.disabledButton( button, 'remove')
+
+        setTimeout(() => {
+          
+          this.addValidate(type == 2 
+            ? 'new_product_form'
+            : 'edit_product_form', 'new')
+        }, 500);
+
         return type == 2 
         ? this.newProduct.dismantling.push(newItem)
         : this.selectedProduct.dismantling.push(newItem);
@@ -1089,6 +1138,13 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
         this.getProducts('',index)
       },
       selectDismantling(e,index,type){
+        const idButton = type == 2 
+          ? 'new_product_form_button'
+          : 'edit_product_form_button'
+
+        const button = document.getElementById(idButton)
+
+        this.disabledButton( button, 'remove')
         return type == 2 
         ? this.newProduct.dismantling[index].piece_product_id = e
         : this.selectedProduct.dismantling[index].piece_product_id = e
@@ -1159,8 +1215,9 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
         formData.append('img', this.$refs.editProductImg.files[0]);
         formData.append('is_dismantling', this.selectedProduct.is_dismantling ? 1 : 0);
 
-        console.log(this.selectedProduct.is_dismantling)
-        if (this.selectedProduct.isDismantling) {
+        
+
+        if (this.selectedProduct.is_dismantling) {
           formData.append('dismantling', JSON.stringify(this.selectedProduct.dismantling) );
         }
 
@@ -1390,18 +1447,64 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
       },
       sendingButton(id){
         document.getElementById(id).disabled = true
-        document.getElementById(id).textContent = 'Cargando...'
+        
       },
       readyButton(id){
         document.getElementById(id).disabled = true
-        document.getElementById(id).textContent = 'Guardar'
+        
         document.getElementById(id).setAttribute('class','v-btn v-btn--disabled v-theme--light bg-primary v-btn--density-default v-btn--size-default v-btn--variant-elevated w-100')
       },
       validateSwitch(e){
-        let button = document.getElementById(e.target.closest('form').id+'_button')
-        button.disabled = !button.disabled;
-        button.classList.toggle('v-btn--disabled')
+        this.disabledButton( document.getElementById(e.target.closest('form').id+'_button'), 'toggle')
+      },
+      disabledButton(element, action){
+
+        element.disabled = true;
+        element.classList.add('v-btn--disabled')
+
+        if(action == 'toggle' ){
+          element.disabled = !element.disabled;
+          element.classList.toggle('v-btn--disabled')
+            return
+        }
+        element.disabled = false;
+        element.classList.remove('v-btn--disabled')
+      },
+      addValidate(id,type){
+        // this.forms[id] 
+        let form = document.getElementById(id),
+        quantityInput = type == 'new'
+        ? form.querySelectorAll('input[name*="product_desmantling_quantity_"]')[ form.querySelectorAll('input[name*="product_desmantling_quantity_"]').length - 1]
+        : form.querySelectorAll('input[name*="product_desmantling_quantity_"]'),
+        fieldOptions={
+            quantity: {
+              validators: {
+                notEmpty: {
+                  message: "Agregar la cantidad de piezas "
+                },
+                numeric: {
+                  message: "Debe ser númerico"
+                }
+              }
+            }
+          } 
+
+        if(quantityInput && type == 'new'){
+          this.forms[id].addField(quantityInput.name, fieldOptions.quantity)
+          return
+        }
+
+        quantityInput.forEach((element) => {
+          this.forms[id].addField(element.name, fieldOptions.quantity)
+
+        });
         
+        // console.log(newfield)
+      },
+      removeValidate(id){
+        let form = document.getElementById(id),
+        quantityInput = form.querySelectorAll('input[name*="product_desmantling_quantity_"]')[ form.querySelectorAll('input[name*="product_desmantling_quantity_"]').length - 1]
+        this.forms[id].removeField(quantityInput.name)
       }
     },
     mounted(){

@@ -90,8 +90,6 @@ class ProductController extends Controller
 
         if (!$validated['validated']) return $this->returnFail(400, $validated['message']);
         
-        
-
         try {
             $product->title             = $request->title;
             $product->description       = $request->description;
@@ -101,12 +99,20 @@ class ProductController extends Controller
             $product->is_dismantling    = $request->is_dismantling;
             $product->updated_by        = $request->user()->id;
 
+
+            if($request->is_dismantling){
+                $this->returnSuccess(200, [$this->updateDismantling($product->id, $request->dismantling), json_decode($request->dismantling,true)] );
+           }
+
             $product->save();
             
         } catch (Exception $th) {
             return $this->returnSuccess(400, $th->getMessage());
         }
-    
+        
+
+        
+       
         return $this->returnSuccess(200, Product::with(['dismantling.products_pieces'])->find($product->id));
     }
     public function addStock(Request $request, $id)
@@ -138,9 +144,6 @@ class ProductController extends Controller
 
         return $this->returnSuccess(200, $products->take(10)->get());
     }
-    public function getProductBySearchs(Request $request){
-        Product::where('id', '>' ,'6')->delete();
-    }
     private function addDismantling($productId, $dismantlingsProducts){
         $dismantlingsProductsArrayFormat = json_decode($dismantlingsProducts,true); 
         foreach ($dismantlingsProductsArrayFormat as $dismantlingProduct) {
@@ -151,6 +154,23 @@ class ProductController extends Controller
                 'quantity'          => $dismantlingProduct['quantity'],
             ]);
         }
+    } 
+    private function updateDismantling($productId, $dismantlingsProducts){
+
+        $dismantlingsProductsArrayFormat = json_decode($dismantlingsProducts,true); 
+        Dismantling::where('product_id', $productId)->delete();
+
+        if( $dismantlingsProductsArrayFormat !== null ){
+            foreach ($dismantlingsProductsArrayFormat as $dismantlingProduct) {
+    
+                Dismantling::create([
+                    'product_id'        => $productId,
+                    'piece_product_id'  => $dismantlingProduct['piece_product_id'],
+                    'quantity'          => $dismantlingProduct['quantity'],
+                ]);
+            }
+        }
+
     }   
     /**
      * Store a newly created resource in storage.

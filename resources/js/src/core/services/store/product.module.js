@@ -75,8 +75,8 @@ const actions = {
               
           })
           .catch(( { response } ) => {
-              // console.log(response )
-              reject('Ocurrió un error desconocido al intentar crear el producto');
+              console.log(response)
+              reject('Ocurrió un error desconocido al intentar actualizar el producto');
           });
         }
       });
@@ -94,7 +94,7 @@ const actions = {
           })
           .catch(( { response } ) => {
               // console.log(response )
-              reject('Ocurrió un error desconocido al intentar crear el producto');
+              reject('Ocurrió un error desconocido al intentar crear el stock');
           });
         }
       });
