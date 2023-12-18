@@ -30,10 +30,11 @@ class Order extends Model
             'svg'    => 'http://192.168.42.226:8085/images/status/confirm.svg',
         ],
     );
+    protected $appends = ['status_label'];
 
     public function getStatusLabelAttribute()
     {
-        $this->status_info = $this->statuses[$this->status];  
+      return  $this->statuses[$this->status];  
     }
 
     public function getStatusByKey($key)

@@ -119,7 +119,7 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                         <div class="d-block d-md-flex">
                           <b v-for="item in selectedProduct.dismantling" v-bind:key="item.id">
                             <p class="mb-0 ms-2 mt-3" >  
-                              <b class="d-inline-flex d-md-none">*</b> {{ item.products_pieces.title}}: {{item.quantity}} <b class="d-none d-md-inline-flex">||</b>
+                              <b class="d-inline-flex d-md-none">*</b> {{ item.products_pieces.title}}: {{item.quantity}} {{ item.quantity > 1 ? 'Piezas' : 'Pieza' }} <b class="d-none d-md-inline-flex">||</b>
                             </p> 
                           </b>
                         </div>
@@ -620,7 +620,7 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                                 <VCol cols="12"  md="6" class="form-group">
                                   <v-autocomplete
                                     :model-value="item.piece_product_id"
-                                    :items="productOption[index +'_0'] ?  productOption[index +'_0'] : [ {id: item.piece_product_id, title: item.products_pieces.title}]"
+                                    :items="productOption[index] ?  productOption[index] : [ {id: item.piece_product_id, title: item.products_pieces.title}]"
                                     label="Nombre del producto"
                                     item-props="stock"
                                     item-title="title"
@@ -631,9 +631,9 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                                     no-filter
                                     :name="'product_desmantling_id_'+index"
                                     no-data-text="No se encontraron resultados"
-                                    @keyup="searchDismantling($event,index +'_0')"
-                                    @click:clear="clearSearchDismantling(index+'_'+selectedProduct.id)"
-                                    @update:modelValue="selectDismantling($event, index+'_'+selectedProduct.id,2)"
+                                    @keyup="searchDismantling($event,index )"
+                                    @click:clear="clearSearchDismantling(index)"
+                                    @update:modelValue="selectDismantling($event, index,2)"
                                   ></v-autocomplete>
                                 </VCol>
                                 <VCol cols="8"  md="4" class="form-group">
@@ -695,74 +695,12 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
   </VRow>
 </template>
 <style lang="scss">
-  .d-grid{
-    display: grid!important;
-  }
-  input,textarea, select{
-    font-weight: 600;
-  }
-  .img-content{
-    position:relative;
-    width: auto;
-    max-width: fit-content;
-    border-radius: 10px;
-    &:hover > label > .overlay-img{
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-  .overlay-img{
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background: #3f3f3f70;
-    border-radius: 20px;
-    opacity: 0;
-    transform: scale(0.1);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: all 0.2s ease-in;
-  }
-  .v-autocomplete__selection > span.v-chip{
-    color: white;
-    background: rgb(var(--v-theme-primary)) !important;
-  }
-  .v-switch__track{
-    box-shadow: 0px 0px 17px 2px #727272;
-  }
-  thead > tr > th.title-th{
-    width: 70%!important;
-  }
-  thead > tr > th:nth-child(n+2){
-    width: 15%!important;
-  }
-  .modal__close-button{
-    position: absolute; right: -2%; top:0%
-  }
-  .modal__content{
-    position: initial!important; overflow: visible!important;
-  }
-  #newProduct__img{
-    filter: opacity(0.4);
-  }
-  tr{
-    transition: all 0.2s ease-in;
-  }
-  tr:hover{
-    background: rgba(100,100,100,0.2)!important;
-  }
-  @media screen and (max-width: 780px){
-    .modal__close-button{
-      position: absolute; right: -5%; top: 0%
-    }
-    div.dropdown-menu.large{
-      width:max-content;
-    }
-
-  }
+ thead > tr > th.title-th{
+  width: 70%!important;
+}
+thead > tr > th:nth-child(n+2){
+  width: 15%!important;
+}
 </style>
 
 <script>
@@ -802,7 +740,11 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
           "url": import.meta.env.VITE_VUE_APP_BACKEND_URL+"api/get-products",
           "type": "POST",
           data: function ( data ) {
+            console.log(data)
             data.filter_product_title = document.querySelector('[name="product_title"]').value;
+            data.order_title = data.order[0].column == 1 ? '' : data.order[0].dir
+            data.order_stock = data.order[0].column == 1 ? data.order[0].dir : ''
+
           },
           "crossDomain": true,
           "beforeSend": function (xhr) {
@@ -813,10 +755,12 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
         processing: true,
         serverSide: true,
         columns: [
-          { title: 'Nombre del producto', class:'text-start title-th',
-          render: ( data, type, row, meta ) =>{ 
-              return `${row.title}`
-            }   
+          { 
+            title: 'Nombre del producto', class:'text-start title-th',
+            render: ( data, type, row, meta ) =>{ 
+                console.log(row)
+                return `${row.title}`
+              }   
           },
           { 
             title: 'Stock',

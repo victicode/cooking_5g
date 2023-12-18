@@ -24,7 +24,7 @@ class OrderController extends Controller
 
         return $this->returnSuccess(200, $order );
     }
-    public function getOrdersTable()
+    public function getOrdersTable(Request $request)
     {
         $order = Order::query()->with('user');
 
@@ -35,12 +35,8 @@ class OrderController extends Controller
             $order->where('trancker', 'like', '%'.request('filter_tracker_id').'%');
         }
 
-        $order = $order->get(); 
-
-        foreach ($order  as $key ) {
-            # code...
-            $key->getStatusLabelAttribute();
-        }
+        if(!empty(request('order_sort_date')))   $order->orderBy('created_at', request('order_sort_date'));
+        if(!empty(request('order_sort_status')))  $order->orderBy('status', request('order_sort_status'));
 
         return DataTables::of($order)->toJson();
     }

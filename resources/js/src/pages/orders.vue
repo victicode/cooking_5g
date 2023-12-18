@@ -515,8 +515,12 @@
           "type": "POST",
           data: function ( data ) {
             data.filter_tracker_id = document.querySelector('[name="tracker_id"]').value;
+            console.log(data)
             data.filter_start_date = document.querySelector('[name="start_date"]').value;
             data.filter_end_date = document.querySelector('[name="end_date"]').value;
+
+            data.order_sort_date = data.order[0].column == 0 ? data.order[0].dir : ''
+            data.order_sort_status = data.order[0].column ==  0 ? '' : data.order[0].dir
           },
           "crossDomain": true,
           "beforeSend": function (xhr) {
@@ -565,8 +569,8 @@
           { 
             title: 'Estado ',
             class:'text-center px-0',
-            orderable: true,
             render: ( data, type, row, meta ) =>{ 
+              console.log(row.status)
               return `
               <span 
                 class="  v-chip v-theme--light v-chip--density-comfortable elevation-0 v-chip--size-default v-chip--variant-tonal ${row.status == 1 ? 'bg-warning' : row.status == 2 ? 'bg-secondary' :row.status == 3 ? 'bg-success' : 'bg-error' }" 
@@ -575,10 +579,10 @@
                   <span class="v-chip__underlay"></span>
                   <div class="v-chip__content ">
                     <span class="d-md-flex d-none">
-                      ${row.status_info.status}
+                      ${row.status_label.status}
                     </span>
-                    <span class="d-flex d-md-none" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="${row.status_info.status}">
-                      <img src="${row.status_info.svg}" alt="Mi SVG feliz" height="24" width="24"/>
+                    <span class="d-flex d-md-none" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="${row.status_label.status}">
+                      <img src="${row.status_label.svg}" alt="Mi SVG feliz" height="24" width="24"/>
                     </span>  
                   </div>
               </span>                  
@@ -722,9 +726,6 @@
       },
       initOptionsTable(){
         document.getElementById('data-table').addEventListener('OptionsActionTable', () => this.activeOptionsTable() )	
-      },
-      hola(){
-        console.log('hola')
       },
       activeOptionsTable() {
         document.querySelectorAll('.view').forEach(item => {

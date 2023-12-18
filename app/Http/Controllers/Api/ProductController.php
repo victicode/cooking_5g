@@ -23,6 +23,10 @@ class ProductController extends Controller
     public function getProductsTable(Request $request){
         $products = Product::query();
 
+        if(!empty(request('order_title')))  $products->orderBy('title', request('order_title'));
+
+        if(!empty(request('order_stock')))  $products->orderBy('stock', request('order_stock'));
+
         return DataTables::of($products)->filter(function ($query) {
             if (!empty(request('filter_product_title'))) {
               $query->where('title','like','%'.request('filter_product_title').'%');
