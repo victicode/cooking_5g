@@ -72,6 +72,19 @@ class OrderController extends Controller
         //
     }
 
+    public function changeStatus(Request $request, $idOrder)
+    {
+        $order = Order::find($idOrder);
+
+        if(!$order) return $this->returnFail(404, "Orden no encontrada.");
+
+        if($order->status == $request->newStatus) return $this->returnFail(404, "Nuevo estado no valido.");
+
+        $order->status = $request->newStatus;
+        $order->save();
+
+        return $this->returnSuccess(200, $order );
+    }
     /**
      * Store a newly created resource in storage.
      *

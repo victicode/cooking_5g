@@ -13,7 +13,7 @@
   import moment from 'moment';
   import 'flatpickr/dist/flatpickr.min.css'
   import { Spanish } from "flatpickr/dist/l10n/es.js"
-  import { GET_ORDER_BY_ID } from "@/core/services/store/order.module";
+  import { GET_ORDER_BY_ID, CHANGE_STATUS } from "@/core/services/store/order.module";
 
   DataTable.use(DataTablesCore);
   DataTable.use(Button);
@@ -844,15 +844,47 @@
         this.modal.hide()
       },
       orderChangeStatus(){
-        this.hideModal()
-        const message = this.$refs.newStatus.value == 2 ? 'Orden colocada en transito' : 'Orden completada exitosamente';
-        const type = this.$refs.newStatus.value == 2 ? 'secondary' : 'success';
+        this.sendingButton('change-status-order-button')
+        const message = this.$refs.newStatus.value == 2 
+        ? 'Orden colocada en transito' 
+        : this.$refs.newStatus.value == 3 
+        ? 'Orden completada exitosamente'
+        :'Orden cancelada';
+        
+        const type = this.$refs.newStatus.value == 2 
+        ? 'secondary' 
+        : this.$refs.newStatus.value == 3 
+        ? 'success'
+        : 'error';
 
-        this.showSnackbar(type, message)
+        this.$store
+          .dispatch(CHANGE_STATUS, {id:this.selectedOrder.id, newStatus: this.$refs.newStatus.value})
+          .then((response) => {
+            this.filterColumn()
+            this.hideModal()
+            this.showSnackbar(type, message)
+            this.readyButton('change-status-order-button')
+          })
+          .catch((err) => {
+            console.log(err)
+            this.hideModal()
+            this.showSnackbar('error', err )
+            this.readyButton('change-status-order-button')
+          })
+
+      },
+      sendingButton(id){
+        document.getElementById(id).disabled = true
+        
+      },
+      readyButton(id){
+        document.getElementById(id).disabled = true
+        
+        document.getElementById(id).setAttribute('class','v-btn v-btn--disabled v-theme--light bg-primary v-btn--density-default v-btn--size-default v-btn--variant-elevated w-100')
       },
       cancelOrder(){
-        this.hideModal()
-        this.showSnackbar('error','Orden cancelada')
+        this.$refs.newStatus.value = 0
+        this.orderChangeStatus()
       },
       
     },

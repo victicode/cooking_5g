@@ -101,7 +101,7 @@ class ProductController extends Controller
 
 
             if($request->is_dismantling){
-                $this->returnSuccess(200, [$this->updateDismantling($product->id, $request->dismantling), json_decode($request->dismantling,true)] );
+                $this->returnSuccess(200, [$this->addDismantling($product->id, $request->dismantling), json_decode($request->dismantling,true)] );
            }
 
             $product->save();
@@ -143,85 +143,28 @@ class ProductController extends Controller
         }
 
         return $this->returnSuccess(200, $products->take(10)->get());
-    }
-    private function addDismantling($productId, $dismantlingsProducts){
-        $dismantlingsProductsArrayFormat = json_decode($dismantlingsProducts,true); 
-        foreach ($dismantlingsProductsArrayFormat as $dismantlingProduct) {
-
-            Dismantling::create([
-                'product_id'        => $productId,
-                'piece_product_id'  => $dismantlingProduct['piece_product_id'],
-                'quantity'          => $dismantlingProduct['quantity'],
-            ]);
-        }
-    } 
-    private function updateDismantling($productId, $dismantlingsProducts){
-
-        $dismantlingsProductsArrayFormat = json_decode($dismantlingsProducts,true); 
-        Dismantling::where('product_id', $productId)->delete();
-
-        if( $dismantlingsProductsArrayFormat !== null ){
-            foreach ($dismantlingsProductsArrayFormat as $dismantlingProduct) {
-    
-                Dismantling::create([
-                    'product_id'        => $productId,
-                    'piece_product_id'  => $dismantlingProduct['piece_product_id'],
-                    'quantity'          => $dismantlingProduct['quantity'],
-                ]);
-            }
-        }
-
     }   
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function deleteProduct($productId)
     {
-        //
+        if (!$productId) {
+            return $this->returnFail(400, "El ID del producto es requerido.");
+        }
+
+        $product = Product::find($productId);
+
+        if (!$product) {
+            return $this->returnFail(404, "Producto no encontrada.");
+        }
+
+        $product->delete();
+
+        return $this->returnSuccess(200, ['id' => $productId, 'deleted_at' => $product->deleted_at]);
     }
     private function validateRequiredFields($inputRequest, $type = "create" )
     {
@@ -269,4 +212,19 @@ class ProductController extends Controller
             'validated' => true,
         ];
     }
+    private function addDismantling($productId, $dismantlingsProducts){
+        $dismantlingsProductsArrayFormat = json_decode($dismantlingsProducts,true); 
+        Dismantling::where('product_id', $productId)->delete();
+
+        if( $dismantlingsProductsArrayFormat !== null ){
+            foreach ($dismantlingsProductsArrayFormat as $dismantlingProduct) {
+    
+                Dismantling::create([
+                    'product_id'        => $productId,
+                    'piece_product_id'  => $dismantlingProduct['piece_product_id'],
+                    'quantity'          => $dismantlingProduct['quantity'],
+                ]);
+            }
+        }
+    } 
 }

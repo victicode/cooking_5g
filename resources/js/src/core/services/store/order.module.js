@@ -5,6 +5,7 @@ import JwtService from "@/core/services/jwt.service";
 export const GET_ORDERS      =  "GET_ORDERS";
 export const GET_LAST_ORDERS =  "GET_LAST_SEND_ORDERS";
 export const GET_ORDER_BY_ID =  "GET_ORDER_BY_ID";
+export const CHANGE_STATUS =  "CHANGE_STATUS";
 
 const actions = {
     [GET_ORDERS](context) {
@@ -53,6 +54,23 @@ const actions = {
           })
           .catch(( { response } ) => {
               // console.log(response )
+              reject('Ocurrió un error desconocido al intentar obtener las ordenes');
+          });
+        }
+      });
+    },
+    [CHANGE_STATUS](context,body){
+      return new Promise((resolve, reject) => {
+        if (JwtService.getToken()) {
+          ApiService.setHeader();
+          ApiService.post("api/order/change-status/"+body.id, body)
+          .then(( { data } ) => {
+              console.log(data)
+              resolve(data);
+              
+          })
+          .catch(( { response } ) => {
+              console.log(response )
               reject('Ocurrió un error desconocido al intentar obtener las ordenes');
           });
         }

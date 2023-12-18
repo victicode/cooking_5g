@@ -6,6 +6,7 @@ export const GET_PRODUCTS = "GET_PRODUCTS";
 export const GET_CRITICAL_STOCK_PRODUCTS = "GET_CRITICAL_STOCK_PRODUCTS";
 export const STORE_PRODUCT = "STORE_PRODUCT";
 export const UPDATE_PRODUCT = "UPDATE_PRODUCT"
+export const DELETE_PRODUCT = "DELETE_PRODUCT"
 export const ADD_STOCK = "ADD_STOCK"
 export const GET_PRODUCT_BY_ID = "GET_PRODUCT_BY_ID";
 export const GET_PRODUCT_BY_SEARCH = "GET_PRODUCT_BY_SEARCH";
@@ -64,7 +65,6 @@ const actions = {
       });
     },
     [UPDATE_PRODUCT](context, body) {
-      console.log(body)
       return new Promise((resolve, reject) => {
         if (JwtService.getToken()) {
           ApiService.setHeader();
@@ -82,11 +82,27 @@ const actions = {
       });
     },
     [ADD_STOCK](context, body) {
-      console.log(body)
       return new Promise((resolve, reject) => {
         if (JwtService.getToken()) {
           ApiService.setHeader();
           ApiService.post("api/products/add-stock/"+body.id, body.data)
+          .then(( { data } ) => {
+              console.log(data)
+              resolve(data);
+              
+          })
+          .catch(( { response } ) => {
+              // console.log(response )
+              reject('Ocurrió un error desconocido al intentar crear el stock');
+          });
+        }
+      });
+    },
+    [DELETE_PRODUCT](context, id) {
+      return new Promise((resolve, reject) => {
+        if (JwtService.getToken()) {
+          ApiService.setHeader();
+          ApiService.delete("api/products/"+ id)
           .then(( { data } ) => {
               console.log(data)
               resolve(data);

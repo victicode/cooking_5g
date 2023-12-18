@@ -5,7 +5,7 @@
   import 'datatables.net-dt/css/jquery.dataTables.min.css';
   import * as bootstrap from 'bootstrap'
   import debounce from 'debounce';
-  import { GET_PRODUCT_BY_ID, GET_PRODUCT_BY_SEARCH, STORE_PRODUCT, UPDATE_PRODUCT, ADD_STOCK} from "@/core/services/store/product.module";
+  import { GET_PRODUCT_BY_ID, GET_PRODUCT_BY_SEARCH, STORE_PRODUCT, UPDATE_PRODUCT, ADD_STOCK, DELETE_PRODUCT} from "@/core/services/store/product.module";
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue'
   import { func } from '@/core/services/utils/utils.js'
   import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
@@ -94,19 +94,19 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                         </VCol>
                         <VCol cols="12" md="8" class="mt-0 pt-0">
 
-                          <VCardItem>
+                          <VCardItem class="px-1">
                             <VCardTitle>{{ selectedProduct.title }}</VCardTitle>
                           </VCardItem>
     
-                          <VCardText>
+                          <VCardText class="px-1">
                             {{ selectedProduct.description}}
                           </VCardText>
                           <div class="mt-0">
 
-                          <VCardText class="text-subtitle-1 pt-0">
-                            <span class="font-weight-medium">Stock actual:</span> <span class="font-weight-bold">{{func.numberFormat(selectedProduct.stock)}} {{selectedProduct.type_of_unit }}</span>
+                            <VCardText class="text-subtitle-1 pt-0 px-1">
+                              <span class="font-weight-medium">Stock actual:</span> <span class="font-weight-bold">{{func.numberFormat(selectedProduct.stock)}} {{selectedProduct.type_of_unit }}</span>
                             </VCardText>
-                            <VCardText class="text-subtitle-1 pt-0">
+                            <VCardText class="text-subtitle-1 pt-0 px-1">
                               <span class="font-weight-medium">Cantidad de despices:</span> <span class="font-weight-bold">{{ selectedProduct.dismantling.length}}</span>
                             </VCardText>
                           </div>
@@ -114,7 +114,6 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                       </VRow>
                       
                       <div style="border-top: 1px solid rgba(119, 119, 119, 0.356)" v-if="selectedProduct.is_dismantling">
-
                         <VCardText class="text-subtitle-1">
                           <p class="mb-0">Despieces:</p> 
                         <div class="d-block d-md-flex">
@@ -124,11 +123,9 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                             </p> 
                           </b>
                         </div>
-
                         </VCardText>
                       </div>
-                      
-                      
+
                     </div>
                   </div>
                 </VCard>
@@ -269,7 +266,7 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                                     <v-autocomplete
                                       :model-value="item.piece_product_id"
                                       :loading="loading"
-                                      :items="productOption[index] ?  productOption[index] : [ {id: item.piece_product_id, title: item.products_pieces.title}]"
+                                      :items="productOption[index+'_'+selectedProduct.id] != undefined ?  productOption[index+'_'+selectedProduct.id] : [ {id: item.piece_product_id, title: item.products_pieces.title}]"
                                       label="Nombre del producto"
                                       item-props="stock"
                                       item-title="title"
@@ -280,9 +277,9 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                                       no-filter
                                       no-data-text="No se encontraron resultados"
                                       :name="'product_desmantling_id_'+index"
-                                      @keyup="searchDismantling($event,index)"
-                                      @click:clear="clearSearchDismantling(index)"
-                                      @update:modelValue="selectDismantling($event,index,1)"
+                                      @keyup="searchDismantling($event, index+'_'+selectedProduct.id)"
+                                      @click:clear="clearSearchDismantling(index+'_'+selectedProduct.id)"
+                                      @update:modelValue="selectDismantling($event, index, 1)"
                                     ></v-autocomplete>
                                   </VCol>
                                   <VCol cols="8"  md="4" class="form-group">
@@ -467,7 +464,7 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                       
                     <VDivider  />
                     <div class="mt-5 w-100 d-md-flex  d-block justify-center">
-                      <VCardActions class=" justify-center w-100 d-md-flex  d-block">
+                      <VCardActions class=" justify-center w-100 d-md-flex  d-flex">
                         <VBtn
                           color="white"
                           class="bg-error text-white w-50 mx-0 mx-md-5 my-2"
@@ -613,7 +610,7 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                               <v-tooltip text="Agregar nuevo despiece">
                                   <template v-slot:activator="{ props }">
                                     <v-col cols="auto" class="">
-                                      <VBtn v-bind="props" color="primary" class="w-100 " @click="addDismantlingInput($event, 2)"><VIcon icon="bx-plus"/> Agregar despiece</VBtn>
+                                      <VBtn v-bind="props" color="primary" class="w-100"  @click="addDismantlingInput($event, 2)"><VIcon icon="bx-plus"/> Agregar despiece</VBtn>
                                     </v-col>
                                   </template>
                                 </v-tooltip>
@@ -623,7 +620,7 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                                 <VCol cols="12"  md="6" class="form-group">
                                   <v-autocomplete
                                     :model-value="item.piece_product_id"
-                                    :items="productOption[index] ?  productOption[index] : [ {id: item.piece_product_id, title: item.products_pieces.title}]"
+                                    :items="productOption[index +'_0'] ?  productOption[index +'_0'] : [ {id: item.piece_product_id, title: item.products_pieces.title}]"
                                     label="Nombre del producto"
                                     item-props="stock"
                                     item-title="title"
@@ -634,9 +631,9 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                                     no-filter
                                     :name="'product_desmantling_id_'+index"
                                     no-data-text="No se encontraron resultados"
-                                    @keyup="searchDismantling($event,index)"
-                                    @click:clear="clearSearchDismantling(index)"
-                                    @update:modelValue="selectDismantling($event,index,2)"
+                                    @keyup="searchDismantling($event,index +'_0')"
+                                    @click:clear="clearSearchDismantling(index+'_'+selectedProduct.id)"
+                                    @update:modelValue="selectDismantling($event, index+'_'+selectedProduct.id,2)"
                                   ></v-autocomplete>
                                 </VCol>
                                 <VCol cols="8"  md="4" class="form-group">
@@ -750,6 +747,12 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
   }
   #newProduct__img{
     filter: opacity(0.4);
+  }
+  tr{
+    transition: all 0.2s ease-in;
+  }
+  tr:hover{
+    background: rgba(100,100,100,0.2)!important;
   }
   @media screen and (max-width: 780px){
     .modal__close-button{
@@ -1126,7 +1129,7 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
             ? 'new_product_form'
             : 'edit_product_form', 'new')
         }, 500);
-
+        console.log(e)
         return type == 2 
         ? this.newProduct.dismantling.push(newItem)
         : this.selectedProduct.dismantling.push(newItem);
@@ -1145,6 +1148,7 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
         const button = document.getElementById(idButton)
 
         this.disabledButton( button, 'remove')
+        console.log(this.selectedProduct.dismantling)
         return type == 2 
         ? this.newProduct.dismantling[index].piece_product_id = e
         : this.selectedProduct.dismantling[index].piece_product_id = e
@@ -1261,8 +1265,21 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
         
       },
       deleteProduct(){
-        this.hideModal()
-        this.showSnackbar('error', 'Producto Eliminado con exito')
+
+        this.$store
+          .dispatch(DELETE_PRODUCT, this.selectedProduct.id )
+          .then((response) => {
+            this.filterColumn()
+            this.hideModal()
+            this.showSnackbar('error', 'Producto Eliminado con exito')
+          })
+          .catch((err) => {
+            console.log(err)
+            this.hideModal()
+            this.showSnackbar('warning', err )
+          })
+
+        
       },
       validateFormItem(id){
         const fieldToValidate = this.itemsValidateByForm(id)
@@ -1298,7 +1315,7 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                     message: "El campo de titulo es obligatorio"
                   },
                   regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@$_ñ_ ]+$/i,
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@,$_ñ_ ]+$/i,
                     message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
                   },
                 }
@@ -1309,7 +1326,7 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                     message: "La descripción es necesaria"
                   },
                   regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@$_ñ_ ]+$/i,
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+,/&@$_ñ_ ]+$/i,
                     message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
                   },
                 }
@@ -1320,7 +1337,7 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                     message: "La descripción corta es necesaria"
                   },
                   regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@$_ñ_ ]+$/i,
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@,$_ñ_ ]+$/i,
                     message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
                   },
                 }
@@ -1354,7 +1371,7 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                     message: "El campo de titulo es obligatorio"
                   },
                   regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@$_ñ_ ]+$/i,
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&,@$_ñ_ ]+$/i,
                     message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
                   },
                 }
@@ -1365,7 +1382,7 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                     message: "La descripción es necesaria"
                   },
                   regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@$_ñ_ ]+$/i,
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@$,_ñ_ ]+$/i,
                     message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
                   },
                 }
@@ -1376,7 +1393,7 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                     message: "La descripción corta es necesaria"
                   },
                   regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@$_ñ_ ]+$/i,
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+,/&@$_ñ_ ]+$/i,
                     message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
                   },
                 }
@@ -1454,9 +1471,6 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
         
         document.getElementById(id).setAttribute('class','v-btn v-btn--disabled v-theme--light bg-primary v-btn--density-default v-btn--size-default v-btn--variant-elevated w-100')
       },
-      validateSwitch(e){
-        this.disabledButton( document.getElementById(e.target.closest('form').id+'_button'), 'toggle')
-      },
       disabledButton(element, action){
 
         element.disabled = true;
@@ -1469,6 +1483,9 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
         }
         element.disabled = false;
         element.classList.remove('v-btn--disabled')
+      },
+      validateSwitch(e){
+        this.disabledButton( document.getElementById(e.target.closest('form').id+'_button'), 'toggle')
       },
       addValidate(id,type){
         // this.forms[id] 
