@@ -70,8 +70,85 @@ tr:hover{
   div.dropdown-menu.large{
     width:max-content;
   }
-
+  thead > tr > th:last-child{
+    width: 10%!important;
+  }
 }
 
 //  end product page
-//
+//  Order page
+
+.modal{
+  animation-duration: 1.2s; /* don't forget to set a duration! */
+}
+.v-timeline-divider__inner-dot > svg{
+  color: #fff!important;
+}
+.timeline__content{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.timeline__divider{
+  height: 1px; width: calc(50% - 25px);position:relative;  background:#9b9b9b6e
+}
+.timeline__content--item-center{
+  display: flex;
+  height: 50px; 
+  width: 50px;
+  border-radius: 50%; 
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease-in;
+  &:hover{
+    cursor: pointer;
+  }
+}
+
+.timeline__content--items {
+    width: 100%;
+    & > div > input:checked + label > .timeline__content--item-center{
+      background-color: #d06427!important;
+    }
+    & > div > input:checked + label > .timeline__content--item-center > .up{
+      opacity: 1;
+    }
+}
+.timeline__content--item-text{
+  width: 160px;
+  position: absolute;
+  text-align: center;
+  transition: all 0.2s ease-in;
+  &.up{
+    top: 15%;
+  }
+  &.down{
+    bottom: 15%;
+  }
+
+}
+.opacity-0{
+  opacity: 0;
+}
+.opacity-1{
+  opacity: 1;
+}
+@media screen and (max-width: 780px){
+  .datatables-basic{
+    width:375px!important
+  }
+  .timeline__content--items{
+
+    width: 180px;
+  }
+  .timelapse, .timeline__content{
+    max-width: 800px!important;
+    width: max-content;
+  }
+  .overflow-scroll{
+    overflow: scroll;
+  }
+  .w-30{
+    width:  100%!important;
+  }
+}

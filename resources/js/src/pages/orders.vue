@@ -25,11 +25,21 @@
   <VRow class="">
     <VCol cols="12">
       <VCard title="Listado de Ordenes" class="pa-3 px-1 px-md-3">
+        <VRow class="ma-0  justify-center justify-md-end pa-2 px-0 mb-0 pb-0">
+          <VCol
+            cols="11"
+            md="3"
+            class="ma-0 px-0 justify-center justify-md-end d-flex"
+          >
+          <VBtn @click=" showModal('createOrder')" color="primary" class="w-100 "><VIcon icon="bx-plus"/>Crear orden manual</VBtn>
+
+          </VCol>
+        </VRow>
         <VRow class="ma-0  justify-center align-center justify-md-start pa-2 px-0 mb-10 mb-md-2">
           <VCol cols="12" md="4" class="form-group">
             <VTextField
               placeholder="Desde - Hasta"
-              label="Buscar por Fecha"
+              label="Buscar por fecha de pedido"
               type="text"
               name="date"
               ref="range_date"
@@ -53,7 +63,7 @@
           <VCol cols="12" md="4" class="form-group">
             <VTextField
               placeholder="Buscar por Track ID"
-              label="Track ID"
+              label="Buscar por Track ID"
               type="text"
               ref="tracker"
               name="tracker_id"
@@ -144,7 +154,7 @@
                         </div>
                         <div >
                           <div class="my-2  text-start text-md-end">
-                            Fecha: {{ moment(selectedOrder.created_at).format('DD/MM/YYYY HH:mm:ss') }}
+                            Fecha de pedio: {{ moment(selectedOrder.created_at).format('DD/MM/YYYY HH:mm:ss') }}
                           </div>
                           <div class="my-2  text-start text-md-end">
                             Tracker ID: {{ selectedOrder.trancker }}
@@ -401,6 +411,138 @@
         </div>
       </div>
     </div>
+    <div class="modal animate__animated animate__fadeInDown"  id="createOrder" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg mt-10" >
+        <div class="modal-content">
+          <VCol
+            cols="12"
+            class="pa-0 d-flex justify-center"
+            style="position: relative;"
+          >
+            <VCol
+              cols="12"
+            >
+              <VCard class="modal__content">
+                <div class="modal__close-button" >
+                  <v-col class="pa-0 pe-4">
+                    <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                  </v-col>
+                </div>
+                <div>
+                  <VCardItem class="justify-center w-100  py-md-6  py-4   ">
+                    <VCardTitle class="text-2xl font-weight-bold">
+                      <div class="card-title d-flex ">
+                        <div class="form-title__part1">Crear Orden</div>
+                        
+                      </div>
+                    </VCardTitle>
+                  </VCardItem>
+                  <VCardText class="mb-5  w-100 pa-0" v-if="alertShow">
+                    <v-alert
+                      :color="alertType"
+                      :text="alertMessage"
+                    ></v-alert>
+                  </VCardText>
+                  <VCardText class="w-100 pb-5 px-3 px-md-6">
+                    <VForm  id="new_order_form">
+                      <VRow>
+                        <VCol cols="12" md="6" class="form-group">
+                          <VTextField
+                            placeholder="Nombre del producto"
+                            label="Nombre del producto"
+                            type="text"
+                            name="new_product_title"
+                            autocomplete="off"
+                            v-model="newOrder.user"
+                          />
+                        </VCol>
+                        <VCol cols="12" class="form-group">
+                          <v-textarea
+                            label="Descripcion larga"
+                            auto-grow
+                            variant="outlined"
+                            rows="3"
+                            row-height="25"
+                            shaped
+                            name="new_product_description"
+                            v-model="newOrder.address"
+                          ></v-textarea>
+                        </VCol>
+                      </VRow>
+                      <VRow 
+                        class="ma-0 pa-0  mt-4 align-center" 
+                        >
+                            <VCol cols="12" class="form-group">
+                              <h3>Productos:</h3>
+                            </VCol>
+                            <VCol cols="12" md="4" class="mt-0 py-0 px-0">
+                              <v-tooltip text="Agregar nuevo despiece">
+                                  <template v-slot:activator="{ props }">
+                                    <v-col cols="auto" class="">
+                                      <VBtn v-bind="props" color="primary" class="w-100"  @click="addDismantlingInput($event, 2)"><VIcon icon="bx-plus"/> Agregar producto</VBtn>
+                                    </v-col>
+                                  </template>
+                                </v-tooltip>
+                            </VCol>
+                            <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
+                              <VRow  v-for="(item,index) in newOrder.products"  v-bind:key="item.id" class="pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'new_product_desmantling_'+index">
+                                <VCol cols="12"  md="6" class="form-group">
+                                  <v-autocomplete
+                                    :model-value="item.piece_product_id"
+                                    :items="productsForOrder[index] ?  productsForOrder[index] : [ {id: item.piece_product_id, title: item.products_pieces.title}]"
+                                    label="Nombre del producto"
+                                    item-props="stock"
+                                    item-title="title"
+                                    item-value="id"
+                                    placeholder="Nombre del producto"
+                                    variant="outlined"
+                                    clearable
+                                    no-filter
+                                    :name="'product_desmantling_id_'+index"
+                                    no-data-text="No se encontraron resultados"
+                                    @keyup="searchDismantling($event,index )"
+                                    @click:clear="clearSearchDismantling(index)"
+                                    @update:modelValue="selectDismantling($event, index,2)"
+                                  ></v-autocomplete>
+                                </VCol>
+                                <VCol cols="8"  md="4" class="form-group">
+                                  <VTextField
+                                    placeholder="Unidades que trae"
+                                    label="Unidades que trae"
+                                    type="number"
+                                    :name="'product_in_order_'+index"
+                                    v-model="item.quantity"
+                                    
+                                  />
+                                </VCol>
+                                <VCol cols="4" md="1" class="form-group pa-0">
+                                  <v-tooltip text="Eliminar despiece">
+                                    <template v-slot:activator="{ props }">
+                                      <v-col cols="auto" class="">
+                                        <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeDismantlingInput(2, index)"></v-btn>
+                                      </v-col>
+                                    </template>
+                                  </v-tooltip>
+                                </VCol> 
+                              </VRow>
+                            </div>
+                      </VRow>
+                      <VRow class="ma-0 pa-0  mt-8 align-center">
+                        <VCol cols="12" md="4" offset-md="4" class="mt-0 py-0 px-0">
+                          <v-col cols="auto" class="">
+                            <VBtn  color="primary" class="w-100 " type="submit" disabled id="new_product_form_button"> Guardar</VBtn>
+                          </v-col>
+                        </VCol>
+                      </VRow>
+                    </VForm>
+                  </VCardText>
+                </div>
+              </VCard>
+            </VCol>
+          </VCol>
+        </div>
+      </div>
+    </div>
     <v-snackbar
       v-model="snackShow"
       :color="snackType"
@@ -425,75 +567,10 @@
   thead > tr > th.date{
     width: 15%!important;
   }
-  .modal{
-    animation-duration: 1.2s; /* don't forget to set a duration! */
-  }
-  .v-timeline-divider__inner-dot > svg{
-    color: #fff!important;
-  }
-  .timeline__content{
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-  .timeline__divider{
-    height: 1px; width: calc(50% - 25px);position:relative;  background:#9b9b9b6e
-  }
-  .timeline__content--item-center{
-    display: flex;
-    height: 50px; 
-    width: 50px;
-    border-radius: 50%; 
-    justify-content: center;
-    align-items: center;
-    transition: all 0.2s ease-in;
-    &:hover{
-      cursor: pointer;
-    }
-  }
-  
-  .timeline__content--items {
-      width: 100%;
-      & > div > input:checked + label > .timeline__content--item-center{
-        background-color: #d06427!important;
-      }
-      & > div > input:checked + label > .timeline__content--item-center > .up{
-        opacity: 1;
-      }
-  }
-  .timeline__content--item-text{
-    width: 160px;
-    position: absolute;
-    text-align: center;
-    transition: all 0.2s ease-in;
-    &.up{
-      top: 15%;
-    }
-    &.down{
-      bottom: 15%;
-    }
-
-  }
-  .opacity-0{
-    opacity: 0;
-  }
-  .opacity-1{
-    opacity: 1;
-  }
   @media screen and (max-width: 780px){
-    .timeline__content--items{
 
-      width: 180px;
-    }
-    .timelapse, .timeline__content{
-      max-width: 800px!important;
-      width: max-content;
-    }
-    .overflow-scroll{
-      overflow: scroll;
-    }
-    .w-30{
-      width:  100%!important;
+    thead > tr > th:last-child{
+      width: 10%!important;
     }
   }
 </style>
@@ -509,6 +586,14 @@
       snacktimeOut:5000,
       selectedOrder:{},
       table:'',
+      alertShow:false,
+      alertMessage:'',
+      alertType:'',
+      newOrder: {
+        direction:'',
+        user:'',
+        products:[]
+      },
       tableData:{
         ajax:{
           "url": import.meta.env.VITE_VUE_APP_BACKEND_URL+"api/get-orders",
@@ -532,8 +617,8 @@
         serverSide: true,
         columns: [
           { 
-            title: 'Fecha',  
-            class:'text-center date',
+            title: '<span class="d-none d-md-block">Fecha de pedido</span> <span class="d-flex justify-center d-md-none text-center">Pedido</span>',  
+            class:'text-center date ',
             render: ( data, type, row, meta ) =>{ 
               return `
               ${ moment(row.created_at).format('DD-MM-YYYY') }
@@ -568,7 +653,7 @@
           },
           { 
             title: 'Estado ',
-            class:'text-center px-0',
+            class:'text-center px-3',
             render: ( data, type, row, meta ) =>{ 
               console.log(row.status)
               return `
@@ -591,10 +676,10 @@
 
           },
           { 
-            title: 'Acciones',
+            title: '<span class="d-none d-md-block">Acciones</span> <span class="d-flex justify-center d-md-none text-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="#8c8c8c" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 4H7.2c-1.12 0-1.68 0-2.108.218a1.999 1.999 0 0 0-.874.874C4 5.52 4 6.08 4 7.2v9.6c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874c.427.218.987.218 2.105.218h9.606c1.118 0 1.677 0 2.104-.218c.377-.192.683-.498.875-.874c.218-.428.218-.987.218-2.105V14m-4-9l-6 6v3h3l6-6m-3-3l3-3l3 3l-3 3m-3-3l3 3"/></svg></span>',
             orderable: false, 
             searchable: false, 
-            class:'text-center px-0 px-md-3',
+            class:'text-center  px-1 px-md-3',
             render: ( data, type, row, meta ) =>{ 
               let html = `
                 <div class="d-md-flex d-none justify-center ">
