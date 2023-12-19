@@ -52,7 +52,7 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
               
             </VCol>
             <VCol cols="3"  class="text-center d-none d-sm-block">
-              <v-chip class="bg-warning">{{ order.status_info.status }}</v-chip>
+              <v-chip class="bg-warning">{{ order.status_label.status }}</v-chip>
               <!-- <v-chip class="bg-warning">{{ order.status_info }}</v-chip> -->
             </VCol>
             <VCol cols="3" md="2" class="text-center">

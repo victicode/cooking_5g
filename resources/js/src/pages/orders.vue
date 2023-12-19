@@ -106,7 +106,7 @@
                           <h2>Orden de productos</h2>
                           <h3 class="mt-2">
                             <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
-                              {{ selectedOrder.status_info.status }}
+                              {{ selectedOrder.status_label.status }}
                             </v-chip>
 
                           </h3>
@@ -203,7 +203,7 @@
                           <h2>Linea de tiempo Orden #{{ orderNumberFormat(selectedOrder.id) }}</h2>
                           <h3 class="mt-2">
                             <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
-                              {{ selectedOrder.status_info.status }}
+                              {{ selectedOrder.status_label.status }}
                             </v-chip>
 
                           </h3>
@@ -364,7 +364,7 @@
                           <h2>Cancelar orden #{{ orderNumberFormat(selectedOrder.id) }}</h2>
                           <h3 class="mt-2">
                             <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
-                              {{ selectedOrder.status_info.status }}
+                              {{ selectedOrder.status_label.status }}
                             </v-chip>
 
                           </h3>
