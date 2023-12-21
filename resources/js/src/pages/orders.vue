@@ -432,7 +432,7 @@
                   <VCardItem class="justify-center w-100  py-md-6  py-4   ">
                     <VCardTitle class="text-2xl font-weight-bold">
                       <div class="card-title d-flex ">
-                        <div class="form-title__part1">Crear Orden</div>
+                        <div class="form-title__part1">Crear nueva orden</div>
                         
                       </div>
                     </VCardTitle>
@@ -445,20 +445,26 @@
                   </VCardText>
                   <VCardText class="w-100 pb-5 px-3 px-md-6">
                     <VForm  id="new_order_form">
-                      <VRow>
-                        <VCol cols="12" md="6" class="form-group">
+                      <VRow class="align-center">
+                        <VCol cols="12" md="7" class="form-group">
                           <VTextField
-                            placeholder="Nombre del producto"
-                            label="Nombre del producto"
+                            placeholder="Usuario"
+                            label="Usuario"
                             type="text"
                             name="new_product_title"
                             autocomplete="off"
                             v-model="newOrder.user"
                           />
                         </VCol>
-                        <VCol cols="12" class="form-group">
+                        <VCol cols="12"  md="5" class="form-group px-3">
+                          <div class="d-flex align-center">
+                            <input type="checkbox" id="isUserAddress" value="1" style="height: 20px; width: 20px;">
+                            <label for="isUserAddress" class="mx-2">Usar dirección del usuario</label>
+                          </div>
+                        </VCol>
+                        <VCol cols="12" md="12" class="form-group">
                           <v-textarea
-                            label="Descripcion larga"
+                            label="Dirección"
                             auto-grow
                             variant="outlined"
                             rows="3"
@@ -592,7 +598,8 @@
       newOrder: {
         direction:'',
         user:'',
-        products:[]
+        products:[],
+        userAddress:false,
       },
       tableData:{
         ajax:{
