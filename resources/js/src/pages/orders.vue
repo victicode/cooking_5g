@@ -432,7 +432,7 @@
                   <VCardItem class="justify-center w-100  py-md-6  py-4   ">
                     <VCardTitle class="text-2xl font-weight-bold">
                       <div class="card-title d-flex ">
-                        <div class="form-title__part1">Crear Orden</div>
+                        <div class="form-title__part1">Crear nueva orden</div>
                         
                       </div>
                     </VCardTitle>
@@ -448,8 +448,8 @@
                       <VRow>
                         <VCol cols="12" md="6" class="form-group">
                           <VTextField
-                            placeholder="Nombre del producto"
-                            label="Nombre del producto"
+                            placeholder="Cliente"
+                            label="Cliente"
                             type="text"
                             name="new_product_title"
                             autocomplete="off"
@@ -458,7 +458,7 @@
                         </VCol>
                         <VCol cols="12" class="form-group">
                           <v-textarea
-                            label="Descripcion larga"
+                            label="Dirección"
                             auto-grow
                             variant="outlined"
                             rows="3"
@@ -479,7 +479,7 @@
                               <v-tooltip text="Agregar nuevo despiece">
                                   <template v-slot:activator="{ props }">
                                     <v-col cols="auto" class="">
-                                      <VBtn v-bind="props" color="primary" class="w-100"  @click="addDismantlingInput($event, 2)"><VIcon icon="bx-plus"/> Agregar producto</VBtn>
+                                      <VBtn v-bind="props" color="primary" class="w-100"  @click="addDismantlingInput($event)"><VIcon icon="bx-plus"/> Agregar producto</VBtn>
                                     </v-col>
                                   </template>
                                 </v-tooltip>
@@ -489,7 +489,7 @@
                                 <VCol cols="12"  md="6" class="form-group">
                                   <v-autocomplete
                                     :model-value="item.piece_product_id"
-                                    :items="productsForOrder[index] ?  productsForOrder[index] : [ {id: item.piece_product_id, title: item.products_pieces.title}]"
+                                    :items="productsForOrder[index] ?  productsForOrder[index] : [ {id: item.id, title: item.title}]"
                                     label="Nombre del producto"
                                     item-props="stock"
                                     item-title="title"
@@ -507,8 +507,8 @@
                                 </VCol>
                                 <VCol cols="8"  md="4" class="form-group">
                                   <VTextField
-                                    placeholder="Unidades que trae"
-                                    label="Unidades que trae"
+                                    placeholder="Unidades solicitadas"
+                                    label="Unidades solicitadas"
                                     type="number"
                                     :name="'product_in_order_'+index"
                                     v-model="item.quantity"
@@ -594,6 +594,7 @@
         user:'',
         products:[]
       },
+      productsForOrder:[],
       tableData:{
         ajax:{
           "url": import.meta.env.VITE_VUE_APP_BACKEND_URL+"api/get-orders",
@@ -961,12 +962,71 @@
       },
       sendingButton(id){
         document.getElementById(id).disabled = true
-        
       },
       readyButton(id){
         document.getElementById(id).disabled = true
         
         document.getElementById(id).setAttribute('class','v-btn v-btn--disabled v-theme--light bg-primary v-btn--density-default v-btn--size-default v-btn--variant-elevated w-100')
+      },
+      removeDismantlingInput(type, index){
+        this.productOption.splice(index, 1)
+        const idButton = type == 2 
+          ? 'new_product_form_button'
+          : 'edit_product_form_button'
+
+        const button = document.getElementById(idButton)
+
+        this.disabledButton( button, 'remove')
+
+        this.removeValidate(type == 2 
+            ? 'new_product_form'
+            : 'edit_product_form')
+
+        setTimeout(() => {
+            return type == 2 
+          ? this.newProduct.dismantling.splice(index, 1)
+          : this.selectedProduct.dismantling.splice(index, 1);
+        }, 300);
+
+        
+        
+      },
+      addDismantlingInput(e){
+        let newOrder = {
+          id:'',
+          title:'',
+          quantity:''
+        }
+        
+        
+        // const button = document.getElementById('new_order_form')
+
+        // this.disabledButton( button, 'remove')
+
+        // setTimeout(() => {
+        //   this.addValidate('new_order_form')
+        // }, 500);
+        return this.newOrder.products.push(newOrder)
+
+      },
+      searchDismantling(e, index){ 
+        debounce(this.getProducts, 200)(e.target.value, index)
+      },
+      clearSearchDismantling(index){
+        this.getProducts('',index)
+      },
+      selectDismantling(e,index,type){
+        const idButton = type == 2 
+          ? 'new_product_form_button'
+          : 'edit_product_form_button'
+
+        const button = document.getElementById(idButton)
+
+        this.disabledButton( button, 'remove')
+        console.log(this.selectedProduct.dismantling)
+        return type == 2 
+        ? this.newProduct.dismantling[index].piece_product_id = e
+        : this.selectedProduct.dismantling[index].piece_product_id = e
       },
       cancelOrder(){
         this.$refs.newStatus.value = 0
