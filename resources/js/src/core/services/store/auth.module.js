@@ -54,7 +54,7 @@ const actions = {
                 context.commit(SET_AUTH, data.data.user);
                 context.commit(SET_IS_ADMIN, data.data.user);
                 state.user = data.data.user;
-                
+                // console.log(data)
                 resolve(data.data);
               })
               .catch(( response ) => {

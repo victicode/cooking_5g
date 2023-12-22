@@ -13,9 +13,10 @@
   import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
   import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
   import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
-import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/js/utils/closest';
-
-  
+  import flatpickr from "flatpickr";
+  import moment from 'moment';
+  import 'flatpickr/dist/flatpickr.min.css'
+  import { Spanish } from "flatpickr/dist/l10n/es.js"
 </script>
 <template>
   <VRow class="">
@@ -384,7 +385,53 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                     </VCardText>
                     <VCardText class="w-100 pb-5 px-3 px-md-6">
                       <VForm  id="add_stock_form">
+                        <VRow class="my-2">
+                          <VCol cols="12" md="4" class="form-group" >
+                            <VTextField
+                              placeholder="Fecha de vencimiento"
+                              label="Fecha de vencimiento"
+                              type="text"
+                              name="stock_due_date"
+                              ref="stock_due_date"
+                              id="date-input"
+                              variant="underlined"
+                            />
+                            <input type="hidden" id="date-input-val" ref="due_date" v-model="stockOperation.due_date">
+                          </VCol>
+
+                          <VCol cols="12" md="4" offset-md="4" class="form-group" v-show="stockOperation.type==1">
+
+                            <VTextField
+                              placeholder="Número de lote"
+                              label="Número de lote"
+                              type="text"
+                              name="stock_add_lot"
+                              class=""
+                              v-model="stockOperation.lot"
+                              autocomplete="off"
+                              variant="underlined"
+                            />
+                          </VCol>
+                          <VCol cols="12" md="4" offset-md="8" class="form-group" v-show="stockOperation.type==2">
+
+                            <v-combobox  
+                              :items="[{id:1, lote_number:'00012541'},{id:2, lote_number:'00012542'},{id:3, lote_number:'00012543'},{id:4, lote_number:'00012544'}]"
+                              item-title="lote_number"
+                              item-value="id"
+                              placeholder="Número de lote"
+                              label="Número de lote"
+                              type="text"
+                              name="stock_dis_lot"
+                              class="text-end"
+                              v-model="stockOperation.lot"
+                              variant="underlined"
+                              
+                            ></v-combobox >
+                          </VCol>
+                          
+                        </VRow>
                         <VRow>
+                          
                           <VCol cols="12" md="6" class="form-group">
                             <v-select
                               item-title="title"
@@ -393,7 +440,7 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                               :items=" [{ title:'Agregar stock', value: 1 }, { title:'Disminuir stock', value: 2 }]"
                               variant="outlined"
                               v-model="stockOperation.type"
-                              @update:modelValue="stockCalculate()"
+                              @update:modelValue="stockCalculate(); clearDateAndLot()"
                               
                             ></v-select>
                           </VCol>
@@ -402,7 +449,7 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                               placeholder="Cantidad"
                               label="Cantidad"
                               type="Number"
-                              name="stock_form"
+                              name="stock_form_quatity"
                               v-model="stockOperation.quantity"
                               @keyup="stockCalculate()"
                             />
@@ -419,15 +466,7 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
                               
                             ></v-select>
                           </VCol>
-                          <VCol cols="12" md="6" class="form-group">
-                            <VTextField
-                              placeholder="Número de lote"
-                              label="Número de lote"
-                              type="Number"
-                              name="stock_lot"
-                              v-model="stockOperation.lot"
-                            />
-                          </VCol>
+                          
                           
                         </VRow>
                         <VRow class="ma-0 pa-0  mt-8 align-center">
@@ -722,7 +761,13 @@ import closest from '../../../js - copia/src/assets/plugins/formvalidation/src/j
 thead > tr > th:nth-child(n+2){
   width: 15%!important;
 }
+@media screen and (max-width: 780px){
+  thead > tr > th.title-th {
+      width: 52%!important;
+  }
+}
 </style>
+
 
 <script>
   export default {
@@ -752,6 +797,7 @@ thead > tr > th:nth-child(n+2){
         isDismantling: 0 ,
         dismantling:[],
       },
+      inputDate:'',
       reasonForDecrease:[
         {id:1, title:'Merma de producto'},
         {id:2, title:'Rotacion de producto'},
@@ -761,14 +807,14 @@ thead > tr > th:nth-child(n+2){
         type:1,
         quantity:'',
         reason:1,
-        lot:0
+        lot:'',
+        due_date:''
       },
       tableData:{
         ajax:{
           "url": import.meta.env.VITE_VUE_APP_BACKEND_URL+"api/get-products",
           "type": "POST",
           data: function ( data ) {
-            console.log(data)
             data.filter_product_title = document.querySelector('[name="product_title"]').value;
             data.order_title = data.order[0].column == 1 ? '' : data.order[0].dir
             data.order_stock = data.order[0].column == 1 ? data.order[0].dir : ''
@@ -786,7 +832,6 @@ thead > tr > th:nth-child(n+2){
           { 
             title: 'Nombre del producto', class:'text-start title-th',
             render: ( data, type, row, meta ) =>{ 
-                console.log(row)
                 return `${row.title}`
               }   
           },
@@ -931,7 +976,7 @@ thead > tr > th:nth-child(n+2){
         : this.stockOperation.type == 1
           ? parseInt(this.selectedProduct.stock)  + parseInt(this.stockOperation.quantity)
           : parseInt(this.selectedProduct.stock)  - parseInt(this.stockOperation.quantity)
-
+      
       },
       initOptionsTable(){
         document.getElementById('data-table').addEventListener('OptionsActionTable', () => this.activeOptionsTable() )	
@@ -983,6 +1028,7 @@ thead > tr > th:nth-child(n+2){
               this.validateFormItem('add_stock_form')
               this.validateFormItem('edit_product_form')
               this.addValidate('edit_product_form', 'update')
+              this.initDueDateInput()
 
             }, 200);
             return new Promise((resolve) => {
@@ -1134,7 +1180,11 @@ thead > tr > th:nth-child(n+2){
       resetStockForm(){
         this.stockOperation = {
           type:1,
-          quantity:''
+          quantity:'',
+          reason:1,
+          lot:'',
+          due_date:''
+          
         }
       },
       resetNewProductForm(){
@@ -1217,7 +1267,9 @@ thead > tr > th:nth-child(n+2){
         this.sendingButton('add_stock_form_button')
         let formData = new FormData();
         formData.append('type', this.stockOperation.type);
-        formData.append('stock', this.stockOperation.quantity);
+        formData.append('quantity', this.stockOperation.quantity);
+        formData.append('lote', this.stockOperation.lot);
+        formData.append('due_date', this.$refs.due_date.value );
 
         this.$store
           .dispatch(ADD_STOCK, {id:this.selectedProduct.id, data:formData})
@@ -1374,10 +1426,10 @@ thead > tr > th:nth-child(n+2){
             break;
           case 'add_stock_form':
             fieldByForm = {
-              stock_form: {
+              stock_form_quatity: {
                 validators: {
                   notEmpty: {
-                    message: "El campo de titulo es obligatorio"
+                    message: "La cantidad es obligatoria"
                   },
                   regexp: {
                     regexp: /^[0-9]+$/i,
@@ -1385,6 +1437,27 @@ thead > tr > th:nth-child(n+2){
                   },
                 }
               },
+              stock_add_lot:{
+                validators: {
+                  notEmpty: {
+                    message: "El número de lote es obligatorio"
+                  },
+                }
+              },
+              stock_dis_lot:{
+                validators: {
+                  notEmpty: {
+                    message: "El número de lote es obligatorio"
+                  },
+                }
+              },
+              stock_due_date:{
+                validators: {
+                  notEmpty: {
+                    message: "La fecha de vencimiento es obligatorio"
+                  }
+                }
+              }
             }
             break;
           default:
@@ -1494,6 +1567,22 @@ thead > tr > th:nth-child(n+2){
         let form = document.getElementById(id),
         quantityInput = form.querySelectorAll('input[name*="product_desmantling_quantity_"]')[ form.querySelectorAll('input[name*="product_desmantling_quantity_"]').length - 1]
         this.forms[id].removeField(quantityInput.name)
+      },
+      initDueDateInput(){
+        this.inputDate = flatpickr(document.querySelector('#date-input'), {
+          dateFormat: 'd/m/Y',
+          minDate: "today",
+          orientation: 'auto left',
+          locale: Spanish,
+          onClose: function (selectedDate) {
+            document.querySelector('#date-input-val').value = moment(selectedDate[0]).format('YYYY-MM-DD')
+          }
+        });
+
+      },
+      clearDateAndLot(){
+        this.stockOperation.lot  = ''
+        this.stockOperation.due_date = this.stockOperation.type==1 ?'':'0000'
       }
     },
     mounted(){

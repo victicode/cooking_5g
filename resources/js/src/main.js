@@ -21,16 +21,13 @@ const emitter = mitt()
 const app = createApp(App)
 
 // Create vue app
-window.popStateDetected = false
-window.addEventListener('popstate', () => {
-  window.popStateDetected = true
-})
 router.beforeEach(async (to, from, next) => {
   // Caso 1
   document.title = to.meta.title + ' - Cooking 5G'
   if (!to.meta.middleware) {
     return next()
   }
+
 
   setTimeout(() => {
     let trashElement = [document.querySelectorAll('.modal-backdrop'), document.querySelectorAll('.tooltip')];

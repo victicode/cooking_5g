@@ -49,6 +49,9 @@ Route::middleware('jwt.verify')->post('/logout', [AuthController::class, 'logout
 
 Route::middleware('jwt.verify')->prefix('user')->name('user.')->group(function () {
     Route::get('/', [AuthController::class, 'getUser'])->name('getUser');
+
+    Route::get('/get-user', [UserController::class, 'getUser'])->name('getUser');
+
 });
 Route::middleware('jwt.verify')->prefix('order')->name('order.')->group(function () {
     Route::get('/', [OrderController::class, 'index'])->name('getOrders');

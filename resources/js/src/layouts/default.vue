@@ -6,7 +6,7 @@ import DefaultLayoutWithVerticalNav from './components/DefaultLayoutWithVertical
 </script>
 
 <template>
-  <DefaultLayoutWithVerticalNav>
+  <DefaultLayoutWithVerticalNav v-if="load">
     <router-view v-slot="{Component}" >
       <transition 
          mode="out-in" 
@@ -59,6 +59,7 @@ export default {
           }
           this.user = data.user;
           this.overlayLoad = false
+          this.load= true
         })
         .catch((e) => {
           console.log(e)
@@ -71,6 +72,7 @@ export default {
   },
   data: () => ({
     overlayLoad: false,
+    load:false,
     overlayModal: false,
   }),
   created(){

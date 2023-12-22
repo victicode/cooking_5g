@@ -13,7 +13,7 @@
             <VCol cols="3" class="text-center">
               Stock
             </VCol>
-            <VCol cols="4" class="text-center">
+            <VCol cols="4" class="text-center px-2">
               Opciones
             </VCol>
           </VRow>

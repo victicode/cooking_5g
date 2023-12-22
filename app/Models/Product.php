@@ -30,4 +30,7 @@ class Product extends Model
     public function dismantling(){
         return $this->hasMany(Dismantling::class, 'product_id', 'id');
     }
+    public function lotes(){
+        return $this->hasMany(Lot::class, 'product_id', 'id');
+    }
 }

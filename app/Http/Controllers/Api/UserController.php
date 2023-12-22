@@ -8,12 +8,19 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Facades\JWTAuth;
+
 
 class UserController extends Controller
 {
     public function getUser(Request $request){
        
-        return response()->json([ 'data'=>['code'=>200,'user' => User::with('rol')->find($request->user()->id)]], 200);
+        return response()->json([ 'data'=>[
+            'code'=> 200,
+            'user' => User::with('rol')->find($request->user()->id),
+            'new_token' =>JWTAuth::refresh()
+            ] 
+        ], 200);
 
     }
     public function createUser(Request $request){
@@ -41,52 +48,6 @@ class UserController extends Controller
 
         return $this->returnSuccess(200, $usersByRol);
     }
-    private function validateRequiredFields($inputRequest)
-    {
-
- 
-        
-        if (!array_key_exists('name', $inputRequest) && empty($inputRequest['name']) )  {
-            return [
-                'validated' => false,
-                'message' => 'El nombre del usuario requerido.',
-            ];
-        }
-        if (!array_key_exists('email', $inputRequest) && empty($inputRequest['email']) ) {
-            return [
-                'validated' => false,
-                'message' => 'El email del usuario es requerido',
-            ];
-        }
-        if (!array_key_exists('short_description', $inputRequest) && empty($inputRequest['short_description']) ){
-            return [
-                'validated' => false,
-                'message' => 'La contraseña requerida.',
-            ];
-        }
-        if ( !array_key_exists('initial_stock', $inputRequest) && empty($inputRequest['initial_stock'])){ 
-            return [
-                'validated' => false,
-                'message' => 'El stock inicial es requerido.',
-            ];
-        }
-        if (!array_key_exists('type_unit', $inputRequest) && empty($inputRequest['type_unit'])) {
-            return [
-                'validated' => false,
-                'message' => 'El tipo de unidad es requerido.',
-            ];
-        }
-        if (!array_key_exists('is_dismantling', $inputRequest) ){
-            return [
-                'validated' => false,
-                'message' => 'Se requiere que especifique si trae despecies.',
-            ];
-        }
-
-        return [
-            'validated' => true,
-        ];
-    }
     private function validateFieldsFromInput($inputs){
         $rules=[
             'name'          => ['required', 'regex:/^[a-zA-Z-À-ÿ .]+$/i'],
@@ -110,4 +71,14 @@ class UserController extends Controller
 
         return $validator->all() ;
     }
+    protected function createNewToken($token){
+        return response()->json([
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'user' => auth()->user()
+        ]);
+}
+	public function refresh(){
+			return $this->createNewToken(JWTAuth::refresh());
+	}
 }

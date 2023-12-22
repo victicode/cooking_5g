@@ -6,7 +6,7 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
 
 <template>
   <VCard title="Últimas Ordenes Enviadas" class="h-100">
-    <VCardText class="px-md-6 px-4">
+    <VCardText class="px-md-2 px-4">
       <VList class="card-list">
         <VListItem
           class="py-3 border-bottom-4 px-1 px-md-2"
@@ -29,7 +29,7 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
           :key="order.id"
           class="py-3 border-bottom-4 px-1 px-md-2"
         >
-          <VRow class="pa-0 m-0 align-center">
+          <VRow class="pa-0  align-center">
             <VCol cols="4" md="4" class="text-center">
               {{moment(order.created_at ).format('DD/MM/YYYY') }}
             </VCol>

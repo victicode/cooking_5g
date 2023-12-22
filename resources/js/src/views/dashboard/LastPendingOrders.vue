@@ -11,7 +11,7 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
           class="py-3 border-bottom-4 px-1 px-md-2"
         >
           <VRow class="pa-0 m-0 align-center">
-            <VCol cols="4" md="2" class="text-center hide-text">
+            <VCol cols="4" md="2" class="text-center hide-text px-2">
               Fecha
             </VCol>
             <VCol cols="5" md="3" class="text-center hide-text">
@@ -35,7 +35,7 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
           class="py-3 border-bottom-4 px-1 px-md-2"
         >
           <VRow class="pa-0 m-0 align-center">
-            <VCol cols="4" md="2" class="text-center">
+            <VCol cols="4" md="2" class="text-center px-2">
               
                 {{moment(order.created_at ).format('DD/MM/YYYY') }}
               

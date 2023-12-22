@@ -1,5 +1,7 @@
 import ApiService from "@/core/services/api.service";
 import JwtService from "@/core/services/jwt.service";
+// import newToken from "@/core/services/jwt.service";
+
 
 // action types
 export const GET_USER = "GET_USER";
@@ -20,11 +22,18 @@ const actions = {
         return new Promise((resolve, reject) => {
             if (JwtService.getToken()) {
                 ApiService.setHeader();
-                ApiService.get("api/user")
+                ApiService.get("api/user/get-user")
                     .then(( { data } ) => {
                         // console.log(data.data.user)
-                        context.commit(SET_USER, data.data.user);
-                        resolve(data.data);
+                        console.log(data.data.new_token)
+                        console.log(JwtService.getToken())
+
+                        JwtService.saveToken(data.data.new_token);
+                        setTimeout(() => {
+                            
+                            context.commit(SET_USER, data.data.user);
+                            resolve(data.data);
+                        }, 500);
                         
                     })
                     .catch(( { response } ) => {

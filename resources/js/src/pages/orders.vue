@@ -14,11 +14,7 @@
   import 'flatpickr/dist/flatpickr.min.css'
   import { Spanish } from "flatpickr/dist/l10n/es.js"
   import { GET_ORDER_BY_ID, CHANGE_STATUS } from "@/core/services/store/order.module";
-
-  DataTable.use(DataTablesCore);
-  DataTable.use(Button);
-  DataTable.use(ButtonHTML5);
-  DataTable.use(ButtonPrint); 
+  import { GET_PRODUCT_BY_SEARCH } from "@/core/services/store/product.module";
 </script>
 
 <template>
@@ -967,6 +963,10 @@
           })
 
       },
+      cancelOrder(){
+        this.$refs.newStatus.value = 0
+        this.orderChangeStatus()
+      },
       sendingButton(id){
         document.getElementById(id).disabled = true
       },
@@ -1035,9 +1035,18 @@
         ? this.newProduct.dismantling[index].piece_product_id = e
         : this.selectedProduct.dismantling[index].piece_product_id = e
       },
-      cancelOrder(){
-        this.$refs.newStatus.value = 0
-        this.orderChangeStatus()
+      getProducts(search = "", index){
+        this.$store
+          .dispatch(GET_PRODUCT_BY_SEARCH, search)
+          .then((response) => {
+            this.productsForOrder[index] = response.data
+          })
+          .catch((err) => {
+            return new Promise((resolve) => {
+              resolve(false);
+            });
+          })
+
       },
       
     },

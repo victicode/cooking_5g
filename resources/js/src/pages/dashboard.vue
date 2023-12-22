@@ -55,7 +55,7 @@ import CriticalStockProduct from '@/views/dashboard/CriticalStockProduct.vue'
             cycle
             direction="vertical"
             progress="primary"
-            interval="8000"
+            interval="8000000"
           >
             <v-carousel-item>
               <VCol

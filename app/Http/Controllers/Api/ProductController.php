@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Product;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Models\Dismantling;
-use Yajra\DataTables\DataTables;
 use Exception;
+use App\Models\Lot;
+use App\Models\Product;
+use App\Models\Dismantling;
+use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
+use App\Http\Controllers\Controller;
 
 class ProductController extends Controller
 {
@@ -124,17 +125,22 @@ class ProductController extends Controller
         $product = Product::find($id);
         if(!$product) return $this->returnFail(400, 'Producto no encontrado');
 
+        if($request->type == 1)  $this->addLote($id, $request);
+        if($request->type == 2)  $this->reduceLote($id, $request);
+
         try {
-            $product->stock            = $request->type == 1 
-            ? $product->stock  + $request->stock
-            : $product->stock  - $request->stock;
+            $product->stock = $request->type == 1 
+                ? $product->stock  + $request->quantity
+                : $product->stock  - $request->quantity;
             $product->save();
             
         } catch (Exception $th) {
             return $this->returnSuccess(400, $th->getMessage());
         }
     
-        return $this->returnSuccess(200, [$request->type, $request->stock]);
+        
+
+        return $this->returnSuccess(200, [$request->type, $request->quantity]);
     }
     public function getProductById($id){
         return $this->returnSuccess(200, Product::with(['dismantling.products_pieces'])->find($id));
@@ -230,5 +236,25 @@ class ProductController extends Controller
                 ]);
             }
         }
+    } 
+    private function addLote($productId, $data){
+
+    
+        Lot::create([
+            'lote_code'  => $data->lote,
+            'product_id' => $productId,
+            'quantity'   => $data->quantity,
+            'due_date'   => date('Y-m-d', $data->due_date) ,
+        ]);
+            
+        
+    } 
+    private function reduceLote($productId, $data){
+
+        $lote = Lot::where('lote_code', $data->lote_code)->where('product_id', $productId)->first();
+
+        $lote->quantity = $lote->quantity - $data->quantity;
+        $lote->save();
+
     } 
 }

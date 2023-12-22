@@ -366,27 +366,6 @@
   </VRow>
 </template>
 <style lang="scss" >
-  thead > tr > th.date{
-    width: 15%!important;
-  }
-  .modal{
-    animation-duration: 1.2s; /* don't forget to set a duration! */
-  }
-  .v-timeline-divider__inner-dot > svg{
-    color: #fff!important;
-  }
-  @media screen and (max-width: 780px){
-    .timelapse{
-      max-width: 800px!important;
-      width: 480px!important;
-    }
-    .overflow-scroll{
-      overflow: scroll;
-    }
-    .w-30{
-      width:  100%!important;
-    }
-  }
 </style>
 <script>
 
