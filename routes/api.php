@@ -37,6 +37,8 @@ Route::middleware('jwt.verify')->post('/get-products', [ProductController::class
 Route::middleware('jwt.verify')->post('/get-orders', [OrderController::class, 'getOrdersTable']);
 Route::post('/get-recipes', [ProductController::class, 'getProductsTable']);
 
+// Route::post('/validation', [UserController::class, 'validateFieldsFromInput']);
+
 
 
 // Route::put('/validate_email/{id}', [UserController::class, 'validateEmail']);
@@ -70,5 +72,9 @@ Route::middleware('jwt.verify')->prefix('products')->name('product.')->group(fun
 
 
 
+});
+
+Route::middleware('jwt.verify')->prefix('users')->name('user.')->group(function () {
+    Route::post('/',[UserController::class, 'createUser']);
 });
 
