@@ -9,6 +9,7 @@ import './@layouts/styles/index.scss'
 import './styles/styles.scss'
 import { createApp } from 'vue'
 import { func } from '@/core/services/utils/utils.js'
+import { CHECK_TOKEN, SET_TOKEN } from "@/core/services/store/auth.module";
 import axios from "axios";
 import VueAxios from "vue-axios";
 import store from "@/core/services/store/index.js";
@@ -28,6 +29,13 @@ router.beforeEach(async (to, from, next) => {
     return next()
   }
 
+  store.dispatch(CHECK_TOKEN).then((data)=>{
+    console.log(data.data)
+   if(data.data.code !== 200){
+    store.commit(SET_TOKEN,data.data.new_token)
+   } 
+  });
+
 
   setTimeout(() => {
     let trashElement = [document.querySelectorAll('.modal-backdrop'), document.querySelectorAll('.tooltip')];
@@ -44,18 +52,20 @@ router.beforeEach(async (to, from, next) => {
   //     next(); 
   // }
   // Caso 3 
-  emitter.emit('displayOverlayLoad', true)
-  const middleware = to.meta.middleware
-  const context = {
-    to,
-    from,
-    next,
-    store
-  }
-  return middleware[0]({
-    ...context,
-    next: middlewarePipeline(context, middleware, 1)
-  })
+
+    emitter.emit('displayOverlayLoad', true)
+    const middleware = to.meta.middleware
+    const context = {
+      to,
+      from,
+      next,
+      store
+    }
+    
+    return middleware[0]({
+      ...context,
+      next: middlewarePipeline(context, middleware, 1)
+    })
 });
 
 // 

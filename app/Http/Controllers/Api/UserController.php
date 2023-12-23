@@ -18,7 +18,6 @@ class UserController extends Controller
         return response()->json([ 'data'=>[
             'code'=> 200,
             'user' => User::with('rol')->find($request->user()->id),
-            'new_token' =>JWTAuth::refresh()
             ] 
         ], 200);
 
@@ -71,14 +70,5 @@ class UserController extends Controller
 
         return $validator->all() ;
     }
-    protected function createNewToken($token){
-        return response()->json([
-                'access_token' => $token,
-                'token_type' => 'bearer',
-                'user' => auth()->user()
-        ]);
-}
-	public function refresh(){
-			return $this->createNewToken(JWTAuth::refresh());
-	}
+
 }

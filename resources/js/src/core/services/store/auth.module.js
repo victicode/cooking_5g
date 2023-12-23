@@ -13,6 +13,8 @@ export const RESET_PASSWORD = 'resetPassword';
 export const RESET_PASSWORD_EMAIL = 'resetPasswordEmail';
 export const VALIDATE_USER_EXIST = 'validate_user_exist';
 export const VALIDATE_EMAIL = 'validate_email';
+export const CHECK_TOKEN = 'CHECK_TOKEN';
+
 // mutation types
 export const PURGE_AUTH = "logOut";
 export const SET_TOKEN = "setToken";
@@ -77,6 +79,19 @@ const actions = {
           .then(() => {
             context.commit(PURGE_AUTH);
             resolve();
+          });
+      }
+    });
+  },
+  [CHECK_TOKEN](context) {
+    return new Promise(resolve => {
+      if (JwtService.getToken()) {
+        ApiService.setHeader();
+        ApiService.post("api/checkToken")
+          .then((data) => {
+            resolve(data);
+          }).catch(( data ) => {
+            resolve(data);
           });
       }
     });

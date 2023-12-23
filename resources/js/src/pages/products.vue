@@ -386,7 +386,7 @@
                     <VCardText class="w-100 pb-5 px-3 px-md-6">
                       <VForm  id="add_stock_form">
                         <VRow class="my-2">
-                          <VCol cols="12" md="4" class="form-group" >
+                          <VCol cols="12" md="4" class="form-group" v-show="stockOperation.type==1" >
                             <VTextField
                               placeholder="Fecha de vencimiento"
                               label="Fecha de vencimiento"
@@ -410,13 +410,14 @@
                               v-model="stockOperation.lot"
                               autocomplete="off"
                               variant="underlined"
+                              @change="selectLote($event)"
                             />
                           </VCol>
                           <VCol cols="12" md="4" offset-md="8" class="form-group" v-show="stockOperation.type==2">
 
                             <v-combobox  
-                              :items="[{id:1, lote_number:'00012541'},{id:2, lote_number:'00012542'},{id:3, lote_number:'00012543'},{id:4, lote_number:'00012544'}]"
-                              item-title="lote_number"
+                              :items="selectedProduct.lotes"
+                              item-title="lote_code"
                               item-value="id"
                               placeholder="Número de lote"
                               label="Número de lote"
@@ -425,6 +426,10 @@
                               class="text-end"
                               v-model="stockOperation.lot"
                               variant="underlined"
+                              persistent-hint
+                              :return-object="false"
+                              :hint="'Stock en lote: '+stockOperation.lot_quantity"
+                              @update:modelValue="selectLote($event)"
                               
                             ></v-combobox >
                           </VCol>
@@ -454,20 +459,6 @@
                               @keyup="stockCalculate()"
                             />
                           </VCol>
-                          <VCol cols="12" md="6" class="form-group" v-if="stockOperation.type==2">
-                            <v-select
-                              item-title="title"
-                              item-value="id"
-                              label="Motivo de disminución"
-                              :items="reasonForDecrease"
-                              variant="outlined"
-                              v-model="stockOperation.reason"
-                              @update:modelValue="stockCalculate()"
-                              
-                            ></v-select>
-                          </VCol>
-                          
-                          
                         </VRow>
                         <VRow class="ma-0 pa-0  mt-8 align-center">
                           <VCol cols="12" md="4" offset-md="4" class="mt-0 py-0 px-0">
@@ -761,6 +752,13 @@
 thead > tr > th:nth-child(n+2){
   width: 15%!important;
 }
+.v-messages__message{
+  color: #cf6123;
+  font-weight: 500;
+  text-align: start;
+  font-size: 13px!important;
+
+}
 @media screen and (max-width: 780px){
   thead > tr > th.title-th {
       width: 52%!important;
@@ -798,16 +796,11 @@ thead > tr > th:nth-child(n+2){
         dismantling:[],
       },
       inputDate:'',
-      reasonForDecrease:[
-        {id:1, title:'Merma de producto'},
-        {id:2, title:'Rotacion de producto'},
-        {id:3, title:'Producto vencido'},
-      ],
       stockOperation:{
         type:1,
         quantity:'',
-        reason:1,
         lot:'',
+        lot_quantity: '',
         due_date:''
       },
       tableData:{
@@ -971,9 +964,7 @@ thead > tr > th:nth-child(n+2){
     }),
     methods:{
       stockCalculate(){
-        this.selectedProduct.newStock = this.stockOperation.type == -1
-        ? NaN
-        : this.stockOperation.type == 1
+        this.selectedProduct.newStock =  this.stockOperation.type == 1
           ? parseInt(this.selectedProduct.stock)  + parseInt(this.stockOperation.quantity)
           : parseInt(this.selectedProduct.stock)  - parseInt(this.stockOperation.quantity)
       
@@ -1024,6 +1015,8 @@ thead > tr > th:nth-child(n+2){
           .dispatch(GET_PRODUCT_BY_ID, idAccount)
           .then((response) => {
             this.selectedProduct = Object.assign({}, response.data);
+            console.log(this.selectedProduct)
+
             setTimeout(() => {
               this.validateFormItem('add_stock_form')
               this.validateFormItem('edit_product_form')
@@ -1147,7 +1140,7 @@ thead > tr > th:nth-child(n+2){
             ? 'new_product_form'
             : 'edit_product_form', 'new')
         }, 500);
-        console.log(e)
+        // console.log(e)
         return type == 2 
         ? this.newProduct.dismantling.push(newItem)
         : this.selectedProduct.dismantling.push(newItem);
@@ -1166,7 +1159,7 @@ thead > tr > th:nth-child(n+2){
         const button = document.getElementById(idButton)
 
         this.disabledButton( button, 'remove')
-        console.log(this.selectedProduct.dismantling)
+        // console.log(this.selectedProduct.dismantling)
         return type == 2 
         ? this.newProduct.dismantling[index].piece_product_id = e
         : this.selectedProduct.dismantling[index].piece_product_id = e
@@ -1178,6 +1171,7 @@ thead > tr > th:nth-child(n+2){
         this.resetNewProductForm()
       },
       resetStockForm(){
+        this.inputDate.clear()
         this.stockOperation = {
           type:1,
           quantity:'',
@@ -1271,6 +1265,7 @@ thead > tr > th:nth-child(n+2){
         formData.append('lote', this.stockOperation.lot);
         formData.append('due_date', this.$refs.due_date.value );
 
+        console.log(this.stockOperation)
         this.$store
           .dispatch(ADD_STOCK, {id:this.selectedProduct.id, data:formData})
           .then((response) => {
@@ -1582,7 +1577,15 @@ thead > tr > th:nth-child(n+2){
       },
       clearDateAndLot(){
         this.stockOperation.lot  = ''
-        this.stockOperation.due_date = this.stockOperation.type==1 ?'':'0000'
+        this.stockOperation.due_date = this.stockOperation.type==1 ?'':moment().format('DD-MM-YYYY')
+        this.$refs.due_date.value = moment().format('DD-MM-YYYY')
+        this.inputDate.setDate(moment().format('DD-MM-YYYY'),true);
+      },
+      selectLote(e){
+        const selectedLote = this.selectedProduct.lotes.filter((lot) => lot.id === e)[0]
+        this.stockOperation.lot_quantity = selectedLote.quantity;
+        this.stockOperation.lot = selectedLote.id;
+
       }
     },
     mounted(){

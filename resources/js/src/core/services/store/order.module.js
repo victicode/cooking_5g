@@ -19,7 +19,7 @@ const actions = {
                         
                     })
                     .catch(( { response } ) => {
-                        // console.log(response )
+                        console.log(response )
                         reject('Ocurrió un error desconocido al intentar obtener las ordenes');
                     });
             }
@@ -48,12 +48,10 @@ const actions = {
           ApiService.setHeader();
           ApiService.get("api/order/get-by-id/"+orderID)
           .then(( { data } ) => {
-              // console.log(data)
               resolve(data);
               
           })
           .catch(( { response } ) => {
-              // console.log(response )
               reject('Ocurrió un error desconocido al intentar obtener las ordenes');
           });
         }

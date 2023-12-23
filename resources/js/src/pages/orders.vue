@@ -604,7 +604,6 @@
           "type": "POST",
           data: function ( data ) {
             data.filter_tracker_id = document.querySelector('[name="tracker_id"]').value;
-            console.log(data)
             data.filter_start_date = document.querySelector('[name="start_date"]').value;
             data.filter_end_date = document.querySelector('[name="end_date"]').value;
 
@@ -659,7 +658,6 @@
             title: 'Estado ',
             class:'text-center px-3',
             render: ( data, type, row, meta ) =>{ 
-              console.log(row.status)
               return `
               <span 
                 class="  v-chip v-theme--light v-chip--density-comfortable elevation-0 v-chip--size-default v-chip--variant-tonal ${row.status == 1 ? 'bg-warning' : row.status == 2 ? 'bg-secondary' :row.status == 3 ? 'bg-success' : 'bg-error' }" 
@@ -1030,7 +1028,7 @@
         const button = document.getElementById(idButton)
 
         this.disabledButton( button, 'remove')
-        console.log(this.selectedProduct.dismantling)
+        // console.log(this.selectedProduct.dismantling)
         return type == 2 
         ? this.newProduct.dismantling[index].piece_product_id = e
         : this.selectedProduct.dismantling[index].piece_product_id = e

@@ -22,19 +22,12 @@ const actions = {
         return new Promise((resolve, reject) => {
             if (JwtService.getToken()) {
                 ApiService.setHeader();
-                ApiService.get("api/user/get-user")
+                ApiService.get("api/user")
                     .then(( { data } ) => {
-                        // console.log(data.data.user)
-                        console.log(data.data.new_token)
-                        console.log(JwtService.getToken())
 
-                        JwtService.saveToken(data.data.new_token);
-                        setTimeout(() => {
-                            
-                            context.commit(SET_USER, data.data.user);
-                            resolve(data.data);
-                        }, 500);
-                        
+                        context.commit(SET_USER, data.data.user);
+                        resolve(data.data);
+ 
                     })
                     .catch(( { response } ) => {
                         reject('Ocurrió un error desconocido al intentar guardar el usuario.');

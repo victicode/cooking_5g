@@ -143,7 +143,7 @@ class ProductController extends Controller
         return $this->returnSuccess(200, [$request->type, $request->quantity]);
     }
     public function getProductById($id){
-        return $this->returnSuccess(200, Product::with(['dismantling.products_pieces'])->find($id));
+        return $this->returnSuccess(200, Product::with(['dismantling.products_pieces','lotes'])->find($id));
     }
     public function getProductBySearch(Request $request){
         $products = Product::query()->with(['dismantling.products_pieces']);
@@ -251,7 +251,7 @@ class ProductController extends Controller
     } 
     private function reduceLote($productId, $data){
 
-        $lote = Lot::where('lote_code', $data->lote_code)->where('product_id', $productId)->first();
+        $lote = Lot::where('id', $data->lote)->where('product_id', $productId)->first();
 
         $lote->quantity = $lote->quantity - $data->quantity;
         $lote->save();

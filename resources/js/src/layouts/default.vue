@@ -6,7 +6,7 @@ import DefaultLayoutWithVerticalNav from './components/DefaultLayoutWithVertical
 </script>
 
 <template>
-  <DefaultLayoutWithVerticalNav v-if="load">
+  <DefaultLayoutWithVerticalNav >
     <router-view v-slot="{Component}" >
       <transition 
          mode="out-in" 
@@ -48,7 +48,7 @@ body{
 </style>
 <script>
 import { GET_USER } from "@/core/services/store/user.module";
-import { LOGOUT } from "@/core/services/store/auth.module";
+import { LOGOUT, PURGE_AUTH } from "@/core/services/store/auth.module";
 export default {
   methods:{
     getUser(){
@@ -59,20 +59,23 @@ export default {
           }
           this.user = data.user;
           this.overlayLoad = false
-          this.load= true
         })
         .catch((e) => {
-          console.log(e)
-          this.$store.dispatch(LOGOUT).then(() => { this.$router.go('/login')});
+          this.logout()
         });
     },
-    gol(){
-      alert('se abandona pagina');
+    logout(){
+      window.localStorage.removeItem("id_token");
+      window.localStorage.removeItem("has_account");
+      window.localStorage.removeItem("is_admin");
+      window.localStorage.removeItem("session_on");
+      setTimeout(() => {
+        this.$router.go('/login')
+      }, 200);
     }
   },
   data: () => ({
     overlayLoad: false,
-    load:false,
     overlayModal: false,
   }),
   created(){

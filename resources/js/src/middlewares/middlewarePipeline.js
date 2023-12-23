@@ -4,12 +4,13 @@ function middlewarePipeline (context, middleware, index) {
         return context.next 
     }
 
-    return () => {
-        const nextPipeline = middlewarePipeline(
-            context, middleware, index + 1
-        )
-        nextMiddleware({ ...context, next: nextPipeline })
-    }
+        return () => {
+            const nextPipeline = middlewarePipeline(
+                context, middleware, index + 1
+            )
+            nextMiddleware({ ...context, next: nextPipeline })
+        }
+    
 }
 
 export default middlewarePipeline

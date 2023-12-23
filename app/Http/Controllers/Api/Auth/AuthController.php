@@ -38,6 +38,11 @@ class AuthController extends Controller
 		return response()->json([ 'data'=>['code'=>200]], 200);
 
 	}
+	public function checkToken(Request $request)
+	{
+		return $this->returnSuccess(200, 'ok');
+
+	}
 	protected function createNewToken($token){
 			return response()->json([
 					'access_token' => $token,

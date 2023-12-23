@@ -21,6 +21,7 @@ class Product extends Model
         'updated_by', 
     ];
 
+    // protected $appends = ['lot'];
 
     public function orders()
     {

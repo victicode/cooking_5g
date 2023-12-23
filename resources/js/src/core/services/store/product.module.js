@@ -23,7 +23,7 @@ const actions = {
                 
             })
             .catch(( { response } ) => {
-                // console.log(response )
+                console.log(response )
                 reject('Ocurrió un error desconocido al intentar obtener las ordenes');
             });
           }
@@ -40,7 +40,7 @@ const actions = {
                 
             })
             .catch(( { response } ) => {
-                // console.log(response )
+                console.log(response )
                 reject('Ocurrió un error desconocido al intentar obtener las ordenes');
             });
           }
