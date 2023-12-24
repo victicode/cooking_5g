@@ -51,6 +51,7 @@ Route::middleware('jwt.verify')->post('/checkToken', [AuthController::class, 'ch
 
 Route::middleware('jwt.verify')->prefix('user')->name('user.')->group(function () {
     Route::get('/', [AuthController::class, 'getUser'])->name('getUser');
+    Route::get('/all-client', [UserController::class, 'getAllclient']);
 
 });
 Route::middleware('jwt.verify')->prefix('order')->name('order.')->group(function () {

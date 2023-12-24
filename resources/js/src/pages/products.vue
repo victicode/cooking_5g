@@ -1561,7 +1561,12 @@ thead > tr > th:nth-child(n+2){
       removeValidate(id){
         let form = document.getElementById(id),
         quantityInput = form.querySelectorAll('input[name*="product_desmantling_quantity_"]')[ form.querySelectorAll('input[name*="product_desmantling_quantity_"]').length - 1]
-        this.forms[id].removeField(quantityInput.name)
+        try {
+          this.forms[id].removeField(quantityInput.name)
+        } catch (error) {
+          console.log('no hay validación activa')
+        }
+        
       },
       initDueDateInput(){
         this.inputDate = flatpickr(document.querySelector('#date-input'), {

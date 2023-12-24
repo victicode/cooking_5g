@@ -115,9 +115,6 @@ class ProductController extends Controller
             return $this->returnSuccess(400, $th->getMessage());
         }
         
-
-        
-       
         return $this->returnSuccess(200, Product::with(['dismantling.products_pieces'])->find($product->id));
     }
     public function addStock(Request $request, $id)
@@ -167,6 +164,8 @@ class ProductController extends Controller
         }
 
         $product = Product::find($productId);
+        $dismantlingsOfProducts= Dismantling::where('piece_product_id', $productId)->delete();
+
 
         if (!$product) {
             return $this->returnFail(404, "Producto no encontrada.");
@@ -174,12 +173,11 @@ class ProductController extends Controller
 
         $product->delete();
 
+
         return $this->returnSuccess(200, ['id' => $productId, 'deleted_at' => $product->deleted_at]);
     }
     private function validateRequiredFields($inputRequest, $type = "create" )
     {
-
- 
         
         if (!array_key_exists('title', $inputRequest) && empty($inputRequest['title']) )  {
             return [
@@ -224,7 +222,7 @@ class ProductController extends Controller
     }
     private function addDismantling($productId, $dismantlingsProducts){
         $dismantlingsProductsArrayFormat = json_decode($dismantlingsProducts,true); 
-        Dismantling::where('product_id', $productId)->delete();
+        Dismantling::where('product_id', $productId)->forceDelete();
 
         if( $dismantlingsProductsArrayFormat !== null ){
             foreach ($dismantlingsProductsArrayFormat as $dismantlingProduct) {

@@ -14,6 +14,8 @@
   import 'flatpickr/dist/flatpickr.min.css'
   import { Spanish } from "flatpickr/dist/l10n/es.js"
   import { GET_ORDER_BY_ID, CHANGE_STATUS } from "@/core/services/store/order.module";
+  import { GET_ALL_USER } from "@/core/services/store/user.module";
+
   import { GET_PRODUCT_BY_SEARCH } from "@/core/services/store/product.module";
 </script>
 
@@ -443,14 +445,27 @@
                     <VForm  id="new_order_form">
                       <VRow class="align-center">
                         <VCol cols="12" md="7" class="form-group">
-                          <VTextField
+                          <!-- <VTextField
                             placeholder="Usuario"
                             label="Usuario"
                             type="text"
                             name="new_product_title"
                             autocomplete="off"
                             v-model="newOrder.user"
-                          />
+                          /> -->
+                          <v-combobox  
+                            :items="userForOrder"
+                            item-title="name"
+                            item-value="id"
+                            placeholder="Usuario"
+                            label="Usuario"
+                            type="text"
+                            name="orden_client"
+                            v-model="newOrder.user"
+                            :return-object="false"
+                           
+                            
+                          ></v-combobox >
                         </VCol>
                         <VCol cols="12"  md="5" class="form-group px-3">
                           <div class="d-flex align-center">
@@ -597,6 +612,7 @@
         products:[],
         userAddress:false,
       },
+      userForOrder:[],
       productsForOrder:[],
       tableData:{
         ajax:{
@@ -889,6 +905,18 @@
             });
           });
       },
+      getUsers(){
+        this.$store
+          .dispatch(GET_ALL_USER)
+          .then((data) => {
+            console.log(data)
+            this.userForOrder = data
+          })
+          .catch((err) => {
+            console.log(err)
+        
+          });
+      },
       bootstrapOptions(){
         setTimeout(() => {
           const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
@@ -1049,6 +1077,7 @@
       
     },
     mounted(){
+      this.getUsers()
       this.initOptionsTable()
       this.table = new DataTablesCore('#data-table', this.tableData)
       this.initFlatpickr();

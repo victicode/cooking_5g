@@ -92,7 +92,7 @@ const actions = {
               
           })
           .catch(( { response } ) => {
-              // console.log(response )
+              console.log(response)
               reject('Ocurrió un error desconocido al intentar crear el stock');
           });
         }
@@ -109,8 +109,8 @@ const actions = {
               
           })
           .catch(( { response } ) => {
-              // console.log(response )
-              reject('Ocurrió un error desconocido al intentar crear el stock');
+              console.log(response)
+              reject('Ocurrió un error desconocido al intentar borrar el producto');
           });
         }
       });

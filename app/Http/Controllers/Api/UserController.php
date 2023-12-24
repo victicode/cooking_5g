@@ -6,6 +6,7 @@ use Exception;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Rol;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -13,14 +14,8 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
-    public function getUser(Request $request){
-       
-        return response()->json([ 'data'=>[
-            'code'=> 200,
-            'user' => User::with('rol')->find($request->user()->id),
-            ] 
-        ], 200);
-
+    public function getAllclient(Request $request){
+        return $this->returnSuccess(200, User::where('rol_id', 3)->get());
     }
     public function createUser(Request $request){
        
