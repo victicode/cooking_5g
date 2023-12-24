@@ -30,7 +30,6 @@ router.beforeEach(async (to, from, next) => {
   }
 
   store.dispatch(CHECK_TOKEN).then((data)=>{
-    console.log(data.data)
    if(data.data.code !== 200){
     store.commit(SET_TOKEN,data.data.new_token)
    } 

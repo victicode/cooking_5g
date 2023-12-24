@@ -267,9 +267,8 @@
                                     <v-autocomplete
                                       :model-value="item.piece_product_id"
                                       :loading="loading"
-                                      :items="productOption[index+'_'+selectedProduct.id] != undefined ?  productOption[index+'_'+selectedProduct.id] : [ {id: item.piece_product_id, title: item.products_pieces.title}]"
+                                      :items="productOption[index+'_'+selectedProduct.id] != undefined ?  productOption[index+'_'+selectedProduct.id] : item.piece_product_id !== null ?[ {id: item.piece_product_id, title: item.products_pieces.title}] : []"
                                       label="Nombre del producto"
-                                      item-props="stock"
                                       item-title="title"
                                       item-value="id"
                                       placeholder="Nombre del producto"
@@ -297,7 +296,7 @@
                                     <v-tooltip text="Eliminar despiece">
                                       <template v-slot:activator="{ props }">
                                         <v-col cols="auto" class="">
-                                          <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeDismantlingInput(1,index)"></v-btn>
+                                          <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeDismantlingInput(1,productOption[index+'_'+selectedProduct.id])"></v-btn>
                                         </v-col>
                                       </template>
                                     </v-tooltip>
@@ -759,6 +758,9 @@ thead > tr > th:nth-child(n+2){
   font-size: 13px!important;
 
 }
+.v-menu{
+  box-shadow: 2px 2px 2px red!important;
+}
 @media screen and (max-width: 780px){
   thead > tr > th.title-th {
       width: 52%!important;
@@ -1036,10 +1038,27 @@ thead > tr > th:nth-child(n+2){
           });
       },
       getProducts(search = "", index){
+
+        const loge = {
+          items:this.productOption[index],
+          index: index,
+          search: search
+        }
+
+
+
         this.$store
           .dispatch(GET_PRODUCT_BY_SEARCH, search)
           .then((response) => {
+            console.log(response)
             this.productOption[index] = response.data
+            const loge = {
+              items:this.productOption[index],
+              items_count:this.productOption[index].length,
+              index: index,
+              search: search
+            }
+            console.log(loge)
           })
           .catch((err) => {
             return new Promise((resolve) => {
@@ -1121,7 +1140,7 @@ thead > tr > th:nth-child(n+2){
           id:'',
           piece_product_id: null,
           product_id: '',
-          products_pieces: { title: '' },
+          products_pieces: { title: '', id:'' },
           quantity: '',
         }
 
@@ -1140,7 +1159,7 @@ thead > tr > th:nth-child(n+2){
             ? 'new_product_form'
             : 'edit_product_form', 'new')
         }, 500);
-        // console.log(e)
+        console.log(this.selectedProduct.dismantling)
         return type == 2 
         ? this.newProduct.dismantling.push(newItem)
         : this.selectedProduct.dismantling.push(newItem);
