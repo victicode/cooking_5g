@@ -11,7 +11,7 @@
   import * as bootstrap from 'bootstrap'
   import flatpickr from "flatpickr";
   import moment from 'moment';
-  import 'flatpickr/dist/flatpickr.min.css'
+  // import 'flatpickr/dist/flatpickr.min.css'
   import { Spanish } from "flatpickr/dist/l10n/es.js"
   import { GET_ORDER_BY_ID, CHANGE_STATUS } from "@/core/services/store/order.module";
   import { GET_ALL_USER } from "@/core/services/store/user.module";
@@ -930,6 +930,7 @@
         this.table.draw('full-hold');
       },
       clearFilters(){
+        this.inputDate.clear()
         document.querySelector('[name="tracker_id"]').value = '';
         document.querySelector('[name="start_date"]').value = '';
         document.querySelector('[name="end_date"]').value = '';

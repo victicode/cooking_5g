@@ -242,7 +242,7 @@ class ProductController extends Controller
             'lote_code'  => $data->lote,
             'product_id' => $productId,
             'quantity'   => $data->quantity,
-            'due_date'   => date('Y-m-d', $data->due_date) ,
+            'due_date'   => $data->due_date ,
         ]);
             
         
