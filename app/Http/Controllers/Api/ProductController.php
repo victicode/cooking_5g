@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use stdClass;
 use Exception;
 use App\Models\Lot;
 use App\Models\Product;
@@ -76,6 +77,9 @@ class ProductController extends Controller
         if($request->is_dismantling){
              $this->addDismantling($product->id, $request->dismantling);
         }
+
+        $addLote = $this->formatInputLot($request);
+        $this->addLote($product->id, $addLote);
         return $this->returnSuccess(200, $product);
 
     }
@@ -255,4 +259,13 @@ class ProductController extends Controller
         $lote->save();
 
     } 
+    private function formatInputLot($inputs){
+        $formatInputs = new stdClass(); 
+        $formatInputs->lote = $inputs->initial_lote;
+        $formatInputs->quantity = $inputs->initial_stock;
+        $formatInputs->due_date = $inputs->due_date;
+
+        return $formatInputs;
+
+    }
 }
