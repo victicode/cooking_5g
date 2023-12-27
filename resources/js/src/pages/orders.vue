@@ -1,7 +1,11 @@
 <script setup >
-  import DataTable from 'datatables.net-vue3';
   import DataTablesCore from 'datatables.net';
   import Button from 'datatables.net-buttons';
+  import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
+  import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
+  import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
+  import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
+  import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
   import 'datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css';
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue'
   import OrderProductsTables from '@/views/pages/tables/OrderProductsTables.vue'
@@ -10,8 +14,9 @@
   import 'datatables.net-dt/css/jquery.dataTables.min.css';
   import * as bootstrap from 'bootstrap'
   import flatpickr from "flatpickr";
+  import debounce from 'debounce';
   import moment from 'moment';
-  // import 'flatpickr/dist/flatpickr.min.css'
+  import 'flatpickr/dist/flatpickr.min.css'
   import { Spanish } from "flatpickr/dist/l10n/es.js"
   import { GET_ORDER_BY_ID, CHANGE_STATUS } from "@/core/services/store/order.module";
   import { GET_ALL_USER } from "@/core/services/store/user.module";
@@ -460,16 +465,14 @@
                             placeholder="Usuario"
                             label="Usuario"
                             type="text"
-                            name="orden_client"
-                            v-model="newOrder.user"
-                            :return-object="false"
-                           
-                            
+                            name="new_order_client"
+                            v-model="newOrder.user"  
+                            autocomplete="off"            
                           ></v-combobox >
                         </VCol>
                         <VCol cols="12"  md="5" class="form-group px-3">
                           <div class="d-flex align-center">
-                            <input type="checkbox" id="isUserAddress" value="1" style="height: 20px; width: 20px;">
+                            <input type="checkbox"  @change="useClientAddress($event)" id="isUserAddress" value="1" style="height: 20px; width: 20px;">
                             <label for="isUserAddress" class="mx-2">Usar dirección del usuario</label>
                           </div>
                         </VCol>
@@ -481,8 +484,8 @@
                             rows="3"
                             row-height="25"
                             shaped
-                            name="new_product_description"
-                            v-model="newOrder.address"
+                            name="new_order_address"
+                            v-model="newOrder.userAddress"
                           ></v-textarea>
                         </VCol>
                       </VRow>
@@ -502,20 +505,19 @@
                                 </v-tooltip>
                             </VCol>
                             <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
-                              <VRow  v-for="(item,index) in newOrder.products"  v-bind:key="item.id" class="pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'new_product_desmantling_'+index">
+                              <VRow  v-for="(item,index) in newOrder.products"  v-bind:key="item.id" class="pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'new_order_product_'+index">
                                 <VCol cols="12"  md="6" class="form-group">
                                   <v-autocomplete
-                                    :model-value="item.piece_product_id"
-                                    :items="productsForOrder[index] ?  productsForOrder[index] : [ {id: item.id, title: item.title}]"
+                                    :model-value="item.id"
+                                    :items="productsForOrder[index] ?  productsForOrder[index] : item.id !== null ? [ {id: item.id, title: item.title, stock: item.quantity}] : []"
                                     label="Nombre del producto"
-                                    item-props="stock"
                                     item-title="title"
                                     item-value="id"
                                     placeholder="Nombre del producto"
                                     variant="outlined"
                                     clearable
                                     no-filter
-                                    :name="'product_desmantling_id_'+index"
+                                    :name="'product_in_order_'+index"
                                     no-data-text="No se encontraron resultados"
                                     @keyup="searchDismantling($event,index )"
                                     @click:clear="clearSearchDismantling(index)"
@@ -527,7 +529,7 @@
                                     placeholder="Unidades solicitadas"
                                     label="Unidades solicitadas"
                                     type="number"
-                                    :name="'product_in_order_'+index"
+                                    :name="'product_in_order_quantity_'+index"
                                     v-model="item.quantity"
                                     
                                   />
@@ -547,7 +549,7 @@
                       <VRow class="ma-0 pa-0  mt-8 align-center">
                         <VCol cols="12" md="4" offset-md="4" class="mt-0 py-0 px-0">
                           <v-col cols="auto" class="">
-                            <VBtn  color="primary" class="w-100 " type="submit" disabled id="new_product_form_button"> Guardar</VBtn>
+                            <VBtn  color="primary" class="w-100 " type="submit" disabled id="new_order_form_button"> Guardar</VBtn>
                           </v-col>
                         </VCol>
                       </VRow>
@@ -606,11 +608,11 @@
       alertShow:false,
       alertMessage:'',
       alertType:'',
+      forms:[],
       newOrder: {
-        direction:'',
         user:'',
         products:[],
-        userAddress:false,
+        userAddress:'',
       },
       userForOrder:[],
       productsForOrder:[],
@@ -909,7 +911,7 @@
         this.$store
           .dispatch(GET_ALL_USER)
           .then((data) => {
-            console.log(data)
+            // console.log(data)
             this.userForOrder = data
           })
           .catch((err) => {
@@ -936,6 +938,12 @@
         document.querySelector('[name="end_date"]').value = '';
         this.table.clear();
         this.table.columns().search('').draw('full-hold')
+      },
+      useClientAddress(e){
+          this.newOrder.userAddress = e.target.checked 
+            ? this.newOrder.user.user_address
+            : this.newOrder.userAddress = ''
+          this.forms.validateField('new_order_address')
       },
       showModal(modal) {
         try {
@@ -1021,26 +1029,18 @@
           ? this.newProduct.dismantling.splice(index, 1)
           : this.selectedProduct.dismantling.splice(index, 1);
         }, 300);
-
-        
         
       },
       addDismantlingInput(e){
         let newOrder = {
-          id:'',
+          id:null,
           title:'',
           quantity:''
         }
-        
-        
-        // const button = document.getElementById('new_order_form')
-
-        // this.disabledButton( button, 'remove')
-
-        // setTimeout(() => {
-        //   this.addValidate('new_order_form')
-        // }, 500);
-        return this.newOrder.products.push(newOrder)
+        this.newOrder.products.push(newOrder)
+        setTimeout(() => {
+          
+        }, 200);
 
       },
       searchDismantling(e, index){ 
@@ -1049,23 +1049,15 @@
       clearSearchDismantling(index){
         this.getProducts('',index)
       },
-      selectDismantling(e,index,type){
-        const idButton = type == 2 
-          ? 'new_product_form_button'
-          : 'edit_product_form_button'
-
-        const button = document.getElementById(idButton)
-
-        this.disabledButton( button, 'remove')
-        // console.log(this.selectedProduct.dismantling)
-        return type == 2 
-        ? this.newProduct.dismantling[index].piece_product_id = e
-        : this.selectedProduct.dismantling[index].piece_product_id = e
+      selectDismantling(e,index){
+        this.newOrder.products[index].id = e
+        
       },
       getProducts(search = "", index){
         this.$store
           .dispatch(GET_PRODUCT_BY_SEARCH, search)
           .then((response) => {
+            // console.log(response)
             this.productsForOrder[index] = response.data
           })
           .catch((err) => {
@@ -1075,6 +1067,126 @@
           })
 
       },
+      validateFormItem(){
+        this.forms = formValidation(document.getElementById('new_order_form'), {
+          fields: {
+            new_order_client:{
+                validators: {
+                  notEmpty: {
+                    message: "El cliente es requerido"
+                  },
+                }
+              },
+              new_order_address: {
+                validators: {
+                  notEmpty: {
+                    message: "Debes agregar la dirección"
+                  },
+                  regexp: {
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@,$_ñ_ ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+          },
+          plugins: {
+            trigger: new Trigger(),
+            submitButton: new SubmitButton(),
+            bootstrap: new Bootstrap({
+                  // Use this for enabling/changing valid/invalid class
+                  // eleInvalidClass: '',
+                  // eleValidClass: '',
+                }),
+          }
+        });
+        setTimeout( ()=> this.formsActions(), 500)
+      },
+      formsActions(){
+        const sendButton = document.getElementById('new_order_form_button')
+       
+        this.forms.on("core.form.valid", () => {
+          
+        }).on("core.field.valid", () => {
+          sendButton.disabled = false
+          sendButton.classList.remove('v-btn--disabled')
+
+        }).on("core.form.invalid", () => {
+          sendButton.disabled = true
+          sendButton.classList.add('v-btn--disabled')
+
+        }).on("core.field.invalid", () => {
+          sendButton.disabled = true
+          sendButton.classList.add('v-btn--disabled')
+
+        });
+      },
+      destroyFormVal(){
+        this.forms['edit_product_form'].destroy()
+        this.forms['add_stock_form'].destroy()
+        this.forms['new_product_form'].resetForm()
+          
+      },
+      sendingButton(id){
+        document.getElementById(id).disabled = true
+        
+      },
+      readyButton(id){
+        document.getElementById(id).disabled = true
+        
+        document.getElementById(id).setAttribute('class','v-btn v-btn--disabled v-theme--light bg-primary v-btn--density-default v-btn--size-default v-btn--variant-elevated w-100')
+      },
+      disabledButton(element, action){
+
+        element.disabled = true;
+        element.classList.add('v-btn--disabled')
+
+        if(action == 'toggle' ){
+          element.disabled = !element.disabled;
+          element.classList.toggle('v-btn--disabled')
+            return
+        }
+        element.disabled = false;
+        element.classList.remove('v-btn--disabled')
+      },
+      addValidate(){
+        // this.forms[id] 
+        let form = document.getElementById('new_order_form'),
+        quantityInput = form.querySelectorAll('input[name*="product_in_order_quantity_"]')[ form.querySelectorAll('input[name*="product_in_order_quantity_"]').length - 1]
+        // fieldOptions={
+        //     quantity: {
+        //       validators: {
+        //         notEmpty: {
+        //           message: "Agregar la cantidad de piezas "
+        //         },
+        //         numeric: {
+        //           message: "Debe ser númerico"
+        //         }
+        //       }
+        //     }
+        //   } 
+
+        // if(quantityInput && type == 'new'){
+        //   this.forms[id].addField(quantityInput.name, fieldOptions.quantity)
+        //   return
+        // }
+
+        // quantityInput.forEach((element) => {
+        //   this.forms[id].addField(element.name, fieldOptions.quantity)
+
+        // });
+        
+        // console.log(newfield)
+      },
+      removeValidate(id){
+        let form = document.getElementById(id),
+        quantityInput = form.querySelectorAll('input[name*="product_desmantling_quantity_"]')[ form.querySelectorAll('input[name*="product_desmantling_quantity_"]').length - 1]
+        try {
+          this.forms[id].removeField(quantityInput.name)
+        } catch (error) {
+          console.log('no hay validación activa')
+        }
+        
+      },
       
     },
     mounted(){
@@ -1083,6 +1195,7 @@
       this.table = new DataTablesCore('#data-table', this.tableData)
       this.initFlatpickr();
       this.bootstrapOptions();
+      this.validateFormItem();
     },
     created(){
       

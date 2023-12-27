@@ -126,7 +126,7 @@
                         </VCol>
                       </VRow>
                       
-                      <div style="border-top: 1px solid rgba(119, 119, 119, 0.356)" v-if="selectedProduct.is_dismantling">
+                      <div style="border-top: 1px solid rgba(119, 119, 119, 0.356)" v-if="selectedProduct.is_dismantling && selectedProduct.dismantling.length > 0">
                         <VCardText class="text-subtitle-1 pb-4">
                           <span class="font-weight-medium">Cantidad de despices:</span> <span class="font-weight-bold">{{ selectedProduct.dismantling.length}}</span>
                         </VCardText>
@@ -272,7 +272,7 @@
                                 <v-tooltip text="Agregar nuevo despiece">
                                     <template v-slot:activator="{ props }">
                                       <v-col cols="auto" class="">
-                                        <VBtn v-bind="props" color="primary" class="w-100 " @click="addDismantlingInput($event, 1)"><VIcon icon="bx-plus"/> Agregar despiece</VBtn>
+                                        <VBtn v-bind="props" color="primary" class="w-100 " @click="addDismantlingInput(1)"><VIcon icon="bx-plus"/> Agregar despiece</VBtn>
                                       </v-col>
                                     </template>
                                   </v-tooltip>
@@ -500,7 +500,7 @@
             >
               <VCol
                 cols="12"
-                class="pa-0"  
+                class="px-2"  
               >
                 <VCard class="modal__content">
                   <div class="modal__close-button" >
@@ -699,7 +699,7 @@
                                             <v-tooltip text="Agregar nuevo despiece">
                                                 <template v-slot:activator="{ props }">
                                                   <v-col cols="auto" class="">
-                                                    <VBtn v-bind="props" color="primary" class="w-100"  @click="addDismantlingInput($event, 2)"><VIcon icon="bx-plus"/> Agregar despiece</VBtn>
+                                                    <VBtn v-bind="props" color="primary" class="w-100"  @click="addDismantlingInput(2)"><VIcon icon="bx-plus"/> Agregar despiece</VBtn>
                                                   </v-col>
                                                 </template>
                                               </v-tooltip>
@@ -709,7 +709,7 @@
                                               <VCol cols="12"  md="6" class="form-group">
                                                 <v-autocomplete
                                                   :model-value="item.piece_product_id"
-                                                  :items="productOption[index] ?  productOption[index] : [ {id: item.piece_product_id, title: item.products_pieces.title}]"
+                                                  :items="productOption[index] ?  productOption[index] :item.piece_product_id !== null ? [ {id: item.piece_product_id, title: item.products_pieces.title}] : []"
                                                   label="Nombre del producto"
                                                   item-props="stock"
                                                   item-title="title"
@@ -865,9 +865,6 @@ thead > tr > th:nth-child(n+2){
   text-align: start;
   font-size: 13px!important;
 
-}
-.v-menu{
-  box-shadow: 2px 2px 2px red!important;
 }
 .v-stepper.v-sheet{
   width:100%
@@ -1254,7 +1251,7 @@ thead > tr > th:nth-child(n+2){
         
         
       },
-      addDismantlingInput(e, type){
+      addDismantlingInput(type){
         let newItem = {
           id:'',
           piece_product_id: null,
@@ -1277,6 +1274,7 @@ thead > tr > th:nth-child(n+2){
           this.addValidate(type == 2 
             ? 'new_product_form'
             : 'edit_product_form', 'new')
+
         }, 500);
         return type == 2 
         ? this.newProduct.dismantling.push(newItem)
@@ -1526,13 +1524,6 @@ thead > tr > th:nth-child(n+2){
             break;
           case 'new_product_form_2':
             fieldByForm = {
-              new_product_due_date:{
-                validators: {
-                  notEmpty: {
-                    message: "La fecha de vencimiento es requerida"
-                  }
-                }
-              },
               new_product_init_lot:{
                 validators: {
                   notEmpty: {
@@ -1549,6 +1540,13 @@ thead > tr > th:nth-child(n+2){
                     regexp: /^[0-9]+$/i,
                     message: "Debe ser númerico",
                   },
+                }
+              },
+              new_product_due_date:{
+                validators: {
+                  notEmpty: {
+                    message: "La fecha de vencimiento es requerida"
+                  }
                 }
               },
             }

@@ -29,7 +29,7 @@ class UserController extends Controller
                 'email'         => $request->email,
                 'password'      => Hash::make($request->password),
                 'rol_id'        => $request->rol_id,
-                'user_address'  => $request->rol_id == 3 ? $request->user_address : ' ',
+                'user_address'  => $request->rol_id == 3 ? $request->user_address : '----',
             ]);
         } catch (Exception $th) {
             return $this->returnSuccess(400, $th->getMessage() );
