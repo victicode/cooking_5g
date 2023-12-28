@@ -1137,8 +1137,6 @@ thead > tr > th:nth-child(n+2){
           .dispatch(GET_PRODUCT_BY_ID, idAccount)
           .then((response) => {
             this.selectedProduct = Object.assign({}, response.data);
-            console.log(this.selectedProduct)
-
             setTimeout(() => {
               this.validateFormItem('add_stock_form')
               this.validateFormItem('edit_product_form')
@@ -1760,7 +1758,6 @@ thead > tr > th:nth-child(n+2){
         this.stockOperation.lot  = ''
         this.stockOperation.due_date = this.stockOperation.type==1 ?'':moment().format('DD-MM-YYYY')
         this.$refs.stock_due_date.value = moment().format('DD-MM-YYYY')
-        console.log(this.inputDate['dueDateAddStock'])
         this.inputDate['dueDateAddStock'].setDate(moment().format('DD-MM-YYYY'),true);
       },
       selectLote(e){

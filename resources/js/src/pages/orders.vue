@@ -1,6 +1,5 @@
 <script setup >
   import DataTablesCore from 'datatables.net';
-  import Button from 'datatables.net-buttons';
   import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
   import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
   import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
@@ -9,8 +8,6 @@
   import 'datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css';
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue'
   import OrderProductsTables from '@/views/pages/tables/OrderProductsTables.vue'
-  import ButtonPrint from 'datatables.net-buttons/js/buttons.print';
-  import ButtonHTML5 from 'datatables.net-buttons/js/buttons.html5';
   import 'datatables.net-dt/css/jquery.dataTables.min.css';
   import * as bootstrap from 'bootstrap'
   import flatpickr from "flatpickr";
@@ -18,7 +15,7 @@
   import moment from 'moment';
   import 'flatpickr/dist/flatpickr.min.css'
   import { Spanish } from "flatpickr/dist/l10n/es.js"
-  import { GET_ORDER_BY_ID, CHANGE_STATUS } from "@/core/services/store/order.module";
+  import { GET_ORDER_BY_ID, CHANGE_STATUS, CREATE_ORDER } from "@/core/services/store/order.module";
   import { GET_ALL_USER } from "@/core/services/store/user.module";
 
   import { GET_PRODUCT_BY_SEARCH } from "@/core/services/store/product.module";
@@ -467,16 +464,17 @@
                             type="text"
                             name="new_order_client"
                             v-model="newOrder.user"  
-                            autocomplete="off"            
+                            autocomplete="off"        
+                            @update:modelValue="forms.validateField('new_order_client')"
                           ></v-combobox >
                         </VCol>
-                        <VCol cols="12"  md="5" class="form-group px-3">
+                        <VCol cols="12"  md="5" class="form-group px-3 my-2">
                           <div class="d-flex align-center">
                             <input type="checkbox"  @change="useClientAddress($event)" id="isUserAddress" value="1" style="height: 20px; width: 20px;">
                             <label for="isUserAddress" class="mx-2">Usar dirección del usuario</label>
                           </div>
                         </VCol>
-                        <VCol cols="12" md="12" class="form-group">
+                        <VCol cols="12" md="12" class="form-group mt-md-5">
                           <v-textarea
                             label="Dirección"
                             auto-grow
@@ -490,7 +488,7 @@
                         </VCol>
                       </VRow>
                       <VRow 
-                        class="ma-0 pa-0  mt-4 align-center" 
+                        class="ma-0 pa-0  mt-5 align-center" 
                         >
                             <VCol cols="12" class="form-group">
                               <h3>Productos:</h3>
@@ -499,14 +497,14 @@
                               <v-tooltip text="Agregar nuevo despiece">
                                   <template v-slot:activator="{ props }">
                                     <v-col cols="auto" class="">
-                                      <VBtn v-bind="props" color="primary" class="w-100"  @click="addDismantlingInput($event)"><VIcon icon="bx-plus"/> Agregar producto</VBtn>
+                                      <VBtn v-bind="props" color="primary" class="w-100"  @click="addProductInput()"><VIcon icon="bx-plus"/> Agregar producto</VBtn>
                                     </v-col>
                                   </template>
                                 </v-tooltip>
                             </VCol>
                             <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
                               <VRow  v-for="(item,index) in newOrder.products"  v-bind:key="item.id" class="pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'new_order_product_'+index">
-                                <VCol cols="12"  md="6" class="form-group">
+                                <VCol cols="12"  md="6" class="form-group pb-md-0  mb-md-1">
                                   <v-autocomplete
                                     :model-value="item.id"
                                     :items="productsForOrder[index] ?  productsForOrder[index] : item.id !== null ? [ {id: item.id, title: item.title, stock: item.quantity}] : []"
@@ -515,30 +513,32 @@
                                     item-value="id"
                                     placeholder="Nombre del producto"
                                     variant="outlined"
+                                    persistent-hint
                                     clearable
                                     no-filter
+                                    :hint="'Stock: ' + item.maxValue"
                                     :name="'product_in_order_'+index"
                                     no-data-text="No se encontraron resultados"
+                                    @click="searchDismantling($event,index )"
                                     @keyup="searchDismantling($event,index )"
                                     @click:clear="clearSearchDismantling(index)"
-                                    @update:modelValue="selectDismantling($event, index,2)"
+                                    @update:modelValue="selectDismantling($event, index)"
                                   ></v-autocomplete>
                                 </VCol>
-                                <VCol cols="8"  md="4" class="form-group">
+                                <VCol cols="10"  md="4" class="form-group pb-md-0 pt-1 mb-md-5">
                                   <VTextField
                                     placeholder="Unidades solicitadas"
                                     label="Unidades solicitadas"
                                     type="number"
                                     :name="'product_in_order_quantity_'+index"
                                     v-model="item.quantity"
-                                    
                                   />
                                 </VCol>
-                                <VCol cols="4" md="1" class="form-group pa-0">
+                                <VCol cols="2" md="1" class="form-group pa-0 mb-md-5">
                                   <v-tooltip text="Eliminar despiece">
                                     <template v-slot:activator="{ props }">
-                                      <v-col cols="auto" class="">
-                                        <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeDismantlingInput(2, index)"></v-btn>
+                                      <v-col cols="auto" class="pa-0">
+                                        <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeProductInput(index)"></v-btn>
                                       </v-col>
                                     </template>
                                   </v-tooltip>
@@ -586,6 +586,9 @@
   thead > tr > th.date{
     width: 15%!important;
   }
+  .fv-plugins-message-container{
+    position: absolute;
+  }
   @media screen and (max-width: 780px){
 
     thead > tr > th:last-child{
@@ -597,6 +600,11 @@
 
   export default {
     data: () => ({
+      rules:[ 
+          v => !!v || "This field is required",
+          v => ( v && v >= 2 ) || "Loan should be above £5000",
+          v => ( v && v <= 8 ) || "Max should not be above £50,000",
+      ],
       modal: '',
       inputDate: '',
       snackShow:false,
@@ -919,6 +927,20 @@
         
           });
       },
+      getProducts(search = "", index){
+        this.$store
+          .dispatch(GET_PRODUCT_BY_SEARCH, search)
+          .then((response) => {
+            // console.log(response)
+            this.productsForOrder[index] = response.data
+          })
+          .catch((err) => {
+            return new Promise((resolve) => {
+              resolve(false);
+            });
+          })
+
+      },
       bootstrapOptions(){
         setTimeout(() => {
           const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
@@ -998,6 +1020,29 @@
           })
 
       },
+      createdNewOrder(){
+
+        this.sendingButton('new_order_form_button')
+        const formData = new FormData();
+        formData.append('client', this.newOrder.user.id);
+        formData.append('address', this.newOrder.userAddress);
+        formData.append('products', JSON.stringify(this.newOrder.products));
+
+        this.$store
+          .dispatch(CREATE_ORDER, formData)
+          .then((response) => {
+            this.filterColumn()
+            this.hideModal()
+            this.showSnackbar('success', 'Orden creada con exito')
+            this.readyButton('new_order_form_button')
+          })
+          .catch((err) => {
+            console.log(err)
+            // this.hideModal()
+            this.showSnackbar('error', err )
+            this.readyButton('new_order_form_button')
+          })
+      },
       cancelOrder(){
         this.$refs.newStatus.value = 0
         this.orderChangeStatus()
@@ -1010,36 +1055,33 @@
         
         document.getElementById(id).setAttribute('class','v-btn v-btn--disabled v-theme--light bg-primary v-btn--density-default v-btn--size-default v-btn--variant-elevated w-100')
       },
-      removeDismantlingInput(type, index){
-        this.productOption.splice(index, 1)
-        const idButton = type == 2 
-          ? 'new_product_form_button'
-          : 'edit_product_form_button'
+      removeProductInput(index){
+        console.log(this.productsForOrder)
+        
 
-        const button = document.getElementById(idButton)
-
-        this.disabledButton( button, 'remove')
-
-        this.removeValidate(type == 2 
-            ? 'new_product_form'
-            : 'edit_product_form')
+        this.removeValidate(index)
 
         setTimeout(() => {
-            return type == 2 
-          ? this.newProduct.dismantling.splice(index, 1)
-          : this.selectedProduct.dismantling.splice(index, 1);
-        }, 300);
+          try{
+            this.newOrder.products.splice(index, 1)
+            this.productsForOrder.splice(index, 1)
+          }catch(e){
+
+          }
+        }, 200);
         
       },
-      addDismantlingInput(e){
-        let newOrder = {
+      addProductInput(){
+        let newProducInOrder = {
           id:null,
           title:'',
-          quantity:''
+          quantity:'',
+          maxValue:''
         }
-        this.newOrder.products.push(newOrder)
+        this.newOrder.products.push(newProducInOrder)
         setTimeout(() => {
-          
+          this.addValidate()
+
         }, 200);
 
       },
@@ -1051,21 +1093,10 @@
       },
       selectDismantling(e,index){
         this.newOrder.products[index].id = e
-        
-      },
-      getProducts(search = "", index){
-        this.$store
-          .dispatch(GET_PRODUCT_BY_SEARCH, search)
-          .then((response) => {
-            // console.log(response)
-            this.productsForOrder[index] = response.data
-          })
-          .catch((err) => {
-            return new Promise((resolve) => {
-              resolve(false);
-            });
-          })
-
+        this.newOrder.products[index].maxValue = this.productsForOrder[index].filter(product => product.id == e)[0].stock
+        setTimeout(() => {
+          this.addValidate(this.newOrder.products[index].maxValue)
+        }, 200);
       },
       validateFormItem(){
         this.forms = formValidation(document.getElementById('new_order_form'), {
@@ -1105,7 +1136,7 @@
         const sendButton = document.getElementById('new_order_form_button')
        
         this.forms.on("core.form.valid", () => {
-          
+          this.createdNewOrder()
         }).on("core.field.valid", () => {
           sendButton.disabled = false
           sendButton.classList.remove('v-btn--disabled')
@@ -1126,62 +1157,35 @@
         this.forms['new_product_form'].resetForm()
           
       },
-      sendingButton(id){
-        document.getElementById(id).disabled = true
-        
-      },
-      readyButton(id){
-        document.getElementById(id).disabled = true
-        
-        document.getElementById(id).setAttribute('class','v-btn v-btn--disabled v-theme--light bg-primary v-btn--density-default v-btn--size-default v-btn--variant-elevated w-100')
-      },
-      disabledButton(element, action){
-
-        element.disabled = true;
-        element.classList.add('v-btn--disabled')
-
-        if(action == 'toggle' ){
-          element.disabled = !element.disabled;
-          element.classList.toggle('v-btn--disabled')
-            return
-        }
-        element.disabled = false;
-        element.classList.remove('v-btn--disabled')
-      },
-      addValidate(){
+      addValidate(max){
         // this.forms[id] 
+        
+        let form = document.getElementById('new_order_form'),
+        quantityInput = form.querySelectorAll('input[name*="product_in_order_quantity_"]')[ form.querySelectorAll('input[name*="product_in_order_quantity_"]').length - 1],
+        fieldOptions={
+          quantity: {
+            validators: {
+              notEmpty: {
+                message: "Agregar la cantidad unidades"
+              },
+              numeric: {
+                message: "Debe ser númerico"
+              },
+              lessThan: {
+                message: "Cantidad supera el stock",
+                max: max,
+              },
+            }
+          }
+        } 
+        this.forms.addField(quantityInput.name, fieldOptions.quantity)
+        return
+      },
+      removeValidate(){
         let form = document.getElementById('new_order_form'),
         quantityInput = form.querySelectorAll('input[name*="product_in_order_quantity_"]')[ form.querySelectorAll('input[name*="product_in_order_quantity_"]').length - 1]
-        // fieldOptions={
-        //     quantity: {
-        //       validators: {
-        //         notEmpty: {
-        //           message: "Agregar la cantidad de piezas "
-        //         },
-        //         numeric: {
-        //           message: "Debe ser númerico"
-        //         }
-        //       }
-        //     }
-        //   } 
-
-        // if(quantityInput && type == 'new'){
-        //   this.forms[id].addField(quantityInput.name, fieldOptions.quantity)
-        //   return
-        // }
-
-        // quantityInput.forEach((element) => {
-        //   this.forms[id].addField(element.name, fieldOptions.quantity)
-
-        // });
-        
-        // console.log(newfield)
-      },
-      removeValidate(id){
-        let form = document.getElementById(id),
-        quantityInput = form.querySelectorAll('input[name*="product_desmantling_quantity_"]')[ form.querySelectorAll('input[name*="product_desmantling_quantity_"]').length - 1]
         try {
-          this.forms[id].removeField(quantityInput.name)
+          this.forms.removeField(quantityInput.name)
         } catch (error) {
           console.log('no hay validación activa')
         }

@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Order;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Exception;
 
 class OrderController extends Controller
 {
@@ -63,9 +65,24 @@ class OrderController extends Controller
         $order->getStatusLabelAttribute();
         return $this->returnSuccess(200, $order );
     }
-    public function create()
+    public function createOrder(Request $request)
     {
-        //
+        $order = Order::create([
+           'client_id'      => $request->client ?? $request->user()->id,
+           'other_address'  => $request->address,
+           'status'         => '1',
+           'trancker'       => '00'.rand(10000, 99999),
+           'created_by'     => $request->user()->id,
+        ]);
+
+        try{
+            $products_in_order = $this->addProductforOrder($order->id, json_decode($request->products,true));
+        }catch(Exception $e){
+            return $this->returnFail(400, 'Productos no validos');
+        }
+
+        return $this->returnSuccess(200, $order);
+
     }
 
     public function changeStatus(Request $request, $idOrder)
@@ -80,6 +97,16 @@ class OrderController extends Controller
         $order->save();
 
         return $this->returnSuccess(200, $order );
+    }
+    private function addProductforOrder($order, $products){
+        foreach ($products as $key) {
+            DB::table('products_x_orders')->insert([
+                'order_id' => $order,
+                'product_id' => $key['id'],
+                'quantity'  => $key['quantity']
+            ]);
+        }
+
     }
     /**
      * Store a newly created resource in storage.

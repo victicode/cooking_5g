@@ -58,6 +58,7 @@ Route::middleware('jwt.verify')->prefix('user')->name('user.')->group(function (
 });
 Route::middleware('jwt.verify')->prefix('order')->name('order.')->group(function () {
     Route::get('/', [OrderController::class, 'index'])->name('getOrders');
+    Route::post('/', [OrderController::class, 'createOrder']);
     Route::get('/get-last', [OrderController::class, 'getLastByType']);
     Route::get('/get-by-id/{id}',[OrderController::class, 'getOrderById']);
     Route::post('/change-status/{id}',[OrderController::class, 'changeStatus']);

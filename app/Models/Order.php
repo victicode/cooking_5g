@@ -11,7 +11,7 @@ class Order extends Model
 {
     use HasFactory, SoftDeletes;
     
-    protected $fillable = ['status','trancker','created_by'];
+    protected $fillable = ['status','trancker', 'other_address', 'created_by', 'client_id'];
     protected $table = "orders";
 
     
@@ -47,6 +47,10 @@ class Order extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+    public function client()
+    {
+        return $this->belongsTo(User::class, 'client_id');
     }
     public function products()
     {
