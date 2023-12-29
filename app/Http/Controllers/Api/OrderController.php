@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use Exception;
+use App\Models\Lot;
 use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Exception;
 
 class OrderController extends Controller
 {
@@ -76,12 +78,16 @@ class OrderController extends Controller
         ]);
 
         try{
-            $products_in_order = $this->addProductforOrder($order->id, json_decode($request->products,true));
+            $this->addProductforOrder($order->id, json_decode($request->products,true));
+            $this->decreaseStockInProduct(json_decode($request->products,true));
         }catch(Exception $e){
             return $this->returnFail(400, 'Productos no validos');
         }
 
-        return $this->returnSuccess(200, $order);
+        return $this->returnSuccess(200, [
+
+            json_decode($request->products,true)
+        ]);
 
     }
 
@@ -108,6 +114,22 @@ class OrderController extends Controller
         }
 
     }
+    private function decreaseStockInProduct($products){
+
+
+        foreach ($products as $key) {
+            $product = Product::find($key['id']);
+            $product->stock = intval($product->stock) - intval($key['quantity']);
+            $product->save();
+
+            $lote = Lot::find($key['selected_lote']['id']);
+            $lote->quantity = intval($lote->quantity) - intval($key['quantity']);
+            $lote->save();
+            
+        }
+
+    }
+
     /**
      * Store a newly created resource in storage.
      *

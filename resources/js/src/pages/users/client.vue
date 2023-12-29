@@ -25,7 +25,17 @@
   <VRow class="">
     <VCol cols="12">
       <VCard title="Listado de clientes" class="pa-3 px-1 px-md-3">
-        <VRow class="ma-0 d-none justify-center align-center justify-md-start pa-2 px-0 mb-10 mb-md-2">
+        <VRow class="ma-0  justify-center justify-md-end pa-2 px-0 mb-0 pb-0">
+          <VCol
+            cols="11"
+            md="3"
+            class="ma-0 px-0 justify-center justify-md-end d-flex"
+          >
+          <VBtn @click=" showModal('createProduct')" color="primary" class="w-100 "><VIcon icon="bx-plus"/> Agregar nuevo usuario</VBtn>
+
+          </VCol>
+        </VRow>
+        <VRow class="ma-0 justify-center align-center justify-md-start pa-2 px-0 mb-10 mb-md-2">
           <VCol cols="12" md="4" class="form-group">
             <VTextField
               placeholder="Desde - Hasta"
@@ -70,7 +80,7 @@
             </VBtn>
           </VCol>
         </VRow>
-        <div class="card-datatable table-responsive d-none">
+        <div class="card-datatable table-responsive">
           <table class="datatables-basic table" id="data-table">
           </table>
         </div>
@@ -382,12 +392,14 @@
       table:'',
       tableData:{
         ajax:{
-          "url": import.meta.env.VITE_VUE_APP_BACKEND_URL+"api/get-orders",
+          "url": import.meta.env.VITE_VUE_APP_BACKEND_URL+"api/get-users",
           "type": "POST",
           data: function ( data ) {
-            data.filter_tracker_id = document.querySelector('[name="tracker_id"]').value;
-            data.filter_start_date = document.querySelector('[name="start_date"]').value;
-            data.filter_end_date = document.querySelector('[name="end_date"]').value;
+            // data.filter_start_date = document.querySelector('[name="start_date"]').value;
+            // data.filter_end_date = document.querySelector('[name="end_date"]').value;
+
+            // data.order_sort_date = data.order[0].column == 0 ? data.order[0].dir : ''
+            // data.order_sort_status = data.order[0].column ==  0 ? '' : data.order[0].dir
           },
           "crossDomain": true,
           "beforeSend": function (xhr) {
@@ -399,114 +411,91 @@
         serverSide: true,
         columns: [
           { 
-            title: 'Fecha',  
-            class:'text-center date',
+            title: 'Nombre',  
+            class:'text-start date',
             render: ( data, type, row, meta ) =>{ 
-              return `
-              ${ moment(row.created_at).format('DD-MM-YYYY') }
-              `
+              return row.name
+              
             }   
           },
           { 
-            title: 'Track ID',
-            class:'text-center justify-center px-0 px-md-3',
+            title: 'Email',
+            class:'text-justify',
             orderable: false, 
             render: ( data, type, row, meta ) =>{ 
-              return `
-              
-              <span class="d-none d-md-flex justify-center">
-                #${row.trancker}
-              </span>
-              <span class="d-flex d-md-none justify-center">
-                #${row.trancker.slice(0,2)}...${row.trancker.slice(-3)}
-              </span>
-              `
+              return row.email
             } 
-
           },
           { 
-            title: 'Creada por',
-            class:'text-center d-md-table-cell d-none',
+            title: 'Ubicación',
+            class:'text-justify',
             orderable: false, 
             render: ( data, type, row, meta ) =>{ 
-              return ` ${row.user.name} `
+              return row.user_address
             } 
-
           },
           { 
-            title: 'Estado ',
-            class:'text-center px-0',
-            orderable: true,
-            render: ( data, type, row, meta ) =>{ 
-              return `
-              <span 
-                class="  v-chip v-theme--light v-chip--density-comfortable elevation-0 v-chip--size-default v-chip--variant-tonal ${row.status == 1 ? 'bg-warning' : row.status == 2 ? 'bg-secondary' :row.status == 3 ? 'bg-success' : 'bg-error' }" 
-                draggable="false"
-                >
-                  <span class="v-chip__underlay"></span>
-                  <div class="v-chip__content ">
-                    <span class="d-md-flex d-none">
-                      ${row.status_info.status}
-                    </span>
-                    <span class="d-flex d-md-none" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="${row.status_info.status}">
-                      <img src="${row.status_info.svg}" alt="Mi SVG feliz" height="24" width="24"/>
-                    </span>  
-                  </div>
-              </span>                  
-              `
-            }
-
-          },
-          { 
-            title: 'Acciones',
+            title: '<span class="d-none d-md-block">Acciones</span> <span class="d-flex justify-center d-md-none text-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="#8c8c8c" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 4H7.2c-1.12 0-1.68 0-2.108.218a1.999 1.999 0 0 0-.874.874C4 5.52 4 6.08 4 7.2v9.6c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874c.427.218.987.218 2.105.218h9.606c1.118 0 1.677 0 2.104-.218c.377-.192.683-.498.875-.874c.218-.428.218-.987.218-2.105V14m-4-9l-6 6v3h3l6-6m-3-3l3-3l3 3l-3 3m-3-3l3 3"/></svg></span>',
             orderable: false, 
             searchable: false, 
-            class:'text-center px-0 px-md-3',
+            class:'text-center  px-1 px-md-3',
             render: ( data, type, row, meta ) =>{ 
-              return `
-              <div class="d-md-flex d-none justify-center ">
-                <span data-id="${row.id}" class="view" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver detalles">
-                  <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-5 iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
-                    <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
-                </span>
-                <span data-bs-toggle="tooltip" data-id="${row.id}" class="change" data-bs-placement="top" data-bs-title="Actualizar estado">
-                  <svg data-id="${row.id}"  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-5 iconify iconify--icon-park-outline" aria-describedby="v-tooltip-35" width="1em" height="1em" viewBox="0 0 48 48">
-                    <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
-                      <path data-id="${row.id}" d="M24 44c11.046 0 20-8.954 20-20S35.046 4 24 4S4 12.954 4 24s8.954 20 20 20"></path><path d="M33.542 27c-1.274 4.057-5.064 7-9.542 7c-4.477 0-8.268-2.943-9.542-7v6m19.084-18v6c-1.274-4.057-5.064-7-9.542-7c-4.477 0-8.268 2.943-9.542 7"></path></g></svg>
-                </span>
-                <span data-bs-toggle="tooltip"  data-id="${row.id}"class="cancel data-bs-placement="top" data-bs-title="Cancelar Orden">
-                  <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default  iconify iconify--ic" aria-describedby="v-tooltip-11" width="1em" height="1em" viewBox="0 0 24 24">
-                    <path data-id="${row.id}" fill="currentColor" d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m3.59-13L12 10.59L8.41 7L7 8.41L10.59 12L7 15.59L8.41 17L12 13.41L15.59 17L17 15.59L13.41 12L17 8.41z"></path></svg>
-                </span>
-              </div>
-              <!- Vista en moviles ->
-              <div class="d-md-none d-flex justify-center position-relative relative ">
-                <div class="dropdown dropup ">
-                  <button type="button dropup" data-bs-toggle="dropdown" aria-expanded="false">
-                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="button" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default v-icon--clickable iconify iconify--mdi" aria-haspopup="menu" aria-expanded="false" aria-owns="v-menu-46" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z"></path></svg>
-                  </button>
-                  <div class="dropdown-menu animate__animated animate__rubberBand">
-                    <span  data-id="${row.id}" class="view me-5" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver detalles">
-                      <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
-                        <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
-                    </span>
-                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="change me-5"  data-bs-placement="top" data-bs-title="Actualizar estado">
-                      <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--icon-park-outline" aria-describedby="v-tooltip-35" width="1em" height="1em" viewBox="0 0 48 48">
-                        <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
-                          <path data-id="${row.id}" d="M24 44c11.046 0 20-8.954 20-20S35.046 4 24 4S4 12.954 4 24s8.954 20 20 20"></path><path d="M33.542 27c-1.274 4.057-5.064 7-9.542 7c-4.477 0-8.268-2.943-9.542-7v6m19.084-18v6c-1.274-4.057-5.064-7-9.542-7c-4.477 0-8.268 2.943-9.542 7"></path></g></svg>
-                    </span>
-                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="cancel" data-bs-placement="top" data-bs-title="Cancelar Orden">
-                      <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--ic" aria-describedby="v-tooltip-11" width="1em" height="1em" viewBox="0 0 24 24">
-                        <path data-id="${row.id}" fill="currentColor" d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m3.59-13L12 10.59L8.41 7L7 8.41L10.59 12L7 15.59L8.41 17L12 13.41L15.59 17L17 15.59L13.41 12L17 8.41z"></path></svg>
-                    </span>
-                  </div>
-                </div>
-              </div> 
-
-              
-              
-              
+              let html = `
+                <div class="d-md-flex d-none justify-center ">
+                  <span data-id="${row.id}" class="view mx-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver Ficha">
+                    <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
+                      <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
+                  </span>
+                  <span data-id="${row.id}" class="edit mx-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editar chef">
+                    <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                      <path data-id="${row.id}" fill="currentColor" d="M21 12a1 1 0 0 0-1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h6a1 1 0 0 0 0-2H5a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-6a1 1 0 0 0-1-1m-15 .76V17a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .71-.29l6.92-6.93L21.71 8a1 1 0 0 0 0-1.42l-4.24-4.29a1 1 0 0 0-1.42 0l-2.82 2.83l-6.94 6.93a1 1 0 0 0-.29.71m10.76-8.35l2.83 2.83l-1.42 1.42l-2.83-2.83ZM8 13.17l5.93-5.93l2.83 2.83L10.83 16H8Z"/></svg>
+                  </span>
+                  <span data-bs-toggle="tooltip" data-id="${row.id}" class="recipes mx-2" data-bs-placement="top" data-bs-title="Ver ordenes">
+                    <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48">
+                      <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="4">
+                        <rect data-id="${row.id}" width="30" height="36" x="9" y="8" rx="2"/>
+                        <path data-id="${row.id}" stroke-linecap="round" d="M18 4v6m12-6v6m-14 9h16m-16 8h12m-12 8h8"/></g></svg>
+                  </span>
+                  <span data-id="${row.id}" class="delete mx-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Eliminar chef">
+                    <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                      <path  data-id="${row.id}" fill="currentColor" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4zm2 2h6V4H9zM6.074 8l.857 12H17.07l.857-12zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1"/></svg>
+                  </span>
               `
+              html +=`</div>`
+
+              html +=`
+                <div class="d-md-none d-flex justify-center position-relative relative ">
+                  <div class="dropdown dropup ">
+                    <button type="button dropup" data-bs-toggle="dropdown" aria-expanded="false">
+                      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="button" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default v-icon--clickable iconify iconify--mdi" aria-haspopup="menu" aria-expanded="false" aria-owns="v-menu-46" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z"></path></svg>
+                    </button>
+                    <div class="dropdown-menu animate__animated animate__rubberBand">
+                      <span  data-id="${row.id}" class="view mx-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver Ficha">
+                        <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
+                          <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
+                      </span>
+                      <span  data-id="${row.id}" class="edit mx-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editar chef">
+                        <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                          <path data-id="${row.id}" fill="currentColor" d="M21 12a1 1 0 0 0-1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h6a1 1 0 0 0 0-2H5a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-6a1 1 0 0 0-1-1m-15 .76V17a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .71-.29l6.92-6.93L21.71 8a1 1 0 0 0 0-1.42l-4.24-4.29a1 1 0 0 0-1.42 0l-2.82 2.83l-6.94 6.93a1 1 0 0 0-.29.71m10.76-8.35l2.83 2.83l-1.42 1.42l-2.83-2.83ZM8 13.17l5.93-5.93l2.83 2.83L10.83 16H8Z"/></svg>
+                      </span>
+                      <span data-id="${row.id}" data-bs-toggle="tooltip" data-id="${row.id}" class="recipes mx-2" data-bs-placement="top" data-bs-title="Ver ordenes">
+                        <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48">
+                          <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="4">
+                            <rect data-id="${row.id}" width="30" height="36" x="9" y="8" rx="2"/>
+                            <path data-id="${row.id}" stroke-linecap="round" d="M18 4v6m12-6v6m-14 9h16m-16 8h12m-12 8h8"/></g></svg>
+                      </span>
+                      <span  data-id="${row.id}" class="delete mx-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Eliminar chef">
+                        <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                          <path data-id="${row.id}" fill="currentColor" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4zm2 2h6V4H9zM6.074 8l.857 12H17.07l.857-12zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1"/></svg>
+                      </span>
+              `
+              html +=`
+                    </div>
+                  </div>
+                </div> 
+              `
+
+              return html
             } 
           },
 
@@ -606,36 +595,6 @@
           })	
         })
       },
-      initFlatpickr(){
-        this.inputDate = flatpickr(document.querySelector('#date-input'), {
-          mode: 'range',
-          dateFormat: 'd/m/Y',
-          maxDate: "today",
-          orientation: 'auto left',
-          locale: Spanish,  
-          onClose: function (selectedDates,) {
-            var startDate = '',
-            endDate = new Date();
-
-            if (selectedDates[0] != undefined) {
-              startDate = moment(selectedDates[0]).format('YYYY-MM-DD');
-              document.querySelector('[name="start_date"]').value = startDate+ ' 00:00:00';
-
-            }
-            if (selectedDates[1] != undefined) {
-              endDate = moment(selectedDates[1]).format('YYYY-MM-DD');
-              document.querySelector('[name="end_date"]').value= endDate + ' 23:59:00';
-
-            }
-            let event = new Event("selectDates")
-            document.querySelector('#date-input').dispatchEvent(event);
-          }
-        });
-
-        document.querySelector('#date-input').addEventListener('selectDates', event => {
-          this.filterColumn()
-        });
-      },
       async selectOrder(idAccount){
         this.$store
           .dispatch(GET_ORDER_BY_ID, idAccount)
@@ -678,14 +637,10 @@
         })
         this.modal.show()
       },
-      orderNumberFormat(id){
-        return '0000000'.slice( 0, 6 - id.toString().length ) + id 
-      }
     },
     mounted(){
       this.initOptionsTable()
       this.table = new DataTablesCore('#data-table', this.tableData)
-      this.initFlatpickr();
       this.bootstrapOptions();
     },
     created(){

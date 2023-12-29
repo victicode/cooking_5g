@@ -20,7 +20,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return $this->returnSuccess(200, Product::with(['dismantling.products_pieces'])->get());
+        return $this->returnSuccess(200, Product::with(['dismantling.products_pieces', 'lotes'])->get());
     }
     public function getProductsTable(Request $request){
         $products = Product::query();
@@ -147,7 +147,7 @@ class ProductController extends Controller
         return $this->returnSuccess(200, Product::with(['dismantling.products_pieces','lotes'])->find($id));
     }
     public function getProductBySearch(Request $request){
-        $products = Product::query()->with(['dismantling.products_pieces']);
+        $products = Product::query()->with(['dismantling.products_pieces','lotes']);
 
         if(!empty($request->title)){
             $products->where('title', 'like', '%'.$request->title.'%');

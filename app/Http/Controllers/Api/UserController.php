@@ -9,13 +9,29 @@ use App\Http\Controllers\Controller;
 use App\Models\Rol;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use Yajra\DataTables\DataTables;
+
 
 
 class UserController extends Controller
 {
     public function getAllclient(Request $request){
         return $this->returnSuccess(200, User::where('rol_id', 3)->get());
+    }
+    public function getUserTableByRol(Request $request){
+
+        $users = $request->path() == 'api/get-chefs' ?  User::query()->where('rol_id', 2) : User::query()->where('rol_id', 3);
+
+        // if(!empty(request('order_title')))  $products->orderBy('title', request('order_title'));
+
+        // if(!empty(request('order_stock')))  $products->orderBy('stock', request('order_stock'));
+
+        return DataTables::of($users)->toJson();
+        // return DataTables::of($products)->filter(function ($query) {
+        //     if (!empty(request('filter_product_title'))) {
+        //       $query->where('title','like','%'.request('filter_product_title').'%');
+        //     }
+        //   })->toJson();
     }
     public function createUser(Request $request){
        

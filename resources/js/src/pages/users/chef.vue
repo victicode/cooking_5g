@@ -25,7 +25,17 @@
   <VRow class="">
     <VCol cols="12">
       <VCard title="Listado de chef" class="pa-3 px-1 px-md-3">
-        <VRow class="ma-0 d-none justify-center align-center justify-md-start pa-2 px-0 mb-10 mb-md-2">
+        <VRow class="ma-0  justify-center justify-md-end pa-2 px-0 mb-0 pb-0">
+          <VCol
+            cols="11"
+            md="3"
+            class="ma-0 px-0 justify-center justify-md-end d-flex"
+          >
+          <VBtn @click=" showModal('createProduct')" color="primary" class="w-100 "><VIcon icon="bx-plus"/> Agregar nuevo chef</VBtn>
+
+          </VCol>
+        </VRow>
+        <VRow class="ma-0 justify-center align-center justify-md-start pa-2 px-0 mb-10 mb-md-2">
           <VCol cols="12" md="4" class="form-group">
             <VTextField
               placeholder="Desde - Hasta"
@@ -70,7 +80,7 @@
             </VBtn>
           </VCol>
         </VRow>
-        <div class="card-datatable table-responsive d-none">
+        <div class="card-datatable table-responsive">
           <table class="datatables-basic table" id="data-table">
           </table>
         </div>
@@ -94,30 +104,7 @@
                     >
                       <div class="my-md-4 my-2 text-center text-md-start">
                         <h2>Orden de productos</h2>
-                        <h3 class="mt-2">
-                          <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
-                            {{ selectedOrder.status_info.status }}
-                          </v-chip>
-
-                        </h3>
-                      </div>
-                      <div class="my-3 my-md-0  d-block d-md-none text-center text-md-end ">
-                        <h4 class="font-400">
-                          Orden N°: 
-                          <b>
-                            {{ '0000000'.slice(0, 6-selectedOrder.id)+ selectedOrder.id }}
-                          </b> 
-                        </h4>
-                      </div>
-                      <div >
-                        <div class="my-2  text-start">
-                          Solicitante: {{ selectedOrder.user.name.toUpperCase() }}
-                        </div>
-                        <div class="my-2 text-start">
-                          Dirección de destino: {{ selectedOrder.other_address }}
-                        </div>
-                      </div>
-                    
+                      </div>    
                     </VCol>
                     <VCol
                       cols="12"
@@ -126,186 +113,30 @@
                     >
                       <div class="my-md-4 my-0  d-none d-md-block text-center text-md-end ">
                         <h4 class="font-400">
-                          Orden N°: 
+                          Número de recetas: 
                           <b>
-                            {{ orderNumberFormat(selectedOrder.id) }}
+                            5
                           </b> 
                         </h4>
                       </div>
                       <div >
                         <div class="my-2  text-start text-md-end">
-                          Fecha: {{ moment(selectedOrder.created_at).format('DD/MM/YYYY HH:mm:ss') }}
+                          Años en la plataforma: 10años
                         </div>
                         <div class="my-2  text-start text-md-end">
-                          Tracker ID: {{ selectedOrder.trancker }}
+                          Estilo: Americano
                         </div>
                       </div>
                     
                     </VCol>
                   </VRow>
-                  <div>
-                    <OrderProductsTables :products="selectedOrder.products" />
-                  </div>
-                  <VDivider  />
-                  <div class="mt-5 w-100 d-flex  justify-center">
-                    <VCardActions class=" justify-center w-75">
-                      <VBtn
-                        color="white"
-                        class="bg-secondary text-white w-50"
-                        @click="modal.hide()"
-                      >
-                        <VIcon icon="mingcute:close-fill" />
-                        <span class="ms-2">Cerrar</span>
-                      </VBtn>
-                    </VCardActions>
-                  </div>
                 </div>
               </VCard>
             </VCol>
           </div>
         </div>
       </div>
-      <div class="modal animate__animated animate__fadeInDown" id="changeStatusOrder" tabindex="-1" aria-labelledby="changeStatusOrderLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl mt-10">
-          <div class="modal-content">
-            <VCol
-              cols="12"
-              class="pa-0"
-            >
-              <VCard>
-                <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
-                  <VRow  class="mb-2 ma-0">
-                    <VCol
-                      cols="12"
-                      class="py-0"
-                    >
-                      <div class="my-md-4 my-2 text-center">
-                        <h2>Linea de tiempo Orden #{{ orderNumberFormat(selectedOrder.id) }}</h2>
-                        <h3 class="mt-2">
-                          <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
-                            {{ selectedOrder.status_info.status }}
-                          </v-chip>
-
-                        </h3>
-                      </div>
-                    </VCol>
-                    <VCol
-                      cols="12"
-                      class="px-md-10 px-0 overflow-scroll"
-                      style=""
-                    >
-                      <v-timeline direction="horizontal"  class="timelapse ">
-                        <v-timeline-item
-                          dot-color="#d06427"
-                          icon="ic:outline-pending-actions"
-                          fill-dot
-                          size="large"
-                        >
-                          <template v-slot:opposite>
-                            <h3>
-                              Orden creada
-                            </h3>
-                          </template>
-    
-                          <div class="text-h6">
-                            <h4>
-                              {{  moment(selectedOrder.created_at).format('DD/MM/YYYY') }}
-                            </h4>
-                          </div>
-    
-                        </v-timeline-item>
-                        <v-timeline-item
-                          :dot-color="selectedOrder.status > 1 ? '#d06427' :'#fff' "
-                          icon="carbon:delivery-parcel"
-                          fill-dot
-                          size="large"
-                        >
-                          <template v-slot:opposite v-if="selectedOrder.status > 1">
-                            <h3>
-                              En transito
-                            </h3>
-                          </template>
-                            <div class="text-h6" v-if="selectedOrder.status == 2">
-                              <h4>
-                                {{  moment(selectedOrder.updated_at).format('DD/MM/YYYY') }}
-                              </h4>
-                            </div>
-                        </v-timeline-item>
-                        <v-timeline-item
-                          :dot-color="selectedOrder.status == 3 ? '#d06427' :'#fff' "
-                          icon="line-md:confirm-circle"
-                          fill-dot
-                          size="large"
-                        >
-                          <template v-slot:opposite v-if="selectedOrder.status == 3">
-                            <h3>
-                              Completado
-                            </h3>
-                          </template>
-                            <div class="text-h6" v-if="selectedOrder.status == 3">
-                              <h4>
-                                {{  moment(selectedOrder.updated_at).format('DD/MM/YYYY') }}
-                              </h4>  
-                            </div>
-                        </v-timeline-item>
-                        <v-timeline-item
-                          dot-color="#ff5538"
-                          icon="ic:outline-cancel"
-                          fill-dot
-                          size="large"
-                          v-if="selectedOrder.status == 0"
-                        >
-                          <template v-slot:opposite>
-                            <h3>
-                              Cancelada
-                            </h3>
-                          </template>
-                            <div class="text-h6">
-                              <h4>
-                                {{  moment(selectedOrder.updated_at).format('DD/MM/YYYY') }}
-                              </h4>  
-                            </div>
-                        </v-timeline-item>
-                    
-                      </v-timeline>
-                    </VCol>
-                  </VRow>
-                    
-
-                  <VDivider  />
-                  <div class="mt-5 w-100 d-md-flex  d-block justify-center">
-                    <VCardActions class=" justify-center w-100 d-md-flex  d-block">
-                      <VRow class="ma-0 pa-0 justify-center align-center">
-                        <VCol :cols="selectedOrder.status == 1 ? '5' : selectedOrder.status == 2 ? '5' : '12' "  md="3" offset-md="3" class="">
-                          <VBtn
-                            color="white"
-                            class="bg-secondary text-white w-100 mx-0  my-2 "
-                            @click="modal.hide()"
-                          >
-                            <span class="">Cerrar</span>
-                          </VBtn>
-                        </VCol>
-                        <VCol cols="7" md="3" class="">
-                          <VBtn
-                            color="white"
-                            class=" text-white w-100 bg-success mx-0  my-2 "
-                            @click="modal.hide()"
-                            v-if="selectedOrder.status == 1 || selectedOrder.status == 2 "
-                          >
-                            <span class="">Cambiar estado</span>
-                          </VBtn>
-                        </VCol>
-                      </VRow>
-                      
-                    </VCardActions>
-                  </div>
-                </div>
-              </VCard>
-            </VCol>
-          </div>
-        </div>
-      </div>
-      <div class="modal animate__animated animate__fadeInDown" id="cancelOrder" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+      <!-- <div class="modal animate__animated animate__fadeInDown" id="cancelOrder" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl mt-10">
           <div class="modal-content">
             <VCol
@@ -364,7 +195,7 @@
             </VCol>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
     
   </VRow>
@@ -402,12 +233,14 @@
       table:'',
       tableData:{
         ajax:{
-          "url": import.meta.env.VITE_VUE_APP_BACKEND_URL+"api/get-orders",
+          "url": import.meta.env.VITE_VUE_APP_BACKEND_URL+"api/get-chefs",
           "type": "POST",
           data: function ( data ) {
-            data.filter_tracker_id = document.querySelector('[name="tracker_id"]').value;
-            data.filter_start_date = document.querySelector('[name="start_date"]').value;
-            data.filter_end_date = document.querySelector('[name="end_date"]').value;
+            // data.filter_start_date = document.querySelector('[name="start_date"]').value;
+            // data.filter_end_date = document.querySelector('[name="end_date"]').value;
+
+            // data.order_sort_date = data.order[0].column == 0 ? data.order[0].dir : ''
+            // data.order_sort_status = data.order[0].column ==  0 ? '' : data.order[0].dir
           },
           "crossDomain": true,
           "beforeSend": function (xhr) {
@@ -419,114 +252,93 @@
         serverSide: true,
         columns: [
           { 
-            title: 'Fecha',  
-            class:'text-center date',
+            title: 'Nombre',  
+            class:'text-start date',
             render: ( data, type, row, meta ) =>{ 
-              return `
-              ${ moment(row.created_at).format('DD-MM-YYYY') }
-              `
+              return row.name
+              
             }   
           },
           { 
-            title: 'Track ID',
-            class:'text-center justify-center px-0 px-md-3',
+            title: 'Email',
+            class:'text-justify',
             orderable: false, 
             render: ( data, type, row, meta ) =>{ 
-              return `
-              
-              <span class="d-none d-md-flex justify-center">
-                #${row.trancker}
-              </span>
-              <span class="d-flex d-md-none justify-center">
-                #${row.trancker.slice(0,2)}...${row.trancker.slice(-3)}
-              </span>
-              `
+              return row.email
             } 
-
           },
           { 
-            title: 'Creada por',
-            class:'text-center d-md-table-cell d-none',
+            title: 'Ubicación',
+            class:'text-justify',
             orderable: false, 
             render: ( data, type, row, meta ) =>{ 
-              return ` ${row.user.name} `
+              return row.user_address
             } 
-
           },
           { 
-            title: 'Estado ',
-            class:'text-center px-0',
-            orderable: true,
-            render: ( data, type, row, meta ) =>{ 
-              return `
-              <span 
-                class="  v-chip v-theme--light v-chip--density-comfortable elevation-0 v-chip--size-default v-chip--variant-tonal ${row.status == 1 ? 'bg-warning' : row.status == 2 ? 'bg-secondary' :row.status == 3 ? 'bg-success' : 'bg-error' }" 
-                draggable="false"
-                >
-                  <span class="v-chip__underlay"></span>
-                  <div class="v-chip__content ">
-                    <span class="d-md-flex d-none">
-                      ${row.status_info.status}
-                    </span>
-                    <span class="d-flex d-md-none" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="${row.status_info.status}">
-                      <img src="${row.status_info.svg}" alt="Mi SVG feliz" height="24" width="24"/>
-                    </span>  
-                  </div>
-              </span>                  
-              `
-            }
-
-          },
-          { 
-            title: 'Acciones',
+            title: '<span class="d-none d-md-block">Acciones</span> <span class="d-flex justify-center d-md-none text-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="#8c8c8c" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 4H7.2c-1.12 0-1.68 0-2.108.218a1.999 1.999 0 0 0-.874.874C4 5.52 4 6.08 4 7.2v9.6c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874c.427.218.987.218 2.105.218h9.606c1.118 0 1.677 0 2.104-.218c.377-.192.683-.498.875-.874c.218-.428.218-.987.218-2.105V14m-4-9l-6 6v3h3l6-6m-3-3l3-3l3 3l-3 3m-3-3l3 3"/></svg></span>',
             orderable: false, 
             searchable: false, 
-            class:'text-center px-0 px-md-3',
+            class:'text-center  px-1 px-md-3',
             render: ( data, type, row, meta ) =>{ 
-              return `
-              <div class="d-md-flex d-none justify-center ">
-                <span data-id="${row.id}" class="view" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver detalles">
-                  <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-5 iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
-                    <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
-                </span>
-                <span data-bs-toggle="tooltip" data-id="${row.id}" class="change" data-bs-placement="top" data-bs-title="Actualizar estado">
-                  <svg data-id="${row.id}"  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-5 iconify iconify--icon-park-outline" aria-describedby="v-tooltip-35" width="1em" height="1em" viewBox="0 0 48 48">
-                    <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
-                      <path data-id="${row.id}" d="M24 44c11.046 0 20-8.954 20-20S35.046 4 24 4S4 12.954 4 24s8.954 20 20 20"></path><path d="M33.542 27c-1.274 4.057-5.064 7-9.542 7c-4.477 0-8.268-2.943-9.542-7v6m19.084-18v6c-1.274-4.057-5.064-7-9.542-7c-4.477 0-8.268 2.943-9.542 7"></path></g></svg>
-                </span>
-                <span data-bs-toggle="tooltip"  data-id="${row.id}"class="cancel data-bs-placement="top" data-bs-title="Cancelar Orden">
-                  <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default  iconify iconify--ic" aria-describedby="v-tooltip-11" width="1em" height="1em" viewBox="0 0 24 24">
-                    <path data-id="${row.id}" fill="currentColor" d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m3.59-13L12 10.59L8.41 7L7 8.41L10.59 12L7 15.59L8.41 17L12 13.41L15.59 17L17 15.59L13.41 12L17 8.41z"></path></svg>
-                </span>
-              </div>
-              <!- Vista en moviles ->
-              <div class="d-md-none d-flex justify-center position-relative relative ">
-                <div class="dropdown dropup ">
-                  <button type="button dropup" data-bs-toggle="dropdown" aria-expanded="false">
-                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="button" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default v-icon--clickable iconify iconify--mdi" aria-haspopup="menu" aria-expanded="false" aria-owns="v-menu-46" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z"></path></svg>
-                  </button>
-                  <div class="dropdown-menu animate__animated animate__rubberBand">
-                    <span  data-id="${row.id}" class="view me-5" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver detalles">
-                      <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
-                        <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
-                    </span>
-                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="change me-5"  data-bs-placement="top" data-bs-title="Actualizar estado">
-                      <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--icon-park-outline" aria-describedby="v-tooltip-35" width="1em" height="1em" viewBox="0 0 48 48">
-                        <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
-                          <path data-id="${row.id}" d="M24 44c11.046 0 20-8.954 20-20S35.046 4 24 4S4 12.954 4 24s8.954 20 20 20"></path><path d="M33.542 27c-1.274 4.057-5.064 7-9.542 7c-4.477 0-8.268-2.943-9.542-7v6m19.084-18v6c-1.274-4.057-5.064-7-9.542-7c-4.477 0-8.268 2.943-9.542 7"></path></g></svg>
-                    </span>
-                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="cancel" data-bs-placement="top" data-bs-title="Cancelar Orden">
-                      <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--ic" aria-describedby="v-tooltip-11" width="1em" height="1em" viewBox="0 0 24 24">
-                        <path data-id="${row.id}" fill="currentColor" d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m3.59-13L12 10.59L8.41 7L7 8.41L10.59 12L7 15.59L8.41 17L12 13.41L15.59 17L17 15.59L13.41 12L17 8.41z"></path></svg>
-                    </span>
-                  </div>
-                </div>
-              </div> 
-
-              
-              
-              
+              let html = `
+                <div class="d-md-flex d-none justify-center ">
+                  <span data-id="${row.id}" class="view mx-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver Ficha">
+                    <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
+                      <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
+                  </span>
+                  <span data-id="${row.id}" class="edit mx-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editar chef">
+                    <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                      <path data-id="${row.id}" fill="currentColor" d="M21 12a1 1 0 0 0-1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h6a1 1 0 0 0 0-2H5a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-6a1 1 0 0 0-1-1m-15 .76V17a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .71-.29l6.92-6.93L21.71 8a1 1 0 0 0 0-1.42l-4.24-4.29a1 1 0 0 0-1.42 0l-2.82 2.83l-6.94 6.93a1 1 0 0 0-.29.71m10.76-8.35l2.83 2.83l-1.42 1.42l-2.83-2.83ZM8 13.17l5.93-5.93l2.83 2.83L10.83 16H8Z"/></svg>
+                  </span>
+                  <span data-bs-toggle="tooltip" data-id="${row.id}" class="recipes mx-2" data-bs-placement="top" data-bs-title="Ver recetas">
+                    <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48">
+                      <defs data-id="${row.id}">
+                        <mask data-id="${row.id}" id="ipTChefHat0">
+                          <g data-id="${row.id}" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"><path fill="#555" d="M12 34h24v8H12z"/>
+                            <path data-id="${row.id}" d="M29 34V20m-7 14v-8m-10-1v9h24v-9s5-3 5-8s-4-7-9-7c0-2-3-6-8-6s-8 4-8 6c-4 0-9 2-9 7s5 8 5 8"/></g></mask></defs><path fill="currentColor" d="M0 0h48v48H0z" mask="url(#ipTChefHat0)"/></svg>
+                  </span>
+                  <span data-id="${row.id}" class="delete mx-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Eliminar chef">
+                    <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                      <path  data-id="${row.id}" fill="currentColor" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4zm2 2h6V4H9zM6.074 8l.857 12H17.07l.857-12zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1"/></svg>
+                  </span>
               `
+              html +=`</div>`
+
+              html +=`
+                <div class="d-md-none d-flex justify-center position-relative relative ">
+                  <div class="dropdown dropup ">
+                    <button type="button dropup" data-bs-toggle="dropdown" aria-expanded="false">
+                      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="button" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default v-icon--clickable iconify iconify--mdi" aria-haspopup="menu" aria-expanded="false" aria-owns="v-menu-46" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z"></path></svg>
+                    </button>
+                    <div class="dropdown-menu animate__animated animate__rubberBand">
+                      <span  data-id="${row.id}" class="view mx-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver Ficha">
+                        <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
+                          <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
+                      </span>
+                      <span  data-id="${row.id}" class="edit mx-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editar chef">
+                        <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                          <path data-id="${row.id}" fill="currentColor" d="M21 12a1 1 0 0 0-1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h6a1 1 0 0 0 0-2H5a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-6a1 1 0 0 0-1-1m-15 .76V17a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .71-.29l6.92-6.93L21.71 8a1 1 0 0 0 0-1.42l-4.24-4.29a1 1 0 0 0-1.42 0l-2.82 2.83l-6.94 6.93a1 1 0 0 0-.29.71m10.76-8.35l2.83 2.83l-1.42 1.42l-2.83-2.83ZM8 13.17l5.93-5.93l2.83 2.83L10.83 16H8Z"/></svg>
+                      </span>
+                      <span data-id="${row.id}" data-bs-toggle="tooltip" data-id="${row.id}" class="recipes mx-2" data-bs-placement="top" data-bs-title="Ver recetas">
+                        <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48">
+                          <defs data-id="${row.id}" >
+                            <mask data-id="${row.id}" id="ipTChefHat0">
+                              <g data-id="${row.id}" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"><path fill="#555" d="M12 34h24v8H12z"/>
+                                <path data-id="${row.id}" d="M29 34V20m-7 14v-8m-10-1v9h24v-9s5-3 5-8s-4-7-9-7c0-2-3-6-8-6s-8 4-8 6c-4 0-9 2-9 7s5 8 5 8"/></g></mask></defs><path fill="currentColor" d="M0 0h48v48H0z" mask="url(#ipTChefHat0)"/></svg>
+                      </span>
+                      <span  data-id="${row.id}" class="delete mx-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Eliminar chef">
+                        <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                          <path data-id="${row.id}" fill="currentColor" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4zm2 2h6V4H9zM6.074 8l.857 12H17.07l.857-12zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1"/></svg>
+                      </span>
+              `
+              html +=`
+                    </div>
+                  </div>
+                </div> 
+              `
+
+              return html
             } 
           },
 

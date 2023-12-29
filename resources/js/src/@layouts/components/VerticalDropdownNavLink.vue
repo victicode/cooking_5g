@@ -23,8 +23,9 @@ const props = defineProps({
     <ul class="ms-4">
       <template v-for=" drowpDownItem in item.items">
         <li
-          class="nav-link link-son"
+          class="nav-link link-son "
           :class="{ disabled: drowpDownItem.disable }" 
+          @click="isSonActive()"
         >
           <Component
             :is="drowpDownItem.to ? 'RouterLink' : 'a'"
@@ -66,12 +67,32 @@ const props = defineProps({
 }
 </style>
 <script>
+import { onBeforeRouteUpdate } from 'vue-router';
 export default {
   data() {
     return {
       dropdow: false
     };
   },
+  methods:{
+    isSonActive(){
+      setTimeout(() => {
+        
+        let elements = document.querySelectorAll('.link-son');
+        let isActive = []
+        elements.forEach(element => {
+          if(element.querySelector('.router-link-active.router-link-exact-active')) isActive.push(element.querySelector('.router-link-active.router-link-exact-active'))
+        });
+  
+        if(isActive.length > 0) this.dropdow = true
+      }, 100);
+
+    }
+  },
+  mounted(){
+    this.isSonActive()
+  },
+
 
 };
 </script>

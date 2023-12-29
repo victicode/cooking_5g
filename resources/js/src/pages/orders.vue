@@ -504,7 +504,7 @@
                             </VCol>
                             <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
                               <VRow  v-for="(item,index) in newOrder.products"  v-bind:key="item.id" class="pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'new_order_product_'+index">
-                                <VCol cols="12"  md="6" class="form-group pb-md-0  mb-md-1">
+                                <VCol cols="12"  md="5" class="form-group pb-md-0  mb-md-1">
                                   <v-autocomplete
                                     :model-value="item.id"
                                     :items="productsForOrder[index] ?  productsForOrder[index] : item.id !== null ? [ {id: item.id, title: item.title, stock: item.quantity}] : []"
@@ -519,13 +519,28 @@
                                     :hint="'Stock: ' + item.maxValue"
                                     :name="'product_in_order_'+index"
                                     no-data-text="No se encontraron resultados"
-                                    @click="searchDismantling($event,index )"
-                                    @keyup="searchDismantling($event,index )"
-                                    @click:clear="clearSearchDismantling(index)"
-                                    @update:modelValue="selectDismantling($event, index)"
+                                    @click="searchProductsForOrder($event,index )"
+                                    @keyup="searchProductsForOrder($event,index )"
+                                    @click:clear="clearProductSearch(index)"
+                                    @update:modelValue="selectedProduct($event, index)"
                                   ></v-autocomplete>
                                 </VCol>
-                                <VCol cols="10"  md="4" class="form-group pb-md-0 pt-1 mb-md-5">
+                                <VCol cols="6"  md="3" class="form-group pb-md-0 pt-1 mb-md-5">
+                                  <v-combobox  
+                                    :items="item.lotes"
+                                    item-title="lote_code"
+                                    item-value="id"
+                                    placeholder="Número de lote"
+                                    label="Número de lote"
+                                    type="text"
+                                    name="new_order_client"
+                                    v-model="item.selected_lote"  
+                                    autocomplete="off"        
+                                    :auto-select-first="true"
+                                    @update:modelValue="selectedLotes($event,index)"
+                                  ></v-combobox >
+                                </VCol>
+                                <VCol cols="6"  md="3" class="form-group pb-md-0 pt-1 mb-md-5">
                                   <VTextField
                                     placeholder="Unidades solicitadas"
                                     label="Unidades solicitadas"
@@ -961,6 +976,13 @@
         this.table.clear();
         this.table.columns().search('').draw('full-hold')
       },
+      clearNewOrderForm(){
+        this.newOrder = {
+          user:'',
+          products:[],
+          userAddress:'',
+        }
+      },
       useClientAddress(e){
           this.newOrder.userAddress = e.target.checked 
             ? this.newOrder.user.user_address
@@ -989,6 +1011,7 @@
       },
       hideModal(){
         this.modal.hide()
+        this.clearNewOrderForm()
       },
       orderChangeStatus(){
         this.sendingButton('change-status-order-button')
@@ -1035,6 +1058,7 @@
             this.hideModal()
             this.showSnackbar('success', 'Orden creada con exito')
             this.readyButton('new_order_form_button')
+            this.clearNewOrderForm()
           })
           .catch((err) => {
             console.log(err)
@@ -1076,7 +1100,10 @@
           id:null,
           title:'',
           quantity:'',
-          maxValue:''
+          maxValue:'',
+          lotes:[],
+          selected_lote:''
+
         }
         this.newOrder.products.push(newProducInOrder)
         setTimeout(() => {
@@ -1085,18 +1112,40 @@
         }, 200);
 
       },
-      searchDismantling(e, index){ 
+      selectedLotes(e, index){
+        this.newOrder.products[index].maxValue = e.quantity
+        setTimeout(() => {
+            this.addValidate(this.newOrder.products[index].maxValue)
+          }, 200);
+        console.log(e)
+      },
+      searchProductsForOrder(e, index){ 
+        console.log(e)
         debounce(this.getProducts, 200)(e.target.value, index)
       },
-      clearSearchDismantling(index){
+      clearProductSearch(index){
+        this.newOrder.products[index].maxValue = 0;
+        this.newOrder.products[index].lotes =[]
+        this.newOrder.products[index].selected_lote =''
         this.getProducts('',index)
       },
-      selectDismantling(e,index){
-        this.newOrder.products[index].id = e
-        this.newOrder.products[index].maxValue = this.productsForOrder[index].filter(product => product.id == e)[0].stock
-        setTimeout(() => {
-          this.addValidate(this.newOrder.products[index].maxValue)
-        }, 200);
+      selectedProduct(e,index){
+        try {
+          this.newOrder.products[index].id = e
+          this.newOrder.products[index].lotes = this.productsForOrder[index].filter(product => product.id == e)[0].lotes
+
+          setTimeout(() => {
+            this.newOrder.products[index].selected_lote = this.newOrder.products[index].lotes[0]
+            this.newOrder.products[index].maxValue = this.newOrder.products[index].lotes[0].quantity
+
+            this.addValidate(this.newOrder.products[index].maxValue)
+
+          }, 200);
+          
+        } catch (error) {
+          
+        }
+        
       },
       validateFormItem(){
         this.forms = formValidation(document.getElementById('new_order_form'), {

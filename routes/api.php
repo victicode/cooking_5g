@@ -35,6 +35,10 @@ use Illuminate\Support\Facades\Route;
 Route::post('login', [AuthController::class, 'login']);
 Route::middleware('jwt.verify')->post('/get-products', [ProductController::class, 'getProductsTable']);
 Route::middleware('jwt.verify')->post('/get-orders', [OrderController::class, 'getOrdersTable']);
+Route::middleware('jwt.verify')->post('/get-chefs', [UserController::class, 'getUserTableByRol']);
+Route::middleware('jwt.verify')->post('/get-users', [UserController::class, 'getUserTableByRol']);
+
+
 Route::post('/get-recipes', [ProductController::class, 'getProductsTable']);
 
 // Route::post('/validation', [UserController::class, 'validateFieldsFromInput']);
