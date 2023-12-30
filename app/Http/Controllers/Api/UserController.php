@@ -20,7 +20,9 @@ class UserController extends Controller
     }
     public function getUserTableByRol(Request $request){
 
-        $users = $request->path() == 'api/get-chefs' ?  User::query()->where('rol_id', 2) : User::query()->where('rol_id', 3);
+        $users = $request->path() == 'api/get-chefs'
+            ?  User::query()->where('rol_id', 2) 
+            : User::query()->where('rol_id', 3);
 
         // if(!empty(request('order_title')))  $products->orderBy('title', request('order_title'));
 
@@ -34,6 +36,8 @@ class UserController extends Controller
         //   })->toJson();
     }
     public function createUser(Request $request){
+         $request->rol_id == 'api/get-chefs' ?  2 : 3;
+        
        
         $validated = $this->validateFieldsFromInput($request->all()) ;
 
@@ -45,14 +49,22 @@ class UserController extends Controller
                 'email'         => $request->email,
                 'password'      => Hash::make($request->password),
                 'rol_id'        => $request->rol_id,
-                'user_address'  => $request->rol_id == 3 ? $request->user_address : '----',
+                'user_address'  => $request->user_address,
             ]);
         } catch (Exception $th) {
             return $this->returnSuccess(400, $th->getMessage() );
         }
 
         return $this->returnSuccess(200, $newUser);
+        
+
     }
+
+    public function getUserById($userId){
+        $user = User::with('rol')->find($userId);
+ 
+         return $this->returnSuccess(200, $user);
+     }
     public function getAlluserByRol(Request $request){
        $usersByRol = User::with('rol')->where('rol',$request->rol)->get();
 
@@ -64,16 +76,17 @@ class UserController extends Controller
             'email'         => ['required', 'email', 'unique:users'],
             'password'      => ['required', 'min:8'],
             'rol_id'        => ['required'],
+            'user_address'  => ['required'],
         ];
         $messages = [
-            'name.required'     => 'El nombre es requerido.',
-            'name.required'     => 'El nombre es invalido.',
-            'email.required'    => 'La contraseña es requerido.',
-            'email.unique'      => 'Email ya regsitrado.',
-            'password.required' => 'La contraseña es requerido.',
-            'rol_id.required'   => 'El rol es requerido.',
-            'password.min'      => 'La contraseña debe tener un minimo de 8 caracteres',
-            'email.email'       => 'El Email no es valido'
+            'name.required'         => 'El nombre es requerido.',
+            'email.required'        => 'La contraseña es requerido.',
+            'user_address.required' => 'La dirección es requerida.',
+            'email.unique'          => 'Email ya regsitrado.',
+            'password.required'     => 'La contraseña es requerido.',
+            'rol_id.required'       => 'El rol es requerido.',
+            'password.min'          => 'La contraseña debe tener un minimo de 8 caracteres',
+            'email.email'           => 'El Email no es valido'
         ];
 
 

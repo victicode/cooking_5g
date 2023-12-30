@@ -1,24 +1,20 @@
 <script setup >
-  import DataTable from 'datatables.net-vue3';
   import DataTablesCore from 'datatables.net';
-  import Button from 'datatables.net-buttons';
+  import 'datatables.net-responsive-dt';
   import 'datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css';
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue'
   import OrderProductsTables from '@/views/pages/tables/OrderProductsTables.vue'
-  import ButtonPrint from 'datatables.net-buttons/js/buttons.print';
-  import ButtonHTML5 from 'datatables.net-buttons/js/buttons.html5';
+  import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
+  import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
+  import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
+  import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
+  import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
   import 'datatables.net-dt/css/jquery.dataTables.min.css';
-  import * as bootstrap from 'bootstrap'
-  import flatpickr from "flatpickr";
-  import moment from 'moment';
-  import 'flatpickr/dist/flatpickr.min.css'
-  import { Spanish } from "flatpickr/dist/l10n/es.js"
-  import { GET_ORDER_BY_ID } from "@/core/services/store/order.module";
+  import 'datatables.net-responsive-dt/css/responsive.dataTables.min.css';
 
-  DataTable.use(DataTablesCore);
-  DataTable.use(Button);
-  DataTable.use(ButtonHTML5);
-  DataTable.use(ButtonPrint); 
+  import * as bootstrap from 'bootstrap'
+  import { GET_USER_BY_ID, CREATE_USER } from "@/core/services/store/user.module";
+
 </script>
 
 <template>
@@ -31,35 +27,11 @@
             md="3"
             class="ma-0 px-0 justify-center justify-md-end d-flex"
           >
-          <VBtn @click=" showModal('createProduct')" color="primary" class="w-100 "><VIcon icon="bx-plus"/> Agregar nuevo usuario</VBtn>
+          <VBtn @click=" showModal('createNewUser')" color="primary" class="w-100 "><VIcon icon="bx-plus"/> Agregar nuevo usuario</VBtn>
 
           </VCol>
         </VRow>
         <VRow class="ma-0 justify-center align-center justify-md-start pa-2 px-0 mb-10 mb-md-2">
-          <VCol cols="12" md="4" class="form-group">
-            <VTextField
-              placeholder="Desde - Hasta"
-              label="Buscar por Fecha"
-              type="text"
-              name="date"
-              ref="range_date"
-              id="date-input"
-            />
-            <VTextField
-              placeholder="Buscar por Track ID"
-              type="hidden"
-              name="start_date"
-              ref="start_date"
-              class="boder-0 d-none start_date"
-            />
-            <VTextField
-              placeholder="Buscar por Track ID"
-              type="hidden"
-              name="end_date"
-              ref="end_date"
-              class="boder-0 d-none end_date"
-            />
-          </VCol>
           <VCol cols="12" md="4" class="form-group">
             <VTextField
               placeholder="Buscar por Track ID"
@@ -376,18 +348,152 @@
         </div>
       </div>
     </div>
-    
+    <div class="modal animate__animated animate__fadeInDown"  id="createNewUser" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg mt-10" >
+        <div class="modal-content">
+          <VCol
+            cols="12"
+            class="pa-0 d-flex justify-center"
+            style="position: relative;"
+          >
+            <VCol
+              cols="12"
+            >
+              <VCard class="modal__content">
+                <div class="modal__close-button" >
+                  <v-col class="pa-0 pe-4">
+                    <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                  </v-col>
+                </div>
+                <div>
+                  <VCardItem class="justify-center w-100  py-md-6  py-4   ">
+                    <VCardTitle class="text-2xl font-weight-bold">
+                      <div class="card-title d-flex ">
+                        <div class="form-title__part1">Crear nuevo usuario</div>
+                        
+                      </div>
+                    </VCardTitle>
+                  </VCardItem>
+                  <VCardText class="mb-5  w-100 pa-0" v-if="alertShow">
+                    <v-alert
+                      :color="alertType"
+                      :text="alertMessage"
+                    ></v-alert>
+                  </VCardText>
+                  <VCardText class="w-100 pb-5 px-3 px-md-6">
+                    <VForm  id="new_user_form">
+                      <VRow class="align-center">
+                        <VCol cols="12" class="form-group mt-md-5 mt-0">
+                          <VTextField
+                            placeholder="Nombre y apellido"
+                            label="Nombre y apellido"
+                            type="text"
+                            name="new_user_name"
+                            v-model="newUser.name"
+                            autocomplete="off"
+                          />
+                        </VCol>
+                        <VCol cols="12" class="form-group mt-md-5 mt-0">
+                          <VTextField
+                            placeholder="Email"
+                            label="Email"
+                            type="text"
+                            name="new_user_email"
+                            v-model="newUser.email"
+                            autocomplete="off"
+                          />
+                        </VCol>
+                        <VCol cols="12" class="form-group mt-md-5 mt-0">
+                          <VTextField
+                            v-model="newUser.password"
+                            label="Password"
+                            placeholder="············"
+                            autocomplete="off"
+                            name="new_user_password"
+                            :type="isPasswordVisible ? 'text' : 'password'"
+                            :append-inner-icon="isPasswordVisible ? 'bx-hide' : 'bx-show'"
+                            @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                          />
+                        </VCol>
+                        <VCol cols="12"  class="form-group mt-md-5 mt-0">
+                          <v-textarea
+                            label="Dirección"
+                            auto-grow
+                            variant="outlined"
+                            rows="3"
+                            autocomplete="off"
+                            row-height="25"
+                            shaped
+                            name="new_user_address"
+                            v-model="newUser.address"
+                          ></v-textarea>
+                        </VCol>
+                      </VRow>
+                      <VRow class="ma-0 pa-0  mt-8 align-center">
+                        <VCol cols="12" md="4" offset-md="4" class="mt-0 py-0 px-0">
+                          <v-col cols="auto" class="">
+                            <VBtn  color="primary" class="w-100 " type="submit" disabled id="new_user_form_button"> Guardar</VBtn>
+                          </v-col>
+                        </VCol>
+                      </VRow>
+                    </VForm>
+                  </VCardText>
+                </div>
+              </VCard>
+            </VCol>
+          </VCol>
+        </div>
+      </div>
+    </div>
+    <v-snackbar
+      v-model="snackShow"
+      :color="snackType"
+      rounded="pill"
+      :timeout="snacktimeOut"
+      width="max-content"
+      class="text-center"
+    >
+     <h4 class="text-white w-100 text-center">
+
+       {{snackMessage}}
+     </h4>
+        <template
+          v-slot:actions
+        >
+        <VBtn  color="white" class="text-white" @click="snackShow=false"> Cerrar</VBtn>
+        </template>
+    </v-snackbar>
   </VRow>
 </template>
 <style lang="scss" >
+table.dataTable tbody th, table.dataTable tbody td{
+  padding: 15px 10px!important;
+}
 
+thead > tr > th.options{
+    width: 1%!important;
+}
+.fv-plugins-message-container{
+  position: relative!important;
+}
 </style>
 <script>
 
   export default {
     data: () => ({
       modal: '',
-      inputDate: '',
+      isPasswordVisible: false,
+      forms:[],
+      snackShow:false,
+      snackMessage:'',
+      snackType:'',
+      snacktimeOut:5000,
+      newUser:{
+        name :'',
+        email:'',
+        password:'',
+        address:''
+      },
       selectedOrder:{},
       table:'',
       tableData:{
@@ -409,10 +515,18 @@
         dataType:'json',
         processing: true,
         serverSide: true,
+        responsive: true,
+        columnDefs: [
+          {
+            defaultContent: "",
+            targets: "_all"
+          },
+        ],
         columns: [
+          
           { 
             title: 'Nombre',  
-            class:'text-start date',
+            class:'text-start date ',
             render: ( data, type, row, meta ) =>{ 
               return row.name
               
@@ -420,7 +534,7 @@
           },
           { 
             title: 'Email',
-            class:'text-justify',
+            class:'text-justify ',
             orderable: false, 
             render: ( data, type, row, meta ) =>{ 
               return row.email
@@ -428,7 +542,7 @@
           },
           { 
             title: 'Ubicación',
-            class:'text-justify',
+            class:'',
             orderable: false, 
             render: ( data, type, row, meta ) =>{ 
               return row.user_address
@@ -438,7 +552,8 @@
             title: '<span class="d-none d-md-block">Acciones</span> <span class="d-flex justify-center d-md-none text-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="#8c8c8c" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 4H7.2c-1.12 0-1.68 0-2.108.218a1.999 1.999 0 0 0-.874.874C4 5.52 4 6.08 4 7.2v9.6c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874c.427.218.987.218 2.105.218h9.606c1.118 0 1.677 0 2.104-.218c.377-.192.683-.498.875-.874c.218-.428.218-.987.218-2.105V14m-4-9l-6 6v3h3l6-6m-3-3l3-3l3 3l-3 3m-3-3l3 3"/></svg></span>',
             orderable: false, 
             searchable: false, 
-            class:'text-center  px-1 px-md-3',
+            class:'text-center ',
+            responsivePriority: 0,
             render: ( data, type, row, meta ) =>{ 
               let html = `
                 <div class="d-md-flex d-none justify-center ">
@@ -446,11 +561,11 @@
                     <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
                       <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
                   </span>
-                  <span data-id="${row.id}" class="edit mx-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editar chef">
+                  <span data-id="${row.id}" class="edit mx-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editar usuario">
                     <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                       <path data-id="${row.id}" fill="currentColor" d="M21 12a1 1 0 0 0-1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h6a1 1 0 0 0 0-2H5a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-6a1 1 0 0 0-1-1m-15 .76V17a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .71-.29l6.92-6.93L21.71 8a1 1 0 0 0 0-1.42l-4.24-4.29a1 1 0 0 0-1.42 0l-2.82 2.83l-6.94 6.93a1 1 0 0 0-.29.71m10.76-8.35l2.83 2.83l-1.42 1.42l-2.83-2.83ZM8 13.17l5.93-5.93l2.83 2.83L10.83 16H8Z"/></svg>
                   </span>
-                  <span data-bs-toggle="tooltip" data-id="${row.id}" class="recipes mx-2" data-bs-placement="top" data-bs-title="Ver ordenes">
+                  <span data-bs-toggle="tooltip" data-id="${row.id}" class="orders mx-2" data-bs-placement="top" data-bs-title="Ver ordenes">
                     <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48">
                       <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="4">
                         <rect data-id="${row.id}" width="30" height="36" x="9" y="8" rx="2"/>
@@ -469,16 +584,16 @@
                     <button type="button dropup" data-bs-toggle="dropdown" aria-expanded="false">
                       <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="button" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default v-icon--clickable iconify iconify--mdi" aria-haspopup="menu" aria-expanded="false" aria-owns="v-menu-46" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z"></path></svg>
                     </button>
-                    <div class="dropdown-menu animate__animated animate__rubberBand">
+                    <div class="d-flex justify-center dropdown-menu animate__animated animate__rubberBand">
                       <span  data-id="${row.id}" class="view mx-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver Ficha">
                         <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
                           <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
                       </span>
-                      <span  data-id="${row.id}" class="edit mx-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editar chef">
+                      <span  data-id="${row.id}" class="edit mx-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editar usuario">
                         <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                           <path data-id="${row.id}" fill="currentColor" d="M21 12a1 1 0 0 0-1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h6a1 1 0 0 0 0-2H5a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-6a1 1 0 0 0-1-1m-15 .76V17a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .71-.29l6.92-6.93L21.71 8a1 1 0 0 0 0-1.42l-4.24-4.29a1 1 0 0 0-1.42 0l-2.82 2.83l-6.94 6.93a1 1 0 0 0-.29.71m10.76-8.35l2.83 2.83l-1.42 1.42l-2.83-2.83ZM8 13.17l5.93-5.93l2.83 2.83L10.83 16H8Z"/></svg>
                       </span>
-                      <span data-id="${row.id}" data-bs-toggle="tooltip" data-id="${row.id}" class="recipes mx-2" data-bs-placement="top" data-bs-title="Ver ordenes">
+                      <span data-id="${row.id}" data-bs-toggle="tooltip" data-id="${row.id}" class="orders mx-2" data-bs-placement="top" data-bs-title="Ver ordenes">
                         <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48">
                           <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="4">
                             <rect data-id="${row.id}" width="30" height="36" x="9" y="8" rx="2"/>
@@ -569,25 +684,34 @@
       activeOptionsTable() {
         document.querySelectorAll('.view').forEach(item => {
           item.addEventListener('click', event => {
-            this.selectOrder(event.target.dataset.id).finally((data)=>{
+            this.selectUser(event.target.dataset.id).finally((data)=>{
               setTimeout(() => {
                 this.showModal('viewOrder')
               }, 500);
             })
           })	
         })
-        document.querySelectorAll('.change').forEach(item => {
+        document.querySelectorAll('.edit').forEach(item => {
           item.addEventListener('click', event => {
-            this.selectOrder(event.target.dataset.id).finally((data)=>{
+            this.selectUser(event.target.dataset.id).finally((data)=>{
+              setTimeout(() => {
+                this.showModal('viewOrder')
+              }, 500);
+            })
+          })	
+        })
+        document.querySelectorAll('.orders').forEach(item => {
+          item.addEventListener('click', event => {
+            this.selectUser(event.target.dataset.id).finally((data)=>{
               setTimeout(() => {
                 this.showModal('changeStatusOrder')
               }, 500);
             })
           })	
         })
-        document.querySelectorAll('.cancel').forEach(item => {
+        document.querySelectorAll('.delete').forEach(item => {
           item.addEventListener('click', event => {
-            this.selectOrder(event.target.dataset.id).finally((data)=>{
+            this.selectUser(event.target.dataset.id).finally((data)=>{
               setTimeout(() => {
                 this.showModal('cancelOrder')
               }, 500);
@@ -595,9 +719,9 @@
           })	
         })
       },
-      async selectOrder(idAccount){
+      async selectUser(idAccount){
         this.$store
-          .dispatch(GET_ORDER_BY_ID, idAccount)
+          .dispatch(GET_USER_BY_ID, idAccount)
           .then((response) => {
             this.selectedOrder = Object.assign({}, response.data);
             return new Promise((resolve) => {
@@ -637,11 +761,253 @@
         })
         this.modal.show()
       },
+      hideModal(){
+        this.modal.hide()
+      },
+      createUser(){
+        this.sendingButton('new_user_form_button')
+        const formData = new FormData();
+        formData.append('name', this.newUser.name);
+        formData.append('email', this.newUser.email);
+        formData.append('password', this.newUser.password);
+        formData.append('user_address', this.newUser.address);
+        formData.append('rol_id', 3);
+        console.log(this.newUser)
+
+        this.$store
+          .dispatch(CREATE_USER, formData)
+          .then((response) => {
+            this.filterColumn()
+            this.hideModal()
+            this.showSnackbar('success', 'Usuario creado con exito')
+            this.readyButton('new_user_form_button')
+            this.resetNewUserForm()
+          })
+          .catch((err) => {
+            console.log(err)
+            this.notSendButton('new_user_form_button')
+          
+          });
+        
+      },
+      resetNewUserForm(){
+        this.newUser={
+          name :'',
+          email:'',
+          password:'',
+          address:''
+        }
+        this.forms['new_user_form_'].resetForm()
+      },
+
+      showSnackbar(type, messagge){
+        this.snackShow = true;
+        this.snackType = type
+        this.snackMessage = messagge
+      },
+      sendingButton(id){
+        document.getElementById(id).disabled = true
+      },
+      readyButton(id){
+        document.getElementById(id).disabled = true
+        
+        document.getElementById(id).setAttribute('class','v-btn v-btn--disabled v-theme--light bg-primary v-btn--density-default v-btn--size-default v-btn--variant-elevated w-100')
+      },
+      notSendButton(id){
+        document.getElementById(id).disabled = false
+      },
+      validateFormItem(id){
+        const fieldToValidate = this.itemsValidateByForm(id)
+        this.forms[id] = formValidation(document.getElementById(id), {
+          fields: fieldToValidate,
+          plugins: {
+            trigger: new Trigger(),
+            submitButton: new SubmitButton(),
+            bootstrap: new Bootstrap({
+                  // Use this for enabling/changing valid/invalid class
+                  // eleInvalidClass: '',
+                  // eleValidClass: '',
+                }),
+          }
+        });
+        setTimeout( ()=>this.formsActions(id), 500)
+      },
+      itemsValidateByForm(id){
+        let fieldByForm = {}
+        switch (id) {
+          case 'new_user_form':
+            fieldByForm = {
+              new_user_name: {
+                validators: {
+                  notEmpty: {
+                    message: "El nombre es requerido"
+                  },
+                  regexp: {
+                    regexp: /^[A-Za-zÀ-ÿ ñ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+              new_user_email: {
+                validators: {
+                  notEmpty: {
+                    message: "El email es requerido"
+                  },
+                  emailAddress: {
+                    message: 'Email no valido',
+                  },
+                }
+              },
+              new_user_password: {
+                validators: {
+                  notEmpty: {
+                    message: "La contraseña es requerida"
+                  },
+                  regexp: {
+                    regexp: /^[A-Za-zÀ-ÿ.*-+/&\-@,$_ñ_ ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+              new_user_address: {
+                validators: {
+                  notEmpty: {
+                    message: "La dirección es necesaria"
+                  },
+                  regexp: {
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&\-@,#$_ñ_ ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+            }
+            break;
+          case 'edit_product_form':
+            fieldByForm = {
+              
+              edit_product_title: {
+                validators: {
+                  notEmpty: {
+                    message: "Debes subir una imagen"
+                  },
+                }
+              },
+              edit_product_title: {
+                validators: {
+                  notEmpty: {
+                    message: "El campo de titulo es obligatorio"
+                  },
+                  regexp: {
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&,@$_ñ_ ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+              edit_product_description: {
+                validators: {
+                  notEmpty: {
+                    message: "La descripción es necesaria"
+                  },
+                  regexp: {
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@$,_ñ_ ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+              edit_product_short_description: {
+                validators: {
+                  notEmpty: {
+                    message: "La descripción corta es necesaria"
+                  },
+                  regexp: {
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+,/&@$_ñ_ ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+            }
+            break;
+          case 'add_stock_form':
+            fieldByForm = {
+              stock_form_quatity: {
+                validators: {
+                  notEmpty: {
+                    message: "La cantidad es obligatoria"
+                  },
+                  regexp: {
+                    regexp: /^[0-9]+$/i,
+                    message: 'Debe ser numerico',
+                  },
+                }
+              },
+              stock_add_lot:{
+                validators: {
+                  notEmpty: {
+                    message: "El número de lote es obligatorio"
+                  },
+                }
+              },
+              stock_dis_lot:{
+                validators: {
+                  notEmpty: {
+                    message: "El número de lote es obligatorio"
+                  },
+                }
+              },
+              stock_due_date:{
+                validators: {
+                  notEmpty: {
+                    message: "La fecha de vencimiento es obligatorio"
+                  }
+                }
+              }
+            }
+            break;
+          default:
+            break;
+        }
+        return fieldByForm
+      },
+      formsActions(id){
+        const sendButton = document.getElementById(id+'_button')
+       
+        this.forms[id].on("core.form.valid", () => {
+          switch (id) {
+            case 'new_user_form':
+              this.createUser()
+              
+              break;
+            case 'edit_product_form':
+              this.updatedProduct()
+              break;
+            case 'add_stock_form':
+              this.updatedStockProduct()
+              break;
+            default:
+              break;
+          }
+
+        }).on("core.field.valid", () => {
+          sendButton.disabled = false
+          sendButton.classList.remove('v-btn--disabled')
+
+        }).on("core.form.invalid", () => {
+          sendButton.disabled = true
+          sendButton.classList.add('v-btn--disabled')
+
+        }).on("core.field.invalid", () => {
+          sendButton.disabled = true
+          sendButton.classList.add('v-btn--disabled')
+
+        });
+      },
+        
     },
     mounted(){
       this.initOptionsTable()
       this.table = new DataTablesCore('#data-table', this.tableData)
       this.bootstrapOptions();
+      this.validateFormItem('new_user_form')
     },
     created(){
       
