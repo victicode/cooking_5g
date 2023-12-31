@@ -2,18 +2,20 @@
   import DataTablesCore from 'datatables.net';
   import 'datatables.net-responsive-dt';
   import 'datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css';
+  import 'datatables.net-dt/css/jquery.dataTables.min.css';
+  import 'datatables.net-responsive-dt/css/responsive.dataTables.min.css';
+  
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue'
   import OrderProductsTables from '@/views/pages/tables/OrderProductsTables.vue'
+
   import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
   import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
   import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
   import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
   import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
-  import 'datatables.net-dt/css/jquery.dataTables.min.css';
-  import 'datatables.net-responsive-dt/css/responsive.dataTables.min.css';
 
   import * as bootstrap from 'bootstrap'
-  import { GET_USER_BY_ID, CREATE_USER } from "@/core/services/store/user.module";
+  import { GET_USER_BY_ID, CREATE_USER, DELETE_USER } from "@/core/services/store/user.module";
 
 </script>
 
@@ -58,291 +60,319 @@
         </div>
       </VCard>
     </VCol>
-    <div v-if="Object.keys(selectedOrder).length > 2">
-      <div class="modal animate__animated animate__fadeInDown" id="viewOrder" tabindex="-1" aria-labelledby="viewOrderLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl mt-10">
+    <div v-if="Object.keys(selectedUser).length > 2">
+      <!-- <div class="modal animate__animated animate__fadeInDown" id="viewOrder" tabindex="-1" aria-labelledby="viewOrderLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl mt-10" >
           <div class="modal-content">
             <VCol
               cols="12"
-              class="pa-0"
+              class="pa-0 d-flex justify-center"
+              style="position: relative;"
             >
-              <VCard>
-                <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column pa-2 pa-md-5 ">
-                  <VRow  class="mb-2 ma-0">
-                    <VCol
-                      cols="12"
-                      md="6"
-                      class="py-0"
-                    >
-                      <div class="my-md-4 my-2 text-center text-md-start">
-                        <h2>Orden de productos</h2>
-                        <h3 class="mt-2">
-                          <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
-                            {{ selectedOrder.status_info.status }}
-                          </v-chip>
-
-                        </h3>
-                      </div>
-                      <div class="my-3 my-md-0  d-block d-md-none text-center text-md-end ">
-                        <h4 class="font-400">
-                          Orden N°: 
-                          <b>
-                            {{ '0000000'.slice(0, 6-selectedOrder.id)+ selectedOrder.id }}
-                          </b> 
-                        </h4>
-                      </div>
-                      <div >
-                        <div class="my-2  text-start">
-                          Solicitante: {{ selectedOrder.user.name.toUpperCase() }}
-                        </div>
-                        <div class="my-2 text-start">
-                          Dirección de destino: {{ selectedOrder.other_address }}
-                        </div>
-                      </div>
-                    
-                    </VCol>
-                    <VCol
-                      cols="12"
-                      md="6"
-                      class="py-0"
-                    >
-                      <div class="my-md-4 my-0  d-none d-md-block text-center text-md-end ">
-                        <h4 class="font-400">
-                          Orden N°: 
-                          <b>
-                            {{ orderNumberFormat(selectedOrder.id) }}
-                          </b> 
-                        </h4>
-                      </div>
-                      <div >
-                        <div class="my-2  text-start text-md-end">
-                          Fecha: {{ moment(selectedOrder.created_at).format('DD/MM/YYYY HH:mm:ss') }}
-                        </div>
-                        <div class="my-2  text-start text-md-end">
-                          Tracker ID: {{ selectedOrder.trancker }}
-                        </div>
-                      </div>
-                    
-                    </VCol>
-                  </VRow>
-                  <div>
-                    <OrderProductsTables :products="selectedOrder.products" />
+            
+              <VCol
+                cols="12"
+              >
+                <VCard class="modal__content">
+                  <div class="modal__close-button" >
+                    <v-col  class="pa-0 pe-4">
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                    </v-col>
                   </div>
-                  <VDivider  />
-                  <div class="mt-5 w-100 d-flex  justify-center">
-                    <VCardActions class=" justify-center w-75">
-                      <VBtn
-                        color="white"
-                        class="bg-secondary text-white w-50"
-                        @click="modal.hide()"
+                  <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column pa-2 pa-md-5 ">
+                    <VRow  class="mb-2 ma-0">
+                      <VCol
+                        cols="12"
+                        md="6"
+                        class="py-0"
                       >
-                        <VIcon icon="mingcute:close-fill" />
-                        <span class="ms-2">Cerrar</span>
-                      </VBtn>
-                    </VCardActions>
+                        <div class="my-md-4 my-2 text-center text-md-start">
+                          <h2>Orden de productos</h2>
+                          <h3 class="mt-2">
+                            <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
+                              {{ selectedOrder.status_label.status }}
+                            </v-chip>
+
+                          </h3>
+                        </div>
+                        <div class="my-3 my-md-0  d-block d-md-none text-center text-md-end ">
+                          <h4 class="font-400">
+                            Orden N°: 
+                            <b>
+                              {{ orderNumberFormat(selectedOrder.id) }}
+                            </b> 
+                          </h4>
+                        </div>
+                        <div >
+                          <div class="my-2  text-start">
+                            Solicitante: {{ selectedOrder.user.name.toUpperCase() }}
+                          </div>
+                          <div class="my-2 text-start">
+                            Dirección de destino: {{ selectedOrder.other_address }}
+                          </div>
+                        </div>
+                      
+                      </VCol>
+                      <VCol
+                        cols="12"
+                        md="6"
+                        class="py-0"
+                      >
+                        <div class="my-md-4 my-0  d-none d-md-block text-center text-md-end ">
+                          <h4 class="font-400">
+                            Orden N°: 
+                            <b>
+                              {{ orderNumberFormat(selectedOrder.id) }}
+                            </b> 
+                          </h4>
+                        </div>
+                        <div >
+                          <div class="my-2  text-start text-md-end">
+                            Fecha de pedio: {{ moment(selectedOrder.created_at).format('DD/MM/YYYY HH:mm:ss') }}
+                          </div>
+                          <div class="my-2  text-start text-md-end">
+                            Tracker ID: {{ selectedOrder.trancker }}
+                          </div>
+                        </div>
+                      
+                      </VCol>
+                    </VRow>
+                    <div>
+                      <OrderProductsTables :products="selectedOrder.products" />
+                    </div>
+                    <VDivider  />
+                    <div class="mt-5 w-100 d-flex  justify-center">
+                      <VCardActions class=" justify-center w-75">
+                        <VBtn
+                          color="white"
+                          class="bg-secondary text-white w-50"
+                          @click="hideModal()"
+                        >
+                          <VIcon icon="mingcute:close-fill" />
+                          <span class="ms-2">Cerrar</span>
+                        </VBtn>
+                      </VCardActions>
+                    </div>
                   </div>
-                </div>
-              </VCard>
+                </VCard>
+              </VCol>
             </VCol>
           </div>
         </div>
       </div>
       <div class="modal animate__animated animate__fadeInDown" id="changeStatusOrder" tabindex="-1" aria-labelledby="changeStatusOrderLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl mt-10">
+        <div class="modal-dialog modal-xl mt-10" >
           <div class="modal-content">
             <VCol
               cols="12"
-              class="pa-0"
+              class="pa-0 d-flex justify-center"
+              style="position: relative;"
             >
-              <VCard>
-                <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
-                  <VRow  class="mb-2 ma-0">
-                    <VCol
-                      cols="12"
-                      class="py-0"
-                    >
-                      <div class="my-md-4 my-2 text-center">
-                        <h2>Linea de tiempo Orden #{{ orderNumberFormat(selectedOrder.id) }}</h2>
-                        <h3 class="mt-2">
-                          <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
-                            {{ selectedOrder.status_info.status }}
-                          </v-chip>
-
-                        </h3>
-                      </div>
-                    </VCol>
-                    <VCol
-                      cols="12"
-                      class="px-md-10 px-0 overflow-scroll"
-                      style=""
-                    >
-                      <v-timeline direction="horizontal"  class="timelapse ">
-                        <v-timeline-item
-                          dot-color="#d06427"
-                          icon="ic:outline-pending-actions"
-                          fill-dot
-                          size="large"
-                        >
-                          <template v-slot:opposite>
-                            <h3>
-                              Orden creada
-                            </h3>
-                          </template>
-    
-                          <div class="text-h6">
-                            <h4>
-                              {{  moment(selectedOrder.created_at).format('DD/MM/YYYY') }}
-                            </h4>
-                          </div>
-    
-                        </v-timeline-item>
-                        <v-timeline-item
-                          :dot-color="selectedOrder.status > 1 ? '#d06427' :'#fff' "
-                          icon="carbon:delivery-parcel"
-                          fill-dot
-                          size="large"
-                        >
-                          <template v-slot:opposite v-if="selectedOrder.status > 1">
-                            <h3>
-                              En transito
-                            </h3>
-                          </template>
-                            <div class="text-h6" v-if="selectedOrder.status == 2">
-                              <h4>
-                                {{  moment(selectedOrder.updated_at).format('DD/MM/YYYY') }}
-                              </h4>
-                            </div>
-                        </v-timeline-item>
-                        <v-timeline-item
-                          :dot-color="selectedOrder.status == 3 ? '#d06427' :'#fff' "
-                          icon="line-md:confirm-circle"
-                          fill-dot
-                          size="large"
-                        >
-                          <template v-slot:opposite v-if="selectedOrder.status == 3">
-                            <h3>
-                              Completado
-                            </h3>
-                          </template>
-                            <div class="text-h6" v-if="selectedOrder.status == 3">
-                              <h4>
-                                {{  moment(selectedOrder.updated_at).format('DD/MM/YYYY') }}
-                              </h4>  
-                            </div>
-                        </v-timeline-item>
-                        <v-timeline-item
-                          dot-color="#ff5538"
-                          icon="ic:outline-cancel"
-                          fill-dot
-                          size="large"
-                          v-if="selectedOrder.status == 0"
-                        >
-                          <template v-slot:opposite>
-                            <h3>
-                              Cancelada
-                            </h3>
-                          </template>
-                            <div class="text-h6">
-                              <h4>
-                                {{  moment(selectedOrder.updated_at).format('DD/MM/YYYY') }}
-                              </h4>  
-                            </div>
-                        </v-timeline-item>
-                    
-                      </v-timeline>
-                    </VCol>
-                  </VRow>
-                    
-
-                  <VDivider  />
-                  <div class="mt-5 w-100 d-md-flex  d-block justify-center">
-                    <VCardActions class=" justify-center w-100 d-md-flex  d-block">
-                      <VRow class="ma-0 pa-0 justify-center align-center">
-                        <VCol :cols="selectedOrder.status == 1 ? '5' : selectedOrder.status == 2 ? '5' : '12' "  md="3" offset-md="3" class="">
-                          <VBtn
-                            color="white"
-                            class="bg-secondary text-white w-100 mx-0  my-2 "
-                            @click="modal.hide()"
-                          >
-                            <span class="">Cerrar</span>
-                          </VBtn>
-                        </VCol>
-                        <VCol cols="7" md="3" class="">
-                          <VBtn
-                            color="white"
-                            class=" text-white w-100 bg-success mx-0  my-2 "
-                            @click="modal.hide()"
-                            v-if="selectedOrder.status == 1 || selectedOrder.status == 2 "
-                          >
-                            <span class="">Cambiar estado</span>
-                          </VBtn>
-                        </VCol>
-                      </VRow>
-                      
-                    </VCardActions>
+              <VCol
+                cols="12"
+              >
+                <VCard class="modal__content">
+                  <div class="modal__close-button" >
+                    <v-col  class="pa-0 pe-4">
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                    </v-col>
                   </div>
-                </div>
-              </VCard>
+                  <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
+                    <VRow  class="mb-2 ma-0">
+                      <VCol
+                        cols="12"
+                        class="py-0"
+                      >
+                        <div class="my-md-4 my-2 text-center">
+                          <h2>Linea de tiempo Orden #{{ orderNumberFormat(selectedOrder.id) }}</h2>
+                          <h3 class="mt-2">
+                            <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
+                              {{ selectedOrder.status_label.status }}
+                            </v-chip>
+
+                          </h3>
+                        </div>
+                      </VCol>
+                      <VCol
+                        cols="12"
+                        class="px-md-10 px-0 overflow-scroll relative position-relative py-10 "
+                        style=""
+                      >
+                        <div class="my-8">
+                          <div class="">
+                            <div class="timeline__content">
+                                <div class="d-flex justify-center align-center timeline__content--items">
+                                  <div class="timeline__divider"></div>
+                                  <div class="timeline__content--item-center bg-primary">
+                                    <div class="timeline__content--item-text up">
+                                      <h3>
+                                        Orden creada
+                                      </h3>
+                                    </div>
+      
+                                    <v-icon size="large" color="white" icon="ic:outline-pending-actions"></v-icon>  
+                                    
+                                    <div class="text-h6 timeline__content--item-text down">
+                                      <h4>
+                                        {{  moment(selectedOrder.created_at).format('DD/MM/YYYY') }}
+                                      </h4>
+                                    </div>
+                                  </div>
+                                  <div class="timeline__divider"></div>
+                                </div>
+                                <div class="d-flex justify-center align-center timeline__content--items" v-if="selectedOrder.status >= 1 ">
+                                  <div class="timeline__divider"></div>
+                                  <div class="timeline__middle">
+                                    <input type="checkbox" value="2" id="in-transit" name="newStatus" ref="newStatus" class="d-none" v-if="selectedOrder.status == 1"  @input="validateChangeStatus()">
+                                    <label for="in-transit">
+                                      <div class="timeline__content--item-center " :class="selectedOrder.status > 1 ? 'bg-primary' :'bg-unavailable'">
+                                        <div class="timeline__content--item-text up" :class="{'opacity-0' : selectedOrder.status == 1 } " >
+                                          <h3>
+                                            En transito
+                                          </h3>
+                                        </div>
+          
+                                        <v-icon size="large" color="white" icon="carbon:delivery-parcel"></v-icon>
+                                        
+                                        <div class="text-h6 timeline__content--item-text down" v-if="selectedOrder.status == 2">
+                                          <h4>
+                                            {{  moment(selectedOrder.updated_at).format('DD/MM/YYYY') }}
+                                          </h4>
+                                        </div>
+                                      </div>
+                                    </label>
+                                  </div>
+                                  <div class="timeline__divider"></div>
+                                </div>
+                                <div class="d-flex justify-center align-center timeline__content--items" v-if="selectedOrder.status >= 1" >
+                                  <div class="timeline__divider"></div>
+                                  <div class="timeline__middle">
+                                    <input type="checkbox" value="3" id="complete" name="newStatus" ref="newStatus" class="d-none" v-if="selectedOrder.status == 2"  @input="validateChangeStatus()">
+                                    <label for="complete">
+                                      <div class="timeline__content--item-center " :class="selectedOrder.status > 2 ? 'bg-primary' :'bg-unavailable'">
+                                        <div class="timeline__content--item-text up" :class="{'opacity-0' : selectedOrder.status <= 2 } " >
+                                          <h3>
+                                            Orden entregada
+                                          </h3>
+                                        </div>
+                                        <v-icon size="large" color="white" icon="line-md:confirm-circle"></v-icon>
+                                        <div class="text-h6 timeline__content--item-text down" v-if="selectedOrder.status == 3">
+                                          <h4>
+                                            {{  moment(selectedOrder.updated_at).format('DD/MM/YYYY') }}
+                                          </h4>
+                                        </div>
+                                      </div>
+                                    </label>
+                                  </div>
+                                  <div class="timeline__divider"></div>
+                                </div>
+                                <div class="d-flex justify-center align-center timeline__content--items" v-if="selectedOrder.status == 0" >
+                                  <div class="timeline__divider"></div>
+                                  <div class="timeline__content--item-center bg-error">
+                                    
+                                    <div class="timeline__content--item-text up"  >
+                                          <h3>
+                                            Orden Cancelada
+                                          </h3>
+                                        </div>
+                                        <v-icon size="large" icon="ic:outline-cancel"></v-icon>
+                                        <div class="text-h6 timeline__content--item-text down">
+                                          <h4>
+                                            {{  moment(selectedOrder.updated_at).format('DD/MM/YYYY') }}
+                                          </h4>
+                                        </div>
+                                  </div>
+                                  <div class="timeline__divider"></div>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                      </VCol>
+                    </VRow>
+                    <VDivider  />
+                    <div class="mt-5 w-100 d-md-flex  d-block justify-center">
+                      <VCardActions class=" justify-center w-100 d-md-flex  d-block">
+                        <VRow class="ma-0 pa-0  mt-0 align-center">
+                          <VCol cols="12" md="6" offset-md="3" class="mt-0 py-0 px-0">
+                            <v-col cols="auto" class="">
+                              <VBtn
+                                color="white"
+                                class=" text-white w-100 bg-success mx-0  my-2 "
+                                :class='selectedOrder.status >= 1  ? "v-btn--disabled" : "" '
+                                
+                                @click="orderChangeStatus()"
+                                :disabled="selectedOrder.status >= 2  ? true : false"
+                                id="change-status-order-button"
+                                ref="changeStatusOrderButton"
+                                v-if="selectedOrder.status == 1 || selectedOrder.status == 2 "
+                              >
+                                <span class="">Cambiar estado</span>
+                              </VBtn>
+                            </v-col>
+                          </VCol>
+                        </VRow>
+                      </VCardActions>
+                    </div>
+                  </div>
+                </VCard>
+              </VCol>
             </VCol>
           </div>
         </div>
-      </div>
-      <div class="modal animate__animated animate__fadeInDown" id="cancelOrder" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl mt-10">
+      </div> -->
+      <div class="modal animate__animated animate__fadeInDown" id="deleteUser" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg mt-10" >
           <div class="modal-content">
             <VCol
               cols="12"
-              class="pa-0"
+              class="pa-0 d-flex justify-center"
+              style="position: relative;"
             >
-              <VCard>
-                <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
-                  <VRow  class="mb-2 ma-0">
-                    <VCol
-                      cols="12"
-                      class="py-0"
-                    >
-                      <div class="my-md-4 my-2 text-center">
-                        <h2>Cancelar orden #{{ orderNumberFormat(selectedOrder.id) }}</h2>
-                        <h3 class="mt-2">
-                          <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
-                            {{ selectedOrder.status_info.status }}
-                          </v-chip>
-
-                        </h3>
-                      </div>
-                    </VCol>
-                    <VCol
-                      cols="12"
-                      class="px-md-10 px-0 text-center"
-                      style=""
-                    >
-                      <h2>¿Seguro que deseas cancelar la orden #{{orderNumberFormat(selectedOrder.id)}}?</h2>
-                    </VCol>
-                  </VRow>
-                    
-
-                  <VDivider  />
-                  <div class="mt-5 w-100 d-md-flex  d-block justify-center">
-                    <VCardActions class=" justify-center w-100 d-md-flex  d-block">
-                      <VBtn
-                        color="white"
-                        class="bg-error text-white w-30 mx-0 mx-md-5 my-2"
-                        @click="modal.hide()"
-                        v-if="selectedOrder.status == 1 || selectedOrder.status == 2"
-                      >
-                        <span class="">Cancelar</span>
-                      </VBtn>
-                      <VBtn
-                        color="white"
-                        class="bg-secondary text-white w-30 mx-0 mx-md-5 my-2"
-                        @click="modal.hide()"
-                      >
-                        <span class="">Cerrar</span>
-                      </VBtn>
-                    </VCardActions>
+            
+              <VCol
+                cols="12"
+              >
+              <VCard class="modal__content">
+                  <div class="modal__close-button" >
+                    <v-col class="pa-0 pe-4">
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                    </v-col>
                   </div>
-                </div>
-              </VCard>
+                  <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
+                    <VRow  class="mb-2 ma-0">
+                      <VCol
+                        cols="12"
+                        class="py-0"
+                      >
+                        <div class="my-md-4 my-2 text-center">
+                          <h2>Eliminar Producto</h2>
+                        </div>
+                      </VCol>
+                      <VCol
+                        cols="12"
+                        class="px-md-10 px-0 text-center"
+                        style=""
+                      >
+                        <h2>¿Seguro que deseas eliminar a {{ selectedUser.name}} de los usuarios?</h2>
+                      </VCol>
+                    </VRow>
+                      
+                    <VDivider  />
+                    <div class="mt-5 w-100 d-md-flex  d-block justify-center">
+                      <VCardActions class=" justify-center w-100 d-md-flex  d-flex">
+                        <VBtn
+                          color="white"
+                          class="bg-error text-white w-50 mx-0 mx-md-5 my-2"
+                          id="delete_form_button"
+                          @click="deleteUser()"
+                        >
+                          <span class="">Eliminar</span>
+                        </VBtn>
+                      </VCardActions>
+                    </div>
+                  </div>
+                </VCard>
+              </VCol>
             </VCol>
           </div>
         </div>
@@ -366,7 +396,7 @@
                   </v-col>
                 </div>
                 <div>
-                  <VCardItem class="justify-center w-100  py-md-6  py-4   ">
+                  <VCardItem class="justify-center w-100  py-md-6  py-4  my-5  ">
                     <VCardTitle class="text-2xl font-weight-bold">
                       <div class="card-title d-flex ">
                         <div class="form-title__part1">Crear nuevo usuario</div>
@@ -383,7 +413,7 @@
                   <VCardText class="w-100 pb-5 px-3 px-md-6">
                     <VForm  id="new_user_form">
                       <VRow class="align-center">
-                        <VCol cols="12" class="form-group mt-md-5 mt-0">
+                        <VCol cols="12" class="form-group mt-md-5 mt-0 pt-1 pt-md-2">
                           <VTextField
                             placeholder="Nombre y apellido"
                             label="Nombre y apellido"
@@ -393,7 +423,7 @@
                             autocomplete="off"
                           />
                         </VCol>
-                        <VCol cols="12" class="form-group mt-md-5 mt-0">
+                        <VCol cols="12" class="form-group mt-md-5 mt-0 pt-1 pt-md-2">
                           <VTextField
                             placeholder="Email"
                             label="Email"
@@ -403,7 +433,7 @@
                             autocomplete="off"
                           />
                         </VCol>
-                        <VCol cols="12" class="form-group mt-md-5 mt-0">
+                        <VCol cols="12" class="form-group mt-md-5 mt-0 pt-1 pt-md-2">
                           <VTextField
                             v-model="newUser.password"
                             label="Password"
@@ -415,7 +445,7 @@
                             @click:append-inner="isPasswordVisible = !isPasswordVisible"
                           />
                         </VCol>
-                        <VCol cols="12"  class="form-group mt-md-5 mt-0">
+                        <VCol cols="12"  class="form-group mt-md-5 mt-0 pt-1 pt-md-2">
                           <v-textarea
                             label="Dirección"
                             auto-grow
@@ -494,7 +524,7 @@ thead > tr > th.options{
         password:'',
         address:''
       },
-      selectedOrder:{},
+      selectedUser:{},
       table:'',
       tableData:{
         ajax:{
@@ -713,7 +743,7 @@ thead > tr > th.options{
           item.addEventListener('click', event => {
             this.selectUser(event.target.dataset.id).finally((data)=>{
               setTimeout(() => {
-                this.showModal('cancelOrder')
+                this.showModal('deleteUser')
               }, 500);
             })
           })	
@@ -723,7 +753,7 @@ thead > tr > th.options{
         this.$store
           .dispatch(GET_USER_BY_ID, idAccount)
           .then((response) => {
-            this.selectedOrder = Object.assign({}, response.data);
+            this.selectedUser = Object.assign({}, response.data);
             return new Promise((resolve) => {
                 resolve(response.data);
             });
@@ -799,7 +829,24 @@ thead > tr > th.options{
         }
         this.forms['new_user_form_'].resetForm()
       },
-
+      deleteUser(){
+        console.log(this.selectedUser)
+        this.sendingButton('delete_form_button')
+        this.$store
+          .dispatch(DELETE_USER, this.selectedUser.id )
+          .then((response) => {
+            this.filterColumn()
+            this.hideModal()
+            this.showSnackbar('error', 'Usuario Eliminado')
+            this.notSendButton('delete_form_button')
+          })
+          .catch((err) => {
+            console.log(err)
+            this.showSnackbar('warning', err)
+            this.notSendButton('delete_form_button')
+          
+          });
+      },
       showSnackbar(type, messagge){
         this.snackShow = true;
         this.snackType = type
@@ -863,8 +910,12 @@ thead > tr > th.options{
                   notEmpty: {
                     message: "La contraseña es requerida"
                   },
+                  stringLength: {
+                    min: 8,
+                    message: 'La contraseña debe contener minimo 8 caracteres',
+                  },
                   regexp: {
-                    regexp: /^[A-Za-zÀ-ÿ.*-+/&\-@,$_ñ_ ]+$/i,
+                    regexp: /^[A-Za-z1-9À-ÿ.*-+/&-\-@,$_ñ_ ]+$/i,
                     message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
                   },
                 }

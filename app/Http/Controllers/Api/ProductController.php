@@ -164,7 +164,7 @@ class ProductController extends Controller
     public function deleteProduct($productId)
     {
         if (!$productId) {
-            return $this->returnFail(400, "El ID del producto es requerido.");
+            return $this->returnFail(400, "El identificador del usuario.");
         }
 
         $product = Product::find($productId);
@@ -172,7 +172,7 @@ class ProductController extends Controller
 
 
         if (!$product) {
-            return $this->returnFail(404, "Producto no encontrada.");
+            return $this->returnFail(404, "Usuario no encontrado.");
         }
 
         $product->delete();

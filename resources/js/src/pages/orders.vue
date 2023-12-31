@@ -1,23 +1,28 @@
 <script setup >
   import DataTablesCore from 'datatables.net';
+  import 'datatables.net-responsive-dt';
+  import 'datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css';
+  import 'datatables.net-dt/css/jquery.dataTables.min.css';
+  import 'datatables.net-responsive-dt/css/responsive.dataTables.min.css';
+  
   import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
   import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
   import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
   import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
   import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
-  import 'datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css';
-  import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue'
-  import OrderProductsTables from '@/views/pages/tables/OrderProductsTables.vue'
-  import 'datatables.net-dt/css/jquery.dataTables.min.css';
-  import * as bootstrap from 'bootstrap'
-  import flatpickr from "flatpickr";
+
+  import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue';
+  import OrderProductsTables from '@/views/pages/tables/OrderProductsTables.vue';
+  import * as bootstrap from 'bootstrap';
   import debounce from 'debounce';
+
   import moment from 'moment';
-  import 'flatpickr/dist/flatpickr.min.css'
-  import { Spanish } from "flatpickr/dist/l10n/es.js"
+  import flatpickr from "flatpickr";
+  import 'flatpickr/dist/flatpickr.min.css';
+  import { Spanish } from "flatpickr/dist/l10n/es.js";
+
   import { GET_ORDER_BY_ID, CHANGE_STATUS, CREATE_ORDER } from "@/core/services/store/order.module";
   import { GET_ALL_USER } from "@/core/services/store/user.module";
-
   import { GET_PRODUCT_BY_SEARCH } from "@/core/services/store/product.module";
 </script>
 
@@ -80,8 +85,8 @@
             </VBtn>
           </VCol>
         </VRow>
-        <div class="card-datatable table-responsive">
-          <table class="datatables-basic table" id="data-table">
+        <div class="card-datatable table-responsive ">
+          <table class="datatables-basic table display nowrap" id="data-table">
           </table>
         </div>
       </VCard>
@@ -125,7 +130,7 @@
                           <h4 class="font-400">
                             Orden N°: 
                             <b>
-                              {{ '0000000'.slice(0, 6-selectedOrder.id)+ selectedOrder.id }}
+                              {{ orderNumberFormat(selectedOrder.id) }}
                             </b> 
                           </h4>
                         </div>
@@ -615,11 +620,6 @@
 
   export default {
     data: () => ({
-      rules:[ 
-          v => !!v || "This field is required",
-          v => ( v && v >= 2 ) || "Loan should be above £5000",
-          v => ( v && v <= 8 ) || "Max should not be above £50,000",
-      ],
       modal: '',
       inputDate: '',
       snackShow:false,
@@ -659,10 +659,18 @@
         dataType:'json',
         processing: true,
         serverSide: true,
+        responsive: true,
+        columnDefs: [
+          {
+            defaultContent: "",
+            targets: "_all"
+          },
+        ],
         columns: [
           { 
             title: '<span class="d-none d-md-block">Fecha de pedido</span> <span class="d-flex justify-center d-md-none text-center">Pedido</span>',  
             class:'text-center date ',
+
             render: ( data, type, row, meta ) =>{ 
               return `
               ${ moment(row.created_at).format('DD-MM-YYYY') }
@@ -671,16 +679,13 @@
           },
           { 
             title: 'Track ID',
-            class:'text-center justify-center px-0 px-md-3',
+            class:'text-md-center text-start',
             orderable: false, 
             render: ( data, type, row, meta ) =>{ 
               return `
               
-              <span class="d-none d-md-flex justify-center">
+              <span class="justify-center">
                 #${row.trancker}
-              </span>
-              <span class="d-flex d-md-none justify-center">
-                #${row.trancker.slice(0,2)}...${row.trancker.slice(-3)}
               </span>
               `
             } 
@@ -688,7 +693,7 @@
           },
           { 
             title: 'Creada por',
-            class:'text-center d-md-table-cell d-none',
+            class:'text-md-center text-start',
             orderable: false, 
             render: ( data, type, row, meta ) =>{ 
               return ` ${row.user.name} `
@@ -698,6 +703,8 @@
           { 
             title: 'Estado ',
             class:'text-center px-3',
+            responsivePriority: 3,
+
             render: ( data, type, row, meta ) =>{ 
               return `
               <span 
@@ -722,6 +729,7 @@
             title: '<span class="d-none d-md-block">Acciones</span> <span class="d-flex justify-center d-md-none text-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="#8c8c8c" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 4H7.2c-1.12 0-1.68 0-2.108.218a1.999 1.999 0 0 0-.874.874C4 5.52 4 6.08 4 7.2v9.6c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874c.427.218.987.218 2.105.218h9.606c1.118 0 1.677 0 2.104-.218c.377-.192.683-.498.875-.874c.218-.428.218-.987.218-2.105V14m-4-9l-6 6v3h3l6-6m-3-3l3-3l3 3l-3 3m-3-3l3 3"/></svg></span>',
             orderable: false, 
             searchable: false, 
+            responsivePriority: 2,
             class:'text-center  px-1 px-md-3',
             render: ( data, type, row, meta ) =>{ 
               let html = `

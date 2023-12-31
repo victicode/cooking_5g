@@ -6,4 +6,11 @@
     border-bottom: 1px solid rgba(153, 153, 153, 0.61)!important;
 
   }
+  .dtr-details{
+    width: 100%!important;
+    & > li{
+      display: flex;
+      justify-content: space-between;
+    }
+  }
 }

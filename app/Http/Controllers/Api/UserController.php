@@ -36,9 +36,6 @@ class UserController extends Controller
         //   })->toJson();
     }
     public function createUser(Request $request){
-         $request->rol_id == 'api/get-chefs' ?  2 : 3;
-        
-       
         $validated = $this->validateFieldsFromInput($request->all()) ;
 
         if (count($validated) > 0) return $this->returnFail(400, $validated[0]);
@@ -59,7 +56,25 @@ class UserController extends Controller
         
 
     }
+    public function deleteUser($userId)
+    {
+        if (!$userId) {
+            return $this->returnFail(400, "El ID del producto es requerido.");
+        }
 
+        $user = User::find($userId);
+        // $dismantlingsOfProducts= Dismantling::where('piece_product_id', $userId)->delete();
+
+
+        if (!$user) {
+            return $this->returnFail(404, "Producto no encontrada.");
+        }
+
+        $user->delete();
+
+
+        return $this->returnSuccess(200, ['id' => $userId, 'deleted_at' => $user->deleted_at]);
+    }
     public function getUserById($userId){
         $user = User::with('rol')->find($userId);
  

@@ -9,6 +9,9 @@ export const GET_USER = "GET_USER";
 export const SET_USER = "SET_USER";
 export const GET_ALL_USER = "GET_ALL_USER";
 export const CREATE_USER = "CREATE_USER";
+export const DELETE_USER = "DELETE_USER";
+export const UPDATE_USER = "UPDATE_USER";
+
 export const GET_USER_BY_ID = "GET_USER_BY_ID";
 
 
@@ -77,12 +80,45 @@ const actions = {
                 ApiService.setHeader();
                 ApiService.post("api/user", body)
                     .then(( { data } ) => {
+                        console.log(data)
                         resolve(data.data);
  
                     })
                     .catch(( { response } ) => {
                         console.log(response)
                         reject('Ocurrió un error desconocido al intentar guardar el usuario.');
+                    });
+            }
+        });
+    },
+    [UPDATE_USER](context, body) {
+        return new Promise((resolve, reject) => {
+            if (JwtService.getToken()) {
+                ApiService.setHeader();
+                ApiService.post("api/user", body)
+                    .then(( { data } ) => {
+                        resolve(data.data);
+ 
+                    })
+                    .catch(( { response } ) => {
+                        console.log(response)
+                        reject('Ocurrió un error desconocido al intentar guardar el usuario.');
+                    });
+            }
+        });
+    },
+    [DELETE_USER](context, userId) {
+        return new Promise((resolve, reject) => {
+            if (JwtService.getToken()) {
+                ApiService.setHeader();
+                ApiService.delete("api/user/"+userId)
+                    .then(( { data } ) => {
+                        resolve(data.data);
+ 
+                    })
+                    .catch(( { response } ) => {
+                        console.log(response)
+                        reject('Ocurrió un error desconocido al borrar el usuario.');
                     });
             }
         });

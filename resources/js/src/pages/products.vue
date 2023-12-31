@@ -1,22 +1,28 @@
 <script setup >
 
   import DataTablesCore from 'datatables.net';
+  import 'datatables.net-responsive-dt';
   import 'datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css';
   import 'datatables.net-dt/css/jquery.dataTables.min.css';
+  import 'datatables.net-responsive-dt/css/responsive.dataTables.min.css';
+
   import * as bootstrap from 'bootstrap'
-  import debounce from 'debounce';
-  import { GET_PRODUCT_BY_ID, GET_PRODUCT_BY_SEARCH, STORE_PRODUCT, UPDATE_PRODUCT, ADD_STOCK, DELETE_PRODUCT} from "@/core/services/store/product.module";
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue'
-  import { func } from '@/core/services/utils/utils.js'
+  import debounce from 'debounce';
+  
   import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
   import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
   import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
   import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
   import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
-  import flatpickr from "flatpickr";
+  
   import moment from 'moment';
+  import flatpickr from "flatpickr";
   import 'flatpickr/dist/flatpickr.min.css'
   import { Spanish } from "flatpickr/dist/l10n/es.js"
+  
+  import { GET_PRODUCT_BY_ID, GET_PRODUCT_BY_SEARCH, STORE_PRODUCT, UPDATE_PRODUCT, ADD_STOCK, DELETE_PRODUCT} from "@/core/services/store/product.module";
+  import { func } from '@/core/services/utils/utils.js'
 
 </script>
 <template>
@@ -878,7 +884,7 @@ thead > tr > th:nth-child(n+2){
 }
 @media screen and (max-width: 780px){
   thead > tr > th.title-th {
-      width: 52%!important;
+      width: 90%!important;
   }
 }
 </style>
@@ -942,6 +948,13 @@ thead > tr > th:nth-child(n+2){
         dataType:'json',
         processing: true,
         serverSide: true,
+        resposive:true,
+        columnDefs: [
+          {
+            defaultContent: "",
+            targets: "_all"
+          },
+        ],
         columns: [
           { 
             title: 'Nombre del producto', class:'text-start title-th',
