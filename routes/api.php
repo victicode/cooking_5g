@@ -56,6 +56,7 @@ Route::middleware('jwt.verify')->post('/checkToken', [AuthController::class, 'ch
 Route::middleware('jwt.verify')->prefix('user')->name('user.')->group(function () {
     Route::get('/', [AuthController::class, 'getUser'])->name('getUser');
     Route::post('/',[UserController::class, 'createUser']);
+    Route::post('/chef',[UserController::class, 'createUser']);
     Route::delete('/{id}',[UserController::class, 'deleteUser']);
     Route::get('/all-client', [UserController::class, 'getAllclient']);
     Route::get('/get-by-id/{id}',[UserController::class, 'getUserById']);

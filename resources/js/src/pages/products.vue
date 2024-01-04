@@ -430,6 +430,9 @@
                               class=""
                               v-model="stockOperation.lot"
                               autocomplete="off"
+                              variant="underlined"
+                              disabled
+                              color="red"
                               
                             />
                           </VCol>
@@ -652,6 +655,7 @@
                                             name="new_product_title"
                                             autocomplete="off"
                                             v-model="newProduct.title"
+                                            @change="formatLoteName()"
                                           />
                                       </VCol>
                                       <VCol cols="12" md="6" class="form-group">
@@ -772,6 +776,18 @@
                                     <VRow>
                                       <VCol cols="6" md="4" class="form-group">
                                         <VTextField
+                                          placeholder="Numero de lote"
+                                          label="Numero de lote"
+                                          type="text"
+                                          name="new_product_init_lot"
+                                          autocomplete="off"
+                                          variant="underlined"
+                                          v-model="newProduct.init_lote"
+                                          disabled
+                                        />
+                                      </VCol>
+                                      <VCol cols="6" md="4" class="form-group">
+                                        <VTextField
                                           placeholder="Stock"
                                           label="Stock"
                                           type="number"
@@ -780,16 +796,7 @@
                                           v-model="newProduct.stock"
                                         />
                                       </VCol>
-                                      <VCol cols="6" md="4" class="form-group">
-                                        <VTextField
-                                          placeholder="Numero de lote"
-                                          label="Numero de lote"
-                                          type="text"
-                                          name="new_product_init_lot"
-                                          autocomplete="off"
-                                          v-model="newProduct.init_lote"
-                                        />
-                                      </VCol>
+                                      
                                       <VCol cols="12" md="4" class="form-group">
                                         <VTextField
                                           id="dueDateNewProduct"
@@ -860,7 +867,7 @@
 </template>
 <style lang="scss">
  thead > tr > th.title-th{
-  width: 70%!important;
+  width: 35%!important;
 }
 thead > tr > th:nth-child(n+2){
   width: 15%!important;
@@ -936,8 +943,9 @@ thead > tr > th:nth-child(n+2){
           "type": "POST",
           data: function ( data ) {
             data.filter_product_title = document.querySelector('[name="product_title"]').value;
-            data.order_title = data.order[0].column == 1 ? '' : data.order[0].dir
-            data.order_stock = data.order[0].column == 1 ? data.order[0].dir : ''
+            data.order_title = data.order[0].column == 0 ?data.order[0].dir : ''  
+            data.order_stock = data.order[0].column == 2 ? data.order[0].dir : ''
+            data.order_due_date = data.order[0].column == 1 ? data.order[0].dir : ''
 
           },
           "crossDomain": true,
@@ -961,6 +969,24 @@ thead > tr > th:nth-child(n+2){
             render: ( data, type, row, meta ) =>{ 
                 return `${row.title}`
               }   
+          },
+          {
+            title:' Proxima fecha venc.',
+            class:'text-center',
+            render: (data, type, row, meta) =>{
+              let today = new moment();
+              let product_due_date = moment(row.lotes[0].due_date);
+              let diff_due_date = Math.round(moment.duration(product_due_date.diff(today)).as('days'));
+              return `
+                <span 
+                  class="v-chip v-theme--light v-chip--density-comfortable elevation-0 v-chip--size-default v-chip--variant-tonal ${ diff_due_date < 1 ? 'bg-error' : diff_due_date >= 30 ? 'bg-success' : 'bg-warning'}" 
+                  draggable="false"
+                  >
+                    <span class="v-chip__underlay"></span>
+                  <div class="v-chip__content">${moment(row.lotes[0].due_date).format('DD-MM-YYYY')} </div>
+                </span> 
+              `
+            }
           },
           { 
             title: 'Stock',
@@ -1130,6 +1156,7 @@ thead > tr > th:nth-child(n+2){
             this.selectProduct(event.target.dataset.id).finally((data)=>{
               setTimeout(() => {
                 this.showModal('addStockProduct')
+                this.formatLoteName()
                 this.initDueDate('dueDateAddStock')
               }, 800);
             })
@@ -1778,6 +1805,32 @@ thead > tr > th:nth-child(n+2){
         this.stockOperation.lot_quantity = selectedLote.quantity ? selectedLote.quantity : this.stockOperation.lot_quantity ;
         this.stockOperation.lot = selectedLote.id ? selectedLote.id : this.stockOperation.lot;
 
+      },
+      formatLoteName(){
+        let isLongWord = this.selectedProduct.lotes 
+        ? this.selectedProduct.title.split(" ")
+        : this.newProduct.title.split(" ")
+
+        let index = this.selectedProduct.lotes 
+          ? this.selectedProduct.lotes.length + 1
+          : 1;
+
+        let loteTitle = isLongWord.length == 1
+          ? isLongWord[0].substring(0,4).toUpperCase()
+          : isLongWord.length == 3
+          ? isLongWord[0].substring(0,2).toUpperCase() + isLongWord[1].substring(0,1).toUpperCase() + isLongWord[2].substring(0,1).toUpperCase()
+          : isLongWord[0].substring(0,2).toUpperCase() + isLongWord[1].substring(0,2).toUpperCase();
+
+        let loteNumber = '000000'.slice( 0, 6 - index.toString().length ) + index;
+
+        if(this.selectedProduct.lotes){
+          this.stockOperation.lot = loteTitle +'-'+ loteNumber;
+          return
+
+        }
+        this.newProduct.init_lote =  loteTitle +'-'+ loteNumber;
+        return
+        
       }
     },
     computed: {
