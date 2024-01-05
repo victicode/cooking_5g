@@ -10,6 +10,7 @@ use App\Models\Dismantling;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Query\Builder;
 
 class ProductController extends Controller
 {
@@ -23,13 +24,20 @@ class ProductController extends Controller
         return $this->returnSuccess(200, Product::with(['dismantling.products_pieces', 'lotes'])->get());
     }
     public function getProductsTable(Request $request){
-        $products = Product::query()->with(['dismantling.products_pieces','lotes']);
+        $products = Product::query()->with(['dismantling.products_pieces', 'lotes']);
 
         if(!empty(request('order_title')))  $products->orderBy('title', request('order_title'));
 
         if(!empty(request('order_stock')))  $products->orderBy('stock', request('order_stock'));
         
-        if(!empty(request('order_due_date')))  $products->orderBy('lotes.due_date', request('order_due_date'));
+        if(!empty(request('order_due_date'))){
+            $products->with(['lotes' => function (Builder $query) {
+                $query->orderBy('due_date', 'ASC' );
+            }]);
+        } 
+        
+            
+            
 
 
         return DataTables::of($products)->filter(function ($query) {
