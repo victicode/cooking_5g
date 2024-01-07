@@ -113,13 +113,13 @@
                           <div class="mt-0" style="border-top: 1px solid rgba(119, 119, 119, 0.356)">
 
                             <VCardText class="text-subtitle-1 py-4 px-1">
-                              <span class="font-weight-medium">Número Lote:</span> <span class="font-weight-bold">{{ selectedProduct.lotes[0].lote_code}}</span>
+                              <span class="font-weight-medium">Número Lote:</span> <span class="font-weight-bold">{{ selectedProduct.lotes_first.lote_code}}</span>
                             </VCardText>
                             <VCardText class="text-subtitle-1 pt-0 px-1 d-block">
                               <div class="font-weight-medium mb-0">Fecha de vencimiento proxima:</div>
                               <div class="font-weight-bold mt-2">
                                 <v-chip class=" bg-success">
-                                  {{ moment(selectedProduct.lotes[0].due_date).format('DD-MM-YYYY') }}
+                                  {{ moment(selectedProduct.lotes_first.due_date).format('DD-MM-YYYY') }}
                                 </v-chip>
                               </div>
                             </VCardText>
@@ -975,7 +975,7 @@ thead > tr > th:nth-child(n+2){
             class:'text-center',
             render: (data, type, row, meta) =>{
               let today = new moment();
-              let product_due_date = moment(row.lotes[0].due_date);
+              let product_due_date = moment(row.lotes_first.due_date);
               let diff_due_date = Math.round(moment.duration(product_due_date.diff(today)).as('days'));
               return `
                 <span 
@@ -983,7 +983,7 @@ thead > tr > th:nth-child(n+2){
                   draggable="false"
                   >
                     <span class="v-chip__underlay"></span>
-                  <div class="v-chip__content">${moment(row.lotes[0].due_date).format('DD-MM-YYYY')} </div>
+                  <div class="v-chip__content">${moment(row.lotes_first.due_date).format('DD-MM-YYYY')} </div>
                 </span> 
               `
             }
@@ -1248,8 +1248,10 @@ thead > tr > th:nth-child(n+2){
         this.modal.show()
       },
       filterColumn(){
-        this.table.clear();
-        this.table.draw('full-hold');
+        debounce(()=>{
+          this.table.clear();
+          this.table.draw('full-hold');
+        }, 300)()
       },
       clearFilters(){
         document.querySelector('[name="product_title"]').value = '';

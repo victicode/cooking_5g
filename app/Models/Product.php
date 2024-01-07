@@ -22,8 +22,6 @@ class Product extends Model
         'updated_by', 
     ];
 
-    // protected $appends = ['lot'];
-
     public function orders()
     {
         return $this->belongsToMany(Order::class, 'products_x_orders');
@@ -34,5 +32,8 @@ class Product extends Model
     }
     public function lotes(){
         return $this->hasMany(Lot::class, 'product_id', 'id')->orderBy('due_date', 'ASC');
+    }
+    public function lotesFirst(){
+        return $this->hasOne(Lot::class, 'product_id', 'id')->orderBy('due_date', 'ASC');
     }
 }
