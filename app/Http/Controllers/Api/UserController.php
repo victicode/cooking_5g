@@ -97,7 +97,7 @@ class UserController extends Controller
             'name.required'         => 'El nombre es requerido.',
             'email.required'        => 'La contraseña es requerido.',
             'user_address.required' => 'La dirección es requerida.',
-            'email.unique'          => 'Email ya regsitrado.',
+            'email.unique'          => 'Email ya registrado.',
             'password.required'     => 'La contraseña es requerido.',
             'rol_id.required'       => 'El rol es requerido.',
             'password.min'          => 'La contraseña debe tener un minimo de 8 caracteres',

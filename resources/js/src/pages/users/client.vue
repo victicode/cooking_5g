@@ -395,7 +395,7 @@
                     <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
                   </v-col>
                 </div>
-                <div>
+                <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
                   <VCardItem class="justify-center w-100  py-md-6  py-4  my-5  ">
                     <VCardTitle class="text-2xl font-weight-bold">
                       <div class="card-title d-flex ">
@@ -413,7 +413,7 @@
                   <VCardText class="w-100 pb-5 px-3 px-md-6">
                     <VForm  id="new_user_form">
                       <VRow class="align-center">
-                        <VCol cols="12" class="form-group mt-md-5 mt-0 pt-1 pt-md-2">
+                        <VCol cols="12" class="form-group mt-md-2 mt-0 pt-1 pt-md-2">
                           <VTextField
                             placeholder="Nombre y apellido"
                             label="Nombre y apellido"
@@ -423,7 +423,7 @@
                             autocomplete="off"
                           />
                         </VCol>
-                        <VCol cols="12" class="form-group mt-md-5 mt-0 pt-1 pt-md-2">
+                        <VCol cols="12" class="form-group mt-md-2 mt-0 pt-1 pt-md-2">
                           <VTextField
                             placeholder="Email"
                             label="Email"
@@ -433,7 +433,7 @@
                             autocomplete="off"
                           />
                         </VCol>
-                        <VCol cols="12" class="form-group mt-md-5 mt-0 pt-1 pt-md-2">
+                        <VCol cols="12" class="form-group mt-md-2 mt-0 pt-1 pt-md-2">
                           <VTextField
                             v-model="newUser.password"
                             label="Password"
@@ -445,7 +445,7 @@
                             @click:append-inner="isPasswordVisible = !isPasswordVisible"
                           />
                         </VCol>
-                        <VCol cols="12"  class="form-group mt-md-5 mt-0 pt-1 pt-md-2">
+                        <VCol cols="12"  class="form-group mt-md-2 mt-0 pt-1 pt-md-2">
                           <v-textarea
                             label="Dirección"
                             auto-grow
@@ -815,6 +815,7 @@ thead > tr > th.options{
           })
           .catch((err) => {
             console.log(err)
+            this.showSnackbar('error', err)
             this.notSendButton('new_user_form_button')
           
           });
@@ -827,7 +828,7 @@ thead > tr > th.options{
           password:'',
           address:''
         }
-        this.forms['new_user_form_'].resetForm()
+        this.forms['new_user_form'].resetForm()
       },
       deleteUser(){
         console.log(this.selectedUser)

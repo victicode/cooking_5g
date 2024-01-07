@@ -85,8 +85,7 @@ const actions = {
  
                     })
                     .catch(( { response } ) => {
-                        console.log(response)
-                        reject('Ocurrió un error desconocido al intentar guardar el usuario.');
+                        reject(response.data.error);
                     });
             }
         });

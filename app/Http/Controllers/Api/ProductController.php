@@ -9,9 +9,10 @@ use App\Models\Product;
 use App\Models\Dismantling;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
+use PhpParser\Node\Expr\FuncCall;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Query\Builder;
-use PhpParser\Node\Expr\FuncCall;
+use Yajra\DataTables\CollectionDataTable;
 
 class ProductController extends Controller
 {
@@ -22,10 +23,10 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return $this->returnSuccess(200, Product::with(['dismantling.products_pieces', 'lotes'])->get());
+        return $this->returnSuccess(200, Product::with(['dismantling.products_pieces', 'lotes:due_date'])->get());
     }
     public function getProductsTable(Request $request){
-        $products = Product::query()->with(['dismantling.products_pieces','lotesFirst']);
+        $products = Product::query()->with(['dismantling.products_pieces']);
         
         
         if(!empty(request('order_title')))  $products->orderBy('title', request('order_title'));
@@ -36,21 +37,8 @@ class ProductController extends Controller
             $products->where('title','like','%'.request('filter_product_title').'%');
         }
         if(!empty(request('order_due_date'))) {
+            if(!empty(request('order_due_date')))  $products->orderBy('due_date', request('order_due_date'));
 
-            $new = [];
-            foreach ($products->get() as $key ) {
-                $key->due_date = $key->lotesFirst->due_date;
-                array_push($new, $key);
-
-            };
-
-            if(request('order_due_date') == 'asc') $products = array_multisort(array_column($new, 'due_date'), SORT_ASC, SORT_NUMERIC, $new);
-            if(request('order_due_date') == 'desc') $products = array_multisort(array_column($new, 'due_date'), SORT_DESC, SORT_NUMERIC, $new);
-            
-            // $news = [...$new]; 
-            return $new;
-            // $news =  $products->get()->sortBy('lotesFirst.due_date', request('order_due_date')); 
-            // return DataTables::of($news)->toJson();
         }
         
 
@@ -99,8 +87,10 @@ class ProductController extends Controller
              $this->addDismantling($product->id, $request->dismantling);
         }
 
-        $addLote = $this->formatInputLot($request);
-        $this->addLote($product->id, $addLote);
+        $formatLote = $this->formatInputLot($request);
+        $lote = $this->addLote($product->id, $formatLote);
+        
+        $this->setMostEarlyDueDate($product, $lote->due_date);
         return $this->returnSuccess(200, $product);
 
     }
@@ -147,7 +137,7 @@ class ProductController extends Controller
         $product = Product::find($id);
         if(!$product) return $this->returnFail(400, 'Producto no encontrado');
 
-        if($request->type == 1)  $this->addLote($id, $request);
+        if($request->type == 1) { $lote = $this->addLote($id, $request);  $this->setMostEarlyDueDate($product, $lote->due_date);}
         if($request->type == 2)  $this->reduceLote($id, $request);
 
         try {
@@ -161,7 +151,7 @@ class ProductController extends Controller
         }
     
         
-
+       
         return $this->returnSuccess(200, [$request->type, $request->quantity]);
     }
     public function getProductById($id){
@@ -263,7 +253,7 @@ class ProductController extends Controller
     private function addLote($productId, $data){
 
     
-        Lot::create([
+        return Lot::create([
             'lote_code'  => $data->lote,
             'product_id' => $productId,
             'quantity'   => $data->quantity,
@@ -272,6 +262,22 @@ class ProductController extends Controller
             
         
     } 
+    private function setMostEarlyDueDate(Product $product, $due_date ){
+        if(!$product->due_date){
+            $product->due_date = $due_date;
+            $product->save();
+
+            return;
+        }
+
+        $product->due_date = strtotime($product->due_date) < strtotime($due_date)
+            ? $product->due_date
+            : $due_date;
+            
+        $product->save();
+
+        return;
+    }
     private function reduceLote($productId, $data){
 
         $lote = Lot::where('id', $data->lote)->where('product_id', $productId)->first();
