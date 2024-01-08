@@ -890,8 +890,8 @@ thead > tr > th:nth-child(n+2){
   padding: 5px;
 }
 @media screen and (max-width: 780px){
-  thead > tr > th.title-th {
-      width: 90%!important;
+  thead > tr > th {
+      width: 25%!important;
   }
 }
 </style>
@@ -965,14 +965,14 @@ thead > tr > th:nth-child(n+2){
         ],
         columns: [
           { 
-            title: 'Nombre del producto', class:'text-start title-th',
+            title: '<div class="d-none d-md-block">Nombre del producto</div><div class="d-md-none d-block">Prodcuto</div>', class:'text-start title-th',
             render: ( data, type, row, meta ) =>{ 
                 return `${row.title}`
               }   
           },
           {
-            title:' Proxima fecha venc.',
-            class:'text-center',
+            title:' <div class="d-none d-md-block">Proxima fecha venc.</div><div class="d-md-none d-block">Fecha venc</div>',
+            class:'text-center pe-5',
             render: (data, type, row, meta) =>{
               let today = new moment();
               let product_due_date = moment(row.due_date);
@@ -990,7 +990,7 @@ thead > tr > th:nth-child(n+2){
           },
           { 
             title: 'Stock',
-            class:'text-center',
+            class:'text-center px-md-5  px-0 ',
             render: ( data, type, row, meta ) =>{ 
               return `
               <span 
