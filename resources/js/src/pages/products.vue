@@ -1171,7 +1171,7 @@ thead > tr > th:nth-child(n+2){
             this.selectProduct(event.target.dataset.id).finally((data)=>{
               setTimeout(() => {
                 this.showModal('addStockProduct')
-                this.formatLoteName(this.$event)
+                this.getLastLoteNumber();
                 this.initDueDate('dueDateAddStock')
               }, 800);
             })
@@ -1196,10 +1196,10 @@ thead > tr > th:nth-child(n+2){
               this.validateFormItem('add_stock_form')
               this.validateFormItem('edit_product_form')
               this.addValidate('edit_product_form', 'update')
+              return new Promise((resolve) => {
+                  resolve(response.data);
+              });
             }, 200);
-            return new Promise((resolve) => {
-                resolve(response.data);
-            });
           })
           .catch((err) => {
             console.log(err)
@@ -1208,6 +1208,7 @@ thead > tr > th:nth-child(n+2){
             });
           });
       },
+      
       getProducts(search = "", index){
 
         const loge = {
@@ -1841,13 +1842,12 @@ thead > tr > th:nth-child(n+2){
 
       },
       formatLoteName(e){
-        
         let isLongWord = !e
         ? this.selectedProduct.title.split(" ")
         : this.newProduct.title.split(" ")
 
         let index = !e
-          ? this.selectedProduct.lotes.length + 1
+          ? this.stockOperation.lote_index + 1
           : 1;
 
         let loteTitle = isLongWord.length == 1
@@ -1871,11 +1871,14 @@ thead > tr > th:nth-child(n+2){
         
       },
       getLastLoteNumber(){
-        let id = this.selectedProduct ? this.selectedProduct.id : 9
-       let tulio =  this.$store.dispatch(GET_LAST_LOTE, id )
+        this.$store
+        .dispatch(GET_LAST_LOTE, this.selectedProduct.id )
+        .then((data)=> {
+          this.stockOperation.lote_index = data ; 
+          this.formatLoteName(this.$event)
+        })
           
-       console.log(tulio)
-      }
+      },
     },
     computed: {
       disabled () {
@@ -1883,7 +1886,8 @@ thead > tr > th:nth-child(n+2){
       },
     },
     mounted(){
-      this.getLastLoteNumber()
+
+      
       this.initOptionsTable()
       this.table = new DataTablesCore('#data-table', this.tableData)
       this.bootstrapOptions();

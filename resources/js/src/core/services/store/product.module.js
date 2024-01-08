@@ -99,12 +99,13 @@ const actions = {
       });
     },
     [GET_LAST_LOTE](context, id) {
+      console.log(id)
       return new Promise((resolve, reject) => {
         if (JwtService.getToken()) {
           ApiService.setHeader();
           ApiService.get("api/products/get-last-lote/"+id)
           .then(( { data } ) => {
-              console.log(data)
+            console.log(data)
               resolve(data);
               
           })
