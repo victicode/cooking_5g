@@ -30,7 +30,7 @@ class OrderController extends Controller
     }
     public function getOrdersTable(Request $request)
     {
-        $order = Order::query()->with('user');
+        $order = Order::query()->with('user', 'client');
 
         if(!empty(request('filter_start_date'))){
             $order->whereBetween('created_at', [request('filter_start_date'), request('filter_end_date')]);
@@ -81,7 +81,7 @@ class OrderController extends Controller
             $this->addProductforOrder($order->id, json_decode($request->products,true));
             $this->decreaseStockInProduct(json_decode($request->products,true));
         }catch(Exception $e){
-            return $this->returnFail(400, 'Productos no validos');
+            return $this->returnFail(400, $e->getMessage());
         }
 
         return $this->returnSuccess(200, [
@@ -109,7 +109,8 @@ class OrderController extends Controller
             DB::table('products_x_orders')->insert([
                 'order_id' => $order,
                 'product_id' => $key['id'],
-                'quantity'  => $key['quantity']
+                'quantity'  => $key['quantity'],
+                'lote_id'   => $key['selected_lote']['id'],
             ]);
         }
 

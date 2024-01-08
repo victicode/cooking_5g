@@ -10,7 +10,7 @@ export const DELETE_PRODUCT = "DELETE_PRODUCT"
 export const ADD_STOCK = "ADD_STOCK"
 export const GET_PRODUCT_BY_ID = "GET_PRODUCT_BY_ID";
 export const GET_PRODUCT_BY_SEARCH = "GET_PRODUCT_BY_SEARCH";
-
+export const GET_LAST_LOTE = "GET_LAST_LOTE";
 const actions = {
     [GET_PRODUCTS](context) {
         return new Promise((resolve, reject) => {
@@ -93,7 +93,24 @@ const actions = {
           })
           .catch(( { response } ) => {
               console.log(response)
-              reject('Ocurrió un error desconocido al intentar crear el stock');
+              reject(response);
+          });
+        }
+      });
+    },
+    [GET_LAST_LOTE](context, id) {
+      return new Promise((resolve, reject) => {
+        if (JwtService.getToken()) {
+          ApiService.setHeader();
+          ApiService.get("api/products/get-last-lote/"+id)
+          .then(( { data } ) => {
+              console.log(data)
+              resolve(data);
+              
+          })
+          .catch(( { response } ) => {
+              console.log(response)
+              reject(response);
           });
         }
       });

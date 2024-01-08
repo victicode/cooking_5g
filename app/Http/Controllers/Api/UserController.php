@@ -24,16 +24,16 @@ class UserController extends Controller
             ?  User::query()->where('rol_id', 2) 
             : User::query()->where('rol_id', 3);
 
-        // if(!empty(request('order_title')))  $products->orderBy('title', request('order_title'));
+        if(!empty(request('order_name')))  $users->orderBy('name', request('order_name'));
 
-        // if(!empty(request('order_stock')))  $products->orderBy('stock', request('order_stock'));
+        // if(!empty(request('order_stock')))  $users->orderBy('stock', request('order_stock'));
 
-        return DataTables::of($users)->toJson();
-        // return DataTables::of($products)->filter(function ($query) {
-        //     if (!empty(request('filter_product_title'))) {
-        //       $query->where('title','like','%'.request('filter_product_title').'%');
-        //     }
-        //   })->toJson();
+        // return DataTables::of($users)->toJson();
+        return DataTables::of($users)->filter(function ($query) {
+            if (!empty(request('filter_name'))) {
+              $query->where('name','like','%'.request('filter_name').'%');
+            }
+          })->toJson();
     }
     public function createUser(Request $request){
         $validated = $this->validateFieldsFromInput($request->all()) ;
@@ -53,6 +53,33 @@ class UserController extends Controller
         }
 
         return $this->returnSuccess(200, $newUser);
+        
+
+    }
+    public function updateUser(Request $request, $id){
+        $validated = $this->validateFieldsFromInput($request->all(), 'update') ;
+
+        if (count($validated) > 0) return $this->returnFail(400, $validated[0]);
+       
+        $user = User::find($id);
+        if (!$user) return $this->returnFail(400, 'Usuario no encontrado');
+        
+        try {
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->user_address = $request->user_address;
+            $user->password = !empty($request->password) 
+            ? Hash::make($request->password)
+            : $user->password;
+
+
+            $user->save();
+            
+        } catch (Exception $th) {
+            return $this->returnSuccess(400, $th->getMessage() );
+        }
+
+        return $this->returnSuccess(200, $user);
         
 
     }
@@ -76,7 +103,7 @@ class UserController extends Controller
         return $this->returnSuccess(200, ['id' => $userId, 'deleted_at' => $user->deleted_at]);
     }
     public function getUserById($userId){
-        $user = User::with('rol')->find($userId);
+        $user = User::with('rol', 'orders')->find($userId);
  
          return $this->returnSuccess(200, $user);
      }
@@ -85,7 +112,31 @@ class UserController extends Controller
 
         return $this->returnSuccess(200, $usersByRol);
     }
-    private function validateFieldsFromInput($inputs){
+    private function validateFieldsFromInput($inputs, $type = 'new'){
+        if($type != 'new'){
+            $rules=[
+                'name'          => ['required', 'regex:/^[a-zA-Z-À-ÿ .]+$/i'],
+                'email'         => ['required', 'email',],
+                'password'      => ['min:8'],
+                'user_address'  => ['required'],
+            ];
+            $messages = [
+                'name.required'         => 'El nombre es requerido.',
+                'name.regex'            => 'Nombre no valido',
+                'email.required'        => 'El email es requerido.',
+                'email.email'           => 'El Email no es valido',
+                'user_address.required' => 'La dirección es requerida.',
+                'password.min'          => 'La contraseña debe tener un minimo de 8 caracteres'
+            ];
+    
+    
+             $validator = Validator::make($inputs, $rules, $messages)->errors();
+    
+            return $validator->all() ;
+
+        }
+
+
         $rules=[
             'name'          => ['required', 'regex:/^[a-zA-Z-À-ÿ .]+$/i'],
             'email'         => ['required', 'email', 'unique:users'],
@@ -95,7 +146,7 @@ class UserController extends Controller
         ];
         $messages = [
             'name.required'         => 'El nombre es requerido.',
-            'email.required'        => 'La contraseña es requerido.',
+            'email.required'        => 'El email es requerido.',
             'user_address.required' => 'La dirección es requerida.',
             'email.unique'          => 'Email ya registrado.',
             'password.required'     => 'La contraseña es requerido.',

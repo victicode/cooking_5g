@@ -56,6 +56,7 @@ Route::middleware('jwt.verify')->post('/checkToken', [AuthController::class, 'ch
 Route::middleware('jwt.verify')->prefix('user')->name('user.')->group(function () {
     Route::get('/', [AuthController::class, 'getUser'])->name('getUser');
     Route::post('/',[UserController::class, 'createUser']);
+    Route::post('/{id}',[UserController::class, 'updateUser']);
     Route::post('/chef',[UserController::class, 'createUser']);
     Route::delete('/{id}',[UserController::class, 'deleteUser']);
     Route::get('/all-client', [UserController::class, 'getAllclient']);
@@ -81,8 +82,8 @@ Route::middleware('jwt.verify')->prefix('products')->name('product.')->group(fun
     Route::get('/get-critical-stock', [ProductController::class, 'getProductsCriticalStock']);
     Route::get('/get-by-id/{id}',[ProductController::class, 'getProductById']);
     Route::get('/get-by-search',[ProductController::class, 'getProductBySearch']);
-    Route::get('/get-by-searchs',[ProductController::class, 'getProductBySearchs']);
-
+    // Route::get('/get-by-searchs',[ProductController::class, 'getProductBySearchs']);
+    Route::get('/get-last-lote/{id}',[ProductController::class, 'getLastLoteFromProduct']);
 
 
 

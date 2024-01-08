@@ -91,10 +91,11 @@ const actions = {
         });
     },
     [UPDATE_USER](context, body) {
+        console.log(body)
         return new Promise((resolve, reject) => {
             if (JwtService.getToken()) {
                 ApiService.setHeader();
-                ApiService.post("api/user", body)
+                ApiService.post("api/user/"+body.id, body)
                     .then(( { data } ) => {
                         resolve(data.data);
  
