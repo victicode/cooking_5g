@@ -136,7 +136,7 @@
                         </div>
                         <div >
                           <div class="my-2  text-start">
-                            Solicitante: {{ selectedOrder.user.name.toUpperCase() }}
+                            Solicitante: {{ selectedOrder.client.name.toUpperCase() }}
                           </div>
                           <div class="my-2 text-start">
                             Dirección de destino: {{ selectedOrder.other_address }}

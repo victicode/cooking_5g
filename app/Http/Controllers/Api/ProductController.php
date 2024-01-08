@@ -137,8 +137,8 @@ class ProductController extends Controller
         $product = Product::find($id);
         if(!$product) return $this->returnFail(400, 'Producto no encontrado');
 
-        if($request->type == 1) { $lote = $this->addLote($id, $request);  $this->setMostEarlyDueDate($product, $lote->due_date);}
-        if($request->type == 2)  $this->reduceLote($id, $request);
+        if($request->type == 1){ $lote = $this->addLote($id, $request); $this->setMostEarlyDueDate($product, $lote->due_date);}  
+        if($request->type == 2){ $lote = $this->reduceLote($id, $request); $this->setMostEarlyDueDate($product, $lote, 'reduce');} 
 
         try {
             $product->stock = $request->type == 1 
@@ -151,7 +151,8 @@ class ProductController extends Controller
         }
     
         
-       
+        
+
         return $this->returnSuccess(200, [$request->type, $request->quantity]);
     }
     public function getProductById($id){
@@ -190,6 +191,9 @@ class ProductController extends Controller
 
 
         return $this->returnSuccess(200, ['id' => $productId, 'deleted_at' => $product->deleted_at]);
+    }
+    public function getLastLoteFromProduct($productId){
+       return Lot::where('product_id', $productId)->count();
     }
     private function validateRequiredFields($inputRequest, $type = "create" )
     {
@@ -262,11 +266,19 @@ class ProductController extends Controller
             
         
     } 
-    private function setMostEarlyDueDate(Product $product, $due_date ){
+    private function setMostEarlyDueDate(Product $product, $due_date, $type = "add" ){
+        
+
         if(!$product->due_date){
             $product->due_date = $due_date;
             $product->save();
-
+            return;
+        }
+        if($type == 'reduce'){
+            $product->due_date = $due_date->quantity == 0
+            ? Lot::where('quantity','>','0')->where('product_id', $product->id)->first()->due_date
+            : $due_date->due_date;
+            $product->save();
             return;
         }
 
@@ -284,7 +296,7 @@ class ProductController extends Controller
 
         $lote->quantity = $lote->quantity - $data->quantity;
         $lote->save();
-
+        return $lote;
     } 
     private function formatInputLot($inputs){
         $formatInputs = new stdClass(); 

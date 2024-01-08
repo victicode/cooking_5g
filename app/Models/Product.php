@@ -32,6 +32,6 @@ class Product extends Model
         return $this->hasMany(Dismantling::class, 'product_id', 'id');
     }
     public function lotes(){
-        return $this->hasMany(Lot::class, 'product_id', 'id')->orderBy('due_date', 'ASC');
+        return $this->hasMany(Lot::class, 'product_id', 'id')->orderBy('due_date', 'ASC')->where('quantity', '>', 0);
     }
 }

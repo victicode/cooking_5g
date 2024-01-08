@@ -21,7 +21,7 @@
   import 'flatpickr/dist/flatpickr.min.css'
   import { Spanish } from "flatpickr/dist/l10n/es.js"
   
-  import { GET_PRODUCT_BY_ID, GET_PRODUCT_BY_SEARCH, STORE_PRODUCT, UPDATE_PRODUCT, ADD_STOCK, DELETE_PRODUCT} from "@/core/services/store/product.module";
+  import { GET_PRODUCT_BY_ID, GET_PRODUCT_BY_SEARCH, STORE_PRODUCT, UPDATE_PRODUCT, ADD_STOCK, DELETE_PRODUCT, GET_LAST_LOTE} from "@/core/services/store/product.module";
   import { func } from '@/core/services/utils/utils.js'
 
 </script>
@@ -101,7 +101,7 @@
                             />
                           </div>
                         </VCol>
-                        <VCol cols="12" md="8" class="mt-0 pt-0">
+                        <VCol cols="12" md="8" class="mt-0 pt-0 mb-4">
 
                           <VCardItem class="px-1">
                             <VCardTitle>{{ selectedProduct.title }}</VCardTitle>
@@ -113,19 +113,34 @@
                           <div class="mt-0" style="border-top: 1px solid rgba(119, 119, 119, 0.356)">
 
                             <VCardText class="text-subtitle-1 py-4 px-1">
-                              <span class="font-weight-medium">Número Lote:</span> <span class="font-weight-bold">{{ selectedProduct.lotes[0].lote_code}}</span>
+                              <span class="font-weight-medium">Número Lote:</span> <span class="font-weight-bold">
+                                {{ 
+                                    selectedProduct.lotes[0]
+                                      ? selectedProduct.lotes[0].lote_code
+                                      : '-----'
+                                }}</span>
                             </VCardText>
                             <VCardText class="text-subtitle-1 pt-0 px-1 d-block">
                               <div class="font-weight-medium mb-0">Fecha de vencimiento proxima:</div>
                               <div class="font-weight-bold mt-2">
-                                <v-chip class=" bg-success">
-                                  {{ moment(selectedProduct.lotes[0].due_date).format('DD-MM-YYYY') }}
+                                <v-chip :class=" Math.round(moment.duration(moment(selectedProduct.due_date).diff(new moment())).as('days') ) > 30 ? 'bg-success' : 'bg-warning'">
+                                 {{
+                                    selectedProduct.lotes[0]
+                                      ? moment(selectedProduct.due_date).format('DD-MM-YYYY') 
+                                      : '-----'
+                                  }}
                                 </v-chip>
                               </div>
                             </VCardText>
 
                             <VCardText class="text-subtitle-1 py-0 px-1">
-                              <span class="font-weight-medium">Stock actual:</span> <span class="font-weight-bold">{{func.numberFormat(selectedProduct.stock)}} {{selectedProduct.type_of_unit }}</span>
+                              <span class="font-weight-medium">Stock actual:</span> 
+                              <span class="font-weight-bold" v-if="selectedProduct.stock > 0">
+                                {{func.numberFormat(selectedProduct.stock)}} {{selectedProduct.type_of_unit }}
+                              </span>
+                              <span class="font-weight-bold text-error" v-else>
+                                SIN STOCK
+                              </span>
                             </VCardText>
                             
                           </div>
@@ -655,7 +670,7 @@
                                             name="new_product_title"
                                             autocomplete="off"
                                             v-model="newProduct.title"
-                                            @change="formatLoteName()"
+                                            @change="formatLoteName($event)"
                                           />
                                       </VCol>
                                       <VCol cols="12" md="6" class="form-group">
@@ -1156,7 +1171,7 @@ thead > tr > th:nth-child(n+2){
             this.selectProduct(event.target.dataset.id).finally((data)=>{
               setTimeout(() => {
                 this.showModal('addStockProduct')
-                this.formatLoteName()
+                this.formatLoteName(this.$event)
                 this.initDueDate('dueDateAddStock')
               }, 800);
             })
@@ -1342,8 +1357,8 @@ thead > tr > th:nth-child(n+2){
       hideModal(){
         this.modal.hide()
         this.destroyFormVal();
-        this.resetStockForm();
         this.resetNewProductForm()
+        this.resetStockForm();
       },
       resetStockForm(){
         
@@ -1477,7 +1492,7 @@ thead > tr > th:nth-child(n+2){
           })
           .catch((err) => {
             console.log(err)
-            this.hideModal()
+            // this.hideModal()
             this.showSnackbar('error', err )
             this.readyButton('add_stock_form_button')
           })
@@ -1825,12 +1840,13 @@ thead > tr > th:nth-child(n+2){
         this.stockOperation.lot = selectedLote.id ? selectedLote.id : this.stockOperation.lot;
 
       },
-      formatLoteName(){
-        let isLongWord = this.selectedProduct.lotes 
+      formatLoteName(e){
+        
+        let isLongWord = !e
         ? this.selectedProduct.title.split(" ")
         : this.newProduct.title.split(" ")
 
-        let index = this.selectedProduct.lotes 
+        let index = !e
           ? this.selectedProduct.lotes.length + 1
           : 1;
 
@@ -1843,7 +1859,7 @@ thead > tr > th:nth-child(n+2){
         let loteNumber = '000000'.slice( 0, 6 - index.toString().length ) + index;
 
         
-        if(this.selectedProduct.lotes){
+        if(!e){
           this.stockOperation.lot = loteTitle +'-'+ loteNumber;
           console.log(this.stockOperation.lot)
           return
@@ -1853,6 +1869,12 @@ thead > tr > th:nth-child(n+2){
         console.log(this.newProduct.init_lote)
         return
         
+      },
+      getLastLoteNumber(){
+        let id = this.selectedProduct ? this.selectedProduct.id : 9
+       let tulio =  this.$store.dispatch(GET_LAST_LOTE, id )
+          
+       console.log(tulio)
       }
     },
     computed: {
@@ -1861,6 +1883,7 @@ thead > tr > th:nth-child(n+2){
       },
     },
     mounted(){
+      this.getLastLoteNumber()
       this.initOptionsTable()
       this.table = new DataTablesCore('#data-table', this.tableData)
       this.bootstrapOptions();
