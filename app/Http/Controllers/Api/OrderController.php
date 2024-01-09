@@ -63,7 +63,7 @@ class OrderController extends Controller
     public function getOrderById($id) {
         
 
-        $order = Order::withCount('products')->with(['user', 'products'])->find($id);
+        $order = Order::withCount('products')->with(['user', 'products', 'client'])->find($id);
         $order->getStatusLabelAttribute();
         return $this->returnSuccess(200, $order );
     }

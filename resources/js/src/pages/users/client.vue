@@ -247,7 +247,7 @@
                         </div>
                       </VCol>
                     </VRow>
-                    <div v-if="selectedUser.orders.length > 0">
+                    <div v-if="selectedUser.orders.length > 0" class="w-100">
                       <UserOrdersTables :orders="selectedUser.orders" />
                     </div>
                     <div v-else class="w-100 my-4">
@@ -613,17 +613,18 @@ thead > tr > th.options{
                     <button type="button dropup" data-bs-toggle="dropdown" aria-expanded="false">
                       <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="button" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default v-icon--clickable iconify iconify--mdi" aria-haspopup="menu" aria-expanded="false" aria-owns="v-menu-46" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z"></path></svg>
                     </button>
-                      <span  data-id="${row.id}" class="edit mx-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editar usuario">
+                    <div class="d-flex justify-center dropdown-menu animate__animated animate__rubberBand">
+                      <span  data-id="${row.id}" class="edit mx-4" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editar usuario">
                         <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                           <path data-id="${row.id}" fill="currentColor" d="M21 12a1 1 0 0 0-1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h6a1 1 0 0 0 0-2H5a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-6a1 1 0 0 0-1-1m-15 .76V17a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .71-.29l6.92-6.93L21.71 8a1 1 0 0 0 0-1.42l-4.24-4.29a1 1 0 0 0-1.42 0l-2.82 2.83l-6.94 6.93a1 1 0 0 0-.29.71m10.76-8.35l2.83 2.83l-1.42 1.42l-2.83-2.83ZM8 13.17l5.93-5.93l2.83 2.83L10.83 16H8Z"/></svg>
                       </span>
-                      <span data-id="${row.id}" data-bs-toggle="tooltip" data-id="${row.id}" class="orders mx-2" data-bs-placement="top" data-bs-title="Ver ordenes">
+                      <span data-id="${row.id}" data-bs-toggle="tooltip" data-id="${row.id}" class="orders mx-4" data-bs-placement="top" data-bs-title="Ver ordenes">
                         <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48">
                           <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="4">
                             <rect data-id="${row.id}" width="30" height="36" x="9" y="8" rx="2"/>
                             <path data-id="${row.id}" stroke-linecap="round" d="M18 4v6m12-6v6m-14 9h16m-16 8h12m-12 8h8"/></g></svg>
                       </span>
-                      <span  data-id="${row.id}" class="delete mx-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Eliminar chef">
+                      <span  data-id="${row.id}" class="delete mx-4" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Eliminar chef">
                         <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                           <path data-id="${row.id}" fill="currentColor" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4zm2 2h6V4H9zM6.074 8l.857 12H17.07l.857-12zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1"/></svg>
                       </span>

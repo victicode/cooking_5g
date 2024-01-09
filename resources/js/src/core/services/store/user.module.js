@@ -80,7 +80,7 @@ const actions = {
                 ApiService.setHeader();
                 ApiService.post("api/user", body)
                     .then(( { data } ) => {
-                        console.log(data)
+                        // console.log(data)
                         resolve(data.data);
  
                     })
@@ -91,7 +91,6 @@ const actions = {
         });
     },
     [UPDATE_USER](context, body) {
-        console.log(body)
         return new Promise((resolve, reject) => {
             if (JwtService.getToken()) {
                 ApiService.setHeader();

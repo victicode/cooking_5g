@@ -70,7 +70,7 @@ const actions = {
           ApiService.setHeader();
           ApiService.post("api/products/"+body.id, body.data)
           .then(( { data } ) => {
-              console.log(data)
+              // console.log(data)
               resolve(data);
               
           })
@@ -87,7 +87,7 @@ const actions = {
           ApiService.setHeader();
           ApiService.post("api/products/add-stock/"+body.id, body.data)
           .then(( { data } ) => {
-              console.log(data)
+              // console.log(data)
               resolve(data);
               
           })
@@ -99,13 +99,13 @@ const actions = {
       });
     },
     [GET_LAST_LOTE](context, id) {
-      console.log(id)
+      // console.log(id)
       return new Promise((resolve, reject) => {
         if (JwtService.getToken()) {
           ApiService.setHeader();
           ApiService.get("api/products/get-last-lote/"+id)
           .then(( { data } ) => {
-            console.log(data)
+            // console.log(data)
               resolve(data);
               
           })
@@ -122,7 +122,7 @@ const actions = {
           ApiService.setHeader();
           ApiService.delete("api/products/"+ id)
           .then(( { data } ) => {
-              console.log(data)
+              // console.log(data)
               resolve(data);
               
           })

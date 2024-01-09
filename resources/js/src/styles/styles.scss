@@ -2,9 +2,17 @@
 @media only screen and (max-width: 600px){
   /* … */
   .v-table > .v-table__wrapper > table > tbody > tr > td{
-    padding: 15px 20px!important;
+    padding: 15px !important;
+    padding-right: 8px !important;
+    padding-left: 8px !important;
     border-bottom: 1px solid rgba(153, 153, 153, 0.61)!important;
 
+  }
+  .v-table th{
+    width: 25%;
+  }
+  .table-b{
+    width: 600px!important;
   }
   .dtr-details{
     width: 100%!important;

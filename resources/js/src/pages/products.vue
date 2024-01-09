@@ -61,7 +61,7 @@
           </VCol>
         </VRow>
         <div class="card-datatable table-responsive">
-          <table class="datatables-basic table" id="data-table">
+          <table class="max-width-700 datatables-basic table" id="data-table">
           </table>
         </div>
       </VCard>
@@ -387,7 +387,7 @@
                     <VCardItem class="w-100  py-md-6  py-4 text-center">
                       <VCardTitle class="text-2xl font-weight-bold">
                         <div class="card-title ">
-                          <div class="form-title__part1 mx-4">
+                          <div class="form-title__part1 mx-4" style="text-wrap:wrap">
                               {{ selectedProduct.title }}
                           </div>
                           <div class="d-flex mt-4 justify-center w-100 flex-wrap">
@@ -400,7 +400,7 @@
   
                               </span>
                             </div>
-                            <div class="form-title__part1 mx-4 d-flex align-center justify-center" >
+                            <div class="form-title__part1 mx-4 mt-2 mt-md-0 d-flex align-center justify-center" >
                               Stock nuevo:
                               <span class=" ms-2" v-if="!isNaN(selectedProduct.newStock) ">
                                 <v-chip :class="selectedProduct.newStock < 1 ? 'bg-error' : selectedProduct.newStock >= 30 ? 'bg-success' : 'bg-warning'">
@@ -904,9 +904,25 @@ thead > tr > th:nth-child(n+2){
 .v-stepper-window-item{
   padding: 5px;
 }
+.dataTables_scrollBody{
+  overflow: hidden!important;
+}
 @media screen and (max-width: 780px){
-  thead > tr > th {
+  .dataTables_scrollHeadInner{
+    width: 500px!important;
+  }
+  .max-width-700{
+    width: 500px!important;
+    margin-top: 30px!important;
+  }
+  thead > tr > th.title-th{
+    width: 25%!important;
+  }
+  thead > tr > th:nth-child(n+2) {
       width: 25%!important;
+  }
+  .dataTables_scrollBody{
+    overflow: auto!important;
   }
 }
 </style>
@@ -968,6 +984,7 @@ thead > tr > th:nth-child(n+2){
             xhr.setRequestHeader("Authorization","Bearer" + window.localStorage.getItem('id_token'))
           },
         },
+        scrollX: true,
         dataType:'json',
         processing: true,
         serverSide: true,
@@ -980,14 +997,14 @@ thead > tr > th:nth-child(n+2){
         ],
         columns: [
           { 
-            title: '<div class="d-none d-md-block">Nombre del producto</div><div class="d-md-none d-block">Prodcuto</div>', class:'text-start title-th',
+            title: '<div class="d-none d-md-block">Nombre del producto</div><div class="d-md-none d-block">Producto</div>', class:'text-start title-th',
             render: ( data, type, row, meta ) =>{ 
                 return `${row.title}`
               }   
           },
           {
             title:' <div class="d-none d-md-block">Proxima fecha venc.</div><div class="d-md-none d-block">Fecha venc</div>',
-            class:'text-center pe-5',
+            class:'text-center ',
             render: (data, type, row, meta) =>{
               let today = new moment();
               let product_due_date = moment(row.due_date);
@@ -1005,7 +1022,7 @@ thead > tr > th:nth-child(n+2){
           },
           { 
             title: 'Stock',
-            class:'text-center px-md-5  px-0 ',
+            class:'text-center ',
             render: ( data, type, row, meta ) =>{ 
               return `
               <span 
@@ -1019,7 +1036,7 @@ thead > tr > th:nth-child(n+2){
 
           },
           { 
-            title: '<span class="d-none d-md-block">Acciones</span> <span class="d-block d-md-none"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="#8c8c8c" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 4H7.2c-1.12 0-1.68 0-2.108.218a1.999 1.999 0 0 0-.874.874C4 5.52 4 6.08 4 7.2v9.6c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874c.427.218.987.218 2.105.218h9.606c1.118 0 1.677 0 2.104-.218c.377-.192.683-.498.875-.874c.218-.428.218-.987.218-2.105V14m-4-9l-6 6v3h3l6-6m-3-3l3-3l3 3l-3 3m-3-3l3 3"/></svg></span>',
+            title: '<span class="d-none d-md-block">Acciones</span> <span class="d-flex d-md-none justify-center "><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="#8c8c8c" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 4H7.2c-1.12 0-1.68 0-2.108.218a1.999 1.999 0 0 0-.874.874C4 5.52 4 6.08 4 7.2v9.6c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874c.427.218.987.218 2.105.218h9.606c1.118 0 1.677 0 2.104-.218c.377-.192.683-.498.875-.874c.218-.428.218-.987.218-2.105V14m-4-9l-6 6v3h3l6-6m-3-3l3-3l3 3l-3 3m-3-3l3 3"/></svg></span>',
             orderable: false, 
             searchable: false, 
             class:'text-center',
@@ -1366,7 +1383,7 @@ thead > tr > th:nth-child(n+2){
         try {
           this.inputDate['dueDateAddStock'].clear();
         } catch (error) {
-          console.log(error)
+          // console.log(error)
         }
         this.stockOperation = {
           type:1,
@@ -1396,7 +1413,7 @@ thead > tr > th:nth-child(n+2){
         try {
           this.inputDate['dueDateNewProduct'].clear();
         } catch (error) {
-          console.log(error)
+          // console.log(error)
         }
       },
       nextStep(){
@@ -1814,7 +1831,7 @@ thead > tr > th:nth-child(n+2){
         try {
           this.forms[id].removeField(quantityInput.name)
         } catch (error) {
-          console.log('no hay validación activa')
+          // console.log('no hay validación activa')
         }
         
       },
@@ -1830,10 +1847,13 @@ thead > tr > th:nth-child(n+2){
         });
       },
       clearDateAndLot(){
+        if(this.stockOperation.type == 1) { this.getLastLoteNumber(); this.inputDate['dueDateAddStock'].clear() }
+        if(this.stockOperation.type !== 1) this.inputDate['dueDateAddStock'].setDate(moment().format('DD-MM-YYYY'),true);
+
         this.stockOperation.lot  = ''
-        this.stockOperation.due_date = this.stockOperation.type==1 ?'':moment().format('DD-MM-YYYY')
+        this.stockOperation.due_date = this.stockOperation.type== 1  ? '': moment().format('DD-MM-YYYY')
         this.$refs.stock_due_date.value = moment().format('DD-MM-YYYY')
-        this.inputDate['dueDateAddStock'].setDate(moment().format('DD-MM-YYYY'),true);
+
       },
       selectLote(e){
         const selectedLote = this.selectedProduct.lotes.filter((lot) => lot.id === e)[0]
@@ -1861,12 +1881,12 @@ thead > tr > th:nth-child(n+2){
         
         if(!e){
           this.stockOperation.lot = loteTitle +'-'+ loteNumber;
-          console.log(this.stockOperation.lot)
+          // console.log(this.stockOperation.lot)
           return
 
         }
         this.newProduct.init_lote =  loteTitle +'-'+ loteNumber;
-        console.log(this.newProduct.init_lote)
+        // console.log(this.newProduct.init_lote)
         return
         
       },

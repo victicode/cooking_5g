@@ -90,7 +90,9 @@ class ProductController extends Controller
         $formatLote = $this->formatInputLot($request);
         $lote = $this->addLote($product->id, $formatLote);
         
-        $this->setMostEarlyDueDate($product, $lote->due_date);
+        $product->due_date = $lote->due_date;
+        $product->save();
+
         return $this->returnSuccess(200, $product);
 
     }
@@ -137,7 +139,7 @@ class ProductController extends Controller
         $product = Product::find($id);
         if(!$product) return $this->returnFail(400, 'Producto no encontrado');
 
-        if($request->type == 1){ $lote = $this->addLote($id, $request); $this->setMostEarlyDueDate($product, $lote->due_date);}  
+        if($request->type == 1){ $lote = $this->addLote($id, $request); $this->setMostEarlyDueDate($product, $lote, 'add');}  
         if($request->type == 2){ $lote = $this->reduceLote($id, $request); $this->setMostEarlyDueDate($product, $lote, 'reduce');} 
 
         try {
@@ -266,25 +268,22 @@ class ProductController extends Controller
             
         
     } 
-    private function setMostEarlyDueDate(Product $product, $due_date, $type = "add" ){
+    private function setMostEarlyDueDate(Product $product, $lote, $type ){
         
-
-        if(!$product->due_date){
-            $product->due_date = $due_date;
-            $product->save();
-            return;
-        }
         if($type == 'reduce'){
-            $product->due_date = $due_date->quantity == 0
+            $product->due_date = $lote->quantity == 0
             ? Lot::where('quantity','>','0')->where('product_id', $product->id)->first()->due_date
-            : $due_date->due_date;
+            : $product->due_date;
             $product->save();
             return;
         }
 
-        $product->due_date = strtotime($product->due_date) < strtotime($due_date)
+        $currentLote = Lot::where('due_date',$product->due_date)->where('product_id', $product->id)->first();
+
+        
+        $product->due_date = strtotime($product->due_date) < strtotime($lote->due_date) && $currentLote->quantity > 0
             ? $product->due_date
-            : $due_date;
+            : $lote->due_date;
             
         $product->save();
 

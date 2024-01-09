@@ -168,7 +168,7 @@
                       
                       </VCol>
                     </VRow>
-                    <div>
+                    <div class="w-100">
                       <OrderProductsTables :products="selectedOrder.products" />
                     </div>
                     <VDivider  />
@@ -927,9 +927,13 @@
           .dispatch(GET_ORDER_BY_ID, idAccount)
           .then((response) => {
             this.selectedOrder = Object.assign({}, response.data);
-            return new Promise((resolve) => {
-                resolve(response.data);
-            });
+            // console.log(this.selectedOrder)
+            setTimeout(() => {
+              
+              return new Promise((resolve) => {
+                  resolve(response.data);
+              });
+            }, 1000);
           })
           .catch((err) => {
             console.log(err)
@@ -1125,10 +1129,8 @@
         setTimeout(() => {
             this.addValidate(this.newOrder.products[index].maxValue)
           }, 200);
-        console.log(e)
       },
       searchProductsForOrder(e, index){ 
-        console.log(e)
         debounce(this.getProducts, 200)(e.target.value, index)
       },
       clearProductSearch(index){
@@ -1138,6 +1140,10 @@
         this.getProducts('',index)
       },
       selectedProduct(e,index){
+        if(this.productsForOrder[index].filter(product => product.id == e)[0].stock == 0 ){
+          alert('Esta producto no tiene Stock')
+          return
+        }
         try {
           this.newOrder.products[index].id = e
           this.newOrder.products[index].lotes = this.productsForOrder[index].filter(product => product.id == e)[0].lotes
