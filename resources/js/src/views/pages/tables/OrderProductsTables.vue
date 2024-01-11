@@ -57,7 +57,13 @@ const as = window
 <style>
 @media only screen and (max-width: 600px){
   
-
+  .table-b{
+    width: 600px !important;
+    max-width: max-content!important;
+  }
+  .overflow-x-table{
+    overflow-x: scroll;
+  }
   .v-menu > .v-overlay__content > .v-list{
     overflow: visible;
     box-shadow: 0 5px 5px -3px rgb(63 63 63 / 24%), 0 8px 10px 1px var(--v-shadow-key-penumbra-opacity), 0 3px 14px 2px var(--v-shadow-key-ambient-opacity);

@@ -24,9 +24,6 @@ const as = window
             Track ID
           </th>
           <th style="text-align: center;">
-           Estado
-          </th>
-          <th style="width:115px; text-align: center;">
             Cantidad de productos
           </th>
           
@@ -39,7 +36,7 @@ const as = window
           :key="order.id"
         >
           <td class="text-start"> 
-            <a class="blank-modal" @click="showOrderModal(order.id)" rel="noopener noreferrer">
+            <a href="http://" target="_blank" rel="noopener noreferrer">
 
               #{{  orderNumberFormat(order.id) }}
             </a>
@@ -49,11 +46,6 @@ const as = window
           </td>
           <td class="text-center">
             {{  order.trancker }}
-          </td>
-          <td class="text-start  d-flex justify-center"> 
-            <v-chip :class="{'bg-error': order.status == 0, 'bg-warning': order.status == 1, 'bg-secondary': order.status == 2, 'bg-success': order.status == 3, }">
-              {{ order.status_label.status }}
-            </v-chip>
           </td>
           <td class="text-center">
             {{ order.products.length }}
@@ -68,13 +60,8 @@ const as = window
   .overflow-x-table{
     overflow: hidden;
   }
-  .blank-modal{
-    text-decoration: underline;
-    font-weight: bolder;
-    cursor: pointer;
-  }
-@media only screen and (max-width: 600px){
   
+@media only screen and (max-width: 600px){
   .table-b{
     width: 600px !important;
     max-width: max-content!important;
@@ -99,12 +86,6 @@ const as = window
       orderNumberFormat(id){
         return '0000000'.slice( 0, 6 - id.toString().length ) + id 
       },
-      showOrderModal(id){
-        console.log(this.orders)
-        console.log(id)
-        const order = this.orders.filter((order)=> order.id == id )
-        this.$emit('selectedOrder', order[0])
-      }
     },
 
     

@@ -103,7 +103,7 @@ class UserController extends Controller
         return $this->returnSuccess(200, ['id' => $userId, 'deleted_at' => $user->deleted_at]);
     }
     public function getUserById($userId){
-        $user = User::with('rol', 'orders')->find($userId);
+        $user = User::with('rol', 'orders.client')->find($userId);
  
          return $this->returnSuccess(200, $user);
      }

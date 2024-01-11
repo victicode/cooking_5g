@@ -12,7 +12,7 @@
   import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
 
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue';
-  import OrderProductsTables from '@/views/pages/tables/OrderProductsTables.vue';
+  import viewOrderModal from '@/views/pages/modals/viewOrderModal.vue';
   import * as bootstrap from 'bootstrap';
   import debounce from 'debounce';
 
@@ -92,105 +92,7 @@
       </VCard>
     </VCol>
     <div v-if="Object.keys(selectedOrder).length > 2">
-      <div class="modal animate__animated animate__fadeInDown" id="viewOrder" tabindex="-1" aria-labelledby="viewOrderLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl mt-10" >
-          <div class="modal-content">
-            <VCol
-              cols="12"
-              class="pa-0 d-flex justify-center"
-              style="position: relative;"
-            >
-            
-              <VCol
-                cols="12"
-              >
-                <VCard class="modal__content">
-                  <div class="modal__close-button" >
-                    <v-col  class="pa-0 pe-4">
-                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
-                    </v-col>
-                  </div>
-                  <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column pa-2 pa-md-5 ">
-                    <VRow  class="mb-2 ma-0">
-                      <VCol
-                        cols="12"
-                        md="6"
-                        class="py-0"
-                      >
-                        <div class="my-md-4 my-2 text-center text-md-start">
-                          <h2>Orden de productos</h2>
-                          <h3 class="mt-2">
-                            <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
-                              {{ selectedOrder.status_label.status }}
-                            </v-chip>
-
-                          </h3>
-                        </div>
-                        <div class="my-3 my-md-0  d-block d-md-none text-center text-md-end ">
-                          <h4 class="font-400">
-                            Orden N°: 
-                            <b>
-                              {{ orderNumberFormat(selectedOrder.id) }}
-                            </b> 
-                          </h4>
-                        </div>
-                        <div >
-                          <div class="my-2  text-start">
-                            Solicitante: {{ selectedOrder.client.name.toUpperCase() }}
-                          </div>
-                          <div class="my-2 text-start">
-                            Dirección de destino: {{ selectedOrder.other_address }}
-                          </div>
-                        </div>
-                      
-                      </VCol>
-                      <VCol
-                        cols="12"
-                        md="6"
-                        class="py-0"
-                      >
-                        <div class="my-md-4 my-0  d-none d-md-block text-center text-md-end ">
-                          <h4 class="font-400">
-                            Orden N°: 
-                            <b>
-                              {{ orderNumberFormat(selectedOrder.id) }}
-                            </b> 
-                          </h4>
-                        </div>
-                        <div >
-                          <div class="my-2  text-start text-md-end">
-                            Fecha de pedio: {{ moment(selectedOrder.created_at).format('DD/MM/YYYY HH:mm:ss') }}
-                          </div>
-                          <div class="my-2  text-start text-md-end">
-                            Tracker ID: {{ selectedOrder.trancker }}
-                          </div>
-                        </div>
-                      
-                      </VCol>
-                    </VRow>
-                    <div class="w-100">
-                      <OrderProductsTables :products="selectedOrder.products" />
-                    </div>
-                    <VDivider  />
-                    <div class="mt-5 w-100 d-flex  justify-center">
-                      <VCardActions class=" justify-center w-75">
-                        <VBtn
-                          color="white"
-                          class="bg-secondary text-white w-50"
-                          @click="hideModal()"
-                        >
-                          <VIcon icon="mingcute:close-fill" />
-                          <span class="ms-2">Cerrar</span>
-                        </VBtn>
-                      </VCardActions>
-                    </div>
-                  </div>
-                </VCard>
-              </VCol>
-            </VCol>
-          </div>
-        </div>
-      </div>
+      <viewOrderModal :order="selectedOrder"  @click="hideModal()" />
       <div class="modal animate__animated animate__fadeInDown" id="changeStatusOrder" tabindex="-1" aria-labelledby="changeStatusOrderLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl mt-10" >
           <div class="modal-content">
@@ -508,7 +410,7 @@
                                 </v-tooltip>
                             </VCol>
                             <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
-                              <VRow  v-for="(item,index) in newOrder.products"  v-bind:key="item.id" class="pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'new_order_product_'+index">
+                              <VRow  v-for="(item,index) in newOrder.products"  v-bind:key="item.id" class=" position-relative relative pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'new_order_product_'+index">
                                 <VCol cols="12"  md="5" class="form-group pb-md-0  mb-md-1">
                                   <v-autocomplete
                                     :model-value="item.id"
@@ -554,8 +456,8 @@
                                     v-model="item.quantity"
                                   />
                                 </VCol>
-                                <VCol cols="2" md="1" class="form-group pa-0 mb-md-5">
-                                  <v-tooltip text="Eliminar despiece">
+                                <VCol cols="2" md="1" class="form-group pa-0 mb-md-5 d-none d-md-block ">
+                                  <v-tooltip text="Quitar producto">
                                     <template v-slot:activator="{ props }">
                                       <v-col cols="auto" class="pa-0">
                                         <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeProductInput(index)"></v-btn>
@@ -563,6 +465,15 @@
                                     </template>
                                   </v-tooltip>
                                 </VCol> 
+                                <div class="form-group pa-0 mb-md-5 d-md-none d-md-none small-delete-product-button ">
+                                  <v-tooltip text="Quitar producto">
+                                    <template v-slot:activator="{ props }">
+                                      <v-col cols="auto" class="pa-0">
+                                        <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeProductInput(index)"></v-btn>
+                                      </v-col>
+                                    </template>
+                                  </v-tooltip>
+                                </div>
                               </VRow>
                             </div>
                       </VRow>
@@ -610,7 +521,11 @@
     position: absolute;
   }
   @media screen and (max-width: 780px){
-
+    .small-delete-product-button{
+      position: absolute;
+      top: -10px;
+      right: -10px;
+    }
     thead > tr > th:last-child{
       width: 10%!important;
     }
@@ -1063,6 +978,8 @@
         formData.append('address', this.newOrder.userAddress);
         formData.append('products', JSON.stringify(this.newOrder.products));
 
+
+        console.log(this.newOrder)
         this.$store
           .dispatch(CREATE_ORDER, formData)
           .then((response) => {

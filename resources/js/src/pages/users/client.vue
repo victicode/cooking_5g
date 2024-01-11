@@ -17,6 +17,7 @@
   import debounce from 'debounce';
   import * as bootstrap from 'bootstrap'
   import { GET_USER_BY_ID, CREATE_USER, DELETE_USER, UPDATE_USER } from "@/core/services/store/user.module";
+  import viewOrderModal from '@/views/pages/modals/viewOrderModal.vue';
 
 </script>
 
@@ -56,7 +57,7 @@
           </VCol>
         </VRow>
         <div class="card-datatable table-responsive">
-          <table class="datatables-basic table" id="data-table">
+          <table class="datatables-basic table display" id="data-table">
           </table>
         </div>
       </VCard>
@@ -248,9 +249,9 @@
                       </VCol>
                     </VRow>
                     <div v-if="selectedUser.orders.length > 0" class="w-100">
-                      <UserOrdersTables :orders="selectedUser.orders" />
+                      <UserOrdersTables :orders="selectedUser.orders" @selectedOrder="selectedOrder"/>
                     </div>
-                    <div v-else class="w-100 my-4">
+                    <div v-else class="w-100 my-8">
                       <div class="text-center">
                         <h2> Este usuario no ha realizado ordenes</h2>
                       </div>
@@ -275,105 +276,7 @@
           </div>
         </div>
       </div>
-      <!-- <div class="modal animate__animated animate__fadeInDown" id="OrdersUser" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg mt-10" >
-          <div class="modal-content">
-            <VCol
-              cols="12"
-              class="pa-0 d-flex justify-center"
-              style="position: relative;"
-            >
-            
-              <VCol
-                cols="12"
-              >
-                <VCard class="modal__content">
-                  <div class="modal__close-button" >
-                    <v-col  class="pa-0 pe-4">
-                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
-                    </v-col>
-                  </div>
-                  <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column pa-2 pa-md-5 ">
-                    <VRow  class="mb-2 ma-0">
-                      <VCol
-                        cols="12"
-                        md="6"
-                        class="py-0"
-                      >
-                        <div class="my-md-4 my-2 text-center text-md-start">
-                          <h2>Orden de productos</h2>
-                          <h3 class="mt-2">
-                            <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
-                              {{ selectedOrder.status_label.status }}
-                            </v-chip>
-
-                          </h3>
-                        </div>
-                        <div class="my-3 my-md-0  d-block d-md-none text-center text-md-end ">
-                          <h4 class="font-400">
-                            Orden N°: 
-                            <b>
-                              {{ orderNumberFormat(selectedOrder.id) }}
-                            </b> 
-                          </h4>
-                        </div>
-                        <div >
-                          <div class="my-2  text-start">
-                            Solicitante: {{ selectedOrder.client.name.toUpperCase() }}
-                          </div>
-                          <div class="my-2 text-start">
-                            Dirección de destino: {{ selectedOrder.other_address }}
-                          </div>
-                        </div>
-                      
-                      </VCol>
-                      <VCol
-                        cols="12"
-                        md="6"
-                        class="py-0"
-                      >
-                        <div class="my-md-4 my-0  d-none d-md-block text-center text-md-end ">
-                          <h4 class="font-400">
-                            Orden N°: 
-                            <b>
-                              {{ orderNumberFormat(selectedOrder.id) }}
-                            </b> 
-                          </h4>
-                        </div>
-                        <div >
-                          <div class="my-2  text-start text-md-end">
-                            Fecha de pedio: {{ moment(selectedOrder.created_at).format('DD/MM/YYYY HH:mm:ss') }}
-                          </div>
-                          <div class="my-2  text-start text-md-end">
-                            Tracker ID: {{ selectedOrder.trancker }}
-                          </div>
-                        </div>
-                      
-                      </VCol>
-                    </VRow>
-                    <div>
-                      <OrderProductsTables :products="selectedOrder.products" />
-                    </div>
-                    <VDivider  />
-                    <div class="mt-5 w-100 d-flex  justify-center">
-                      <VCardActions class=" justify-center w-75">
-                        <VBtn
-                          color="white"
-                          class="bg-secondary text-white w-50"
-                          @click="hideModal()"
-                        >
-                          <VIcon icon="mingcute:close-fill" />
-                          <span class="ms-2">Cerrar</span>
-                        </VBtn>
-                      </VCardActions>
-                    </div>
-                  </div>
-                </VCard>
-              </VCol>
-            </VCol>
-          </div>
-        </div>
-      </div> -->
+      <viewOrderModal :order="selectedUser.selectedOrder" v-if="selectedUser.selectedOrder" @click="hideModal('back')"  />
     </div>
     <div class="modal animate__animated animate__fadeInDown"  id="createNewUser" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg mt-10" >
@@ -496,15 +399,36 @@
 table.dataTable tbody th, table.dataTable tbody td{
   padding: 15px 10px!important;
 }
-
-thead > tr > th.options{
-    width: 1%!important;
+.card-datatable > thead > tr > th.client_name{
+  width: 25%!important;
 }
+
 .fv-plugins-message-container{
   position: relative!important;
 }
 .header-content{
   border-bottom:  1px solid rgb(216, 216, 216);
+}
+@media screen and (max-width: 780px){
+  .card-datatable > thead > tr > th.options{
+    width: 1%!important;
+}
+  .dataTables_scrollHeadInner{
+    width: 500px!important;
+  }
+  .max-width-700{
+    width: 500px!important;
+    margin-top: 30px!important;
+  }
+  .card-datatable > thead > tr > th.client_name{
+    width: 80%!important;
+  }
+  .card-datatable > thead > tr > th:nth-child(n+2) {
+      width: 0%!important;
+  }
+  .dataTables_scrollBody{
+    overflow: auto!important;
+  }
 }
 </style>
 <script>
@@ -559,7 +483,8 @@ thead > tr > th.options{
           
           { 
             title: 'Nombre',  
-            class:'text-start date ',
+            responsivePriority: 0,
+            class:'text-start client_name ',
             render: ( data, type, row, meta ) =>{ 
               return row.name
               
@@ -567,6 +492,7 @@ thead > tr > th.options{
           },
           { 
             title: 'Email',
+            responsivePriority: 3,
             class:'text-justify ',
             orderable: false, 
             render: ( data, type, row, meta ) =>{ 
@@ -586,7 +512,7 @@ thead > tr > th.options{
             orderable: false, 
             searchable: false, 
             class:'text-center ',
-            responsivePriority: 0,
+            responsivePriority: 1,
             render: ( data, type, row, meta ) =>{ 
               let html = `
                 <div class="d-md-flex d-none justify-center ">
@@ -786,6 +712,12 @@ thead > tr > th.options{
       },
       hideModal(){
         this.modal.hide()
+        try {
+          this.forms['edit_user_form'].destroy()
+        } catch (error) {
+          
+        }
+        
       },
       createUser(){
         this.sendingButton('new_user_form_button')
@@ -825,7 +757,7 @@ thead > tr > th.options{
             this.hideModal()
             this.showSnackbar('success', 'Usuario creado con exito')
             this.readyButton('edit_user_form_button')
-            this.resetNewUserForm()
+            
           })
           .catch((err) => {
             console.log(err)
@@ -1067,6 +999,14 @@ thead > tr > th.options{
 
         });
       },
+      selectedOrder(order){
+        this.selectedUser.selectedOrder =  order
+
+        setTimeout(() => {
+          this.hideModal()
+          this.showModal('viewOrder')
+        }, 200);
+      }
         
     },
     mounted(){

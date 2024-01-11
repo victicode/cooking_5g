@@ -61,7 +61,7 @@
           </VCol>
         </VRow>
         <div class="card-datatable table-responsive">
-          <table class="max-width-700 datatables-basic table" id="data-table">
+          <table class="max-width-700 datatables-basic display table" id="data-table">
           </table>
         </div>
       </VCard>
@@ -881,10 +881,10 @@
   </VRow>
 </template>
 <style lang="scss">
- thead > tr > th.title-th{
+.card-datatable > thead > tr > th.title-th{
   width: 35%!important;
 }
-thead > tr > th:nth-child(n+2){
+.card-datatable > thead > tr > th:nth-child(n+2){
   width: 15%!important;
 }
 .v-messages__message{
@@ -907,6 +907,9 @@ thead > tr > th:nth-child(n+2){
 .dataTables_scrollBody{
   overflow: hidden!important;
 }
+.max-width-700{
+  width: 100%!important;
+}
 @media screen and (max-width: 780px){
   .dataTables_scrollHeadInner{
     width: 500px!important;
@@ -915,10 +918,10 @@ thead > tr > th:nth-child(n+2){
     width: 500px!important;
     margin-top: 30px!important;
   }
-  thead > tr > th.title-th{
+  .card-datatable > thead > tr > th.title-th{
     width: 25%!important;
   }
-  thead > tr > th:nth-child(n+2) {
+  .card-datatable > thead > tr > th:nth-child(n+2) {
       width: 25%!important;
   }
   .dataTables_scrollBody{
@@ -1906,8 +1909,6 @@ thead > tr > th:nth-child(n+2){
       },
     },
     mounted(){
-
-      
       this.initOptionsTable()
       this.table = new DataTablesCore('#data-table', this.tableData)
       this.bootstrapOptions();

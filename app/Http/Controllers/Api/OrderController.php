@@ -119,14 +119,19 @@ class OrderController extends Controller
 
 
         foreach ($products as $key) {
-            $product = Product::find($key['id']);
-            $product->stock = intval($product->stock) - intval($key['quantity']);
-            $product->save();
-
+            
             $lote = Lot::find($key['selected_lote']['id']);
             $lote->quantity = intval($lote->quantity) - intval($key['quantity']);
             $lote->save();
             
+            $product = Product::find($key['id']);
+            $product->stock = intval($product->stock) - intval($key['quantity']);
+            
+            $product->due_date = $lote->quantity == 0
+                ? Lot::where('quantity','>','0')->where('product_id', $product->id)->first()->due_date
+                : $product->due_date;
+
+                $product->save();
         }
 
     }
