@@ -1,4 +1,6 @@
 <script setup>
+  import moment from 'moment';
+
 const props = defineProps({
   products: Object,
 })
@@ -36,11 +38,12 @@ const as = window
           <td class="px-2">
             {{ product.title }}
           </td>
-          <td class="px-2">
+          <td class="px-2 blank-modal">
+            
             {{ product.lote.lote_code }}
           </td>
           <td class="text-center px-2">
-            {{ product.lote.due_date}}
+            {{ moment(product.lote.due_date).format('DD/MM/YYYY') }}
           </td>
           <td class="text-center px-2"> 
             {{  product.pivot.quantity }}

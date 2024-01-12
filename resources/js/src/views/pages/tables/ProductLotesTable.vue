@@ -35,7 +35,7 @@ const as = window
           v-for="order in orders"
           :key="order.id"
         >
-          <td class="text-start"> 
+          <td class="text-start px-8"> 
             <a href="http://" target="_blank" rel="noopener noreferrer">
 
               #{{  orderNumberFormat(order.id) }}

@@ -45,6 +45,42 @@ class ProductController extends Controller
         return DataTables::of($products)->toJson();
   
     }
+    public function getlotesOfProductsTable(Request $request){
+        // $products = Lot::with(['product.dismantling.products_pieces'])->join('products', 'products.id', '=', 'lotes.product_id')->where('quantity', '>', 0);
+        
+        
+        // if(strlen( request('order_due_date')) > 0)  $products->orderBy('due_date', request('order_due_date'));
+        // if(!empty(request('order_title')))  $products->orderBy('products.title', request('order_title'));
+
+        // if(!empty(request('order_stock')))  $products->orderBy('quantity', request('order_stock'));
+        
+        // if (!empty(request('filter_product_title'))) {
+        //     $products->where('products.title','like','%'.request('filter_product_title').'%');
+        // }
+    
+        // // return strlen( request('order_due_date'));
+        // return DataTables::of($products->get())->toJson();
+
+
+
+
+        $products = Lot::query()->with(['product.dismantling.products_pieces'])
+        ->where('quantity', '>', 0)->join('products', 'products.id', '=', 'lotes.product_id')
+        ->orderBy('products.title', request('order_title'));
+        
+        
+        if(!empty(request('order_due_date')))  $products->orderBy('due_date', request('order_due_date'));
+        // if(!empty(request('order_title')))  $products->orderBy('title', request('order_title'));
+
+        if(!empty(request('order_stock')))  $products->orderBy('quantity', request('order_stock'));
+        
+        if (!empty(request('filter_product_title'))) {
+            $products->where('products.title','like','%'.request('filter_product_title').'%');
+        }
+    
+        return DataTables::of($products)->toJson();
+  
+    }
     public function getProductsCriticalStock()
     {
         return $this->returnSuccess(200, Product::orderBy('stock', 'asc')->where('stock', '<', '20')->take(5)->get());

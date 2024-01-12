@@ -1,5 +1,6 @@
 <script setup>
 import moment from 'moment';
+import color from '../../../assets/plugins/formvalidation/src/js/validators/color';
 
 const props = defineProps({
   orders: Object,
@@ -38,7 +39,7 @@ const as = window
           v-for="order in orders"
           :key="order.id"
         >
-          <td class="text-start"> 
+          <td class="text-start px-0 px-md-4"> 
             <a class="blank-modal" @click="showOrderModal(order.id)" rel="noopener noreferrer">
 
               #{{  orderNumberFormat(order.id) }}
@@ -64,7 +65,7 @@ const as = window
   </div>
 </template>
 
-<style>
+<style lang="scss">
   .overflow-x-table{
     overflow: hidden;
   }
@@ -72,6 +73,9 @@ const as = window
     text-decoration: underline;
     font-weight: bolder;
     cursor: pointer;
+    &:hover{
+      color:peru
+    }
   }
 @media only screen and (max-width: 600px){
   

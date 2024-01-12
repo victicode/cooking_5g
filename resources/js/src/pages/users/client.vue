@@ -276,7 +276,7 @@
           </div>
         </div>
       </div>
-      <viewOrderModal :order="selectedUser.selectedOrder" v-if="selectedUser.selectedOrder" @click="hideModal('back')"  />
+      <viewOrderModal :order="selectedUser.selectedOrder" v-if="selectedUser.selectedOrder" @click="hideInternalModal()"  />
     </div>
     <div class="modal animate__animated animate__fadeInDown"  id="createNewUser" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg mt-10" >
@@ -436,6 +436,7 @@ table.dataTable tbody th, table.dataTable tbody td{
   export default {
     data: () => ({
       modal: '',
+      internalModal:'',
       isPasswordVisible: false,
       forms:[],
       snackShow:false,
@@ -708,6 +709,18 @@ table.dataTable tbody th, table.dataTable tbody td{
           keyboard: false,              
           backdrop:'static'
         })
+        this.modal.show()
+      },
+      showInternalModal(modal) {
+        this.internalModal = new bootstrap.Modal(document.getElementById(modal), {
+          keyboard: false,              
+          backdrop:'static'
+        })
+        this.internalModal.show()
+      },
+      hideInternalModal(modal) {
+        
+        this.internalModal.hide()
         this.modal.show()
       },
       hideModal(){
@@ -1004,7 +1017,7 @@ table.dataTable tbody th, table.dataTable tbody td{
 
         setTimeout(() => {
           this.hideModal()
-          this.showModal('viewOrder')
+          this.showInternalModal('viewOrder')
         }, 200);
       }
         
