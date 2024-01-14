@@ -110,7 +110,7 @@ class OrderController extends Controller
                 'order_id' => $order,
                 'product_id' => $key['id'],
                 'quantity'  => $key['quantity'],
-                'lote_id'   => $key['selected_lote']['id'],
+                'lote_id'   => $key['selected_lote']['id_lote'],
             ]);
         }
 
@@ -120,16 +120,16 @@ class OrderController extends Controller
 
         foreach ($products as $key) {
             
-            $lote = Lot::find($key['selected_lote']['id']);
+            $lote = Lot::find($key['selected_lote']['id_lote']);
             $lote->quantity = intval($lote->quantity) - intval($key['quantity']);
             $lote->save();
             
             $product = Product::find($key['id']);
             $product->stock = intval($product->stock) - intval($key['quantity']);
             
-            $product->due_date = $lote->quantity == 0
+            $product->due_date_most_evenly = $lote->quantity == 0
                 ? Lot::where('quantity','>','0')->where('product_id', $product->id)->first()->due_date
-                : $product->due_date;
+                : $product->due_date_most_evenly;
 
                 $product->save();
         }

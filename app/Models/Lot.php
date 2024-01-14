@@ -9,7 +9,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Lot extends Model
 {
     use HasFactory, SoftDeletes;
-
+    // use HasFactory;
+    const CREATED_AT = 'created_at_lote';
+    const UPDATED_AT = 'updated_at_lote';
+    const DELETED_AT = 'deleted_at_lote';
+    protected $primaryKey = 'id_lote';
     protected $table = "lotes";
     protected $fillable = [
         'product_id',

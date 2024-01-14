@@ -1010,7 +1010,7 @@
             class:'text-center ',
             render: (data, type, row, meta) =>{
               let today = new moment();
-              let product_due_date = moment(row.due_date);
+              let product_due_date = moment(row.due_date_most_evenly);
               let diff_due_date = Math.round(moment.duration(product_due_date.diff(today)).as('days'));
               return `
                 <span 
@@ -1018,7 +1018,7 @@
                   draggable="false"
                   >
                     <span class="v-chip__underlay"></span>
-                  <div class="v-chip__content">${moment(row.due_date).format('DD-MM-YYYY')} </div>
+                  <div class="v-chip__content">${moment(row.due_date_most_evenly).format('DD-MM-YYYY')} </div>
                 </span> 
               `
             }

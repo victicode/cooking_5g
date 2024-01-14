@@ -432,7 +432,7 @@
                                     @update:modelValue="selectedProduct($event, index)"
                                   ></v-autocomplete>
                                 </VCol>
-                                <VCol cols="6"  md="3" class="form-group pb-md-0 pt-1 mb-md-5">
+                                <VCol cols="12"  md="4" class="form-group pb-md-0  mb-md-1">
                                   <v-combobox  
                                     :items="item.lotes"
                                     item-title="lote_code"
@@ -442,7 +442,9 @@
                                     type="text"
                                     name="new_order_client"
                                     v-model="item.selected_lote"  
-                                    autocomplete="off"        
+                                    autocomplete="off"
+                                    persistent-hint
+                                    :hint="'Fecha venc: ' + (item.selected_lote.due_date ? moment(item.selected_lote.due_date).format('DD-MM-YYYY') : '----')"
                                     :auto-select-first="true"
                                     @update:modelValue="selectedLotes($event,index)"
                                   ></v-combobox >
@@ -456,7 +458,7 @@
                                     v-model="item.quantity"
                                   />
                                 </VCol>
-                                <VCol cols="2" md="1" class="form-group pa-0 mb-md-5 d-none d-md-block ">
+                                <!-- <VCol cols="2" md="1" class="form-group pa-0 mb-md-5 d-none d-md-block ">
                                   <v-tooltip text="Quitar producto">
                                     <template v-slot:activator="{ props }">
                                       <v-col cols="auto" class="pa-0">
@@ -464,8 +466,8 @@
                                       </v-col>
                                     </template>
                                   </v-tooltip>
-                                </VCol> 
-                                <div class="form-group pa-0 mb-md-5 d-md-none d-md-none small-delete-product-button ">
+                                </VCol>  -->
+                                <div class="form-group pa-0 mb-md-5  small-delete-product-button ">
                                   <v-tooltip text="Quitar producto">
                                     <template v-slot:activator="{ props }">
                                       <v-col cols="auto" class="pa-0">
@@ -520,6 +522,11 @@
   .fv-plugins-message-container{
     position: absolute;
   }
+  .small-delete-product-button{
+      position: absolute;
+      top: -10px;
+      right: -10px;
+    }
   @media screen and (max-width: 780px){
     .small-delete-product-button{
       position: absolute;
@@ -1057,6 +1064,8 @@
         this.getProducts('',index)
       },
       selectedProduct(e,index){
+        if(!this.productsForOrder[index].filter(product => product.id == e)[0].stock) return
+        
         if(this.productsForOrder[index].filter(product => product.id == e)[0].stock == 0 ){
           alert('Esta producto no tiene Stock')
           return
@@ -1068,7 +1077,7 @@
           setTimeout(() => {
             this.newOrder.products[index].selected_lote = this.newOrder.products[index].lotes[0]
             this.newOrder.products[index].maxValue = this.newOrder.products[index].lotes[0].quantity
-
+            // console.log( this.newOrder.products[index].selected_lote )
             this.addValidate(this.newOrder.products[index].maxValue)
 
           }, 200);

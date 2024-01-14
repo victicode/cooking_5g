@@ -46,27 +46,11 @@ class ProductController extends Controller
   
     }
     public function getlotesOfProductsTable(Request $request){
-        // $products = Lot::with(['product.dismantling.products_pieces'])->join('products', 'products.id', '=', 'lotes.product_id')->where('quantity', '>', 0);
-        
-        
-        // if(strlen( request('order_due_date')) > 0)  $products->orderBy('due_date', request('order_due_date'));
-        // if(!empty(request('order_title')))  $products->orderBy('products.title', request('order_title'));
-
-        // if(!empty(request('order_stock')))  $products->orderBy('quantity', request('order_stock'));
-        
-        // if (!empty(request('filter_product_title'))) {
-        //     $products->where('products.title','like','%'.request('filter_product_title').'%');
-        // }
-    
-        // // return strlen( request('order_due_date'));
-        // return DataTables::of($products->get())->toJson();
-
-
-
-
         $products = Lot::query()->with(['product.dismantling.products_pieces'])
-        ->where('quantity', '>', 0)->join('products', 'products.id', '=', 'lotes.product_id')
-        ->orderBy('products.title', request('order_title'));
+        ->where('quantity', '>', 0)->join('products', 'products.id', '=', 'lotes.product_id');
+
+        
+        if(!empty(request('order_title')))  $products->orderBy('products.title', request('order_title'));
         
         
         if(!empty(request('order_due_date')))  $products->orderBy('due_date', request('order_due_date'));
@@ -126,7 +110,7 @@ class ProductController extends Controller
         $formatLote = $this->formatInputLot($request);
         $lote = $this->addLote($product->id, $formatLote);
         
-        $product->due_date = $lote->due_date;
+        $product->due_date_most_evenly = $lote->due_date;
         $product->save();
 
         return $this->returnSuccess(200, $product);
@@ -307,18 +291,18 @@ class ProductController extends Controller
     private function setMostEarlyDueDate(Product $product, $lote, $type ){
         
         if($type == 'reduce'){
-            $product->due_date = $lote->quantity == 0
+            $product->due_date_most_evenly = $lote->quantity == 0
             ? Lot::where('quantity','>','0')->where('product_id', $product->id)->first()->due_date
-            : $product->due_date;
+            : $product->due_date_most_evenly;
             $product->save();
             return;
         }
 
-        $currentLote = Lot::where('due_date',$product->due_date)->where('product_id', $product->id)->first();
+        $currentLote = Lot::where('due_date',$product->due_date_most_evenly)->where('product_id', $product->id)->first();
 
         
-        $product->due_date = strtotime($product->due_date) < strtotime($lote->due_date) && $currentLote->quantity > 0
-            ? $product->due_date
+        $product->due_date_most_evenly = strtotime($product->due_date_most_evenly) < strtotime($lote->due_date) && $currentLote->quantity > 0
+            ? $product->due_date_most_evenly
             : $lote->due_date;
             
         $product->save();
@@ -327,7 +311,7 @@ class ProductController extends Controller
     }
     private function reduceLote($productId, $data){
 
-        $lote = Lot::where('id', $data->lote)->where('product_id', $productId)->first();
+        $lote = Lot::where('id_lote', $data->lote)->where('product_id', $productId)->first();
 
         $lote->quantity = $lote->quantity - $data->quantity;
         $lote->save();

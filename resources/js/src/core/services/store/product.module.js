@@ -11,6 +11,9 @@ export const ADD_STOCK = "ADD_STOCK"
 export const GET_PRODUCT_BY_ID = "GET_PRODUCT_BY_ID";
 export const GET_PRODUCT_BY_SEARCH = "GET_PRODUCT_BY_SEARCH";
 export const GET_LAST_LOTE = "GET_LAST_LOTE";
+export const GET_LOTE_OF_PRODUCT = "GET_LOTE_OF_PRODUCT";
+export const DELETE_LOTE_OF_PRODUCT = "DELETE_LOTE_OF_PRODUCT";
+
 const actions = {
     [GET_PRODUCTS](context) {
         return new Promise((resolve, reject) => {
@@ -58,7 +61,7 @@ const actions = {
               
           })
           .catch(( { response } ) => {
-              // console.log(response )
+              console.log(response )
               reject('Ocurrió un error desconocido al intentar crear el producto');
           });
         }
@@ -145,6 +148,40 @@ const actions = {
           })
           .catch(( { response } ) => {
               // console.log(response )
+              reject('Ocurrió un error desconocido al intentar obtener el producto');
+          });
+        }
+      });
+    },
+    [GET_LOTE_OF_PRODUCT](context,loteID){
+      return new Promise((resolve, reject) => {
+        if (JwtService.getToken()) {
+          ApiService.setHeader();
+          ApiService.get("api/lotes/get-by-id/"+loteID)
+          .then(( { data } ) => {
+              console.log(data)
+              resolve(data);
+              
+          })
+          .catch(( { response } ) => {
+              console.log(response )
+              reject('Ocurrió un error desconocido al intentar obtener el producto');
+          });
+        }
+      });
+    },
+    [DELETE_LOTE_OF_PRODUCT](context,loteID){
+      return new Promise((resolve, reject) => {
+        if (JwtService.getToken()) {
+          ApiService.setHeader();
+          ApiService.delete("api/lotes/"+loteID)
+          .then(( { data } ) => {
+              console.log(data)
+              resolve(data);
+              
+          })
+          .catch(( { response } ) => {
+              console.log(response )
               reject('Ocurrió un error desconocido al intentar obtener el producto');
           });
         }

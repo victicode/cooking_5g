@@ -20,7 +20,7 @@ class Product extends Model
         'is_dismantling',
         'created_by',
         'updated_by', 
-        'due_date'
+        'due_date_most_evenly'
     ];
 
     public function orders()

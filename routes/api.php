@@ -4,6 +4,7 @@
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\LoteController;
 use App\Http\Controllers\Api\ProductController;
 
 use Illuminate\Support\Facades\Route;
@@ -88,7 +89,10 @@ Route::middleware('jwt.verify')->prefix('products')->name('product.')->group(fun
     // Route::get('/get-by-searchs',[ProductController::class, 'getProductBySearchs']);
     Route::get('/get-last-lote/{id}',[ProductController::class, 'getLastLoteFromProduct']);
 
-
+});
+Route::middleware('jwt.verify')->prefix('lotes')->name('lotes.')->group(function () {
+    Route::get('/get-by-id/{id}',[LoteController::class, 'getLoteById']);
+    Route::delete('/{id}',[LoteController::class, 'deleteLote']);
 
 });
 

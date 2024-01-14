@@ -21,7 +21,8 @@
   import 'flatpickr/dist/flatpickr.min.css'
   import { Spanish } from "flatpickr/dist/l10n/es.js"
   
-  import { GET_PRODUCT_BY_ID, GET_PRODUCT_BY_SEARCH, STORE_PRODUCT, UPDATE_PRODUCT, ADD_STOCK, DELETE_PRODUCT, GET_LAST_LOTE} from "@/core/services/store/product.module";
+  import { GET_LOTE_OF_PRODUCT, GET_PRODUCT_BY_SEARCH, STORE_PRODUCT, UPDATE_PRODUCT, ADD_STOCK, DELETE_LOTE_OF_PRODUCT, GET_LAST_LOTE, } from "@/core/services/store/product.module";
+
   import { func } from '@/core/services/utils/utils.js'
 
 </script>
@@ -97,64 +98,64 @@
                               width="200"
                               height="200"
                               class="rounded"
-                              :src="selectedProduct.img "
+                              :src="selectedProduct.product.img "
                             />
                           </div>
                         </VCol>
                         <VCol cols="12" md="8" class="mt-0 pt-0 mb-4">
 
-                          <VCardItem class="px-1">
-                            <VCardTitle>{{ selectedProduct.title }}</VCardTitle>
+                          <VCardItem class="px-1 ">
+                            <VCardTitle>{{ selectedProduct.product.title }}</VCardTitle>
                           </VCardItem>
     
                           <VCardText class="px-1">
-                            {{ selectedProduct.description}}
+                            {{ selectedProduct.product.description}}
                           </VCardText>
                           <div class="mt-0" style="border-top: 1px solid rgba(119, 119, 119, 0.356)">
 
                             <VCardText class="text-subtitle-1 py-4 px-1">
+                              <span class="font-weight-medium">Fecha de entrada:</span> <span class="font-weight-bold">
+                                {{ moment(selectedProduct.created_at_lote).format('DD-MM-YYYY')  }}
+                              </span>
+                            </VCardText>
+                            <VCardText class="text-subtitle-1 py-4 px-1">
                               <span class="font-weight-medium">Número Lote:</span> <span class="font-weight-bold">
                                 {{ 
-                                    selectedProduct.lotes[0]
-                                      ? selectedProduct.lotes[0].lote_code
-                                      : '-----'
+                                    selectedProduct.lote_code
+                                      
                                 }}</span>
                             </VCardText>
-                            <VCardText class="text-subtitle-1 pt-0 px-1 d-block">
-                              <div class="font-weight-medium mb-0">Fecha de vencimiento proxima:</div>
-                              <div class="font-weight-bold mt-2">
-                                <v-chip :class=" Math.round(moment.duration(moment(selectedProduct.due_date).diff(new moment())).as('days') ) > 30 ? 'bg-success' : 'bg-warning'">
-                                 {{
-                                    selectedProduct.lotes[0]
-                                      ? moment(selectedProduct.due_date).format('DD-MM-YYYY') 
-                                      : '-----'
-                                  }}
-                                </v-chip>
-                              </div>
-                            </VCardText>
-
-                            <VCardText class="text-subtitle-1 py-0 px-1">
-                              <span class="font-weight-medium">Stock actual:</span> 
-                              <span class="font-weight-bold" v-if="selectedProduct.stock > 0">
-                                {{func.numberFormat(selectedProduct.stock)}} {{selectedProduct.type_of_unit }}
+                            
+                            <VCardText class="text-subtitle-1 py-4 px-1">
+                              <span class="font-weight-medium">Stock del lote: </span> 
+                              <span class="font-weight-bold" v-if="selectedProduct.quantity > 0">
+                                {{func.numberFormat(selectedProduct.quantity)}} {{selectedProduct.product.type_of_unit }}
                               </span>
                               <span class="font-weight-bold text-error" v-else>
                                 SIN STOCK
                               </span>
+                            </VCardText>
+                            <VCardText class="text-subtitle-1 pt-0 px-1 d-flex align-center">
+                              <div class="font-weight-medium my-0">Fecha de vencimiento:</div>
+                              <div class="font-weight-bold mx-2">
+                                <v-chip :class=" Math.round(moment.duration(moment(selectedProduct.due_date).diff(new moment())).as('days') ) > 30 ? 'bg-success' : 'bg-warning'">
+                                  {{ moment(selectedProduct.due_date).format('DD-MM-YYYY') }}
+                                </v-chip>
+                              </div>
                             </VCardText>
                             
                           </div>
                         </VCol>
                       </VRow>
                       
-                      <div style="border-top: 1px solid rgba(119, 119, 119, 0.356)" v-if="selectedProduct.is_dismantling && selectedProduct.dismantling.length > 0">
+                      <div style="border-top: 1px solid rgba(119, 119, 119, 0.356)" v-if="selectedProduct.product.is_dismantling && selectedProduct.product.dismantling.length > 0">
                         <VCardText class="text-subtitle-1 pb-4">
-                          <span class="font-weight-medium">Cantidad de despices:</span> <span class="font-weight-bold">{{ selectedProduct.dismantling.length}}</span>
+                          <span class="font-weight-medium">Cantidad de despices:</span> <span class="font-weight-bold">{{ selectedProduct.product.dismantling.length}}</span>
                         </VCardText>
                         <VCardText class="text-subtitle-1">
                           <p class="mb-0">Despieces:</p> 
                         <div class="d-block d-md-flex">
-                          <b v-for="item in selectedProduct.dismantling" v-bind:key="item.id">
+                          <b v-for="item in selectedProduct.product.dismantling" v-bind:key="item.id">
                             <p class="mb-0 ms-2 mt-3" >  
                               <b class="d-inline-flex d-md-none">*</b> {{ item.products_pieces.title}}: {{item.quantity}} {{ item.quantity > 1 ? 'Piezas' : 'Pieza' }} <b class="d-none d-md-inline-flex">||</b>
                             </p> 
@@ -215,7 +216,7 @@
                                   width="200"
                                   height="200"
                                   class="rounded "
-                                  :src="selectedProduct.img "
+                                  :src="selectedProduct.product.img "
                                   style="border-radius:10%!important"
                                 />
                                 <div class="overlay-img">
@@ -233,7 +234,7 @@
                               label="Nombre del producto"
                               type="text"
                               name="edit_product_title"
-                              v-model="selectedProduct.title"
+                              v-model="selectedProduct.product.title"
                               
                             />
                           </VCol>
@@ -243,7 +244,7 @@
                               label="Descripción corta"
                               type="text"
                               name="edit_product_description_short"
-                              v-model="selectedProduct.short_description"
+                              v-model="selectedProduct.product.short_description"
                             />
                           </VCol>
                           <VCol cols="12" class="form-group">
@@ -255,7 +256,7 @@
                               row-height="25"
                               shaped
                               name="edit_product_description"
-                              v-model="selectedProduct.description"
+                              v-model="selectedProduct.product.description"
                             ></v-textarea>
                           </VCol>
                           <VCol cols="6" md="4" class="form-group">
@@ -264,7 +265,7 @@
                               label="Stock Actual"
                               type="text"
                               name="edit_product_stock"
-                              v-model="selectedProduct.stock"
+                              v-model="selectedProduct.product.stock"
                               readonly
                             />
                           </VCol>
@@ -273,19 +274,19 @@
                               label="Tipo de unidad"
                               :items="['Selecciona uno','KG', 'UNI', 'PZAS']"
                               variant="outlined"
-                              v-model="selectedProduct.type_of_unit"
+                              v-model="selectedProduct.product.type_of_unit"
                             ></v-combobox>
                           </VCol>
                           <VCol cols="12" md="4" >
                             <v-switch
                               color="primary"
                               label="Tiene despieces" 
-                              v-model="selectedProduct.is_dismantling" :value="1" 
+                              v-model="selectedProduct.product.is_dismantling" :value="1" 
                               @change="validateSwitch($event)"
                             />
                           </VCol>
                         </VRow>
-                        <VRow class="ma-0 pa-0  mt-4 align-center" v-if="selectedProduct.is_dismantling">
+                        <VRow class="ma-0 pa-0  mt-4 align-center" v-if="selectedProduct.product.is_dismantling">
                               <VCol cols="12" class="form-group">
                                 <h3>Despieces:</h3>
                               </VCol>
@@ -299,12 +300,12 @@
                                   </v-tooltip>
                               </VCol>
                               <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
-                                <VRow  v-for="(item,index) in selectedProduct.dismantling"  v-bind:key="item.id" class="pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'product_desmantling_'+index">
+                                <VRow  v-for="(item,index) in selectedProduct.product.dismantling"  v-bind:key="item.id" class="pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'product_desmantling_'+index">
                                   <VCol cols="12"  md="6" class="form-group">
                                     <v-autocomplete
                                       :model-value="item.piece_product_id"
                                       :loading="loading"
-                                      :items="productOption[index+'_'+selectedProduct.id] != undefined ?  productOption[index+'_'+selectedProduct.id] : item.piece_product_id !== null ?[ {id: item.piece_product_id, title: item.products_pieces.title}] : []"
+                                      :items="productOption[index+'_'+selectedProduct.product.id] != undefined ?  productOption[index+'_'+selectedProduct.product.id] : item.piece_product_id !== null ?[ {id: item.piece_product_id, title: item.products_pieces.title}] : []"
                                       label="Nombre del producto"
                                       item-title="title"
                                       item-value="id"
@@ -314,8 +315,8 @@
                                       no-filter
                                       no-data-text="No se encontraron resultados"
                                       :name="'product_desmantling_id_'+index"
-                                      @keyup="searchDismantling($event, index+'_'+selectedProduct.id)"
-                                      @click:clear="clearSearchDismantling(index+'_'+selectedProduct.id)"
+                                      @keyup="searchDismantling($event, index+'_'+selectedProduct.product.id)"
+                                      @click:clear="clearSearchDismantling(index+'_'+selectedProduct.product.id)"
                                       @update:modelValue="selectDismantling($event, index, 1)"
                                     ></v-autocomplete>
                                   </VCol>
@@ -333,7 +334,7 @@
                                     <v-tooltip text="Eliminar despiece">
                                       <template v-slot:activator="{ props }">
                                         <v-col cols="auto" class="">
-                                          <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeDismantlingInput(1,productOption[index+'_'+selectedProduct.id])"></v-btn>
+                                          <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeDismantlingInput(1,productOption[index+'_'+selectedProduct.product.id])"></v-btn>
                                         </v-col>
                                       </template>
                                     </v-tooltip>
@@ -379,32 +380,38 @@
                     <VCardItem class="justify-center w-100  py-md-6  py-4   ">
                       <VCardTitle class="text-2xl font-weight-bold">
                         <div class="card-title d-flex ">
-                          <div class="form-title__part1">Agregar stock Producto</div>
-                          
+                          <div class="form-title__part1">Editar stock de producto</div>
+                
                         </div>
                       </VCardTitle>
                     </VCardItem>
-                    <VCardItem class="w-100  py-md-6  py-4 text-center">
+                    <VCardItem class="w-100  py-md-0  py-4 text-center">
                       <VCardTitle class="text-2xl font-weight-bold">
                         <div class="card-title ">
-                          <div class="form-title__part1 mx-4" style="text-wrap:wrap">
-                              {{ selectedProduct.title }}
+                          <div class="form-title__part1 mx-4 my-2 " style="text-wrap:wrap">
+                              {{ selectedProduct.product.title }}
                           </div>
-                          <div class="d-flex mt-4 justify-center w-100 flex-wrap">
-                            <div class="form-title__part1 mx-4 d-flex align-center justify-center">
+                          <!-- <div class="form-title__part1 mx-4 mb-2" v-show="stockOperation.type==1" style="text-wrap:wrap; opacity:0.7">
+                            <h5>
+
+                              {{ selectedProduct.lote_code }}
+                            </h5>
+                          </div> -->
+                          <div class="d-flex mt-4 justify-center w-100 flex-wrap mt-md-0">
+                            <div class="form-title__part1 mx-4 d-flex align-center justify-center ">
                               Stock actual:
                               <span class=" ms-2" >
-                                <v-chip :class="selectedProduct.stock < 1 ? 'bg-error' : selectedProduct.stock >= 30 ? 'bg-success' : 'bg-warning'">
-                                  {{ selectedProduct.stock }}
+                                <v-chip :class="selectedProduct.product.stock < 1 ? 'bg-error' : selectedProduct.product.stock >= 30 ? 'bg-success' : 'bg-warning'">
+                                  {{ TotalStockByLotes(selectedProduct.product)  }}
                                 </v-chip>
   
                               </span>
                             </div>
                             <div class="form-title__part1 mx-4 mt-2 mt-md-0 d-flex align-center justify-center" >
                               Stock nuevo:
-                              <span class=" ms-2" v-if="!isNaN(selectedProduct.newStock) ">
-                                <v-chip :class="selectedProduct.newStock < 1 ? 'bg-error' : selectedProduct.newStock >= 30 ? 'bg-success' : 'bg-warning'">
-                                  {{ selectedProduct.newStock }}
+                              <span class=" ms-2" v-if="!isNaN(selectedProduct.product.newStock) ">
+                                <v-chip :class="selectedProduct.product.newStock < 1 ? 'bg-error' : selectedProduct.product.newStock >= 30 ? 'bg-success' : 'bg-warning'">
+                                  {{ selectedProduct.product.newStock }}
                                 </v-chip>
   
                               </span>
@@ -420,23 +427,11 @@
                         :text="alertMessage"
                       ></v-alert>
                     </VCardText>
-                    <VCardText class="w-100 pb-5 px-3 px-md-6">
+                    <VCardText class="w-100 pb-5 px-4 px-md-6">
                       <VForm  id="add_stock_form">
-                        <VRow class="my-2">
-                          <VCol cols="6" md="4" class="form-group px-2" v-show="stockOperation.type==1" >
-                            <VTextField
-                              placeholder="Fecha de vencimiento"
-                              label="Fecha de vencimiento"
-                              type="text"
-                              name="stock_due_date"
-                              ref="stock_due_date"
-                              id="dueDateAddStock"
-                            />
-                            <input type="hidden" id="date-input-val-dueDateAddStock" ref="due_date_dueDateAddStock" >
-                          </VCol>
-
-                          <VCol cols="6" md="4" offset-md="4" class="form-group" v-show="stockOperation.type==1">
-
+                        <VRow class="my-3">
+                          <VCol cols="5" md="5"  class="form-group" v-show="stockOperation.type==1">
+  
                             <VTextField
                               placeholder="Número de lote"
                               label="Número de lote"
@@ -451,12 +446,12 @@
                               
                             />
                           </VCol>
-                          <VCol cols="6" md="4" offset-md="8" class="form-group" v-show="stockOperation.type==2">
-
+                          <VCol cols="8" md="4"  class="form-group" v-show="stockOperation.type==2">
+  
                             <v-combobox  
-                              :items="selectedProduct.lotes"
+                              :items="selectedProduct.product.lotes"
+                              item-value="id_lote"
                               item-title="lote_code"
-                              item-value="id"
                               placeholder="Número de lote"
                               label="Número de lote"
                               type="text"
@@ -465,11 +460,23 @@
                               v-model="stockOperation.lot"
                               persistent-hint
                               :return-object="false"
-                              :hint="'Stock en lote: '+stockOperation.lot_quantity"
+                              :hint="'Stock en lote: '+ stockOperation.lot_quantity"
                               @update:modelValue="selectLote($event)"
                               
                             ></v-combobox >
                           </VCol>
+                          <VCol cols="7" md="5" offset-md="2" class="form-group px-2" v-show="stockOperation.type==1" >
+                            <VTextField
+                              placeholder="Fecha de vencimiento"
+                              label="Fecha de vencimiento"
+                              type="text"
+                              name="stock_due_date"
+                              ref="stock_due_date"
+                              id="dueDateAddStock"
+                            />
+                            <input type="hidden" id="date-input-val-dueDateAddStock" ref="due_date_dueDateAddStock" >
+                          </VCol>
+
                           
                         </VRow>
                         <VRow>
@@ -547,7 +554,7 @@
                         class="px-md-10 px-0 text-center"
                         style=""
                       >
-                        <h2>¿Seguro que deseas eliminar <b class="text-primary">{{selectedProduct.title}}</b>?</h2>
+                        <h2>¿Seguro que deseas eliminar <b class="text-primary">{{selectedProduct.product.title}}</b>?</h2>
                       </VCol>
                     </VRow>
                       
@@ -791,8 +798,8 @@
                                     <VRow>
                                       <VCol cols="6" md="4" class="form-group">
                                         <VTextField
-                                          placeholder="Numero de lote"
-                                          label="Numero de lote"
+                                          placeholder="Número de lote"
+                                          label="Número de lote"
                                           type="text"
                                           name="new_product_init_lot"
                                           autocomplete="off"
@@ -881,10 +888,13 @@
   </VRow>
 </template>
 <style lang="scss">
-.card-datatable > thead > tr > th.title-th{
+table.dataTable > thead > tr > th.title-th{
   width: 35%!important;
 }
-.card-datatable > thead > tr > th:nth-child(n+2){
+.v-field--disabled{
+  opacity: inherit;
+}
+table.dataTable > thead > tr > th:nth-child(n+2){
   width: 15%!important;
 }
 .v-messages__message{
@@ -918,10 +928,10 @@
     width: 500px!important;
     margin-top: 30px!important;
   }
-  .card-datatable > thead > tr > th.title-th{
+  table.dataTable > thead > tr > th.title-th{
     width: 25%!important;
   }
-  .card-datatable > thead > tr > th:nth-child(n+2) {
+  table.dataTable > thead > tr > th:nth-child(n+2) {
       width: 25%!important;
   }
   .dataTables_scrollBody{
@@ -978,10 +988,8 @@
           data: function ( data ) {
             data.filter_product_title = document.querySelector('[name="product_title"]').value;
             data.order_title = data.order[0].column == 0 ?data.order[0].dir : ''  
-            data.order_stock = data.order[0].column == 3 ? data.order[0].dir : ''
-            data.order_due_date = data.order[0].column == 2 ? data.order[0].dir : ''
-            console.log(data)
-
+            data.order_stock = data.order[0].column == 2 ? data.order[0].dir : ''
+            data.order_due_date = data.order[0].column == 1 ? data.order[0].dir : ''
           },
           "crossDomain": true,
           "beforeSend": function (xhr) {
@@ -1003,19 +1011,19 @@
           { 
             title: '<div class="d-none d-md-block">Nombre del producto</div><div class="d-md-none d-block">Producto</div>', class:'text-start title-th',
             render: ( data, type, row, meta ) =>{ 
-                return `${row.product.title}`
+                return `${row.product.title} (${row.lote_code})`
               }   
           },
-          { 
-            title: 'Lote', class:'text-center',
-            orderable: false, 
-            searchable: false, 
-            render: ( data, type, row, meta ) =>{ 
-                return ` ${row.lote_code}`
-              }   
-          },
+          // { 
+          //   title: 'Lote', class:'text-center',
+          //   orderable: false, 
+          //   searchable: false, 
+          //   render: ( data, type, row, meta ) =>{ 
+          //       return ` ${row.lote_code}`
+          //     }   
+          // },
           {
-            title:' <div class="d-none d-md-block">Proxima fecha venc.</div><div class="d-md-none d-block">Fecha venc</div>',
+            title:' <div class="d-none d-md-block">Fecha venc.</div><div class="d-md-none d-block">Fecha venc</div>',
             class:'text-center ',
             render: (data, type, row, meta) =>{
               let today = new moment();
@@ -1033,7 +1041,7 @@
             }
           },
           { 
-            title: 'Stock total',
+            title: 'Stock lote',
             class:'text-center ',
             render: ( data, type, row, meta ) =>{ 
               return `
@@ -1056,21 +1064,22 @@
               return `
               <div class="d-md-flex d-none justify-center">
                 
-                <span data-bs-toggle="tooltip" data-id="${row.product.id}" class="view" data-bs-placement="top" data-bs-title="Ver ficha de producto">
-                  <svg  xmlns="http://www.w3.org/2000/svg" data-id="${row.product.id}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
-                    <path data-id="${row.product.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
+                <span data-bs-toggle="tooltip" data-lote="${row.id_lote}" class="view" data-bs-placement="top" data-bs-title="Ver ficha de producto">
+                  <svg  xmlns="http://www.w3.org/2000/svg" data-lote="${row.id_lote}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
+                    <path data-lote="${row.id_lote}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
                 </span>
-                <span data-bs-toggle="tooltip" data-id="${row.product.id}" class="edit" data-bs-placement="top" data-bs-title="Editar producto">
-                  <svg  xmlns="http://www.w3.org/2000/svg" data-id="${row.product.id}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--heroicons-outline" aria-describedby="v-tooltip-20" width="1em" height="1em" viewBox="0 0 24 24">
-                    <path data-id="${row.product.id}"  fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5m-1.414-9.414a2 2 0 1 1 2.828 2.828L11.828 15H9v-2.828l8.586-8.586Z"></path></svg>
+                <span data-bs-toggle="tooltip" data-lote="${row.id_lote}" class="edit" data-bs-placement="top" data-bs-title="Editar producto">
+                  <svg  xmlns="http://www.w3.org/2000/svg" data-lote="${row.id_lote}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--heroicons-outline" aria-describedby="v-tooltip-20" width="1em" height="1em" viewBox="0 0 24 24">
+                    <path data-lote="${row.id_lote}"  fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5m-1.414-9.414a2 2 0 1 1 2.828 2.828L11.828 15H9v-2.828l8.586-8.586Z"></path></svg>
                 </span>
-                <span data-bs-toggle="tooltip" data-id="${row.product.id}" class="stock" data-bs-placement="top" data-bs-title="Agregar stock">
-                  <svg  xmlns="http://www.w3.org/2000/svg" data-id="${row.product.id}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--mdi" aria-describedby="v-tooltip-21" width="1em" height="1em" viewBox="0 0 24 24">
-                    <path data-id="${row.product.id}"  fill="currentColor" d="M13 19.3v-6.7l6-3.4V13c.7 0 1.4.1 2 .4V7.5c0-.4-.2-.7-.5-.9l-7.9-4.4c-.2-.1-.4-.2-.6-.2s-.4.1-.6.2L3.5 6.6c-.3.2-.5.5-.5.9v9c0 .4.2.7.5.9l7.9 4.4c.2.1.4.2.6.2s.4-.1.6-.2l.9-.5c-.3-.6-.4-1.3-.5-2M12 4.2l6 3.3l-2 1.1l-5.9-3.4l1.9-1m-1 15.1l-6-3.4V9.2l6 3.4v6.7m1-8.5L6 7.5l2-1.2l6 3.5l-2 1m8 4.2v3h3v2h-3v3h-2v-3h-3v-2h3v-3h2Z"></path></svg>
+                <span data-bs-toggle="tooltip" data-lote="${row.id_lote}" class="stock" data-bs-placement="top" data-bs-title="Agregar stock">
+                  <svg  xmlns="http://www.w3.org/2000/svg" data-lote="${row.id_lote}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--mdi" aria-describedby="v-tooltip-21" width="1em" height="1em" viewBox="0 0 24 24">
+                    <path data-lote="${row.id_lote}"  fill="currentColor" d="M13 19.3v-6.7l6-3.4V13c.7 0 1.4.1 2 .4V7.5c0-.4-.2-.7-.5-.9l-7.9-4.4c-.2-.1-.4-.2-.6-.2s-.4.1-.6.2L3.5 6.6c-.3.2-.5.5-.5.9v9c0 .4.2.7.5.9l7.9 4.4c.2.1.4.2.6.2s.4-.1.6-.2l.9-.5c-.3-.6-.4-1.3-.5-2M12 4.2l6 3.3l-2 1.1l-5.9-3.4l1.9-1m-1 15.1l-6-3.4V9.2l6 3.4v6.7m1-8.5L6 7.5l2-1.2l6 3.5l-2 1m8 4.2v3h3v2h-3v3h-2v-3h-3v-2h3v-3h2Z"></path></svg>
                 </span>
-                <span data-bs-toggle="tooltip" data-id="${row.id}" class="delete" data-bs-placement="top" data-bs-title="Eliminar producto">
-                  <svg  xmlns="http://www.w3.org/2000/svg" data-id="${row.id}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--bx" aria-describedby="v-tooltip-22" width="1em" height="1em" viewBox="0 0 24 24">
-                    <path data-id="${row.id}"  fill="currentColor" d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path data-id="${row.product.id}" fill="currentColor" d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg>
+                <span data-bs-toggle="tooltip" data-lote="${row.id_lote}" class="delete" data-bs-placement="top" data-bs-title="Eliminar producto">
+                  <svg  xmlns="http://www.w3.org/2000/svg" data-lote="${row.id_lote}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--bx" aria-describedby="v-tooltip-22" width="1em" height="1em" viewBox="0 0 24 24">
+                    <path data-lote="${row.id_lote}"  fill="currentColor" d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path>
+                    <path data-lote="${row.id_lote}" fill="currentColor" d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg>
                 </span>
               </div>
               <div class="d-md-none d-flex justify-center position-relative relative ">
@@ -1079,21 +1088,22 @@
                     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="button" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default v-icon--clickable iconify iconify--mdi" aria-haspopup="menu" aria-expanded="false" aria-owns="v-menu-46" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z"></path></svg>
                   </button>
                   <div class="dropdown-menu animate__animated animate__rubberBand large">
-                    <span data-bs-toggle="tooltip" data-id="${row.product.id}" class="view me-5" data-bs-placement="top" data-bs-title="Ver ficha de producto">
-                      <svg  xmlns="http://www.w3.org/2000/svg" data-id="${row.product.id}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
-                        <path data-id="${row.product.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
+                    <span data-bs-toggle="tooltip" data-lote="${row.id_lote}" class="view me-5" data-bs-placement="top" data-bs-title="Ver ficha de producto">
+                      <svg  xmlns="http://www.w3.org/2000/svg" data-lote="${row.id_lote}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
+                        <path data-lote="${row.id_lote}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
                     </span>
-                    <span data-bs-toggle="tooltip" data-id="${row.product.id}" class="edit me-5" data-bs-placement="top" data-bs-title="Editar producto">
-                      <svg  xmlns="http://www.w3.org/2000/svg" data-id="${row.product.id}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--heroicons-outline" aria-describedby="v-tooltip-20" width="1em" height="1em" viewBox="0 0 24 24">
-                        <path data-id="${row.product.id}"  fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5m-1.414-9.414a2 2 0 1 1 2.828 2.828L11.828 15H9v-2.828l8.586-8.586Z"></path></svg>
+                    <span data-bs-toggle="tooltip" data-lote="${row.id_lote}" class="edit me-5" data-bs-placement="top" data-bs-title="Editar producto">
+                      <svg  xmlns="http://www.w3.org/2000/svg" data-lote="${row.id_lote}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--heroicons-outline" aria-describedby="v-tooltip-20" width="1em" height="1em" viewBox="0 0 24 24">
+                        <path data-lote="${row.id_lote}"  fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5m-1.414-9.414a2 2 0 1 1 2.828 2.828L11.828 15H9v-2.828l8.586-8.586Z"></path></svg>
                     </span>
-                    <span data-bs-toggle="tooltip" data-id="${row.product.id}" class="stock" data-bs-placement="top" data-bs-title="Agregar stock">
-                      <svg  xmlns="http://www.w3.org/2000/svg" data-id="${row.product.id}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--mdi" aria-describedby="v-tooltip-21" width="1em" height="1em" viewBox="0 0 24 24">
-                        <path data-id="${row.product.id}"  fill="currentColor" d="M13 19.3v-6.7l6-3.4V13c.7 0 1.4.1 2 .4V7.5c0-.4-.2-.7-.5-.9l-7.9-4.4c-.2-.1-.4-.2-.6-.2s-.4.1-.6.2L3.5 6.6c-.3.2-.5.5-.5.9v9c0 .4.2.7.5.9l7.9 4.4c.2.1.4.2.6.2s.4-.1.6-.2l.9-.5c-.3-.6-.4-1.3-.5-2M12 4.2l6 3.3l-2 1.1l-5.9-3.4l1.9-1m-1 15.1l-6-3.4V9.2l6 3.4v6.7m1-8.5L6 7.5l2-1.2l6 3.5l-2 1m8 4.2v3h3v2h-3v3h-2v-3h-3v-2h3v-3h2Z"></path></svg>
+                    <span data-bs-toggle="tooltip" data-lote="${row.id_lote}" class="stock" data-bs-placement="top" data-bs-title="Agregar stock">
+                      <svg  xmlns="http://www.w3.org/2000/svg" data-lote="${row.id_lote}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--mdi" aria-describedby="v-tooltip-21" width="1em" height="1em" viewBox="0 0 24 24">
+                        <path data-lote="${row.id_lote}"  fill="currentColor" d="M13 19.3v-6.7l6-3.4V13c.7 0 1.4.1 2 .4V7.5c0-.4-.2-.7-.5-.9l-7.9-4.4c-.2-.1-.4-.2-.6-.2s-.4.1-.6.2L3.5 6.6c-.3.2-.5.5-.5.9v9c0 .4.2.7.5.9l7.9 4.4c.2.1.4.2.6.2s.4-.1.6-.2l.9-.5c-.3-.6-.4-1.3-.5-2M12 4.2l6 3.3l-2 1.1l-5.9-3.4l1.9-1m-1 15.1l-6-3.4V9.2l6 3.4v6.7m1-8.5L6 7.5l2-1.2l6 3.5l-2 1m8 4.2v3h3v2h-3v3h-2v-3h-3v-2h3v-3h2Z"></path></svg>
                     </span>
-                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="delete" data-bs-placement="top" data-bs-title="Eliminar producto">
-                      <svg  xmlns="http://www.w3.org/2000/svg" data-id="${row.id}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--bx" aria-describedby="v-tooltip-22" width="1em" height="1em" viewBox="0 0 24 24">
-                        <path data-id="${row.id}"  fill="currentColor" d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path data-id="${row.id}" fill="currentColor" d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg>
+                    <span data-bs-toggle="tooltip" data-lote="${row.id_lote}" class="delete" data-bs-placement="top" data-bs-title="Eliminar producto">
+                      <svg  xmlns="http://www.w3.org/2000/svg" data-lote="${row.id_lote}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--bx" aria-describedby="v-tooltip-22" width="1em" height="1em" viewBox="0 0 24 24">
+                        <path data-lote="${row.id_lote}"  fill="currentColor" d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path>
+                        <path data-lote="${row.id_lote}" fill="currentColor" d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg>
                     </span>
                   </div>
                 </div>
@@ -1131,6 +1141,7 @@
           },
           
         },
+        order:[[1, 'asc']],
         buttons: [
           {
             extend: 'collection',
@@ -1162,16 +1173,15 @@
           const TableElement = document.getElementById('data-table');
           const event = new Event("OptionsActionTable")
           TableElement.dispatchEvent(event);
-          console.log(settings)
         },
       },
       items:[],
     }),
     methods:{
       stockCalculate(){
-        this.selectedProduct.newStock =  this.stockOperation.type == 1
-          ? parseInt(this.selectedProduct.stock)  + parseInt(this.stockOperation.quantity)
-          : parseInt(this.selectedProduct.stock)  - parseInt(this.stockOperation.quantity)
+        this.selectedProduct.product.newStock =  this.stockOperation.type == 1
+          ? parseInt(this.TotalStockByLotes(this.selectedProduct.product))  + parseInt(this.stockOperation.quantity)
+          : parseInt(this.TotalStockByLotes(this.selectedProduct.product))  - parseInt(this.stockOperation.quantity)
       
       },
       initOptionsTable(){
@@ -1180,7 +1190,7 @@
       activeOptionsTable() {
         document.querySelectorAll('.view').forEach(item => {
           item.addEventListener('click', event => {
-            this.selectProduct(event.target.dataset.id).finally((data)=>{
+            this.selectProduct(event.target.dataset.lote).finally((data)=>{
               setTimeout(() => {
                 this.showModal('viewProduct')
               }, 800);
@@ -1189,7 +1199,7 @@
         })
         document.querySelectorAll('.edit').forEach(item => {
           item.addEventListener('click', event => {
-            this.selectProduct(event.target.dataset.id).finally((data)=>{
+            this.selectProduct(event.target.dataset.lote).finally((data)=>{
               setTimeout(() => {
                 this.showModal('editProduct')
               }, 800);
@@ -1198,7 +1208,7 @@
         })
         document.querySelectorAll('.stock').forEach(item => {
           item.addEventListener('click', event => {
-            this.selectProduct(event.target.dataset.id).finally((data)=>{
+            this.selectProduct(event.target.dataset.lote).finally((data)=>{
               setTimeout(() => {
                 this.showModal('addStockProduct')
                 this.getLastLoteNumber();
@@ -1209,7 +1219,7 @@
         })
         document.querySelectorAll('.delete').forEach(item => {
           item.addEventListener('click', event => {
-            this.selectProduct(event.target.dataset.id).finally((data)=>{
+            this.selectProduct(event.target.dataset.lote).finally((data)=>{
               setTimeout(() => {
                 this.showModal('deleteProduct')
               }, 800);
@@ -1219,7 +1229,7 @@
       },
       async selectProduct(idAccount){
         this.$store
-          .dispatch(GET_PRODUCT_BY_ID, idAccount)
+          .dispatch(GET_LOTE_OF_PRODUCT, idAccount)
           .then((response) => {
             this.selectedProduct = Object.assign({}, response.data);
             setTimeout(() => {
@@ -1271,7 +1281,7 @@
         const file = e.target.files[0];
        return e.target.id == 'newProduct-img' 
        ? this.newProduct.img = URL.createObjectURL(file)
-       : this.selectedProduct.img = URL.createObjectURL(file)
+       : this.selectedProduct.product.img = URL.createObjectURL(file)
       },
       bootstrapOptions(){
         setTimeout(() => {
@@ -1331,7 +1341,7 @@
         setTimeout(() => {
             return type == 2 
           ? this.newProduct.dismantling.splice(index, 1)
-          : this.selectedProduct.dismantling.splice(index, 1);
+          : this.selectedProduct.product.dismantling.splice(index, 1);
         }, 300);
 
         
@@ -1364,7 +1374,7 @@
         }, 500);
         return type == 2 
         ? this.newProduct.dismantling.push(newItem)
-        : this.selectedProduct.dismantling.push(newItem);
+        : this.selectedProduct.product.dismantling.push(newItem);
       },
       searchDismantling(e, index){ 
         debounce(this.getProducts, 200)(e.target.value, index)
@@ -1380,10 +1390,10 @@
         const button = document.getElementById(idButton)
 
         this.disabledButton( button, 'remove')
-        // console.log(this.selectedProduct.dismantling)
+
         return type == 2 
         ? this.newProduct.dismantling[index].piece_product_id = e
-        : this.selectedProduct.dismantling[index].piece_product_id = e
+        : this.selectedProduct.product.dismantling[index].piece_product_id = e
       },
       hideModal(){
         this.modal.hide()
@@ -1465,8 +1475,8 @@
             this.hideModal()
           })
           .catch((err) => {
-            console.log(err)
-            this.hideModal()
+            // console.log(err)
+            // this.hideModal()
             this.showSnackbar('error', err )
             this.readyButton('new_product_form_2_button')
           })
@@ -1476,21 +1486,21 @@
 
         this.sendingButton('edit_product_form_button')
         let formData = new FormData();
-        formData.append('title', this.selectedProduct.title);
-        formData.append('description', this.selectedProduct.description);
-        formData.append('short_description', this.selectedProduct.short_description);
-        formData.append('type_unit', this.selectedProduct.type_of_unit);
+        formData.append('title', this.selectedProduct.product.title);
+        formData.append('description', this.selectedProduct.product.description);
+        formData.append('short_description', this.selectedProduct.product.short_description);
+        formData.append('type_unit', this.selectedProduct.product.type_of_unit);
         formData.append('img', this.$refs.editProductImg.files[0]);
-        formData.append('is_dismantling', this.selectedProduct.is_dismantling ? 1 : 0);
+        formData.append('is_dismantling', this.selectedProduct.product.is_dismantling ? 1 : 0);
 
         
 
-        if (this.selectedProduct.is_dismantling) {
-          formData.append('dismantling', JSON.stringify(this.selectedProduct.dismantling) );
+        if (this.selectedProduct.product.is_dismantling) {
+          formData.append('dismantling', JSON.stringify(this.selectedProduct.product.dismantling) );
         }
 
         this.$store
-          .dispatch(UPDATE_PRODUCT, {id:this.selectedProduct.id, data:formData})
+          .dispatch(UPDATE_PRODUCT, {id:this.selectedProduct.product.id, data:formData})
           .then((response) => {
             this.filterColumn()
             this.hideModal()
@@ -1513,7 +1523,7 @@
         formData.append('lote', this.stockOperation.lot);
         formData.append('due_date', this.$refs.due_date_dueDateAddStock.value );
         this.$store
-          .dispatch(ADD_STOCK, {id:this.selectedProduct.id, data:formData})
+          .dispatch(ADD_STOCK, {id:this.selectedProduct.product.id, data:formData})
           .then((response) => {
             this.filterColumn()
             this.hideModal()
@@ -1531,7 +1541,7 @@
       },
       deleteProduct(){
         this.$store
-          .dispatch(DELETE_PRODUCT, this.selectedProduct.id )
+          .dispatch(DELETE_LOTE_OF_PRODUCT, this.selectedProduct.id_lote )
           .then((response) => {
             this.filterColumn()
             this.hideModal()
@@ -1869,14 +1879,14 @@
 
       },
       selectLote(e){
-        const selectedLote = this.selectedProduct.lotes.filter((lot) => lot.id === e)[0]
+        const selectedLote = this.selectedProduct.product.lotes.filter((lot) => lot.id_lote === e)[0]
         this.stockOperation.lot_quantity = selectedLote.quantity ? selectedLote.quantity : this.stockOperation.lot_quantity ;
         this.stockOperation.lot = selectedLote.id ? selectedLote.id : this.stockOperation.lot;
-
+        this.addValidateMax(this.stockOperation.lot_quantity)
       },
       formatLoteName(e){
         let isLongWord = !e
-        ? this.selectedProduct.title.split(" ")
+        ? this.selectedProduct.product.title.split(" ")
         : this.newProduct.title.split(" ")
 
         let index = !e
@@ -1905,12 +1915,44 @@
       },
       getLastLoteNumber(){
         this.$store
-        .dispatch(GET_LAST_LOTE, this.selectedProduct.id )
+        .dispatch(GET_LAST_LOTE, this.selectedProduct.product.id )
         .then((data)=> {
           this.stockOperation.lote_index = data ; 
           this.formatLoteName(this.$event)
         })
           
+      },
+      TotalStockByLotes(product){
+        let total = 0
+
+        product.lotes.forEach((lote)=>{
+          total += lote.quantity;
+        })
+        return total
+      },
+      addValidateMax(max){
+        // this.forms[id] 
+        
+        let form = document.getElementById('add_stock_form'),
+        quantityInput = form.querySelector('input[name="stock_form_quatity"]'),
+        fieldOptions={
+          quantity: {
+            validators: {
+              notEmpty: {
+                message: "Agregar la cantidad unidades"
+              },
+              numeric: {
+                message: "Debe ser númerico"
+              },
+              lessThan: {
+                message: "Cantidad supera el stock",
+                max: max,
+              },
+            }
+          }
+        } 
+        this.forms['add_stock_form'].addField(quantityInput.name, fieldOptions.quantity)
+        return
       },
     },
     computed: {
@@ -1921,7 +1963,8 @@
     mounted(){
       this.initOptionsTable()
       this.table = new DataTablesCore('#data-table', this.tableData)
-      this.bootstrapOptions();
+      setTimeout(()=> this.bootstrapOptions(),2000)
+      
       this.validateFormItem('new_product_form')
 
     },
