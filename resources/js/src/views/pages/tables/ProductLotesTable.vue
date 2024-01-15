@@ -36,7 +36,7 @@ const as = window
           :key="order.id"
         >
           <td class="text-start px-8"> 
-            <a href="http://" target="_blank" rel="noopener noreferrer">
+            <a class="blank-modal" rel="noopener noreferrer">
 
               #{{  orderNumberFormat(order.id) }}
             </a>

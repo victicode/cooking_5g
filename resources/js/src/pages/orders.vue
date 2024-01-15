@@ -92,7 +92,7 @@
       </VCard>
     </VCol>
     <div v-if="Object.keys(selectedOrder).length > 2">
-      <viewOrderModal :order="selectedOrder"  @click="hideModal()" />
+      <viewOrderModal :order="selectedOrder"  @actionModal="hideModal()" />
       <div class="modal animate__animated animate__fadeInDown" id="changeStatusOrder" tabindex="-1" aria-labelledby="changeStatusOrderLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl mt-10" >
           <div class="modal-content">
@@ -317,6 +317,105 @@
           </div>
         </div>
       </div>
+      <!-- <div class="modal animate__animated animate__fadeInDown" id="createOut" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl mt-10" >
+          <div class="modal-content">
+            <VCol
+              cols="12"
+              class="pa-0 d-flex justify-center"
+              style="position: relative;"
+            >
+            
+              <VCol
+                cols="12"
+              >
+                <VCard class="modal__content">
+                  <div class="modal__close-button" >
+                    <v-col  class="pa-0 pe-4">
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                    </v-col>
+                  </div>
+                  <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column pa-2 pa-md-5 ">
+                    <VRow  class="mb-2 ma-0">
+                      <VCol
+                        cols="12"
+                        md="6"
+                        class="py-0"
+                      >
+                        <div class="my-md-4 my-2 text-center text-md-start">
+                          <h2>Orden de productos</h2>
+                          <h3 class="mt-2">
+                            <v-chip :class="{'bg-error': order.status == 0, 'bg-warning': order.status == 1, 'bg-secondary': order.status == 2, 'bg-success': order.status == 3, }">
+                              {{ order.status_label.status }}
+                            </v-chip>
+    
+                          </h3>
+                        </div>
+                        <div class="my-3 my-md-0  d-block d-md-none text-center text-md-end ">
+                          <h4 class="font-400">
+                            Orden N°: 
+                            <b>
+                              {{ orderNumberFormat(order.id) }}
+                            </b> 
+                          </h4>
+                        </div>
+                        <div >
+                          <div class="my-2  text-start">
+                            Solicitante: {{ order.client.name.toUpperCase() }}
+                          </div>
+                          <div class="my-2 text-start">
+                            Dirección de destino: {{ order.other_address }}
+                          </div>
+                        </div>
+                      
+                      </VCol>
+                      <VCol
+                        cols="12"
+                        md="6"
+                        class="py-0"
+                      >
+                        <div class="my-md-4 my-0  d-none d-md-block text-center text-md-end ">
+                          <h4 class="font-400">
+                            Orden N°: 
+                            <b>
+                              {{ orderNumberFormat(order.id) }}
+                            </b> 
+                          </h4>
+                        </div>
+                        <div >
+                          <div class="my-2  text-start text-md-end">
+                            Fecha de pedio: {{ moment(order.created_at).format('DD/MM/YYYY HH:mm:ss') }}
+                          </div>
+                          <div class="my-2  text-start text-md-end">
+                            Tracker ID: {{ order.trancker }}
+                          </div>
+                        </div>
+                      
+                      </VCol>
+                    </VRow>
+                    <div class="w-100">
+                      <OrderProductsTables :products="order.products" />
+                    </div>
+                    <VDivider  />
+                    <div class="mt-5 w-100 d-flex  justify-center">
+                      <VCardActions class=" justify-center w-75">
+                        <VBtn
+                          color="white"
+                          class="bg-secondary text-white w-50"
+                          @click="hideModal()"
+                        >
+                          <VIcon icon="mingcute:close-fill" />
+                          <span class="ms-2">Cerrar</span>
+                        </VBtn>
+                      </VCardActions>
+                    </div>
+                  </div>
+                </VCard>
+              </VCol>
+            </VCol>
+          </div>
+        </div>
+      </div> -->
     </div>
     <div class="modal animate__animated animate__fadeInDown"  id="createOrder" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg mt-10" >
@@ -543,6 +642,7 @@
   export default {
     data: () => ({
       modal: '',
+      internalModal:'',
       inputDate: '',
       snackShow:false,
       snackMessage:'',
@@ -660,19 +760,26 @@
                     <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
                       <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
                   </span>
-                  <span data-bs-toggle="tooltip" data-id="${row.id}" class="change mx-2" data-bs-placement="top" data-bs-title="Actualizar estado">
-                  <svg data-id="${row.id}"  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--icon-park-outline" aria-describedby="v-tooltip-35" width="1em" height="1em" viewBox="0 0 48 48">
-                    <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
-                      <path data-id="${row.id}" d="M24 44c11.046 0 20-8.954 20-20S35.046 4 24 4S4 12.954 4 24s8.954 20 20 20"></path>
-                      <path data-id="${row.id}" d="M33.542 27c-1.274 4.057-5.064 7-9.542 7c-4.477 0-8.268-2.943-9.542-7v6m19.084-18v6c-1.274-4.057-5.064-7-9.542-7c-4.477 0-8.268 2.943-9.542 7"></path></g></svg>
-                </span>
               `
+              if(row.status == 1 ){
+                html += `
+                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="cancel mx-2" data-bs-placement="top" data-bs-title="Procesar salida">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path fill="currentColor" d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5s.67 1.5 1.5 1.5m1.5-9H17V12h4.46zM6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5s.67 1.5 1.5 1.5M20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4zM3 6v9h.76c.55-.61 1.35-1 2.24-1c.89 0 1.69.39 2.24 1H15V6zm7 1l3.5 3.5L10 14v-2.5H5v-2h5z"/></svg>
+                    </span>`
+              }
+              if(row.status == 2 ){
+                html += `
+                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="cancel mx-2" data-bs-placement="top" data-bs-title="Confirmar recepción">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24"><path fill="currentColor" d="M10.591 2.513a3.75 3.75 0 0 1 2.818 0l7.498 3.04A1.75 1.75 0 0 1 22 7.175v5.635a6.52 6.52 0 0 0-1.5-1.077v-3.96l-7.75 2.992v2.298a6.492 6.492 0 0 0-1.5 2.645v-4.944L3.5 7.75v9.078a.25.25 0 0 0 .156.231l7.499 3.04c.031.013.063.025.095.036l.189.076c.059.024.118.044.179.06c.248.526.565 1.014.94 1.451a3.75 3.75 0 0 1-1.967-.233l-7.498-3.04A1.75 1.75 0 0 1 2 16.827V7.176a1.75 1.75 0 0 1 1.093-1.622zm2.254 1.39a2.25 2.25 0 0 0-1.69 0L9.24 4.68l7.527 2.927l2.67-1.03zM4.59 6.564l7.411 2.883l2.69-1.04L7.216 5.5zM17.5 23.001a5.5 5.5 0 1 0 0-11a5.5 5.5 0 0 0 0 11m-1-4.207l3.646-3.647a.5.5 0 0 1 .708.707l-4 4a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.707z"/></svg>
+                    </span>`
+              }
               if(row.status != 0 && row.status != 3){
                 html += `
                 <span data-bs-toggle="tooltip"  data-id="${row.id}" class="cancel mx-2" data-bs-placement="top" data-bs-title="Cancelar Orden">
                   <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default  iconify iconify--ic" aria-describedby="v-tooltip-11" width="1em" height="1em" viewBox="0 0 24 24">
                     <path data-id="${row.id}" fill="currentColor" d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m3.59-13L12 10.59L8.41 7L7 8.41L10.59 12L7 15.59L8.41 17L12 13.41L15.59 17L17 15.59L13.41 12L17 8.41z"></path></svg>
                 </span>
+
                 `
               }
               html +=`</div>`
@@ -688,13 +795,19 @@
                         <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
                           <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
                       </span>
-                      <span data-bs-toggle="tooltip" data-id="${row.id}" class="change mx-3"  data-bs-placement="top" data-bs-title="Actualizar estado">
-                        <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--icon-park-outline" aria-describedby="v-tooltip-35" width="1em" height="1em" viewBox="0 0 48 48">
-                          <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
-                            <path data-id="${row.id}" d="M24 44c11.046 0 20-8.954 20-20S35.046 4 24 4S4 12.954 4 24s8.954 20 20 20"></path>
-                            <path data-id="${row.id}" d="M33.542 27c-1.274 4.057-5.064 7-9.542 7c-4.477 0-8.268-2.943-9.542-7v6m19.084-18v6c-1.274-4.057-5.064-7-9.542-7c-4.477 0-8.268 2.943-9.542 7"></path></g></svg>
-                      </span>
               `
+              if(row.status == 1 ){
+                html += `
+                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="cancel mx-3" data-bs-placement="top" data-bs-title="Cancelar Orden">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 32 32"><path fill="currentColor" d="m29.482 8.624l-10-5.5a1 1 0 0 0-.964 0l-10 5.5a1 1 0 0 0 0 1.752L18 15.591V26.31l-3.036-1.67L14 26.391l4.518 2.485a.998.998 0 0 0 .964 0l10-5.5A1 1 0 0 0 30 22.5v-13a1 1 0 0 0-.518-.876M19 5.142L26.925 9.5L19 13.858L11.075 9.5Zm9 16.767l-8 4.4V15.59l8-4.4Z"/><path fill="currentColor" d="M10 16H2v-2h8zm2 8H4v-2h8zm2-4H6v-2h8z"/></svg>
+                    </span>`
+              }
+              if(row.status == 2 ){
+                html += `
+                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="cancel mx-3" data-bs-placement="top" data-bs-title="Cancelar Orden">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path fill="currentColor" d="M10.591 2.513a3.75 3.75 0 0 1 2.818 0l7.498 3.04A1.75 1.75 0 0 1 22 7.175v5.635a6.52 6.52 0 0 0-1.5-1.077v-3.96l-7.75 2.992v2.298a6.492 6.492 0 0 0-1.5 2.645v-4.944L3.5 7.75v9.078a.25.25 0 0 0 .156.231l7.499 3.04c.031.013.063.025.095.036l.189.076c.059.024.118.044.179.06c.248.526.565 1.014.94 1.451a3.75 3.75 0 0 1-1.967-.233l-7.498-3.04A1.75 1.75 0 0 1 2 16.827V7.176a1.75 1.75 0 0 1 1.093-1.622zm2.254 1.39a2.25 2.25 0 0 0-1.69 0L9.24 4.68l7.527 2.927l2.67-1.03zM4.59 6.564l7.411 2.883l2.69-1.04L7.216 5.5zM17.5 23.001a5.5 5.5 0 1 0 0-11a5.5 5.5 0 0 0 0 11m-1-4.207l3.646-3.647a.5.5 0 0 1 .708.707l-4 4a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.707z"/></svg>
+                    </span>`
+              }
               if(row.status != 0 && row.status!= 3){
                   html += `
                     <span data-bs-toggle="tooltip" data-id="${row.id}" class="cancel mx-3" data-bs-placement="top" data-bs-title="Cancelar Orden">
@@ -935,6 +1048,22 @@
         })
         this.modal.show()
       },
+      hideModal(){
+        this.modal.hide()
+        this.clearNewOrderForm()
+      },
+      showInternalModal(modal) {
+        this.internalModal = new bootstrap.Modal(document.getElementById(modal), {
+          keyboard: false,              
+          backdrop:'static'
+        })
+        this.internalModal.show()
+      },
+      hideInternalModal(modal) {
+        
+        this.internalModal.hide()
+        this.modal.show()
+      },
       orderNumberFormat(id){
         return '0000000'.slice( 0, 6 - id.toString().length ) + id 
       },
@@ -942,10 +1071,6 @@
         this.snackShow = true;
         this.snackType = type
         this.snackMessage = messagge
-      },
-      hideModal(){
-        this.modal.hide()
-        this.clearNewOrderForm()
       },
       orderChangeStatus(){
         this.sendingButton('change-status-order-button')

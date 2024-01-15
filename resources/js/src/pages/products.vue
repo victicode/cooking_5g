@@ -124,10 +124,10 @@
                             <VCardText class="text-subtitle-1 pt-0 px-1 d-block">
                               <div class="font-weight-medium mb-0">Fecha de vencimiento proxima:</div>
                               <div class="font-weight-bold mt-2">
-                                <v-chip :class=" Math.round(moment.duration(moment(selectedProduct.due_date).diff(new moment())).as('days') ) > 30 ? 'bg-success' : 'bg-warning'">
+                                <v-chip :class=" Math.round(moment.duration(moment(selectedProduct.due_date_most_evenly).diff(new moment())).as('days') ) > 30 ? 'bg-success' : 'bg-warning'">
                                  {{
                                     selectedProduct.lotes[0]
-                                      ? moment(selectedProduct.due_date).format('DD-MM-YYYY') 
+                                      ? moment(selectedProduct.due_date_most_evenly).format('DD-MM-YYYY') 
                                       : '-----'
                                   }}
                                 </v-chip>

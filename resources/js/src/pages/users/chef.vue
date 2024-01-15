@@ -805,6 +805,11 @@ table.dataTable tbody th, table.dataTable tbody td{
         this.table.columns().search('').draw('full-hold')
       },
       showModal(modal) {
+        try {
+          this.modal.hide()
+        } catch (error) {
+          
+        }
         this.modal = new bootstrap.Modal(document.getElementById(modal), {
           keyboard: false,              
           backdrop:'static'

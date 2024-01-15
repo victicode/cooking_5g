@@ -23,7 +23,7 @@ const as = window
             <VCard class="modal__content">
               <div class="modal__close-button" >
                 <v-col  class="pa-0 pe-4">
-                  <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="actionModal('close')" ></v-btn>
+                  <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
                 </v-col>
               </div>
               <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column pa-2 pa-md-5 ">
@@ -52,10 +52,10 @@ const as = window
                     </div>
                     <div >
                       <div class="my-2  text-start">
-                        Solicitante: <a class="text-secondary fw-600">{{ order.client.name.toUpperCase() }}</a>
+                        Solicitante: {{ order.client.name.toUpperCase() }}
                       </div>
                       <div class="my-2 text-start">
-                        Dirección de destino: <a class="text-secondary fw-600">{{ order.other_address }}</a>
+                        Dirección de destino: {{ order.other_address }}
                       </div>
                     </div>
                   
@@ -75,17 +75,13 @@ const as = window
                     </div>
                     <div >
                       <div class="my-2  text-start text-md-end">
-                        Fecha de pedio: <a class="text-secondary fw-600">{{ moment(order.created_at).format('DD/MM/YYYY HH:mm:ss') }}</a>
+                        Fecha de pedio: {{ moment(order.created_at).format('DD/MM/YYYY HH:mm:ss') }}
                       </div>
                       <div class="my-2  text-start text-md-end">
-                        Tracker ID: <a class="text-secondary fw-600">{{ order.trancker }}</a>
+                        Tracker ID: {{ order.trancker }}
                       </div>
                     </div>
-                    <div class="d-flex justify-md-end justify-start mt-4 mb-4">
-                      <v-btn append-icon="icon-park-twotone:history-query"  rounded="xs" variant="outlined" @click="actionModal('show')">
-                        Historial
-                      </v-btn>
-                    </div>
+                  
                   </VCol>
                 </VRow>
                 <div class="w-100">
@@ -97,7 +93,7 @@ const as = window
                     <VBtn
                       color="white"
                       class="bg-secondary text-white w-50"
-                      @click="actionModal('close')"
+                      @click="hideModal()"
                     >
                       <VIcon icon="mingcute:close-fill" />
                       <span class="ms-2">Cerrar</span>
@@ -112,20 +108,16 @@ const as = window
     </div>
   </div>
 </template>
-<style>
-.fw-600{
-  font-weight: 600!important;
-}
-</style>
 <script>
+
 export default {
 
   methods:{
     orderNumberFormat(id){
         return '0000000'.slice( 0, 6 - id.toString().length ) + id 
     },
-    actionModal(action){
-      this.$emit('actionModal',action)
+    hideModal(){
+      this.$emit('hiddenModal')
     }
   }
 

@@ -15,8 +15,14 @@ const as = window
           <th class="text-uppercase px-2">
             Nombre del producto
           </th>
-          <th style="width: 200px; " class="px-2">
-            Cantidad solicitadas
+          <th style="text-align: start!important;" class="px-2">
+            Lote
+          </th>
+          <th class="px-2">
+            Fecha de vencimiento
+          </th>
+          <th style="width: 90px; " class="px-2">
+            Cantidad
           </th>
           <th style="width: 90px; " class="px-2">
             Despieces
@@ -31,6 +37,13 @@ const as = window
         >
           <td class="px-2">
             {{ product.title }}
+          </td>
+          <td class="px-2 blank-modal">
+            
+            {{ product.lote.lote_code }}
+          </td>
+          <td class="text-center px-2">
+            {{ moment(product.lote.due_date).format('DD/MM/YYYY') }}
           </td>
           <td class="text-center px-2"> 
             {{  product.pivot.quantity }}

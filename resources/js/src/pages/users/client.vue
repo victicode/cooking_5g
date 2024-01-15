@@ -276,7 +276,7 @@
           </div>
         </div>
       </div>
-      <viewOrderModal :order="selectedUser.selectedOrder" v-if="selectedUser.selectedOrder" @click="hideInternalModal()"  />
+      <viewOrderModal :order="selectedUser.selectedOrder" v-if="selectedUser.selectedOrder" @actionModal="hideInternalModal()"  />
     </div>
     <div class="modal animate__animated animate__fadeInDown"  id="createNewUser" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg mt-10" >
@@ -705,6 +705,11 @@ table.dataTable tbody th, table.dataTable tbody td{
         this.table.columns().search('').draw('full-hold')
       },
       showModal(modal) {
+        try {
+          this.modal.hide()
+        } catch (error) {
+          
+        }
         this.modal = new bootstrap.Modal(document.getElementById(modal), {
           keyboard: false,              
           backdrop:'static'
