@@ -416,10 +416,10 @@ table.dataTable tbody th, table.dataTable tbody td{
   .dataTables_scrollHeadInner{
     width: 500px!important;
   }
-  .max-width-700{
-    width: 500px!important;
-    margin-top: 30px!important;
-  }
+  // .max-width-700{
+  //   width: 500px!important;
+  //   margin-top: 30px!important;
+  // }
   .card-datatable > thead > tr > th.client_name{
     width: 80%!important;
   }

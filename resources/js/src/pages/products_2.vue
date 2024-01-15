@@ -888,56 +888,56 @@
   </VRow>
 </template>
 <style lang="scss">
-table.dataTable > thead > tr > th.title-th{
-  width: 35%!important;
-}
-.v-field--disabled{
-  opacity: inherit;
-}
-table.dataTable > thead > tr > th:nth-child(n+2){
-  width: 15%!important;
-}
-.v-messages__message{
-  color: #cf6123;
-  font-weight: 500;
-  text-align: start;
-  font-size: 13px!important;
+// table.dataTable > thead > tr > th.title-th{
+//   width: 35%!important;
+// }
+// .v-field--disabled{
+//   opacity: inherit;
+// }
+// table.dataTable > thead > tr > th:nth-child(n+2){
+//   width: 15%!important;
+// }
+// .v-messages__message{
+//   color: #cf6123;
+//   font-weight: 500;
+//   text-align: start;
+//   font-size: 13px!important;
 
-}
-.v-stepper.v-sheet{
-  width:100%
-}
-.v-stepper-window{
-  margin-right: 8px !important;
-  margin-left: 8px !important;
-}
-.v-stepper-window-item{
-  padding: 5px;
-}
-.dataTables_scrollBody{
-  overflow: hidden!important;
-}
-.max-width-700{
-  width: 100%!important;
-}
-@media screen and (max-width: 780px){
-  .dataTables_scrollHeadInner{
-    width: 500px!important;
-  }
-  .max-width-700{
-    width: 500px!important;
-    margin-top: 30px!important;
-  }
-  table.dataTable > thead > tr > th.title-th{
-    width: 25%!important;
-  }
-  table.dataTable > thead > tr > th:nth-child(n+2) {
-      width: 25%!important;
-  }
-  .dataTables_scrollBody{
-    overflow: auto!important;
-  }
-}
+// }
+// .v-stepper.v-sheet{
+//   width:100%
+// }
+// .v-stepper-window{
+//   margin-right: 8px !important;
+//   margin-left: 8px !important;
+// }
+// .v-stepper-window-item{
+//   padding: 5px;
+// }
+// .dataTables_scrollBody{
+//   overflow: hidden!important;
+// }
+// .max-width-700{
+//   width: 100%!important;
+// }
+// @media screen and (max-width: 780px){
+//   .dataTables_scrollHeadInner{
+//     width: 500px!important;
+//   }
+//   .max-width-700{
+//     width: 500px!important;
+//     margin-top: 30px!important;
+//   }
+//   table.dataTable > thead > tr > th.title-th{
+//     width: 25%!important;
+//   }
+//   table.dataTable > thead > tr > th:nth-child(n+2) {
+//       width: 25%!important;
+//   }
+//   .dataTables_scrollBody{
+//     overflow: auto!important;
+//   }
+// }
 </style>
 
 

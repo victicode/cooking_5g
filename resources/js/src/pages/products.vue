@@ -8,6 +8,7 @@
 
   import * as bootstrap from 'bootstrap'
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue'
+  import LotesProductTable from '@/views/pages/tables/LotesProductTable.vue'
   import debounce from 'debounce';
   
   import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
@@ -15,12 +16,12 @@
   import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
   import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
   import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
-  
+
   import moment from 'moment';
   import flatpickr from "flatpickr";
   import 'flatpickr/dist/flatpickr.min.css'
   import { Spanish } from "flatpickr/dist/l10n/es.js"
-  
+
   import { GET_PRODUCT_BY_ID, GET_PRODUCT_BY_SEARCH, STORE_PRODUCT, UPDATE_PRODUCT, ADD_STOCK, DELETE_PRODUCT, GET_LAST_LOTE} from "@/core/services/store/product.module";
   import { func } from '@/core/services/utils/utils.js'
 
@@ -395,7 +396,7 @@
                               Stock actual:
                               <span class=" ms-2" >
                                 <v-chip :class="selectedProduct.stock < 1 ? 'bg-error' : selectedProduct.stock >= 30 ? 'bg-success' : 'bg-warning'">
-                                  {{ selectedProduct.stock }}
+                                  {{ TotalStockByLotes(selectedProduct) }}
                                 </v-chip>
   
                               </span>
@@ -560,6 +561,76 @@
                           @click="deleteProduct()"
                         >
                           <span class="">Eliminar</span>
+                        </VBtn>
+                      </VCardActions>
+                    </div>
+                  </div>
+                </VCard>
+              </VCol>
+            </VCol>
+          </div>
+        </div>
+      </div>
+      <div class="modal animate__animated animate__fadeInDown" id="lotesTable" tabindex="-1" aria-labelledby="viewOrderLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg mt-10" >
+          <div class="modal-content">
+            <VCol
+              cols="12"
+              class="pa-0 d-flex justify-center"
+              style="position: relative;"
+            >
+            
+              <VCol
+                cols="12"
+              >
+                <VCard class="modal__content">
+                  <div class="modal__close-button" >
+                    <v-col  class="pa-0 pe-4">
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                    </v-col>
+                  </div>
+                  <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column pa-2 pa-md-5 ">
+                    <VRow  class="mb-2 ma-0">
+                      <VCol
+                        cols="12"
+                        class="py-0"
+                      >
+                        <div class="my-md-4 my-2 text-center text-md-start">
+                          <h2>Listado de lotes: {{ selectedProduct.title }} </h2>
+                        </div>
+                        <div >
+                          <div class="mb-2 mt-5  text-start">
+                            <span>Cantidad de lotes: <b>{{ selectedProduct.lotes.length }}</b></span>
+                            <span>
+                              <v-icon icon="system-uicons:boxes"  size="large"></v-icon>
+                            </span>
+                          </div>
+                          <div class="my-2  mb-0 text-start">
+                            <span>Fecha de venc. proxima: <b>{{ selectedProduct.due_date_most_evenly }}</b></span>
+                            <span>
+                              <v-icon icon="healthicons:i-schedule-school-date-time-outline d-none d-md-block"  size="large"></v-icon>
+                            </span>
+                          </div>
+                          <!-- <div class="my-2 text-start">
+                            Dirección de destino: {{ order.other_address }}
+                          </div> -->
+                        </div>
+                      
+                      </VCol>
+                    </VRow>
+                    <div class="w-100">
+                      <LotesProductTable  :lotes="selectedProduct.lotes" />
+                    </div>
+                    <VDivider  />
+                    <div class="mt-5 w-100 d-flex  justify-center">
+                      <VCardActions class=" justify-center w-75">
+                        <VBtn
+                          color="white"
+                          class="bg-secondary text-white w-50"
+                          @click="hideModal()"
+                        >
+                          <VIcon icon="mingcute:close-fill" />
+                          <span class="ms-2">Cerrar</span>
                         </VBtn>
                       </VCardActions>
                     </div>
@@ -881,11 +952,11 @@
   </VRow>
 </template>
 <style lang="scss">
-.card-datatable > thead > tr > th.title-th{
-  width: 35%!important;
+table.dataTable > thead > tr > th.title-th{
+  width: 40%!important;
 }
-.card-datatable > thead > tr > th:nth-child(n+2){
-  width: 15%!important;
+table.dataTable > thead > tr > th:nth-child(n+2){
+  width: 20%!important;
 }
 .v-messages__message{
   color: #cf6123;
@@ -912,18 +983,22 @@
 }
 @media screen and (max-width: 780px){
   .dataTables_scrollHeadInner{
-    width: 500px!important;
+    width: 650px!important;
   }
   .max-width-700{
-    width: 500px!important;
+    width:600px!important;
     margin-top: 30px!important;
   }
-  .card-datatable > thead > tr > th.title-th{
-    width: 25%!important;
+  table.dataTable > thead > tr > th.title-th, table.dataTable > tbody > tr > td.title-th{
+    width: 36%!important;
   }
-  .card-datatable > thead > tr > th:nth-child(n+2) {
-      width: 25%!important;
+  table.dataTable > thead > tr > th:nth-child(n+2), table.dataTable > tbody > tr > td:nth-child(n+2){
+      width: 27%!important;
   }
+  table.dataTable > thead > tr > th.laste_item, table.dataTable > tbody > tr > td.laste_item{
+    width: 10%!important;
+  }
+
   .dataTables_scrollBody{
     overflow: auto!important;
   }
@@ -1014,11 +1089,13 @@
               let diff_due_date = Math.round(moment.duration(product_due_date.diff(today)).as('days'));
               return `
                 <span 
+                  data-id="${row.id}"
                   class="view_lotes v-chip v-theme--light v-chip--density-comfortable elevation-0 v-chip--size-default v-chip--variant-tonal ${ diff_due_date < 1 ? 'bg-error' : diff_due_date >= 30 ? 'bg-success' : 'bg-warning'}" 
                   draggable="false"
+                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="${row.lotes[0].lote_code} (${row.lotes[0].quantity})"
                   >
-                    <span class="v-chip__underlay"></span>
-                  <div class="v-chip__content">${moment(row.due_date_most_evenly).format('DD-MM-YYYY')} </div>
+                  <span class="v-chip__underlay" data-id="${row.id}"></span>
+                  <div class="v-chip__content" data-id="${row.id}">${moment(row.due_date_most_evenly).format('DD-MM-YYYY')} </div>
                 </span> 
               `
             }
@@ -1027,14 +1104,25 @@
             title: 'Stock total',
             class:'text-center ',
             render: ( data, type, row, meta ) =>{ 
+              let total = 0
+              row.lotes.forEach((lote)=>{
+                total += lote.quantity;
+              })
               return `
-              <span 
-                class="v-chip v-theme--light v-chip--density-comfortable elevation-0 v-chip--size-default v-chip--variant-tonal ${row.stock < 1 ? 'bg-error' : row.stock >= 30 ? 'bg-success' : 'bg-warning'}" 
-                draggable="false"
-                >
-                  <span class="v-chip__underlay"></span>
-                <div class="v-chip__content">${$number_format(row.stock)} ${row.type_of_unit}</div>
-              </span> `
+              <div class="d-flex justify-center align-center" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="${row.lotes.length} lotes">
+                <span 
+                  class="v-chip v-theme--light v-chip--density-comfortable elevation-0 v-chip--size-default v-chip--variant-tonal ${row.stock < 1 ? 'bg-error' : row.stock >= 30 ? 'bg-success' : 'bg-warning'}" 
+                  draggable="false"
+                  >
+                    <span class="v-chip__underlay"></span>
+                  <div class="v-chip__content">${$number_format(total)} ${row.type_of_unit}</div>
+                </span> 
+                <span class="d-flex justify-center align-center me-1">
+                  <div class="ms-1">(${row.lotes.length})</div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 21 21"><g fill="none" fill-rule="evenodd" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 15.429l3.548 1.837a1 1 0 0 0 .907.006l2.992-1.496a1 1 0 0 0 .553-.894v-2.764a1 1 0 0 0-.553-.894L14.5 9.5l-3.46 1.792a1 1 0 0 0-.54.888z"/><path d="m3.04 15.708l3.008 1.558a1 1 0 0 0 .907.006L10.5 15.5v-3.382a1 1 0 0 0-.553-.894L6.5 9.5l-3.46 1.792a1 1 0 0 0-.54.888v2.64a1 1 0 0 0 .54.888M6.5 9.429l3.548 1.837a1 1 0 0 0 .907.006L14.5 9.5V6.118a1 1 0 0 0-.553-.894l-2.992-1.496a1 1 0 0 0-.907.006L7.04 5.292a1 1 0 0 0-.54.888z"/><path d="m6.846 5.673l3.207 1.603a1 1 0 0 0 .894 0L14.12 5.69h0M8.799 4.649L12.5 6.5m.299 4.149L16.5 12.5M4.799 10.649L8.5 12.5m2.346-.827l3.207 1.603a1 1 0 0 0 .894 0l3.172-1.586h0m-15.273-.017l3.207 1.603a1 1 0 0 0 .894 0l3.172-1.586h0M10.5 7.5v4m4 2V17m-8-3.5V17"/></g></svg>
+                </span>
+              </div>
+              `
             } 
 
           },
@@ -1042,7 +1130,7 @@
             title: '<span class="d-none d-md-block">Acciones</span> <span class="d-flex d-md-none justify-center "><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="#8c8c8c" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 4H7.2c-1.12 0-1.68 0-2.108.218a1.999 1.999 0 0 0-.874.874C4 5.52 4 6.08 4 7.2v9.6c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874c.427.218.987.218 2.105.218h9.606c1.118 0 1.677 0 2.104-.218c.377-.192.683-.498.875-.874c.218-.428.218-.987.218-2.105V14m-4-9l-6 6v3h3l6-6m-3-3l3-3l3 3l-3 3m-3-3l3 3"/></svg></span>',
             orderable: false, 
             searchable: false, 
-            class:'text-center',
+            class:'text-center laste_item',
             render: ( data, type, row, meta ) =>{ 
               return `
               <div class="d-md-flex d-none justify-center">
@@ -1160,14 +1248,23 @@
     methods:{
       stockCalculate(){
         this.selectedProduct.newStock =  this.stockOperation.type == 1
-          ? parseInt(this.selectedProduct.stock)  + parseInt(this.stockOperation.quantity)
-          : parseInt(this.selectedProduct.stock)  - parseInt(this.stockOperation.quantity)
+          ? parseInt(this.TotalStockByLotes(this.selectedProduct))  + parseInt(this.stockOperation.quantity)
+          : parseInt(this.TotalStockByLotes(this.selectedProduct))  - parseInt(this.stockOperation.quantity)
       
       },
       initOptionsTable(){
         document.getElementById('data-table').addEventListener('OptionsActionTable', () => this.activeOptionsTable() )	
       },
       activeOptionsTable() {
+        document.querySelectorAll('.view_lotes').forEach(item => {
+          item.addEventListener('click', event => {
+            this.selectProduct(event.target.dataset.id).finally((data)=>{
+              setTimeout(() => {
+                this.showModal('lotesTable')
+              }, 800);
+            })
+          })	
+        })
         document.querySelectorAll('.view').forEach(item => {
           item.addEventListener('click', event => {
             this.selectProduct(event.target.dataset.id).finally((data)=>{
@@ -1228,7 +1325,6 @@
             });
           });
       },
-      
       getProducts(search = "", index){
 
         const loge = {
@@ -1269,7 +1365,7 @@
           const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
           const dropdownElementList = document.querySelectorAll('.dropdown-toggle')
           const dropdownList = [...dropdownElementList].map(dropdownToggleEl => new bootstrap.Dropdown(dropdownToggleEl))
-        }, 2000);
+        }, 1000);
       },
       showModal(modal) {
         try {
@@ -1287,6 +1383,7 @@
         debounce(()=>{
           this.table.clear();
           this.table.draw('full-hold');
+          this.bootstrapOptions()
         }, 300)()
       },
       clearFilters(){
@@ -1513,8 +1610,8 @@
           })
           .catch((err) => {
             console.log(err)
-            // this.hideModal()
-            this.showSnackbar('error', err )
+            this.hideModal()
+            this.showSnackbar('error', 'Error al actualizar el stock')
             this.readyButton('add_stock_form_button')
           })
         
@@ -1901,6 +1998,38 @@
           this.formatLoteName(this.$event)
         })
           
+      },
+      TotalStockByLotes(product){
+        let total = 0
+
+        product.lotes.forEach((lote)=>{
+          total += lote.quantity;
+        })
+        return total
+      },
+      addValidateMax(max){
+        // this.forms[id] 
+        
+        let form = document.getElementById('add_stock_form'),
+        quantityInput = form.querySelector('input[name="stock_form_quatity"]'),
+        fieldOptions={
+          quantity: {
+            validators: {
+              notEmpty: {
+                message: "Agregar la cantidad unidades"
+              },
+              numeric: {
+                message: "Debe ser númerico"
+              },
+              lessThan: {
+                message: "Cantidad supera el stock",
+                max: max,
+              },
+            }
+          }
+        } 
+        this.forms['add_stock_form'].addField(quantityInput.name, fieldOptions.quantity)
+        return
       },
     },
     computed: {

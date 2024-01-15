@@ -49,16 +49,16 @@ const router = createRouter({
             title : 'Productos'
           },
         },
-        {
-          path: "/products_2",
-          component: products_2Component,
-          meta: {
-            middleware: [
-              auth
-            ],
-            title : 'Productos'
-          },
-        },
+        // {
+        //   path: "/products_2",
+        //   component: products_2Component,
+        //   meta: {
+        //     middleware: [
+        //       auth
+        //     ],
+        //     title : 'Productos'
+        //   },
+        // },
         {
           path: "/orders",
           component: ordersComponent,
