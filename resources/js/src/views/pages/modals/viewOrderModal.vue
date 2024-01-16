@@ -121,6 +121,7 @@ const as = window
 export default {
 
   methods:{
+    
     orderNumberFormat(id){
         return '0000000'.slice( 0, 6 - id.toString().length ) + id 
     },

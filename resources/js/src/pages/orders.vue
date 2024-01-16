@@ -13,6 +13,9 @@
 
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue';
   import viewOrderModal from '@/views/pages/modals/viewOrderModal.vue';
+  import viewCreateOutOrderModal from '@/views/pages/modals/viewCreateOutOrderModal.vue';
+  import viewSelectLoteProductForOutOrder from '@/views/pages/modals/viewSelectLoteProductForOutOrder.vue';
+
   import * as bootstrap from 'bootstrap';
   import debounce from 'debounce';
 
@@ -92,7 +95,9 @@
       </VCard>
     </VCol>
     <div v-if="Object.keys(selectedOrder).length > 2">
-      <viewOrderModal :order="selectedOrder"  @actionModal="hideModal()" />
+      <viewOrderModal :order="selectedOrder"  @actionModal="modalAction" />
+      <viewCreateOutOrderModal :order="selectedOrder"  @actionModal="modalAction"  />
+      <!-- <viewSelectLoteProductForOutOrder v-if="Object.keys(assignedProduct).length > 2" /> -->
       <div class="modal animate__animated animate__fadeInDown" id="changeStatusOrder" tabindex="-1" aria-labelledby="changeStatusOrderLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl mt-10" >
           <div class="modal-content">
@@ -107,7 +112,7 @@
                 <VCard class="modal__content">
                   <div class="modal__close-button" >
                     <v-col  class="pa-0 pe-4">
-                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideInternalModal()" ></v-btn>
                     </v-col>
                   </div>
                   <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
@@ -157,7 +162,7 @@
                                   <div class="timeline__divider"></div>
                                   <div class="timeline__middle">
                                     <input type="checkbox" value="2" id="in-transit" name="newStatus" ref="newStatus" class="d-none" v-if="selectedOrder.status == 1"  @input="validateChangeStatus()">
-                                    <label for="in-transit">
+                                    <label for="in-transits">
                                       <div class="timeline__content--item-center " :class="selectedOrder.status > 1 ? 'bg-primary' :'bg-unavailable'">
                                         <div class="timeline__content--item-text up" :class="{'opacity-0' : selectedOrder.status == 1 } " >
                                           <h3>
@@ -181,7 +186,7 @@
                                   <div class="timeline__divider"></div>
                                   <div class="timeline__middle">
                                     <input type="checkbox" value="3" id="complete" name="newStatus" ref="newStatus" class="d-none" v-if="selectedOrder.status == 2"  @input="validateChangeStatus()">
-                                    <label for="complete">
+                                    <label for="completes">
                                       <div class="timeline__content--item-center " :class="selectedOrder.status > 2 ? 'bg-primary' :'bg-unavailable'">
                                         <div class="timeline__content--item-text up" :class="{'opacity-0' : selectedOrder.status <= 2 } " >
                                           <h3>
@@ -223,7 +228,7 @@
                       </VCol>
                     </VRow>
                     <VDivider  />
-                    <div class="mt-5 w-100 d-md-flex  d-block justify-center">
+                    <!-- <div class="mt-5 w-100 d-md-flex  d-block justify-center">
                       <VCardActions class=" justify-center w-100 d-md-flex  d-block">
                         <VRow class="ma-0 pa-0  mt-0 align-center">
                           <VCol cols="12" md="6" offset-md="3" class="mt-0 py-0 px-0">
@@ -245,7 +250,7 @@
                           </VCol>
                         </VRow>
                       </VCardActions>
-                    </div>
+                    </div> -->
                   </div>
                 </VCard>
               </VCol>
@@ -417,6 +422,7 @@
         </div>
       </div> -->
     </div>
+
     <div class="modal animate__animated animate__fadeInDown"  id="createOrder" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg mt-10" >
         <div class="modal-content">
@@ -649,6 +655,7 @@
       snackType:'',
       snacktimeOut:5000,
       selectedOrder:{},
+      assignedProduct:{},
       table:'',
       alertShow:false,
       alertMessage:'',
@@ -763,14 +770,16 @@
               `
               if(row.status == 1 ){
                 html += `
-                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="cancel mx-2" data-bs-placement="top" data-bs-title="Procesar salida">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path fill="currentColor" d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5s.67 1.5 1.5 1.5m1.5-9H17V12h4.46zM6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5s.67 1.5 1.5 1.5M20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4zM3 6v9h.76c.55-.61 1.35-1 2.24-1c.89 0 1.69.39 2.24 1H15V6zm7 1l3.5 3.5L10 14v-2.5H5v-2h5z"/></svg>
+                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="process mx-2" data-bs-placement="top" data-bs-title="Procesar salida">
+                      <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24">
+                        <path data-id="${row.id}" fill="currentColor" d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5s.67 1.5 1.5 1.5m1.5-9H17V12h4.46zM6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5s.67 1.5 1.5 1.5M20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4zM3 6v9h.76c.55-.61 1.35-1 2.24-1c.89 0 1.69.39 2.24 1H15V6zm7 1l3.5 3.5L10 14v-2.5H5v-2h5z"/></svg>
                     </span>`
               }
               if(row.status == 2 ){
                 html += `
-                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="cancel mx-2" data-bs-placement="top" data-bs-title="Confirmar recepción">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24"><path fill="currentColor" d="M10.591 2.513a3.75 3.75 0 0 1 2.818 0l7.498 3.04A1.75 1.75 0 0 1 22 7.175v5.635a6.52 6.52 0 0 0-1.5-1.077v-3.96l-7.75 2.992v2.298a6.492 6.492 0 0 0-1.5 2.645v-4.944L3.5 7.75v9.078a.25.25 0 0 0 .156.231l7.499 3.04c.031.013.063.025.095.036l.189.076c.059.024.118.044.179.06c.248.526.565 1.014.94 1.451a3.75 3.75 0 0 1-1.967-.233l-7.498-3.04A1.75 1.75 0 0 1 2 16.827V7.176a1.75 1.75 0 0 1 1.093-1.622zm2.254 1.39a2.25 2.25 0 0 0-1.69 0L9.24 4.68l7.527 2.927l2.67-1.03zM4.59 6.564l7.411 2.883l2.69-1.04L7.216 5.5zM17.5 23.001a5.5 5.5 0 1 0 0-11a5.5 5.5 0 0 0 0 11m-1-4.207l3.646-3.647a.5.5 0 0 1 .708.707l-4 4a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.707z"/></svg>
+                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="confirm mx-2" data-bs-placement="top" data-bs-title="Confirmar recepción">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M10.591 2.513a3.75 3.75 0 0 1 2.818 0l7.498 3.04A1.75 1.75 0 0 1 22 7.175v5.635a6.52 6.52 0 0 0-1.5-1.077v-3.96l-7.75 2.992v2.298a6.492 6.492 0 0 0-1.5 2.645v-4.944L3.5 7.75v9.078a.25.25 0 0 0 .156.231l7.499 3.04c.031.013.063.025.095.036l.189.076c.059.024.118.044.179.06c.248.526.565 1.014.94 1.451a3.75 3.75 0 0 1-1.967-.233l-7.498-3.04A1.75 1.75 0 0 1 2 16.827V7.176a1.75 1.75 0 0 1 1.093-1.622zm2.254 1.39a2.25 2.25 0 0 0-1.69 0L9.24 4.68l7.527 2.927l2.67-1.03zM4.59 6.564l7.411 2.883l2.69-1.04L7.216 5.5zM17.5 23.001a5.5 5.5 0 1 0 0-11a5.5 5.5 0 0 0 0 11m-1-4.207l3.646-3.647a.5.5 0 0 1 .708.707l-4 4a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.707z"/></svg>
                     </span>`
               }
               if(row.status != 0 && row.status != 3){
@@ -798,14 +807,16 @@
               `
               if(row.status == 1 ){
                 html += `
-                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="cancel mx-3" data-bs-placement="top" data-bs-title="Cancelar Orden">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 32 32"><path fill="currentColor" d="m29.482 8.624l-10-5.5a1 1 0 0 0-.964 0l-10 5.5a1 1 0 0 0 0 1.752L18 15.591V26.31l-3.036-1.67L14 26.391l4.518 2.485a.998.998 0 0 0 .964 0l10-5.5A1 1 0 0 0 30 22.5v-13a1 1 0 0 0-.518-.876M19 5.142L26.925 9.5L19 13.858L11.075 9.5Zm9 16.767l-8 4.4V15.59l8-4.4Z"/><path fill="currentColor" d="M10 16H2v-2h8zm2 8H4v-2h8zm2-4H6v-2h8z"/></svg>
-                    </span>`
+                <span data-bs-toggle="tooltip" data-id="${row.id}" class="process mx-3" data-bs-placement="top" data-bs-title="Procesar salida">
+                  <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" width="1em" height="1em" viewBox="0 0 24 24">
+                    <path data-id="${row.id}" fill="currentColor" d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5s.67 1.5 1.5 1.5m1.5-9H17V12h4.46zM6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5s.67 1.5 1.5 1.5M20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4zM3 6v9h.76c.55-.61 1.35-1 2.24-1c.89 0 1.69.39 2.24 1H15V6zm7 1l3.5 3.5L10 14v-2.5H5v-2h5z"/></svg>
+                </span>`
               }
               if(row.status == 2 ){
                 html += `
-                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="cancel mx-3" data-bs-placement="top" data-bs-title="Cancelar Orden">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path fill="currentColor" d="M10.591 2.513a3.75 3.75 0 0 1 2.818 0l7.498 3.04A1.75 1.75 0 0 1 22 7.175v5.635a6.52 6.52 0 0 0-1.5-1.077v-3.96l-7.75 2.992v2.298a6.492 6.492 0 0 0-1.5 2.645v-4.944L3.5 7.75v9.078a.25.25 0 0 0 .156.231l7.499 3.04c.031.013.063.025.095.036l.189.076c.059.024.118.044.179.06c.248.526.565 1.014.94 1.451a3.75 3.75 0 0 1-1.967-.233l-7.498-3.04A1.75 1.75 0 0 1 2 16.827V7.176a1.75 1.75 0 0 1 1.093-1.622zm2.254 1.39a2.25 2.25 0 0 0-1.69 0L9.24 4.68l7.527 2.927l2.67-1.03zM4.59 6.564l7.411 2.883l2.69-1.04L7.216 5.5zM17.5 23.001a5.5 5.5 0 1 0 0-11a5.5 5.5 0 0 0 0 11m-1-4.207l3.646-3.647a.5.5 0 0 1 .708.707l-4 4a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.707z"/></svg>
+                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="confirm mx-3" data-bs-placement="top" data-bs-title="Confirmar recepción">
+                      <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg"role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" width="1em" height="1em" viewBox="0 0 24 24">
+                        <path data-id="${row.id}" fill="currentColor" d="M10.591 2.513a3.75 3.75 0 0 1 2.818 0l7.498 3.04A1.75 1.75 0 0 1 22 7.175v5.635a6.52 6.52 0 0 0-1.5-1.077v-3.96l-7.75 2.992v2.298a6.492 6.492 0 0 0-1.5 2.645v-4.944L3.5 7.75v9.078a.25.25 0 0 0 .156.231l7.499 3.04c.031.013.063.025.095.036l.189.076c.059.024.118.044.179.06c.248.526.565 1.014.94 1.451a3.75 3.75 0 0 1-1.967-.233l-7.498-3.04A1.75 1.75 0 0 1 2 16.827V7.176a1.75 1.75 0 0 1 1.093-1.622zm2.254 1.39a2.25 2.25 0 0 0-1.69 0L9.24 4.68l7.527 2.927l2.67-1.03zM4.59 6.564l7.411 2.883l2.69-1.04L7.216 5.5zM17.5 23.001a5.5 5.5 0 1 0 0-11a5.5 5.5 0 0 0 0 11m-1-4.207l3.646-3.647a.5.5 0 0 1 .708.707l-4 4a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.707z"/></svg>
                     </span>`
               }
               if(row.status != 0 && row.status!= 3){
@@ -908,11 +919,12 @@
             })
           })	
         })
-        document.querySelectorAll('.change').forEach(item => {
+        document.querySelectorAll('.process').forEach(item => {
           item.addEventListener('click', event => {
             this.selectOrder(event.target.dataset.id).finally((data)=>{
               setTimeout(() => {
-                this.showModal('changeStatusOrder')
+                console.log('aguja')
+                this.showModal('createOutOrder')
               }, 500);
             })
           })	
@@ -1052,14 +1064,21 @@
         this.modal.hide()
         this.clearNewOrderForm()
       },
+      modalAction(action){ 
+        console.log(action)
+        if(action == 'close') {this.hideModal(); return}
+        this.showInternalModal('changeStatusOrder')
+      },
       showInternalModal(modal) {
+        this.modal.hide()
+
         this.internalModal = new bootstrap.Modal(document.getElementById(modal), {
           keyboard: false,              
           backdrop:'static'
         })
         this.internalModal.show()
       },
-      hideInternalModal(modal) {
+      hideInternalModal() {
         
         this.internalModal.hide()
         this.modal.show()
