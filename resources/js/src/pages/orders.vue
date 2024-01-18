@@ -14,7 +14,7 @@
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue';
   import viewOrderModal from '@/views/pages/modals/viewOrderModal.vue';
   import viewCreateOutOrderModal from '@/views/pages/modals/viewCreateOutOrderModal.vue';
-  import viewSelectLoteProductForOutOrder from '@/views/pages/modals/viewSelectLoteProductForOutOrder.vue';
+  // import viewSelectLoteProductForOutOrder from '@/views/pages/modals/viewSelectLoteProductForOutOrder.vue';
 
   import * as bootstrap from 'bootstrap';
   import debounce from 'debounce';
@@ -96,7 +96,7 @@
     </VCol>
     <div v-if="Object.keys(selectedOrder).length > 2">
       <viewOrderModal :order="selectedOrder"  @actionModal="modalAction" />
-      <viewCreateOutOrderModal :order="selectedOrder"  @actionModal="modalAction"  />
+      <viewCreateOutOrderModal :order="selectedOrder"  @actionModal="modalAction"  @checkProductOrder="checkProductOrder"  />
       <!-- <viewSelectLoteProductForOutOrder v-if="Object.keys(assignedProduct).length > 2" /> -->
       <div class="modal animate__animated animate__fadeInDown" id="changeStatusOrder" tabindex="-1" aria-labelledby="changeStatusOrderLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl mt-10" >
@@ -1324,6 +1324,10 @@
         }
         
       },
+      checkProductOrder(id){
+        console.log(this.selectedOrder.products.filter())
+        // this.selectOrder.products.
+      }
       
     },
     mounted(){
