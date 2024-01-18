@@ -1,11 +1,16 @@
 <script setup>
 import moment from 'moment';
+import * as bootstrap from 'bootstrap';
 import CreateOutOrderProductsTables from '@/views/pages/tables/CreateOutOrderProductsTables.vue';
+import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
+import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
+import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
+import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
+import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
 const props = defineProps({
   order: Object,
 })
-import * as bootstrap from 'bootstrap';
-import filter from '../../../assets/plugins/formvalidation/src/js/core/filter';
+
 
 </script>
 <template>
@@ -131,6 +136,8 @@ import filter from '../../../assets/plugins/formvalidation/src/js/core/filter';
                         <div class="card-title text-center">
                           <div class="form-title__part1"><h4>Asignar producto a la orden:</h4></div>
                           <h2 class="my-2">{{ selectedProduct.title }}</h2>
+                          <h6 class="my-2">orden #{{ orderNumberFormat(order.id) }}</h6>
+
                           <h5 class="my-2">Cantidad solicitada: {{ selectedProduct.pivot.quantity }} {{ selectedProduct.type_of_unit}}</h5>
                           
                         </div>
@@ -143,7 +150,7 @@ import filter from '../../../assets/plugins/formvalidation/src/js/core/filter';
                       ></v-alert>
                     </VCardText> -->
                     <VCardText class="w-100 pb-5 px-3 px-md-6">
-                      <VForm  id="new_order_form">
+                      <VForm  id="select_lote_for_order">
                         <VRow 
                           class="ma-0 pa-0  mt-1 align-center" 
                           >
@@ -151,24 +158,14 @@ import filter from '../../../assets/plugins/formvalidation/src/js/core/filter';
                                 <v-tooltip text="Agregar nuevo despiece">
                                     <template v-slot:activator="{ props }">
                                       <v-col cols="auto" class="">
-                                        <VBtn v-bind="props" color="primary" class="w-100"  @click="addProductInput()"><VIcon icon="bx-plus"/> Agregar lote</VBtn>
+                                        <VBtn v-bind="props" color="primary" class="w-100"  @click="addLoteInput()"><VIcon icon="bx-plus"/> Agregar lote</VBtn>
                                       </v-col>
                                     </template>
                                   </v-tooltip>
                               </VCol>
                               <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
-                                <VRow  v-for="(item,index) in selectedsLotes"  v-bind:key="item.id" class=" position-relative relative pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'new_order_product_'+index">
-                                  <VCol cols="12"  md="5" class="form-group pb-md-0  mb-md-1">
-                                    <VTextField
-                                      placeholder="Producto"
-                                      label="Producto"
-                                      type="tex"
-                                      :name="'product_in_order_quantity_'+index"
-                                      v-model="selectedProduct.title"
-                                      disabled
-                                    />
-                                  </VCol>
-                                  <VCol cols="12"  md="4" class="form-group pb-md-0  mb-md-1">
+                                <VRow  v-for="(item,index) in selectedsLotes"  v-bind:key="item.id" class=" position-relative relative pa-0 ma-0 align-center w-100 mt-5 mt-md-4"  :id="'new_order_product_'+index">
+                                  <VCol cols="12"  md="6" class="form-group pb-md-0  mb-md-1">
                                     <v-combobox  
                                       :items="selectedProduct.lotes"
                                       item-title="lote_code"
@@ -176,7 +173,7 @@ import filter from '../../../assets/plugins/formvalidation/src/js/core/filter';
                                       placeholder="Número de lote"
                                       label="Número de lote"
                                       type="text"
-                                      name="new_order_client"
+                                      :name="'product_in_order_lote_'+index"
                                       v-model="item.lote"  
                                       autocomplete="off"
                                       persistent-hint
@@ -185,29 +182,23 @@ import filter from '../../../assets/plugins/formvalidation/src/js/core/filter';
                                       @update:modelValue="selectedLotes($event,index)"
                                     ></v-combobox >
                                   </VCol>
-                                  <VCol cols="6"  md="3" class="form-group pb-md-0 pt-1 mb-md-5">
+                                  <VCol cols="12"  md="6" class="form-group pb-md-0  mb-md-1">
                                     <VTextField
                                       placeholder="Unidades solicitadas"
                                       label="Unidades solicitadas"
                                       type="number"
+                                      persistent-hint
+                                      :hint="'Stock de lote: ' + (item.lote.quantity ? item.lote.quantity  : '----')"
                                       :name="'product_in_order_quantity_'+index"
                                       v-model="item.quantity"
+                                      @keyup="calculateUnitOrders()"
                                     />
                                   </VCol>
-                                  <!-- <VCol cols="2" md="1" class="form-group pa-0 mb-md-5 d-none d-md-block ">
-                                    <v-tooltip text="Quitar producto">
-                                      <template v-slot:activator="{ props }">
-                                        <v-col cols="auto" class="pa-0">
-                                          <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeProductInput(index)"></v-btn>
-                                        </v-col>
-                                      </template>
-                                    </v-tooltip>
-                                  </VCol>  -->
                                   <div class="form-group pa-0 mb-md-5  small-delete-product-button ">
                                     <v-tooltip text="Quitar producto">
                                       <template v-slot:activator="{ props }">
                                         <v-col cols="auto" class="pa-0">
-                                          <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeProductInput(index)"></v-btn>
+                                          <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeLote(index)"></v-btn>
                                         </v-col>
                                       </template>
                                     </v-tooltip>
@@ -216,9 +207,9 @@ import filter from '../../../assets/plugins/formvalidation/src/js/core/filter';
                               </div>
                         </VRow>
                         <VRow class="ma-0 pa-0  mt-8 align-center">
-                          <VCol cols="12" md="4" offset-md="4" class="mt-0 py-0 px-0">
+                          <VCol cols="12" md="6" offset-md="3" class="mt-0 py-0 px-0">
                             <v-col cols="auto" class="">
-                              <VBtn  color="primary" class="w-100 " type="submit" disabled id="new_order_form_button"> Guardar</VBtn>
+                              <VBtn  color="primary" class="w-100 " type="submit" disabled id="select_lote_for_order_button"> Guardar</VBtn>
                             </v-col>
                           </VCol>
                         </VRow>
@@ -238,17 +229,18 @@ import filter from '../../../assets/plugins/formvalidation/src/js/core/filter';
   font-weight: 600!important;
 }
 .internalModalOrder{
-  box-shadow: 0px 4px 17px 1px #a7a7a7;
+  box-shadow: 0px 5px 32px 0px #5f5f5fe6;
     border-radius: 15px;
 }
 </style>
 <script>
 export default {
   data: () => ({
+    forms:'',
     modal:'', 
     selectedProduct:'',
     selectedsLotes:[
-      {title:'', lote:'', quantity:'', selected_lote_id:''}
+      {lote:'', quantity:'', selected_lote_id:''}
     ]
   }),
   mounted(){
@@ -270,21 +262,161 @@ export default {
       this.modal.hide()
     },
     selectProduct(id){
-      console.log(id)
       this.selectedProduct = this.order.products.filter(product => product.id == id)[0]
-
-      console.log(this.selectedProduct)
       setTimeout(() => {
         this.showModal('selectedProductLote')
-        console.log('per')
+        this.validateFormItem()
       }, 500);
+    },
+    removeLote(index){
+        
+      // this.removeValidate(index)
+
+      setTimeout(() => {
+        try{
+          this.selectedsLotes.splice(index, 1)
+          // this.productsForOrder.splice(index, 1)
+        }catch(e){
+
+        }
+      }, 200);
+      
+    },
+    addLoteInput(){
+      let newLote = {lote:'', quantity:'', selected_lote_id:''}
+      this.selectedsLotes.push(newLote)
+      setTimeout(() => {
+        this.createValidate()
+
+      }, 200);
+
+    }, 
+    selectedLotes(e, index){
+      this.selectedsLotes[index].maxValue = e.quantity
+      this.selectedsLotes[index].indexLote = index
+      setTimeout(() => {
+        this.forms.validateField('product_in_order_lote_'+index)
+          this.addValidate(this.selectedsLotes[index])
+        }, 200);
     },
     orderNumberFormat(id){
         return '0000000'.slice( 0, 6 - id.toString().length ) + id 
     },
+    validateFormItem(){
+      this.forms = formValidation(document.getElementById('select_lote_for_order'), {
+        fields: {
+          product_in_order_lote_0:{
+              validators: {
+                notEmpty: {
+                  message: "El cliente es requerido"
+                },
+              }
+            },
+        },
+        plugins: {
+          trigger: new Trigger(),
+          submitButton: new SubmitButton(),
+          bootstrap: new Bootstrap({
+                // Use this for enabling/changing valid/invalid class
+                // eleInvalidClass: '',
+                // eleValidClass: '',
+              }),
+        }
+      });
+      setTimeout( ()=> this.formsActions(), 500)
+    },
+    formsActions(){
+      
+      this.forms.on("core.form.valid", () => {
+        this.createdNewOrder('select_lote_for_order_button')
+      }).on("core.field.valid", () => {
+        this.enableButton('select_lote_for_order_button')
+
+      }).on("core.form.invalid", () => {
+        this.disabledButton('select_lote_for_order_button')
+
+      }).on("core.field.invalid", () => {
+        this.disabledButton('select_lote_for_order_button')
+
+      });
+    },
     actionModal(action){
       this.$emit('actionModal',action)
-    }
+    },
+    destroyFormVal(){
+      this.forms.destroy()
+    },
+    addValidate(lote){
+      let form = document.getElementById('select_lote_for_order'),
+      quantityInput = form.querySelector('input[name="product_in_order_quantity_'+lote.indexLote+'"]'),
+      fieldOptions={
+        quantity: {
+          validators: {
+            notEmpty: {
+              message: "Agregar la cantidad unidades"
+            },
+            numeric: {
+              message: "Debe ser númerico"
+            },
+            lessThan: {
+              message: "Cantidad supera el stock",
+              max: lote.lote.quantity,
+            },
+          }
+        }
+      } 
+      this.forms.addField(quantityInput.name, fieldOptions.quantity)
+      return
+    },
+    createValidate(){
+
+      let form = document.getElementById('select_lote_for_order')
+      let index = form.querySelectorAll('input[name*="product_in_order_lote_"]').length - 1
+      let input = form.querySelector('input[name="product_in_order_lote_'+index+'"]'),
+      fieldOptions={
+        selectLote: {
+          validators: {
+            notEmpty: {
+              message: "Debes selecionar un lote"
+            },
+          }
+        }
+      } 
+      this.forms.addField(input.name, fieldOptions.selectLote)
+      return
+    },
+    calculateUnitOrders(){
+      const sendButton = document.getElementById('select_lote_for_order_button')
+      let total = 0
+      this.selectedsLotes.forEach( el =>  total = parseInt(total) + parseInt(el.quantity))
+      if(total < this.selectedProduct.pivot.quantity){
+        
+        this.enableButton('select_lote_for_order_button')
+        return
+      }
+      this.disabledButton('select_lote_for_order_button')
+    },
+    enableButton(id){
+      const sendButton = document.getElementById(id)
+      sendButton.disabled = false
+      sendButton.classList.remove('v-btn--disabled') 
+
+    },
+    disabledButton(id){
+      const sendButton = document.getElementById(id)
+      sendButton.disabled = true
+      sendButton.classList.add('v-btn--disabled')
+    },
+    removeValidate(){
+      let form = document.getElementById('new_order_form'),
+      quantityInput = form.querySelectorAll('input[name*="product_in_order_quantity_"]')[ form.querySelectorAll('input[name*="product_in_order_quantity_"]').length - 1]
+      try {
+        this.forms.removeField(quantityInput.name)
+      } catch (error) {
+        console.log('no hay validación activa')
+      }
+      
+    },
   }
 
 

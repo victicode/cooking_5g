@@ -626,7 +626,7 @@
                       <VCardActions class=" justify-center w-75">
                         <VBtn
                           color="white"
-                          class="bg-secondary text-white w-50"
+                          class="bg-secondary text-white w-75"
                           @click="hideModal()"
                         >
                           <VIcon icon="mingcute:close-fill" />
