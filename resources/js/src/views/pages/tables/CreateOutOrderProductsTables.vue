@@ -36,11 +36,8 @@ const as = window
             {{  product.pivot.quantity }}
           </td>
           <td class="text-center px-2"> 
-            <v-chip v-if="!product.in_order" append-icon="fa-solid:truck-loading" color="warning" @click="selectProduct(product.id)">
-              Agregar
-            </v-chip>
-            <v-chip v-else append-icon="fluent:box-checkmark-20-regular" color="success" >
-              Agregado
+            <v-chip  :append-icon="!product.in_order ? 'fa-solid:truck-loading' : 'fluent:box-checkmark-20-regular'" :color="!product.in_order ? 'warning' : 'success'" @click="selectProduct(product.id)">
+              {{!product.in_order ? 'Agregar' : 'Agregado'}}
             </v-chip>
           </td>
         </tr>

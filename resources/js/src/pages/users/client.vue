@@ -257,18 +257,6 @@
                       </div>
                     </div>
                     <VDivider  />
-                    <!-- <div class="mt-5 w-100 d-flex  justify-center">
-                      <VCardActions class=" justify-center w-75">
-                        <VBtn
-                          color="white"
-                          class="bg-secondary text-white w-50"
-                          @click="hideModal()"
-                        >
-                          <VIcon icon="mingcute:close-fill" />
-                          <span class="ms-2">Cerrar</span>
-                        </VBtn>
-                      </VCardActions>
-                    </div> -->
                   </div>
                 </VCard>
               </VCol>

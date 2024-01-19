@@ -97,11 +97,10 @@ const props = defineProps({
                   <VCardActions class=" justify-center w-75">
                     <VBtn
                       color="white"
-                      class="bg-secondary text-white w-50"
-                      @click="actionModal('close')"
+                      class="bg-secondary text-white w-75"
+                      @click="createOutOrder()"
                     >
-                      <VIcon icon="mingcute:close-fill" />
-                      <span class="ms-2">Cerrar</span>
+                      <span class="ms-2">Crear salida</span>
                     </VBtn>
                   </VCardActions>
                 </div>
@@ -164,7 +163,7 @@ const props = defineProps({
                                   </v-tooltip>
                               </VCol>
                               <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
-                                <VRow  v-for="(item,index) in selectedsLotes[selectedProduct.id]"  v-bind:key="item.id" class=" position-relative relative pa-0 ma-0 align-center w-100 mt-5 mt-md-4"  :id="'new_order_product_'+index">
+                                <VRow  v-for="(item,index) in selectedsLotes[selectedProduct.title.replace(/ /g,'_')]"  v-bind:key="item.id" class=" position-relative relative pa-0 ma-0 align-center w-100 mt-5 mt-md-4"  :id="'new_order_product_'+index">
                                   <VCol cols="12"  md="6" class="form-group pb-md-0  mb-md-1">
                                     <v-combobox  
                                       :items="selectedProduct.lotes"
@@ -173,7 +172,7 @@ const props = defineProps({
                                       placeholder="Número de lote"
                                       label="Número de lote"
                                       type="text"
-                                      :name="'product_in_order_lote_'+selectedProduct.id+'_'+index"
+                                      :name="'product_in_order_lote_'+selectedProduct.title.replace(/ /g,'_')+'_'+index"
                                       v-model="item.lote"  
                                       autocomplete="off"
                                       persistent-hint
@@ -189,7 +188,7 @@ const props = defineProps({
                                       type="number"
                                       persistent-hint
                                       :hint="'Stock de lote: ' + (item.lote ? item.lote.quantity  : '----')"
-                                      :name="'product_in_order_quantity_'+selectedProduct.id+'_'+index"
+                                      :name="'product_in_order_quantity_'+selectedProduct.title.replace(/ /g,'_')+'_'+index"
                                       v-model="item.quantity"
                                       @keyup="calculateUnitOrders()"
                                     />
@@ -242,9 +241,9 @@ export default {
     alertType:'',
     alertMessage:'',
     selectedProduct:'',
-    selectedLotesByProduct:'',
     selectedsLotes:[
-    ]
+    ],
+    allProductCheck: false,
   }),
   mounted(){
   },
@@ -281,12 +280,12 @@ export default {
       setTimeout(() => {
         this.showModal('selectedProductLote')
         this.validateFormItem()
-      }, 500);
+      }, 100);
     },
     removeLote(index){  
       setTimeout(() => {
         try{
-          this.selectedsLotes[this.selectedProduct.id].splice(index, 1)
+          this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')].splice(index, 1)
           // this.productsForOrder.splice(index, 1)
         }catch(e){
 
@@ -298,11 +297,11 @@ export default {
       let newLote = {lote:'', quantity:'', selected_lote_id:''}
 
       try {
-        this.selectedsLotes[this.selectedProduct.id].push(newLote)
+        this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')].push(newLote)
       } catch (error) {
-        this.selectedsLotes[this.selectedProduct.id] = [newLote]
+        this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')] = [newLote]
       }
-      
+      this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')]['idProduct']=this.selectedProduct.id
       setTimeout(() => {
         this.createValidate()
 
@@ -310,11 +309,11 @@ export default {
 
     }, 
     selectedLotes(e, index){
-      this.selectedsLotes[this.selectedProduct.id][index].maxValue = e.quantity
-      this.selectedsLotes[this.selectedProduct.id][index].indexLote = index
+      this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')][index].maxValue = e.quantity
+      this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')][index].indexLote = index
       setTimeout(() => {
-        this.forms.validateField('product_in_order_lote_'+this.selectedProduct.id+'_'+index)
-          this.addValidate(this.selectedsLotes[this.selectedProduct.id][index])
+        this.forms.validateField('product_in_order_lote_'+this.selectedProduct.title.replace(/ /g,'_')+'_'+index)
+          this.addValidate(this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')][index])
         }, 200);
     },
     orderNumberFormat(id){
@@ -340,7 +339,7 @@ export default {
         }
       };
       this.forms.addField(
-        'product_in_order_lote_'+this.selectedProduct.id+'_0', fields
+        'product_in_order_lote_'+this.selectedProduct.title.replace(/ /g,'_')+'_0', fields
       )
       setTimeout( ()=> this.formsActions(), 500)
     },
@@ -367,7 +366,7 @@ export default {
     },
     addValidate(lote){
       let form = document.getElementById('select_lote_for_order'),
-      quantityInput = form.querySelector('input[name="product_in_order_quantity_'+this.selectedProduct.id+'_'+lote.indexLote+'"]'),
+      quantityInput = form.querySelector('input[name="product_in_order_quantity_'+this.selectedProduct.title.replace(/ /g,'_')+'_'+lote.indexLote+'"]'),
       fieldOptions={
         quantity: {
           validators: {
@@ -392,21 +391,21 @@ export default {
       if(this.calculateUnitOrders()){
         this.hideModal()
         this.disabledButton('select_lote_for_order_button')
-        this.$emit('checkProductOrder',this.selectedProduct.id)
-
+        // this.$emit('checkProductOrder',this.selectedProduct.title.replace(/ /g,'_'))
+        this.order.products.filter(product => product.id == this.selectedProduct.id)[0].in_order= true
         return
       }
+      
       this.disabledButton('select_lote_for_order_button')
       this.showAlert('Cantidad ingresada es menor a lo solicitado', 'error')
   
     },
+    
     createValidate(){
 
-      let form = document.getElementById('select_lote_for_order')
-      let index = form.querySelectorAll('input[name*="product_in_order_lote_'+this.selectedProduct.id+'"]').length - 1
-      let input = form.querySelector('input[name="product_in_order_lote_'+this.selectedProduct.id+'_'+index+'"]'),
-
-
+      let form = document.getElementById('select_lote_for_order'),
+      index = form.querySelectorAll('input[name*="product_in_order_lote_'+this.selectedProduct.title.replace(/ /g,'_')+'"]').length - 1,
+      input = form.querySelector('input[name="product_in_order_lote_'+this.selectedProduct.title.replace(/ /g,'_')+'_'+index+'"]'),
       fieldOptions={
         selectLote: {
           validators: {
@@ -421,7 +420,7 @@ export default {
     },
     calculateUnitOrders(){
       let total = 0
-      this.selectedsLotes[this.selectedProduct.id].forEach( el =>  total = parseInt(total) + parseInt(el.quantity))
+      this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')].forEach( el =>  total = parseInt(total) + parseInt(el.quantity))
       if(total <= this.selectedProduct.pivot.quantity){
         
         this.enableButton('select_lote_for_order_button')
@@ -457,6 +456,27 @@ export default {
       } catch (error) {
         console.log('no hay validación activa')
       }
+      
+    },
+    verifyCheckLotes(){
+      console.log(this.selectedsLotes.length)
+      Object.values(this.selectedsLotes).forEach((lote) =>{
+        console.log(lote)
+        if (lote.length == 0){
+          // this.order.products.filter(product => product.id == lote.[0].lote)[0].in_order= true
+          this.allProductCheck = false
+        } 
+      })
+      
+    },
+    createOutOrder(){
+      this.verifyCheckLotes()
+      // if(this.allProductCheck){
+      //   console.log(this.selectedsLotes)
+      //   console.log('enviado')
+      //   return
+      // }
+      // console.log('productos sin lotes asignados')
       
     },
   }
