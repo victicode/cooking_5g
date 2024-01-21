@@ -14,7 +14,6 @@
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue';
   import viewOrderModal from '@/views/pages/modals/viewOrderModal.vue';
   import viewCreateOutOrderModal from '@/views/pages/modals/viewCreateOutOrderModal.vue';
-  // import viewSelectLoteProductForOutOrder from '@/views/pages/modals/viewSelectLoteProductForOutOrder.vue';
 
   import * as bootstrap from 'bootstrap';
   import debounce from 'debounce';
@@ -24,7 +23,7 @@
   import 'flatpickr/dist/flatpickr.min.css';
   import { Spanish } from "flatpickr/dist/l10n/es.js";
 
-  import { GET_ORDER_BY_ID, CHANGE_STATUS, CREATE_ORDER } from "@/core/services/store/order.module";
+  import { GET_ORDER_BY_ID, CHANGE_STATUS, CREATE_ORDER, CREATE_OUT_ORDER } from "@/core/services/store/order.module";
   import { GET_ALL_USER } from "@/core/services/store/user.module";
   import { GET_PRODUCT_BY_SEARCH } from "@/core/services/store/product.module";
 </script>
@@ -96,8 +95,8 @@
     </VCol>
     <div v-if="Object.keys(selectedOrder).length > 2">
       <viewOrderModal :order="selectedOrder"  @actionModal="modalAction" />
-      <viewCreateOutOrderModal :order="selectedOrder"  @actionModal="modalAction"  @checkProductOrder="checkProductOrder"  />
-      <!-- <viewSelectLoteProductForOutOrder v-if="Object.keys(assignedProduct).length > 2" /> -->
+      <viewCreateOutOrderModal :order="selectedOrder"  @actionModal="modalAction"  @createOutOrder="createOutOrder"  />
+
       <div class="modal animate__animated animate__fadeInDown" id="changeStatusOrder" tabindex="-1" aria-labelledby="changeStatusOrderLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl mt-10" >
           <div class="modal-content">
@@ -322,105 +321,6 @@
           </div>
         </div>
       </div>
-      <!-- <div class="modal animate__animated animate__fadeInDown" id="createOut" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl mt-10" >
-          <div class="modal-content">
-            <VCol
-              cols="12"
-              class="pa-0 d-flex justify-center"
-              style="position: relative;"
-            >
-            
-              <VCol
-                cols="12"
-              >
-                <VCard class="modal__content">
-                  <div class="modal__close-button" >
-                    <v-col  class="pa-0 pe-4">
-                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
-                    </v-col>
-                  </div>
-                  <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column pa-2 pa-md-5 ">
-                    <VRow  class="mb-2 ma-0">
-                      <VCol
-                        cols="12"
-                        md="6"
-                        class="py-0"
-                      >
-                        <div class="my-md-4 my-2 text-center text-md-start">
-                          <h2>Orden de productos</h2>
-                          <h3 class="mt-2">
-                            <v-chip :class="{'bg-error': order.status == 0, 'bg-warning': order.status == 1, 'bg-secondary': order.status == 2, 'bg-success': order.status == 3, }">
-                              {{ order.status_label.status }}
-                            </v-chip>
-    
-                          </h3>
-                        </div>
-                        <div class="my-3 my-md-0  d-block d-md-none text-center text-md-end ">
-                          <h4 class="font-400">
-                            Orden N°: 
-                            <b>
-                              {{ orderNumberFormat(order.id) }}
-                            </b> 
-                          </h4>
-                        </div>
-                        <div >
-                          <div class="my-2  text-start">
-                            Solicitante: {{ order.client.name.toUpperCase() }}
-                          </div>
-                          <div class="my-2 text-start">
-                            Dirección de destino: {{ order.other_address }}
-                          </div>
-                        </div>
-                      
-                      </VCol>
-                      <VCol
-                        cols="12"
-                        md="6"
-                        class="py-0"
-                      >
-                        <div class="my-md-4 my-0  d-none d-md-block text-center text-md-end ">
-                          <h4 class="font-400">
-                            Orden N°: 
-                            <b>
-                              {{ orderNumberFormat(order.id) }}
-                            </b> 
-                          </h4>
-                        </div>
-                        <div >
-                          <div class="my-2  text-start text-md-end">
-                            Fecha de pedio: {{ moment(order.created_at).format('DD/MM/YYYY HH:mm:ss') }}
-                          </div>
-                          <div class="my-2  text-start text-md-end">
-                            Tracker ID: {{ order.trancker }}
-                          </div>
-                        </div>
-                      
-                      </VCol>
-                    </VRow>
-                    <div class="w-100">
-                      <OrderProductsTables :products="order.products" />
-                    </div>
-                    <VDivider  />
-                    <div class="mt-5 w-100 d-flex  justify-center">
-                      <VCardActions class=" justify-center w-75">
-                        <VBtn
-                          color="white"
-                          class="bg-secondary text-white w-50"
-                          @click="hideModal()"
-                        >
-                          <VIcon icon="mingcute:close-fill" />
-                          <span class="ms-2">Cerrar</span>
-                        </VBtn>
-                      </VCardActions>
-                    </div>
-                  </div>
-                </VCard>
-              </VCol>
-            </VCol>
-          </div>
-        </div>
-      </div> -->
     </div>
 
     <div class="modal animate__animated animate__fadeInDown"  id="createOrder" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
@@ -915,7 +815,7 @@
             this.selectOrder(event.target.dataset.id).finally((data)=>{
               setTimeout(() => {
                 this.showModal('viewOrder')
-              }, 500);
+              }, 800);
             })
           })	
         })
@@ -925,7 +825,7 @@
               setTimeout(() => {
                 console.log('aguja')
                 this.showModal('createOutOrder')
-              }, 500);
+              }, 800);
             })
           })	
         })
@@ -934,7 +834,7 @@
             this.selectOrder(event.target.dataset.id).finally((data)=>{
               setTimeout(() => {
                 this.showModal('cancelOrder')
-              }, 500);
+              }, 800);
             })
           })	
         })
@@ -980,7 +880,7 @@
               return new Promise((resolve) => {
                   resolve(response.data);
               });
-            }, 1000);
+            }, 1500);
           })
           .catch((err) => {
             console.log(err)
@@ -1128,6 +1028,7 @@
         formData.append('client', this.newOrder.user.id);
         formData.append('address', this.newOrder.userAddress);
         formData.append('products', JSON.stringify(this.newOrder.products));
+        formData.append('isManual', true);
 
 
         console.log(this.newOrder)
@@ -1139,6 +1040,26 @@
             this.showSnackbar('success', 'Orden creada con exito')
             this.readyButton('new_order_form_button')
             this.clearNewOrderForm()
+          })
+          .catch((err) => {
+            console.log(err)
+            // this.hideModal()
+            this.showSnackbar('error', err )
+            this.readyButton('new_order_form_button')
+          })
+      },
+      createOutOrder(products){
+        const formData = new FormData();
+        formData.append('order', this.selectedOrder.id);
+        formData.append('products', JSON.stringify(products));
+        this.$store
+          .dispatch(CREATE_OUT_ORDER, formData)
+          .then((response) => {
+            this.filterColumn()
+            this.hideModal()
+            this.showSnackbar('success', 'Orden creada con exito')
+            this.readyButton('new_order_form_button')
+            // this.clearNewOrderForm()
           })
           .catch((err) => {
             console.log(err)
@@ -1208,6 +1129,8 @@
         this.getProducts('',index)
       },
       selectedProduct(e,index){
+        if(!e) return
+
         if(!this.productsForOrder[index].filter(product => product.id == e)[0].stock) return
         
         if(this.productsForOrder[index].filter(product => product.id == e)[0].stock == 0 ){

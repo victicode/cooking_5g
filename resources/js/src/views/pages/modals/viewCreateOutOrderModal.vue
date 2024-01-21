@@ -15,7 +15,7 @@ const props = defineProps({
 </script>
 <template>
   <div class="modal animate__animated animate__fadeInDown" id="createOutOrder" tabindex="-1" aria-labelledby="viewOrderLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl mt-10" >
+    <div class="modal-dialog modal-lg mt-10" >
       <div class="modal-content">
         <VCol
           cols="12"
@@ -99,6 +99,7 @@ const props = defineProps({
                       color="white"
                       class="bg-secondary text-white w-75"
                       @click="createOutOrder()"
+                      :id="'create_order_'+this.order.id"
                     >
                       <span class="ms-2">Crear salida</span>
                     </VBtn>
@@ -137,7 +138,7 @@ const props = defineProps({
                           <h2 class="my-2">{{ selectedProduct.title }}</h2>
                           <h6 class="my-2">orden #{{ orderNumberFormat(order.id) }}</h6>
 
-                          <h5 class="my-2">Cantidad solicitada: {{ selectedProduct.pivot.quantity }} {{ selectedProduct.type_of_unit}}</h5>
+                          <h4 class="my-2">Cantidad solicitada: {{ selectedProduct.pivot.quantity }} {{ selectedProduct.type_of_unit}}</h4>
                           
                         </div>
                       </VCardTitle>
@@ -173,10 +174,10 @@ const props = defineProps({
                                       label="Número de lote"
                                       type="text"
                                       :name="'product_in_order_lote_'+selectedProduct.title.replace(/ /g,'_')+'_'+index"
-                                      v-model="item.lote"  
+                                      v-model="item.selected_lote"  
                                       autocomplete="off"
                                       persistent-hint
-                                      :hint="'Fecha venc: ' + (item.lote ? moment(item.lote.due_date).format('DD-MM-YYYY') : '----')"
+                                      :hint="'Fecha venc: ' + (item.selected_lote ? moment(item.selected_lote.due_date).format('DD-MM-YYYY') : '----')"
                                       :auto-select-first="true"
                                       @update:modelValue="selectedLotes($event,index)"
                                     ></v-combobox >
@@ -187,7 +188,7 @@ const props = defineProps({
                                       label="Unidades solicitadas"
                                       type="number"
                                       persistent-hint
-                                      :hint="'Stock de lote: ' + (item.lote ? item.lote.quantity  : '----')"
+                                      :hint="'Stock de lote: ' + (item.selected_lote ? item.selected_lote.quantity  : '----')"
                                       :name="'product_in_order_quantity_'+selectedProduct.title.replace(/ /g,'_')+'_'+index"
                                       v-model="item.quantity"
                                       @keyup="calculateUnitOrders()"
@@ -222,6 +223,24 @@ const props = defineProps({
       </div>
     </div>
   </div>
+  <v-snackbar
+      v-model="snackShow"
+      :color="snackType"
+      rounded="pill"
+      :timeout="snacktimeOut"
+      width="max-content"
+      class="text-center"
+    >
+    <h4 class="text-white w-100 text-center">
+
+      {{snackMessage}}
+    </h4>
+      <template
+        v-slot:actions
+      >
+      <VBtn  color="white" class="text-white" @click="snackShow=false"> Cerrar</VBtn>
+      </template>
+  </v-snackbar>
 </template>
 <style>
 .fw-600{
@@ -243,6 +262,10 @@ export default {
     selectedProduct:'',
     selectedsLotes:[
     ],
+    snackShow:false,
+    snackMessage:'',
+    snackType:'',
+    snacktimeOut:5000,
     allProductCheck: false,
   }),
   mounted(){
@@ -262,8 +285,8 @@ export default {
     },
     hideModal(){
       this.destroyFormVal()
+      this.verifyCheckLotes()
       this.modal.hide()
-      
     },
     showAlert(message,type){
       this.alertShow = true,
@@ -275,18 +298,22 @@ export default {
       this.alertType = ''
       this.alertMessage = 'message'
     },
+    showSnackbar(type, messagge){
+      this.snackShow = true;
+      this.snackType = type
+      this.snackMessage = messagge
+    },
     selectProduct(id){
       this.selectedProduct = this.order.products.filter(product => product.id == id)[0]
       setTimeout(() => {
         this.showModal('selectedProductLote')
         this.validateFormItem()
-      }, 100);
+      }, 300);
     },
     removeLote(index){  
       setTimeout(() => {
         try{
           this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')].splice(index, 1)
-          // this.productsForOrder.splice(index, 1)
         }catch(e){
 
         }
@@ -294,7 +321,7 @@ export default {
       
     },
     addLoteInput(){
-      let newLote = {lote:'', quantity:'', selected_lote_id:''}
+      let newLote = {selected_lote:'', quantity:'', selected_lote_id:''}
 
       try {
         this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')].push(newLote)
@@ -309,8 +336,9 @@ export default {
 
     }, 
     selectedLotes(e, index){
-      this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')][index].maxValue = e.quantity
       this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')][index].indexLote = index
+      this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')][index].product_id = this.selectedProduct.id
+
       setTimeout(() => {
         this.forms.validateField('product_in_order_lote_'+this.selectedProduct.title.replace(/ /g,'_')+'_'+index)
           this.addValidate(this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')][index])
@@ -378,7 +406,7 @@ export default {
             },
             lessThan: {
               message: "Cantidad supera el stock",
-              max: lote.lote.quantity,
+              max: lote.selected_lote.quantity,
             },
           }
         }
@@ -454,30 +482,32 @@ export default {
       try {
         this.forms.removeField(quantityInput.name)
       } catch (error) {
-        console.log('no hay validación activa')
       }
       
     },
     verifyCheckLotes(){
-      console.log(this.selectedsLotes.length)
-      Object.values(this.selectedsLotes).forEach((lote) =>{
-        console.log(lote)
+
+      Object.values(this.selectedsLotes).forEach( (lote) =>{
         if (lote.length == 0){
-          // this.order.products.filter(product => product.id == lote.[0].lote)[0].in_order= true
-          this.allProductCheck = false
+          this.order.products.filter(product => product.id == lote.idProduct )[0].in_order= false
+          return false;
         } 
       })
+
+      if(Object.values(this.selectedsLotes).length != this.order.products.length) return false
+      
+      return true;
       
     },
     createOutOrder(){
-      this.verifyCheckLotes()
-      // if(this.allProductCheck){
-      //   console.log(this.selectedsLotes)
-      //   console.log('enviado')
-      //   return
-      // }
-      // console.log('productos sin lotes asignados')
-      
+      if(this.verifyCheckLotes()){
+        this.disabledButton('create_order_'+this.order.id)
+        
+
+        this.$emit('createOutOrder', Object.values(this.selectedsLotes))
+        return
+      }
+      this.showSnackbar('error', 'Faltan productos')
     },
   }
 

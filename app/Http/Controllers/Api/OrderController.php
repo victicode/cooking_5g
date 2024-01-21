@@ -6,6 +6,7 @@ use Exception;
 use App\Models\Lot;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\OutOrder;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
@@ -78,19 +79,53 @@ class OrderController extends Controller
         ]);
 
         try{
-            $this->addProductforOrder($order->id, json_decode($request->products,true));
+            $this->addProductforOrder($order->id, json_decode($request->products,true), 'order');
+        }catch(Exception $e){
+            return $this->returnFail(400, $e->getMessage());
+        }
+
+        if(isset($request->isManual)){
+            $requestOutOrder = new Request([
+                'order'   => $order->id,
+                'user'       => $request->user()->id,
+                'products'   => $request->products
+            ]);
+    
+           $this->createOutOrder($requestOutOrder);
+        }
+        return $this->returnSuccess(200, [
+            json_decode($request->products,true)
+        ]);
+
+    }
+    
+    public function createOutOrder(Request $request)
+    {
+        $out_order = OutOrder::create([
+           'order_id'      => $request->order,
+           'created_by'  => $request->user ?? $request->user()->id,
+        ]);
+
+        try{
+            $this->addProductforOrder($out_order->id, json_decode($request->products,true), 'out_order');
             $this->decreaseStockInProduct(json_decode($request->products,true));
         }catch(Exception $e){
             return $this->returnFail(400, $e->getMessage());
         }
 
-        return $this->returnSuccess(200, [
 
-            json_decode($request->products,true)
+       
+        $newStatus= new Request([
+            'newStatus'   => 3,
+        ]);
+
+       $this->changeStatus($newStatus, $request->order);
+        
+        return $this->returnSuccess(200, [
+            $out_order
         ]);
 
     }
-
     public function changeStatus(Request $request, $idOrder)
     {
         $order = Order::find($idOrder);
@@ -102,36 +137,53 @@ class OrderController extends Controller
         $order->status = $request->newStatus;
         $order->save();
 
-        return $this->returnSuccess(200, $order );
+        return $order ;
     }
-    private function addProductforOrder($order, $products){
-        foreach ($products as $key) {
-            DB::table('products_x_orders')->insert([
-                'order_id' => $order,
-                'product_id' => $key['id'],
-                'quantity'  => $key['quantity'],
-                'lote_id'   => $key['selected_lote']['id_lote'],
-            ]);
+    private function addProductforOrder($order, $products, $type){
+
+        if ($type == 'order') {
+            foreach ($products as $key) {
+                DB::table('products_x_orders')->insert([
+                    'order_id' => $order,
+                    'product_id' => $key['id'],
+                    'quantity'  => $key['quantity'],
+                ]);
+            }
+            return ;
         }
+
+        foreach ($products as $product) {
+            foreach ($product as $lotes) {
+                DB::table('products_x_out_order')->insert([
+                    'out_order_id' => $order,
+                    'product_id' => $lotes['product_id'],
+                    'quantity'  => $lotes['quantity'],
+                    'lote_id'   => $lotes['selected_lote']['id_lote'],
+                ]);
+             }
+        }
+
+        return;
 
     }
     private function decreaseStockInProduct($products){
 
 
-        foreach ($products as $key) {
-            
-            $lote = Lot::find($key['selected_lote']['id_lote']);
-            $lote->quantity = intval($lote->quantity) - intval($key['quantity']);
-            $lote->save();
-            
-            $product = Product::find($key['id']);
-            $product->stock = intval($product->stock) - intval($key['quantity']);
-            
-            $product->due_date_most_evenly = $lote->quantity == 0
-                ? Lot::where('quantity','>','0')->where('product_id', $product->id)->first()->due_date
-                : $product->due_date_most_evenly;
+        foreach ($products as $product) {
+            foreach ($product as $lotes) {
+                $lote = Lot::find($lotes['selected_lote']['id_lote']);
+                $product = Product::find($lotes['product_id']);
 
-                $product->save();
+
+                $lote->quantity = intval($lote->quantity) - intval($lotes['quantity']);
+                $lote->save();
+            
+                $product->due_date_most_evenly = $lote->quantity == 0
+                    ? Lot::where('quantity','>','0')->where('product_id', $product->id)->first()->due_date
+                    : $product->due_date_most_evenly;
+
+                    $product->save();
+            }
         }
 
     }

@@ -33,23 +33,13 @@ class Order extends Model
             'svg'    => 'http://192.168.42.226:8085/images/status/confirm.svg',
         ],
     );
-    protected $appends = ['status_label', 'lote'];
-    // protected $appends = ['status_label'];
+    // protected $appends = ['status_label', 'lote'];
+    protected $appends = ['status_label'];
 
 
     public function getStatusLabelAttribute()
     {
       return  $this->statuses[$this->status];  
-    }
-
-    public function getLoteAttribute()
-    {
-        // return  ;  
-        foreach ($this->products as $key) {
-            $key->lote = Lot::find($key->pivot->lote_id);
-        }
-        return true;
-        
     }
 
     public function user()
@@ -60,9 +50,12 @@ class Order extends Model
     {
         return $this->belongsTo(User::class, 'client_id');
     }
+    public function out_order(){
+        return $this->hasOne(OutOrder::class);
+    }
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'products_x_orders')->withPivot(['quantity', 'lote_id']);
+        return $this->belongsToMany(Product::class, 'products_x_orders')->withPivot(['quantity']);
     }
     
 
