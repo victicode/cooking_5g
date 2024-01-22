@@ -7,6 +7,7 @@ use App\Models\Lot;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\OutOrder;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
@@ -63,9 +64,13 @@ class OrderController extends Controller
     }
     public function getOrderById($id) {
         
-
-        $order = Order::withCount('products')->with(['user', 'products.lotes', 'client'])->find($id);
-        $order->getStatusLabelAttribute();
+        try {
+            //code...
+            $order = Order::withCount('products')->with(['user', 'products.lotes', 'client', 'outOrder'])->find($id);
+            $order->getStatusLabelAttribute();
+        } catch (Exception $th) {
+            return $this->returnFail(400, $th->getMessage());
+        }
         return $this->returnSuccess(200, $order );
     }
     public function createOrder(Request $request)
@@ -73,32 +78,28 @@ class OrderController extends Controller
         $order = Order::create([
            'client_id'      => $request->client ?? $request->user()->id,
            'other_address'  => $request->address,
-           'status'         => '1',
+           'status'         => isset($request->isManual) ? '2':'1',
            'trancker'       => '00'.rand(10000, 99999),
-           'created_by'     => $request->user()->id,
+           'created_by'     => $request->user ?? $request->user()->id,
         ]);
-
-        try{
-            $this->addProductforOrder($order->id, json_decode($request->products,true), 'order');
-        }catch(Exception $e){
-            return $this->returnFail(400, $e->getMessage());
-        }
+        $this->addProductforOrder($order->id, json_decode($request->products,true), 'order');
 
         if(isset($request->isManual)){
+    
             $requestOutOrder = new Request([
                 'order'   => $order->id,
                 'user'       => $request->user()->id,
-                'products'   => $request->products
+                'products'   => $this->formatedRequestProductsByOrder(json_decode($request->products,true))
             ]);
-    
-           $this->createOutOrder($requestOutOrder);
+        
+            $this->createOutOrder($requestOutOrder);
         }
+        
         return $this->returnSuccess(200, [
             json_decode($request->products,true)
         ]);
 
     }
-    
     public function createOutOrder(Request $request)
     {
         $out_order = OutOrder::create([
@@ -107,6 +108,7 @@ class OrderController extends Controller
         ]);
 
         try{
+
             $this->addProductforOrder($out_order->id, json_decode($request->products,true), 'out_order');
             $this->decreaseStockInProduct(json_decode($request->products,true));
         }catch(Exception $e){
@@ -116,7 +118,7 @@ class OrderController extends Controller
 
        
         $newStatus= new Request([
-            'newStatus'   => 3,
+            'newStatus'   => '2',
         ]);
 
        $this->changeStatus($newStatus, $request->order);
@@ -125,6 +127,23 @@ class OrderController extends Controller
             $out_order
         ]);
 
+    }
+    public function download($id)
+    {
+
+        $order = OutOrder::with('products', 'order.client')->where('id',$id)->first();
+
+        if(!$order) return $this->returnFail(400, 'algo ha salido mal');
+
+        $pdf = Pdf::loadView('outOrderTemplate', [ 'order' => $order]);
+
+
+
+        // $pdf->stream();
+
+        return $this->returnSuccess(200, [
+            $order
+        ]);
     }
     public function changeStatus(Request $request, $idOrder)
     {
@@ -137,7 +156,7 @@ class OrderController extends Controller
         $order->status = $request->newStatus;
         $order->save();
 
-        return $order ;
+        return [$order,$request->newStatus] ;
     }
     private function addProductforOrder($order, $products, $type){
 
@@ -156,7 +175,7 @@ class OrderController extends Controller
             foreach ($product as $lotes) {
                 DB::table('products_x_out_order')->insert([
                     'out_order_id' => $order,
-                    'product_id' => $lotes['product_id'],
+                    'product_id' => $lotes['selected_lote']['product_id'],
                     'quantity'  => $lotes['quantity'],
                     'lote_id'   => $lotes['selected_lote']['id_lote'],
                 ]);
@@ -172,7 +191,7 @@ class OrderController extends Controller
         foreach ($products as $product) {
             foreach ($product as $lotes) {
                 $lote = Lot::find($lotes['selected_lote']['id_lote']);
-                $product = Product::find($lotes['product_id']);
+                $product = Product::find($lotes['selected_lote']['product_id']);
 
 
                 $lote->quantity = intval($lote->quantity) - intval($lotes['quantity']);
@@ -187,7 +206,25 @@ class OrderController extends Controller
         }
 
     }
+    private function formatedRequestProductsByOrder($products){
+        $newProducts = [];
+        $i=0;
+        $casualidade = [];
+        foreach ($products as  $loteOfProduct) {
+            $datos = $loteOfProduct['selected_lote']['product_id'];
+            $casuali = array_search($datos, $casualidade);
 
+            if(!$casuali){
+                $casualidade[$i] = $loteOfProduct['selected_lote']['product_id'];
+                $newProducts[$i]  = [$loteOfProduct]; 
+
+            }else{
+                array_push($newProducts[$casuali],$loteOfProduct);
+            }
+        }
+
+        return json_encode($newProducts) ;
+    }
     /**
      * Store a newly created resource in storage.
      *

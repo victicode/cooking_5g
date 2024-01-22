@@ -266,7 +266,6 @@ export default {
     snackMessage:'',
     snackType:'',
     snacktimeOut:5000,
-    allProductCheck: false,
   }),
   mounted(){
   },
@@ -495,16 +494,22 @@ export default {
       })
 
       if(Object.values(this.selectedsLotes).length != this.order.products.length) return false
-      
+      this.enableButton('create_order_'+this.order.id)
       return true;
       
+    },
+    cleanForm(){
+      this.selectedProduct ='';
+      this.selectedsLotes =[
+      ];
+    
     },
     createOutOrder(){
       if(this.verifyCheckLotes()){
         this.disabledButton('create_order_'+this.order.id)
-        
-
         this.$emit('createOutOrder', Object.values(this.selectedsLotes))
+
+        this.cleanForm()
         return
       }
       this.showSnackbar('error', 'Faltan productos')

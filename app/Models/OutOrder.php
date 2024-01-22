@@ -20,7 +20,7 @@ class OutOrder extends Model
     {
         // return  ;  
         foreach ($this->products as $key) {
-            $key->lote = Lot::find($key->pivot->lote_id);
+            $key->loteccc = Lot::find($key->pivot->lote_id);
         }
         return true;
         
@@ -31,6 +31,6 @@ class OutOrder extends Model
     }
     public function order()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Order::class, 'order_id', 'id');
     }
 }

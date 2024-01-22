@@ -50,8 +50,8 @@ class Order extends Model
     {
         return $this->belongsTo(User::class, 'client_id');
     }
-    public function out_order(){
-        return $this->hasOne(OutOrder::class);
+    public function outOrder(){
+        return $this->hasOne(OutOrder::class, 'order_id', 'id');
     }
     public function products()
     {

@@ -195,6 +195,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        Barryvdh\DomPDF\ServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
 
     ],
@@ -229,7 +230,7 @@ return [
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
-
+        'PDF' => Barryvdh\DomPDF\Facade\Pdf::class,
     ])->toArray(),
 
 ];

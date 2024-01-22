@@ -76,6 +76,8 @@ Route::middleware('jwt.verify')->prefix('order')->name('order.')->group(function
 });
 Route::middleware('jwt.verify')->prefix('out_order')->name('out_order.')->group(function () {
     Route::post('/', [OrderController::class, 'createOutOrder']);
+    Route::get('/{id}', [OrderController::class, 'download']);
+
 });
 Route::middleware('jwt.verify')->prefix('products')->name('product.')->group(function () {
     Route::get('/', [ProductController::class, 'index']);

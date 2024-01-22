@@ -14,7 +14,7 @@
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue';
   import viewOrderModal from '@/views/pages/modals/viewOrderModal.vue';
   import viewCreateOutOrderModal from '@/views/pages/modals/viewCreateOutOrderModal.vue';
-
+  import viewOutOrderModal from '@/views/pages/modals/viewOutOrderModal.vue';
   import * as bootstrap from 'bootstrap';
   import debounce from 'debounce';
 
@@ -96,7 +96,7 @@
     <div v-if="Object.keys(selectedOrder).length > 2">
       <viewOrderModal :order="selectedOrder"  @actionModal="modalAction" />
       <viewCreateOutOrderModal :order="selectedOrder"  @actionModal="modalAction"  @createOutOrder="createOutOrder"  />
-
+      <viewOutOrderModal v-if="selectedOrder.out_order" :order="selectedOrder" @actionModal="hideInternalModal" />
       <div class="modal animate__animated animate__fadeInDown" id="changeStatusOrder" tabindex="-1" aria-labelledby="changeStatusOrderLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl mt-10" >
           <div class="modal-content">
@@ -171,9 +171,9 @@
           
                                         <v-icon size="large" color="white" icon="carbon:delivery-parcel"></v-icon>
                                         
-                                        <div class="text-h6 timeline__content--item-text down" v-if="selectedOrder.status == 2">
+                                        <div class="text-h6 timeline__content--item-text down" v-if="selectedOrder.status >= 2">
                                           <h4>
-                                            {{  moment(selectedOrder.updated_at).format('DD/MM/YYYY') }}
+                                            {{  moment(selectedOrder.out_order.created_at).format('DD/MM/YYYY') }}
                                           </h4>
                                         </div>
                                       </div>
@@ -227,29 +227,70 @@
                       </VCol>
                     </VRow>
                     <VDivider  />
-                    <!-- <div class="mt-5 w-100 d-md-flex  d-block justify-center">
+                  </div>
+                </VCard>
+              </VCol>
+            </VCol>
+          </div>
+        </div>
+      </div>
+      <div class="modal animate__animated animate__fadeInDown" id="confirmOrder" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg mt-10" >
+          <div class="modal-content">
+            <VCol
+              cols="12"
+              class="pa-0 d-flex justify-center"
+              style="position: relative;"
+            >
+            
+              <VCol
+                cols="12"
+              >
+                <VCard class="modal__content">
+                  <div class="modal__close-button" >
+                    <v-col  class="pa-0 pe-4">
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                    </v-col>
+                  </div>
+                  <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
+                    <VRow  class="mb-2 ma-0">
+                      <VCol
+                        cols="12"
+                        class="py-0"
+                      >
+                        <div class="my-md-4 my-2 text-center">
+                          <h2>Finalizar Orden #{{ orderNumberFormat(selectedOrder.id) }}</h2>
+                          <h3 class="mt-2">
+                            <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
+                              {{ selectedOrder.status_label.status }}
+                            </v-chip>
+
+                          </h3>
+                        </div>
+                      </VCol>
+                      <VCol
+                        cols="12"
+                        class="px-md-10 px-0 text-center"
+                        style=""
+                      >
+                        <h2>¿Desea confirmar la recepción de la orden #{{orderNumberFormat(selectedOrder.id)}}?</h2>
+                      </VCol>
+                    </VRow>
+                      
+
+                    <VDivider  />
+                    <div class="mt-5 w-100 d-md-flex  d-block justify-center">
                       <VCardActions class=" justify-center w-100 d-md-flex  d-block">
-                        <VRow class="ma-0 pa-0  mt-0 align-center">
-                          <VCol cols="12" md="6" offset-md="3" class="mt-0 py-0 px-0">
-                            <v-col cols="auto" class="">
-                              <VBtn
-                                color="white"
-                                class=" text-white w-100 bg-success mx-0  my-2 "
-                                :class='selectedOrder.status >= 1  ? "v-btn--disabled" : "" '
-                                
-                                @click="orderChangeStatus()"
-                                :disabled="selectedOrder.status >= 2  ? true : false"
-                                id="change-status-order-button"
-                                ref="changeStatusOrderButton"
-                                v-if="selectedOrder.status == 1 || selectedOrder.status == 2 "
-                              >
-                                <span class="">Cambiar estado</span>
-                              </VBtn>
-                            </v-col>
-                          </VCol>
-                        </VRow>
+                        <VBtn
+                          color="white"
+                          class="bg-success text-white w-50 mx-0 mx-md-5 my-2"
+                          @click="orderChangeStatus('3')"
+                          v-if="selectedOrder.status == 1 || selectedOrder.status == 2"
+                        >
+                          <span class="">Confirmar</span>
+                        </VBtn>
                       </VCardActions>
-                    </div> -->
+                    </div>
                   </div>
                 </VCard>
               </VCol>
@@ -359,14 +400,6 @@
                     <VForm  id="new_order_form">
                       <VRow class="align-center">
                         <VCol cols="12" md="7" class="form-group">
-                          <!-- <VTextField
-                            placeholder="Usuario"
-                            label="Usuario"
-                            type="text"
-                            name="new_product_title"
-                            autocomplete="off"
-                            v-model="newOrder.user"
-                          /> -->
                           <v-combobox  
                             :items="userForOrder"
                             item-title="name"
@@ -678,8 +711,8 @@
               if(row.status == 2 ){
                 html += `
                     <span data-bs-toggle="tooltip" data-id="${row.id}" class="confirm mx-2" data-bs-placement="top" data-bs-title="Confirmar recepción">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M10.591 2.513a3.75 3.75 0 0 1 2.818 0l7.498 3.04A1.75 1.75 0 0 1 22 7.175v5.635a6.52 6.52 0 0 0-1.5-1.077v-3.96l-7.75 2.992v2.298a6.492 6.492 0 0 0-1.5 2.645v-4.944L3.5 7.75v9.078a.25.25 0 0 0 .156.231l7.499 3.04c.031.013.063.025.095.036l.189.076c.059.024.118.044.179.06c.248.526.565 1.014.94 1.451a3.75 3.75 0 0 1-1.967-.233l-7.498-3.04A1.75 1.75 0 0 1 2 16.827V7.176a1.75 1.75 0 0 1 1.093-1.622zm2.254 1.39a2.25 2.25 0 0 0-1.69 0L9.24 4.68l7.527 2.927l2.67-1.03zM4.59 6.564l7.411 2.883l2.69-1.04L7.216 5.5zM17.5 23.001a5.5 5.5 0 1 0 0-11a5.5 5.5 0 0 0 0 11m-1-4.207l3.646-3.647a.5.5 0 0 1 .708.707l-4 4a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.707z"/></svg>
+                      <svg data-id="${row.id} xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24">
+                        <path data-id="${row.id}" fill="currentColor" d="M10.591 2.513a3.75 3.75 0 0 1 2.818 0l7.498 3.04A1.75 1.75 0 0 1 22 7.175v5.635a6.52 6.52 0 0 0-1.5-1.077v-3.96l-7.75 2.992v2.298a6.492 6.492 0 0 0-1.5 2.645v-4.944L3.5 7.75v9.078a.25.25 0 0 0 .156.231l7.499 3.04c.031.013.063.025.095.036l.189.076c.059.024.118.044.179.06c.248.526.565 1.014.94 1.451a3.75 3.75 0 0 1-1.967-.233l-7.498-3.04A1.75 1.75 0 0 1 2 16.827V7.176a1.75 1.75 0 0 1 1.093-1.622zm2.254 1.39a2.25 2.25 0 0 0-1.69 0L9.24 4.68l7.527 2.927l2.67-1.03zM4.59 6.564l7.411 2.883l2.69-1.04L7.216 5.5zM17.5 23.001a5.5 5.5 0 1 0 0-11a5.5 5.5 0 0 0 0 11m-1-4.207l3.646-3.647a.5.5 0 0 1 .708.707l-4 4a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.707z"/></svg>
                     </span>`
               }
               if(row.status != 0 && row.status != 3){
@@ -801,11 +834,6 @@
       },
     }),
     methods:{
-      validateChangeStatus(){
-        document.getElementById('change-status-order-button').disabled = !this.$refs.newStatus.checked;
-        document.getElementById('change-status-order-button').classList.toggle('v-btn--disabled')
-
-      },
       initOptionsTable(){
         document.getElementById('data-table').addEventListener('OptionsActionTable', () => this.activeOptionsTable() )	
       },
@@ -823,8 +851,17 @@
           item.addEventListener('click', event => {
             this.selectOrder(event.target.dataset.id).finally((data)=>{
               setTimeout(() => {
-                console.log('aguja')
+
                 this.showModal('createOutOrder')
+              }, 800);
+            })
+          })	
+        })
+        document.querySelectorAll('.confirm').forEach(item => {
+          item.addEventListener('click', event => {
+            this.selectOrder(event.target.dataset.id).finally((data)=>{
+              setTimeout(() => {
+                this.showModal('confirmOrder')
               }, 800);
             })
           })	
@@ -874,8 +911,8 @@
           .dispatch(GET_ORDER_BY_ID, idAccount)
           .then((response) => {
             this.selectedOrder = Object.assign({}, response.data);
-            // console.log(this.selectedOrder)
             setTimeout(() => {
+              console.log(this.selectedOrder)
               
               return new Promise((resolve) => {
                   resolve(response.data);
@@ -936,6 +973,7 @@
         this.table.columns().search('').draw('full-hold')
       },
       clearNewOrderForm(){
+        document.getElementById('isUserAddress').checked = false;
         this.newOrder = {
           user:'',
           products:[],
@@ -965,9 +1003,12 @@
         this.clearNewOrderForm()
       },
       modalAction(action){ 
-        console.log(action)
         if(action == 'close') {this.hideModal(); return}
-        this.showInternalModal('changeStatusOrder')
+
+        if(action == 'show:out_order') { this.showInternalModal('viewOutOrder'); return}
+        if(action == 'show:history') { this.showInternalModal('changeStatusOrder'); return}
+
+       
       },
       showInternalModal(modal) {
         this.modal.hide()
@@ -991,33 +1032,27 @@
         this.snackType = type
         this.snackMessage = messagge
       },
-      orderChangeStatus(){
-        this.sendingButton('change-status-order-button')
-        const message = this.$refs.newStatus.value == 2 
-        ? 'Orden colocada en transito' 
-        : this.$refs.newStatus.value == 3 
+      orderChangeStatus(newStatus){
+        const message = newStatus == 3 
         ? 'Orden completada exitosamente'
         :'Orden cancelada';
         
-        const type = this.$refs.newStatus.value == 2 
-        ? 'secondary' 
-        : this.$refs.newStatus.value == 3 
+        const type =  newStatus == 3 
         ? 'success'
         : 'error';
 
+        console.log(newStatus)
         this.$store
-          .dispatch(CHANGE_STATUS, {id:this.selectedOrder.id, newStatus: this.$refs.newStatus.value})
+          .dispatch(CHANGE_STATUS, {id:this.selectedOrder.id, newStatus: newStatus})
           .then((response) => {
             this.filterColumn()
             this.hideModal()
             this.showSnackbar(type, message)
-            this.readyButton('change-status-order-button')
           })
           .catch((err) => {
             console.log(err)
             this.hideModal()
             this.showSnackbar('error', err )
-            this.readyButton('change-status-order-button')
           })
 
       },
@@ -1029,9 +1064,6 @@
         formData.append('address', this.newOrder.userAddress);
         formData.append('products', JSON.stringify(this.newOrder.products));
         formData.append('isManual', true);
-
-
-        console.log(this.newOrder)
         this.$store
           .dispatch(CREATE_ORDER, formData)
           .then((response) => {
@@ -1069,8 +1101,8 @@
           })
       },
       cancelOrder(){
-        this.$refs.newStatus.value = 0
-        this.orderChangeStatus()
+        // this.$refs.newStatus.value = 0
+        this.orderChangeStatus('0')
       },
       sendingButton(id){
         document.getElementById(id).disabled = true
@@ -1081,9 +1113,6 @@
         document.getElementById(id).setAttribute('class','v-btn v-btn--disabled v-theme--light bg-primary v-btn--density-default v-btn--size-default v-btn--variant-elevated w-100')
       },
       removeProductInput(index){
-        console.log(this.productsForOrder)
-        
-
         this.removeValidate(index)
 
         setTimeout(() => {
@@ -1246,12 +1275,7 @@
           console.log('no hay validación activa')
         }
         
-      },
-      checkProductOrder(id){
-        console.log(this.selectedOrder.products.filter())
-        // this.selectOrder.products.
-      }
-      
+      },      
     },
     mounted(){
       this.getUsers()

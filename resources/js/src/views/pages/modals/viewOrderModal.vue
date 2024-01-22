@@ -82,9 +82,17 @@ const as = window
                       </div>
                     </div>
                     <div class="d-flex justify-md-end justify-start mt-4 mb-4">
-                      <v-btn append-icon="icon-park-twotone:history-query"  rounded="xs" variant="outlined" @click="actionModal('show')">
+                      <v-btn append-icon="icon-park-twotone:history-query"  rounded="xs" variant="outlined" @click="actionModal('show:history')">
                         Historial
                       </v-btn>
+                      <div v-if="order.out_order">
+                        <v-btn append-icon="carbon:delivery"  class="d-none d-md-flex mx-2" rounded="xs" variant="outlined" @click="actionModal('show:out_order')">
+                          Orden de salida
+                        </v-btn>
+                        <v-btn append-icon="carbon:delivery"  class="d-block d-md-none" rounded="xs" variant="outlined" @click="actionModal('show:out_order')">
+                          Ver salida
+                        </v-btn>
+                      </div>
                     </div>
                   </VCol>
                 </VRow>
@@ -92,7 +100,7 @@ const as = window
                   <OrderProductsTables :products="order.products" />
                 </div>
                 <VDivider  />
-                <div class="mt-5 w-100 d-flex  justify-center">
+                <!-- <div class="mt-5 w-100 d-flex  justify-center">
                   <VCardActions class=" justify-center w-75">
                     <VBtn
                       color="white"
@@ -103,7 +111,7 @@ const as = window
                       <span class="ms-2">Cerrar</span>
                     </VBtn>
                   </VCardActions>
-                </div>
+                </div> -->
               </div>
             </VCard>
           </VCol>
