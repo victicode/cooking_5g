@@ -14,13 +14,13 @@ class OutOrder extends Model
         'order_id',
         'created_by',
     ];
-    protected $appends = ['lote'];
+    protected $appends = ['loted'];
 
-    public function getLoteAttribute()
+    public function getLotedAttribute()
     {
         // return  ;  
         foreach ($this->products as $key) {
-            $key->loteccc = Lot::find($key->pivot->lote_id);
+            $key->lotes = Lot::find($key->pivot->lote_id);
         }
         return true;
         

@@ -4,8 +4,7 @@ import OutOrderProductsTables from '@/views/pages/tables/OutOrderProductsTables.
 const props = defineProps({
   order: Object,
 })
-const as = window
-
+const token = localStorage.getItem('id_token')
 </script>
 <template>
   <div class="modal animate__animated animate__fadeInDown" id="viewOutOrder" tabindex="-1" aria-labelledby="viewOrderLabel" aria-hidden="true">
@@ -94,14 +93,20 @@ const as = window
                         Tracker ID: {{ order.trancker }}
                       </div>
                       <div class="d-flex justify-md-end justify-start mt-4 mb-4">
-                      <v-btn append-icon="icon-park-twotone:history-query"  rounded="xs" color="secondary" variant="outlined" @click="actionModal('show:history')">
-                        Imprimir
-                      </v-btn>
+                        <a :href="'http://10.10.10.69:8085/api/out_order/print/' + order.out_order.id +'?token='+token"  target="_blank" rel="noopener noreferrer">
+
+                          <v-btn  append-icon="uiw:printer"  rounded="xs" color="secondary" variant="outlined" @click="actionModal('show:history')">
+                            Imprimir
+                          </v-btn>
+                        </a>
+                      
+
+                      
                     </div>
                     </div>
                   </VCol>
                 </VRow>
-                <div class="w-100">
+                <div class="w-100 mb-10">
                   <OutOrderProductsTables :products="order.out_order.products" />
                 </div>
                 <VDivider  />

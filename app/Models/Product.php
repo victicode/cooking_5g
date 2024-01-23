@@ -27,7 +27,10 @@ class Product extends Model
     {
         return $this->belongsToMany(Order::class, 'products_x_orders');
     }
-    
+    public function out_orders()
+    {
+        return $this->belongsToMany(OutOrder::class, 'products_x_out_order');
+    }
     public function dismantling(){
         return $this->hasMany(Dismantling::class, 'product_id', 'id');
     }

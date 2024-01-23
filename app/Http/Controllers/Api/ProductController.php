@@ -162,19 +162,6 @@ class ProductController extends Controller
         if($request->type == 1){ $lote = $this->addLote($id, $request); $this->setMostEarlyDueDate($product, $lote, 'add');}  
         if($request->type == 2){ $lote = $this->reduceLote($id, $request); $this->setMostEarlyDueDate($product, $lote, 'reduce');} 
 
-        try {
-            $product->stock = $request->type == 1 
-                ? $product->stock  + $request->quantity
-                : $product->stock  - $request->quantity;
-            $product->save();
-            
-        } catch (Exception $th) {
-            return $this->returnSuccess(400, $th->getMessage());
-        }
-    
-        
-        
-
         return $this->returnSuccess(200, [$product]);
     }
     public function getProductById($id){
@@ -215,7 +202,7 @@ class ProductController extends Controller
         return $this->returnSuccess(200, ['id' => $productId, 'deleted_at' => $product->deleted_at]);
     }
     public function getLastLoteFromProduct($productId){
-       return Lot::where('product_id', $productId)->count();
+       return Lot::withTrashed()->where('product_id', $productId)->count();
     }
     private function validateRequiredFields($inputRequest, $type = "create" )
     {

@@ -26,9 +26,6 @@ class UserController extends Controller
 
         if(!empty(request('order_name')))  $users->orderBy('name', request('order_name'));
 
-        // if(!empty(request('order_stock')))  $users->orderBy('stock', request('order_stock'));
-
-        // return DataTables::of($users)->toJson();
         return DataTables::of($users)->filter(function ($query) {
             if (!empty(request('filter_name'))) {
               $query->where('name','like','%'.request('filter_name').'%');
@@ -103,7 +100,7 @@ class UserController extends Controller
         return $this->returnSuccess(200, ['id' => $userId, 'deleted_at' => $user->deleted_at]);
     }
     public function getUserById($userId){
-        $user = User::with('rol', 'orders.client')->find($userId);
+        $user = User::with('rol', 'orders.client', 'orders.products', 'orders.outOrder')->find($userId);
  
          return $this->returnSuccess(200, $user);
      }

@@ -95,9 +95,7 @@ class OrderController extends Controller
             $this->createOutOrder($requestOutOrder);
         }
         
-        return $this->returnSuccess(200, [
-            json_decode($request->products,true)
-        ]);
+        return $this->returnSuccess(200, $request->products,true);
 
     }
     public function createOutOrder(Request $request)
@@ -128,22 +126,19 @@ class OrderController extends Controller
         ]);
 
     }
-    public function download($id)
+    public function printOutOrder(Request $request, $id)
     {
 
-        $order = OutOrder::with('products', 'order.client')->where('id',$id)->first();
+        if($request->user()->rol_id == 1){
 
-        if(!$order) return $this->returnFail(400, 'algo ha salido mal');
+            $order = OutOrder::with('products', 'order.client')->where('id',$id)->first();
+    
+            if(!$order) return $this->returnFail(400, 'algo ha salido mal');
+    
+            $pdf = Pdf::loadView('outOrderTemplate2', [ 'order' => $order]);
 
-        $pdf = Pdf::loadView('outOrderTemplate', [ 'order' => $order]);
-
-
-
-        // $pdf->stream();
-
-        return $this->returnSuccess(200, [
-            $order
-        ]);
+            return $pdf->stream('Salida #'.substr("000000", strlen(strval($order->id)) ).$order->id);
+        }
     }
     public function changeStatus(Request $request, $idOrder)
     {
@@ -221,6 +216,7 @@ class OrderController extends Controller
             }else{
                 array_push($newProducts[$casuali],$loteOfProduct);
             }
+            $i++;
         }
 
         return json_encode($newProducts) ;

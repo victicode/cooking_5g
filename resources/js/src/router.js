@@ -41,7 +41,7 @@ const router = createRouter({
         },
         {
           path: "/products",
-          component: productsComponent,
+          component: products_2Component,
           meta: {
             middleware: [
               auth

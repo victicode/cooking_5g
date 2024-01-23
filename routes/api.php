@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\Route;
 
 // });
 
+
 Route::post('login', [AuthController::class, 'login']);
 Route::middleware('jwt.verify')->post('/get-products', [ProductController::class, 'getProductsTable']);
 Route::middleware('jwt.verify')->post('/get-lotes', [ProductController::class, 'getlotesOfProductsTable']);
@@ -76,7 +77,7 @@ Route::middleware('jwt.verify')->prefix('order')->name('order.')->group(function
 });
 Route::middleware('jwt.verify')->prefix('out_order')->name('out_order.')->group(function () {
     Route::post('/', [OrderController::class, 'createOutOrder']);
-    Route::get('/{id}', [OrderController::class, 'download']);
+    Route::get('/print/{id}', [OrderController::class, 'printOutOrder']);
 
 });
 Route::middleware('jwt.verify')->prefix('products')->name('product.')->group(function () {

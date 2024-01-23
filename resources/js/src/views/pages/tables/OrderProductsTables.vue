@@ -36,7 +36,7 @@ const as = window
             {{  product.pivot.quantity }}
           </td>
           <td class="text-center px-2">
-            Si
+            {{ product.is_dismantling ? 'Si' : 'No'}}
           </td>
         </tr>
       </tbody>

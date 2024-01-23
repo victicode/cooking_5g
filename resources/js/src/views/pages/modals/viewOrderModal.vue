@@ -4,7 +4,8 @@ import OrderProductsTables from '@/views/pages/tables/OrderProductsTables.vue';
 const props = defineProps({
   order: Object,
 })
-const as = window
+const token = localStorage.getItem('id_token')
+
 
 </script>
 <template>
@@ -81,22 +82,26 @@ const as = window
                         Tracker ID: <a class="text-secondary fw-600">{{ order.trancker }}</a>
                       </div>
                     </div>
-                    <div class="d-flex justify-md-end justify-start mt-4 mb-4">
+                    <div class="d-flex justify-md-end justify-space-between mt-4 mb-4">
                       <v-btn append-icon="icon-park-twotone:history-query"  rounded="xs" variant="outlined" @click="actionModal('show:history')">
                         Historial
                       </v-btn>
                       <div v-if="order.out_order">
-                        <v-btn append-icon="carbon:delivery"  class="d-none d-md-flex mx-2" rounded="xs" variant="outlined" @click="actionModal('show:out_order')">
-                          Orden de salida
-                        </v-btn>
-                        <v-btn append-icon="carbon:delivery"  class="d-block d-md-none" rounded="xs" variant="outlined" @click="actionModal('show:out_order')">
-                          Ver salida
-                        </v-btn>
+                        <a :href="'http://10.10.10.69:8085/api/out_order/print/' + order.out_order.id +'?token='+token"  target="_blank" rel="noopener noreferrer">
+                          <v-btn append-icon="carbon:delivery"  class="d-none d-md-flex mx-2" rounded="xs" variant="outlined">
+                            Orden de salida
+                          </v-btn>
+                        </a>
+                        <a :href="'http://10.10.10.69:8085/api/out_order/print/' + order.out_order.id +'?token='+token"  target="_blank" rel="noopener noreferrer">
+                          <v-btn append-icon="carbon:delivery"  class="d-flex d-md-none" rounded="xs" variant="outlined">
+                            Ver salida
+                          </v-btn>
+                        </a>
                       </div>
                     </div>
                   </VCol>
                 </VRow>
-                <div class="w-100">
+                <div class="w-100 mb-5">
                   <OrderProductsTables :products="order.products" />
                 </div>
                 <VDivider  />

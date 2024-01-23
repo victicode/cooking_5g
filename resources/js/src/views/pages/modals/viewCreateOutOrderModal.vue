@@ -154,60 +154,61 @@ const props = defineProps({
                         <VRow 
                           class="ma-0 pa-0  mt-1 align-center" 
                           >
-                              <VCol cols="12" class="mt-0 py-0 px-0">
-                                <v-tooltip text="Agregar nuevo despiece">
+                            
+                            <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
+                              <VRow  v-for="(item,index) in selectedsLotes[selectedProduct.title.replace(/ /g,'_')]"  v-bind:key="item.id" class=" position-relative relative pa-0 ma-0 align-center w-100 mt-5 mt-md-4"  :id="'new_order_product_'+index">
+                                <VCol cols="12"  md="6" class="form-group pb-md-0  mb-md-1">
+                                  <v-combobox  
+                                    :items="selectedProduct.lotes"
+                                    item-title="lote_code"
+                                    item-value="id"
+                                    placeholder="Número de lote"
+                                    label="Número de lote"
+                                    type="text"
+                                    :name="'product_in_order_lote_'+selectedProduct.title.replace(/ /g,'_')+'_'+index"
+                                    v-model="item.selected_lote"  
+                                    autocomplete="off"
+                                    persistent-hint
+                                    :hint="'Fecha venc: ' + (item.selected_lote ? moment(item.selected_lote.due_date).format('DD-MM-YYYY') : '----')"
+                                    :auto-select-first="true"
+                                    @update:modelValue="selectedLotes($event,index)"
+                                  ></v-combobox >
+                                </VCol>
+                                <VCol cols="12"  md="6" class="form-group pb-md-0  mb-md-1">
+                                  <VTextField
+                                    placeholder="Unidades solicitadas"
+                                    label="Unidades solicitadas"
+                                    type="number"
+                                    persistent-hint
+                                    :hint="'Stock de lote: ' + (item.selected_lote ? item.selected_lote.quantity  : '----')"
+                                    :name="'product_in_order_quantity_'+selectedProduct.title.replace(/ /g,'_')+'_'+index"
+                                    v-model="item.quantity"
+                                    @keyup="calculateUnitOrders()"
+                                  />
+                                </VCol>
+                                <div class="form-group pa-0 mb-md-5  small-delete-product-button " style="right: -2px;">
+                                  <v-tooltip text="Quitar producto">
                                     <template v-slot:activator="{ props }">
-                                      <v-col cols="auto" class="">
-                                        <VBtn v-bind="props" color="primary" class="w-100"  @click="addLoteInput()"><VIcon icon="bx-plus"/> Agregar lote</VBtn>
+                                      <v-col cols="auto" class="pa-0">
+                                        <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeLote(index)"></v-btn>
                                       </v-col>
                                     </template>
                                   </v-tooltip>
-                              </VCol>
-                              <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
-                                <VRow  v-for="(item,index) in selectedsLotes[selectedProduct.title.replace(/ /g,'_')]"  v-bind:key="item.id" class=" position-relative relative pa-0 ma-0 align-center w-100 mt-5 mt-md-4"  :id="'new_order_product_'+index">
-                                  <VCol cols="12"  md="6" class="form-group pb-md-0  mb-md-1">
-                                    <v-combobox  
-                                      :items="selectedProduct.lotes"
-                                      item-title="lote_code"
-                                      item-value="id"
-                                      placeholder="Número de lote"
-                                      label="Número de lote"
-                                      type="text"
-                                      :name="'product_in_order_lote_'+selectedProduct.title.replace(/ /g,'_')+'_'+index"
-                                      v-model="item.selected_lote"  
-                                      autocomplete="off"
-                                      persistent-hint
-                                      :hint="'Fecha venc: ' + (item.selected_lote ? moment(item.selected_lote.due_date).format('DD-MM-YYYY') : '----')"
-                                      :auto-select-first="true"
-                                      @update:modelValue="selectedLotes($event,index)"
-                                    ></v-combobox >
-                                  </VCol>
-                                  <VCol cols="12"  md="6" class="form-group pb-md-0  mb-md-1">
-                                    <VTextField
-                                      placeholder="Unidades solicitadas"
-                                      label="Unidades solicitadas"
-                                      type="number"
-                                      persistent-hint
-                                      :hint="'Stock de lote: ' + (item.selected_lote ? item.selected_lote.quantity  : '----')"
-                                      :name="'product_in_order_quantity_'+selectedProduct.title.replace(/ /g,'_')+'_'+index"
-                                      v-model="item.quantity"
-                                      @keyup="calculateUnitOrders()"
-                                    />
-                                  </VCol>
-                                  <div class="form-group pa-0 mb-md-5  small-delete-product-button " style="right: -2px;">
-                                    <v-tooltip text="Quitar producto">
-                                      <template v-slot:activator="{ props }">
-                                        <v-col cols="auto" class="pa-0">
-                                          <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeLote(index)"></v-btn>
-                                        </v-col>
-                                      </template>
-                                    </v-tooltip>
-                                  </div>
-                                </VRow>
-                              </div>
+                                </div>
+                              </VRow>
+                            </div>
                         </VRow>
                         <VRow class="ma-0 pa-0  mt-8 align-center">
-                          <VCol cols="12" md="6" offset-md="3" class="mt-0 py-0 px-0">
+                          <VCol cols="12" md="6"  class="mt-0 py-0 px-0">
+                            <v-tooltip text="Agregar nuevo despiece">
+                                <template v-slot:activator="{ props }">
+                                  <v-col cols="auto" class="">
+                                    <VBtn v-bind="props" color="primary" class="w-100"  @click="addLoteInput()"><VIcon icon="bx-plus"/> Agregar lote</VBtn>
+                                  </v-col>
+                                </template>
+                              </v-tooltip>
+                          </VCol>
+                          <VCol cols="12" md="6" class="mt-0 py-0 px-0">
                             <v-col cols="auto" class="">
                               <VBtn  color="primary" class="w-100 " type="submit" disabled id="select_lote_for_order_button"> Guardar</VBtn>
                             </v-col>

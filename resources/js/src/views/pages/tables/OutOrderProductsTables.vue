@@ -40,10 +40,10 @@ const as = window
           </td>
           <td class="px-2 blank-modal">
             
-            {{ product.lote.lote_code }}
+            {{ product.lotes.lote_code }}
           </td>
           <td class="text-center px-2">
-            {{ moment(product.lote.due_date).format('DD/MM/YYYY') }}
+            {{ moment(product.lotes.due_date).format('DD/MM/YYYY') }}
           </td>
           <td class="text-center px-2"> 
             {{  product.pivot.quantity }}

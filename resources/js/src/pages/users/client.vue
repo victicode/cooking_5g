@@ -57,7 +57,7 @@
           </VCol>
         </VRow>
         <div class="card-datatable table-responsive">
-          <table class="datatables-basic table display" id="data-table">
+          <table class="datatable table display" id="data-table">
           </table>
         </div>
       </VCard>
