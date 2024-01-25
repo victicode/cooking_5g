@@ -41,18 +41,9 @@ Route::middleware('jwt.verify')->post('/get-lotes', [ProductController::class, '
 Route::middleware('jwt.verify')->post('/get-orders', [OrderController::class, 'getOrdersTable']);
 Route::middleware('jwt.verify')->post('/get-chefs', [UserController::class, 'getUserTableByRol']);
 Route::middleware('jwt.verify')->post('/get-users', [UserController::class, 'getUserTableByRol']);
-
-
 Route::post('/get-recipes', [ProductController::class, 'getProductsTable']);
 
-// Route::post('/validation', [UserController::class, 'validateFieldsFromInput']);
 
-
-
-// Route::put('/validate_email/{id}', [UserController::class, 'validateEmail']);
-
-
-// Route::middleware('auth:api')->post('/logout', [AuthController::class, 'logout']);
 Route::middleware('jwt.verify')->post('/logout', [AuthController::class, 'logout']);
 Route::middleware('jwt.verify')->post('/checkToken', [AuthController::class, 'checkToken']);
 
@@ -90,7 +81,6 @@ Route::middleware('jwt.verify')->prefix('products')->name('product.')->group(fun
     Route::get('/get-critical-stock', [ProductController::class, 'getProductsCriticalStock']);
     Route::get('/get-by-id/{id}',[ProductController::class, 'getProductById']);
     Route::get('/get-by-search',[ProductController::class, 'getProductBySearch']);
-    // Route::get('/get-by-searchs',[ProductController::class, 'getProductBySearchs']);
     Route::get('/get-last-lote/{id}',[ProductController::class, 'getLastLoteFromProduct']);
 
 });

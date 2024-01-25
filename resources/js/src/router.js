@@ -16,7 +16,7 @@ import ordersComponent from '@/pages/orders.vue';
 import recipesComponent from '@/pages/recipes.vue';
 import clientComponent from '@/pages/users/client.vue';
 import chefComponent from '@/pages/users/chef.vue';
-
+import accountSettings from  '@/pages/account-settings.vue'
 
 
 const router = createRouter({
@@ -100,8 +100,14 @@ const router = createRouter({
           },
         },
         {
-          path: 'account-settings',
-          component: () => import('@/pages/account-settings.vue'),
+          path: '/acount-settings',
+          component: accountSettings,
+          meta: {
+            middleware: [
+              auth
+            ],
+            title : 'Ajustes de perfil',
+          },
         },
         {
           path: 'typography',
@@ -139,6 +145,9 @@ const router = createRouter({
     {
       path: '/:pathMatch(.*)*',
       component: () => import('@/pages/[...all].vue'),
+      meta: {
+        title : 'OPPS! 404',
+      },
     },
     // 404 ROUTEs
     // {

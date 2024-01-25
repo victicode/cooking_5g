@@ -57,13 +57,14 @@ const vuetifyTheme = useTheme()
       <VerticalNavLink
         class="mt-3"
         :item="{
-          title: 'Productos',
+          title: currentUser.rol_id == 1 ? 'Productos' : 'Tus Productos',
           icon: 'bx-package',
           to: '/products',
         }"
       />
       <VerticalDropdownNavLink 
         class="mt-3"
+        v-if="isAdmin"
         :item="{
           title: 'Usuarios - Chefs',
           items:[
@@ -123,9 +124,14 @@ const vuetifyTheme = useTheme()
 <script>
 import { mapGetters } from "vuex";
   export default {
+    data: () => ({
+      isAdmin:false
+    }),
     methods:{
     },
-    created(){
+    mounted(){
+      this.isAdmin = this.getCurrentAccount.role_id == 1 ?  true : false
+
     },
     computed: {
       ...mapGetters(["currentUser"]),

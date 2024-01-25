@@ -1679,7 +1679,7 @@
                   },
                 }
               },
-              edit_product_short_description: {
+              edit_product_description_short: {
                 validators: {
                   notEmpty: {
                     message: "La descripción corta es necesaria"

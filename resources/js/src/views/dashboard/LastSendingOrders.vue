@@ -24,26 +24,38 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
           </VRow>
          
         </VListItem>
-        <VListItem
-          v-for="order in orders"
-          :key="order.id"
-          class="py-3 border-bottom-4 px-1 px-md-2"
-        >
-          <VRow class="pa-0  align-center">
-            <VCol cols="4" md="4" class="text-center">
-              {{moment(order.created_at ).format('DD/MM/YYYY') }}
-            </VCol>
-            <VCol cols="5" md="4" class="text-center">
-              #{{ order.trancker }}
-            </VCol>
-            <VCol cols="3" md="4" class="text-center">
-              <VIcon icon="bx-show" />
-            </VCol>
-
-          </VRow>
-         
-        </VListItem>
-        
+        <template v-if="orders.length > 0">
+          <VListItem
+            v-for="order in orders"
+            :key="order.id"
+            class="py-3 border-bottom-4 px-1 px-md-2"
+          >
+            <VRow class="pa-0  align-center">
+              <VCol cols="4" md="4" class="text-center">
+                {{moment(order.created_at ).format('DD/MM/YYYY') }}
+              </VCol>
+              <VCol cols="5" md="4" class="text-center">
+                #{{ order.trancker }}
+              </VCol>
+              <VCol cols="3" md="4" class="text-center">
+                <VIcon icon="bx-show" />
+              </VCol>
+  
+            </VRow>
+           
+          </VListItem>
+        </template>
+        <template v-else>
+          <VListItem 
+          >
+            <VRow class="pa-0 m-0 align-center">
+              <VCol cols="12" class=" mt-5 text-center">
+                <h3>No hay resultados</h3>
+              </VCol>
+            </VRow>
+           
+          </VListItem>
+        </template>
       </VList>
     </VCardText>
   </VCard>

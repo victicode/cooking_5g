@@ -128,8 +128,9 @@ class OrderController extends Controller
     }
     public function printOutOrder(Request $request, $id)
     {
+        $order = OutOrder::with('products', 'order.client')->where('id',$id)->first();
 
-        if($request->user()->rol_id == 1){
+        if($request->user()->rol_id == 1 ||$request->user()->id == $order->created_by){
 
             $order = OutOrder::with('products', 'order.client')->where('id',$id)->first();
     
@@ -137,7 +138,7 @@ class OrderController extends Controller
     
             $pdf = Pdf::loadView('outOrderTemplate2', [ 'order' => $order]);
 
-            return $pdf->stream('Salida #'.substr("000000", strlen(strval($order->id)) ).$order->id);
+            return $pdf->stream('Salida ');
         }
     }
     public function changeStatus(Request $request, $idOrder)

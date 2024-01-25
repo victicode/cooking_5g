@@ -65,8 +65,14 @@ import { LOGOUT } from "@/core/services/store/auth.module";
                 size="22"
               />
             </template>
-
-            <VListItemTitle>Perfil</VListItemTitle>
+            <Component
+              :is="'RouterLink'"
+              to="/acount-settings"
+              href="/acount-settings"
+            >
+              <VListItemTitle>Perfil</VListItemTitle>
+            </Component>
+            
           </VListItem>
 
           <!-- Divider -->
