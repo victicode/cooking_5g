@@ -21,38 +21,24 @@
   <VRow class="">
     <VCol cols="12">
       <VCard title="Listado de recetas" class="pa-3 px-1 px-md-3">
-        <VRow class="ma-0 d-none justify-center align-center justify-md-start pa-2 px-0 mb-10 mb-md-2">
+        <VRow class="ma-0  justify-center align-center justify-md-start pa-2 px-0 mb-10 mb-md-2">
           <VCol cols="12" md="4" class="form-group">
             <VTextField
-              placeholder="Desde - Hasta"
-              label="Buscar por Fecha"
+              placeholder="Buscar nombre de receta"
+              label="Buscar nombre de receta"
               type="text"
-              name="date"
-              ref="range_date"
-              id="date-input"
-            />
-            <VTextField
-              placeholder="Buscar por Track ID"
-              type="hidden"
-              name="start_date"
-              ref="start_date"
-              class="boder-0 d-none start_date"
-            />
-            <VTextField
-              placeholder="Buscar por Track ID"
-              type="hidden"
-              name="end_date"
-              ref="end_date"
-              class="boder-0 d-none end_date"
+              ref="recipe"
+              name="recipe_title"
+              @change="filterColumn()"
             />
           </VCol>
           <VCol cols="12" md="4" class="form-group">
             <VTextField
-              placeholder="Buscar por Track ID"
-              label="Track ID"
+              placeholder="Buscar por chef"
+              label="Buscar por chef"
               type="text"
-              ref="tracker"
-              name="tracker_id"
+              ref="chef"
+              name="chef_name"
               @change="filterColumn()"
             />
           </VCol>
@@ -66,8 +52,8 @@
             </VBtn>
           </VCol>
         </VRow>
-        <div class="card-datatable table-responsive d-none">
-          <table class="datatables-basic table" id="data-table">
+        <div class="card-datatable table-responsive">
+          <table class="datatables-basic table recipes-table" id="data-table">
           </table>
         </div>
       </VCard>
@@ -366,23 +352,26 @@
   </VRow>
 </template>
 <style lang="scss" >
+
+table.recipes-table > thead > tr > th:nth-child(n+1){
+  width: max-content!important
+}
 </style>
 <script>
 
   export default {
     data: () => ({
       modal: '',
-      inputDate: '',
       selectedOrder:{},
       table:'',
       tableData:{
         ajax:{
-          "url": import.meta.env.VITE_VUE_APP_BACKEND_URL+"api/get-orders",
+          "url": import.meta.env.VITE_VUE_APP_BACKEND_URL+"api/get-recipes",
           "type": "POST",
           data: function ( data ) {
-            data.filter_tracker_id = document.querySelector('[name="tracker_id"]').value;
-            data.filter_start_date = document.querySelector('[name="start_date"]').value;
-            data.filter_end_date = document.querySelector('[name="end_date"]').value;
+            // data.filter_tracker_id = document.querySelector('[name="chef_name"]').value;
+            // data.filter_start_date = document.querySelector('[name="recipe_title"]').value;
+            // data.filter_end_date = document.querySelector('[name="end_date"]').value;
           },
           "crossDomain": true,
           "beforeSend": function (xhr) {
@@ -394,62 +383,30 @@
         serverSide: true,
         columns: [
           { 
-            title: 'Fecha',  
+            title: 'Receta',
+            class:'text-start',
+            orderable: false, 
+            render: ( data, type, row, meta ) =>{ 
+              return ` ${row.title} `
+            } 
+
+          },
+          { 
+            title: 'Chef',  
             class:'text-center date',
             render: ( data, type, row, meta ) =>{ 
               return `
-              ${ moment(row.created_at).format('DD-MM-YYYY') }
+              ${row.chef.name}
               `
             }   
           },
           { 
-            title: 'Track ID',
+            title: 'Estilo',
             class:'text-center justify-center px-0 px-md-3',
             orderable: false, 
             render: ( data, type, row, meta ) =>{ 
-              return `
-              
-              <span class="d-none d-md-flex justify-center">
-                #${row.trancker}
-              </span>
-              <span class="d-flex d-md-none justify-center">
-                #${row.trancker.slice(0,2)}...${row.trancker.slice(-3)}
-              </span>
-              `
+              return ` ${ moment(row.created_at).format('DD-MM-YYYY') }`
             } 
-
-          },
-          { 
-            title: 'Creada por',
-            class:'text-center d-md-table-cell d-none',
-            orderable: false, 
-            render: ( data, type, row, meta ) =>{ 
-              return ` ${row.user.name} `
-            } 
-
-          },
-          { 
-            title: 'Estado ',
-            class:'text-center px-0',
-            orderable: true,
-            render: ( data, type, row, meta ) =>{ 
-              return `
-              <span 
-                class="  v-chip v-theme--light v-chip--density-comfortable elevation-0 v-chip--size-default v-chip--variant-tonal ${row.status == 1 ? 'bg-warning' : row.status == 2 ? 'bg-secondary' :row.status == 3 ? 'bg-success' : 'bg-error' }" 
-                draggable="false"
-                >
-                  <span class="v-chip__underlay"></span>
-                  <div class="v-chip__content ">
-                    <span class="d-md-flex d-none">
-                      ${row.status_info.status}
-                    </span>
-                    <span class="d-flex d-md-none" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="${row.status_info.status}">
-                      <img src="${row.status_info.svg}" alt="Mi SVG feliz" height="24" width="24"/>
-                    </span>  
-                  </div>
-              </span>                  
-              `
-            }
 
           },
           { 
@@ -601,36 +558,6 @@
           })	
         })
       },
-      initFlatpickr(){
-        this.inputDate = flatpickr(document.querySelector('#date-input'), {
-          mode: 'range',
-          dateFormat: 'd/m/Y',
-          maxDate: "today",
-          orientation: 'auto left',
-          locale: Spanish,  
-          onClose: function (selectedDates,) {
-            var startDate = '',
-            endDate = new Date();
-
-            if (selectedDates[0] != undefined) {
-              startDate = moment(selectedDates[0]).format('YYYY-MM-DD');
-              document.querySelector('[name="start_date"]').value = startDate+ ' 00:00:00';
-
-            }
-            if (selectedDates[1] != undefined) {
-              endDate = moment(selectedDates[1]).format('YYYY-MM-DD');
-              document.querySelector('[name="end_date"]').value= endDate + ' 23:59:00';
-
-            }
-            let event = new Event("selectDates")
-            document.querySelector('#date-input').dispatchEvent(event);
-          }
-        });
-
-        document.querySelector('#date-input').addEventListener('selectDates', event => {
-          this.filterColumn()
-        });
-      },
       async selectOrder(idAccount){
         this.$store
           .dispatch(GET_ORDER_BY_ID, idAccount)
@@ -660,9 +587,8 @@
         this.table.draw('full-hold');
       },
       clearFilters(){
-        document.querySelector('[name="tracker_id"]').value = '';
-        document.querySelector('[name="start_date"]').value = '';
-        document.querySelector('[name="end_date"]').value = '';
+        document.querySelector('[name="chef_name"]').value = '';
+        document.querySelector('[name="recipe_title"]').value = '';
         this.table.clear();
         this.table.columns().search('').draw('full-hold')
       },
@@ -673,14 +599,10 @@
         })
         this.modal.show()
       },
-      orderNumberFormat(id){
-        return '0000000'.slice( 0, 6 - id.toString().length ) + id 
-      }
     },
     mounted(){
       this.initOptionsTable()
       this.table = new DataTablesCore('#data-table', this.tableData)
-      this.initFlatpickr();
       this.bootstrapOptions();
     },
     created(){

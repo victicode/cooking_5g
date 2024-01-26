@@ -17,13 +17,14 @@
   import debounce from 'debounce';
   import * as bootstrap from 'bootstrap'
   import { GET_USER_BY_ID, CREATE_USER, DELETE_USER, UPDATE_USER } from "@/core/services/store/user.module";
+  import viewOrderModal from '@/views/pages/modals/viewOrderModal.vue';
 
 </script>
 
 <template>
   <VRow class="">
     <VCol cols="12">
-      <VCard title="Listado de chef's" class="pa-3 px-1 px-md-3">
+      <VCard title="Listado de clientes" class="pa-3 px-1 px-md-3">
         <VRow class="ma-0  justify-center justify-md-end pa-2 px-0 mb-0 pb-0">
           <VCol
             cols="11"
@@ -56,7 +57,7 @@
           </VCol>
         </VRow>
         <div class="card-datatable table-responsive">
-          <table class="datatables-basic table display" id="data-table">
+          <table class="datatable table display" id="data-table">
           </table>
         </div>
       </VCard>
@@ -83,7 +84,7 @@
                   <VCardItem class="justify-center w-100  py-md-6  py-4  my-5  ">
                     <VCardTitle class="text-2xl font-weight-bold">
                       <div class="card-title d-flex ">
-                        <div class="form-title__part1">Editar chef</div>
+                        <div class="form-title__part1">Editar usuario</div>
                         
                       </div>
                     </VCardTitle>
@@ -248,7 +249,7 @@
                       </VCol>
                     </VRow>
                     <div v-if="selectedUser.orders.length > 0" class="w-100">
-                      <UserOrdersTables :orders="selectedUser.orders" />
+                      <UserOrdersTables :orders="selectedUser.orders" @selectedOrder="selectedOrder"/>
                     </div>
                     <div v-else class="w-100 my-8">
                       <div class="text-center">
@@ -256,18 +257,6 @@
                       </div>
                     </div>
                     <VDivider  />
-                    <!-- <div class="mt-5 w-100 d-flex  justify-center">
-                      <VCardActions class=" justify-center w-75">
-                        <VBtn
-                          color="white"
-                          class="bg-secondary text-white w-50"
-                          @click="hideModal()"
-                        >
-                          <VIcon icon="mingcute:close-fill" />
-                          <span class="ms-2">Cerrar</span>
-                        </VBtn>
-                      </VCardActions>
-                    </div> -->
                   </div>
                 </VCard>
               </VCol>
@@ -275,105 +264,9 @@
           </div>
         </div>
       </div>
-      <!-- <div class="modal animate__animated animate__fadeInDown" id="OrdersUser" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg mt-10" >
-          <div class="modal-content">
-            <VCol
-              cols="12"
-              class="pa-0 d-flex justify-center"
-              style="position: relative;"
-            >
-            
-              <VCol
-                cols="12"
-              >
-                <VCard class="modal__content">
-                  <div class="modal__close-button" >
-                    <v-col  class="pa-0 pe-4">
-                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
-                    </v-col>
-                  </div>
-                  <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column pa-2 pa-md-5 ">
-                    <VRow  class="mb-2 ma-0">
-                      <VCol
-                        cols="12"
-                        md="6"
-                        class="py-0"
-                      >
-                        <div class="my-md-4 my-2 text-center text-md-start">
-                          <h2>Orden de productos</h2>
-                          <h3 class="mt-2">
-                            <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
-                              {{ selectedOrder.status_label.status }}
-                            </v-chip>
+      <viewOrderModal :order="selectedUser.selectedOrder" v-if="selectedUser.selectedOrder" @actionModal="hideInternalModal()"  />
+      <viewTimelineOrderModal :order="selectedUser.selectedOrder" v-if="selectedUser.selectedOrder" @actionModal="hideInternalModal()"/>
 
-                          </h3>
-                        </div>
-                        <div class="my-3 my-md-0  d-block d-md-none text-center text-md-end ">
-                          <h4 class="font-400">
-                            Orden N°: 
-                            <b>
-                              {{ orderNumberFormat(selectedOrder.id) }}
-                            </b> 
-                          </h4>
-                        </div>
-                        <div >
-                          <div class="my-2  text-start">
-                            Solicitante: {{ selectedOrder.client.name.toUpperCase() }}
-                          </div>
-                          <div class="my-2 text-start">
-                            Dirección de destino: {{ selectedOrder.other_address }}
-                          </div>
-                        </div>
-                      
-                      </VCol>
-                      <VCol
-                        cols="12"
-                        md="6"
-                        class="py-0"
-                      >
-                        <div class="my-md-4 my-0  d-none d-md-block text-center text-md-end ">
-                          <h4 class="font-400">
-                            Orden N°: 
-                            <b>
-                              {{ orderNumberFormat(selectedOrder.id) }}
-                            </b> 
-                          </h4>
-                        </div>
-                        <div >
-                          <div class="my-2  text-start text-md-end">
-                            Fecha de pedio: {{ moment(selectedOrder.created_at).format('DD/MM/YYYY HH:mm:ss') }}
-                          </div>
-                          <div class="my-2  text-start text-md-end">
-                            Tracker ID: {{ selectedOrder.trancker }}
-                          </div>
-                        </div>
-                      
-                      </VCol>
-                    </VRow>
-                    <div>
-                      <OrderProductsTables :products="selectedOrder.products" />
-                    </div>
-                    <VDivider  />
-                    <div class="mt-5 w-100 d-flex  justify-center">
-                      <VCardActions class=" justify-center w-75">
-                        <VBtn
-                          color="white"
-                          class="bg-secondary text-white w-50"
-                          @click="hideModal()"
-                        >
-                          <VIcon icon="mingcute:close-fill" />
-                          <span class="ms-2">Cerrar</span>
-                        </VBtn>
-                      </VCardActions>
-                    </div>
-                  </div>
-                </VCard>
-              </VCol>
-            </VCol>
-          </div>
-        </div>
-      </div> -->
     </div>
     <div class="modal animate__animated animate__fadeInDown"  id="createNewUser" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg mt-10" >
@@ -533,6 +426,7 @@ table.dataTable tbody th, table.dataTable tbody td{
   export default {
     data: () => ({
       modal: '',
+      internalModal:'',
       isPasswordVisible: false,
       forms:[],
       snackShow:false,
@@ -610,10 +504,6 @@ table.dataTable tbody th, table.dataTable tbody td{
             render: ( data, type, row, meta ) =>{ 
               let html = `
                 <div class="d-md-flex d-none justify-center ">
-                  <span data-id="${row.id}" class="view mx-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver Ficha">
-                    <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
-                      <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
-                  </span>
                   <span data-id="${row.id}" class="edit mx-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editar chef">
                     <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                       <path data-id="${row.id}" fill="currentColor" d="M21 12a1 1 0 0 0-1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h6a1 1 0 0 0 0-2H5a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-6a1 1 0 0 0-1-1m-15 .76V17a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .71-.29l6.92-6.93L21.71 8a1 1 0 0 0 0-1.42l-4.24-4.29a1 1 0 0 0-1.42 0l-2.82 2.83l-6.94 6.93a1 1 0 0 0-.29.71m10.76-8.35l2.83 2.83l-1.42 1.42l-2.83-2.83ZM8 13.17l5.93-5.93l2.83 2.83L10.83 16H8Z"/></svg>
@@ -637,10 +527,6 @@ table.dataTable tbody th, table.dataTable tbody td{
                       <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="button" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default v-icon--clickable iconify iconify--mdi" aria-haspopup="menu" aria-expanded="false" aria-owns="v-menu-46" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z"></path></svg>
                     </button>
                     <div class="d-flex justify-center dropdown-menu animate__animated animate__rubberBand">
-                      <span  data-id="${row.id}" class="view mx-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver Ficha">
-                        <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
-                          <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
-                      </span>
                       <span  data-id="${row.id}" class="edit mx-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editar chef">
                         <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                           <path data-id="${row.id}" fill="currentColor" d="M21 12a1 1 0 0 0-1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h6a1 1 0 0 0 0-2H5a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-6a1 1 0 0 0-1-1m-15 .76V17a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .71-.29l6.92-6.93L21.71 8a1 1 0 0 0 0-1.42l-4.24-4.29a1 1 0 0 0-1.42 0l-2.82 2.83l-6.94 6.93a1 1 0 0 0-.29.71m10.76-8.35l2.83 2.83l-1.42 1.42l-2.83-2.83ZM8 13.17l5.93-5.93l2.83 2.83L10.83 16H8Z"/></svg>
@@ -816,6 +702,18 @@ table.dataTable tbody th, table.dataTable tbody td{
         })
         this.modal.show()
       },
+      showInternalModal(modal) {
+        this.internalModal = new bootstrap.Modal(document.getElementById(modal), {
+          keyboard: false,              
+          backdrop:'static'
+        })
+        this.internalModal.show()
+      },
+      hideInternalModal(modal) {
+        
+        this.internalModal.hide()
+        this.modal.show()
+      },
       hideModal(){
         this.modal.hide()
         try {
@@ -833,6 +731,8 @@ table.dataTable tbody th, table.dataTable tbody td{
         formData.append('password', this.newUser.password);
         formData.append('user_address', this.newUser.address);
         formData.append('rol_id', 2);
+        console.log(this.newUser)
+
         this.$store
           .dispatch(CREATE_USER, formData)
           .then((response) => {
@@ -1103,6 +1003,14 @@ table.dataTable tbody th, table.dataTable tbody td{
 
         });
       },
+      selectedOrder(order){
+        this.selectedUser.selectedOrder =  order
+
+        setTimeout(() => {
+          this.hideModal()
+          this.showInternalModal('viewOrder')
+        }, 200);
+      }
         
     },
     mounted(){

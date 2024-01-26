@@ -10,7 +10,7 @@ import middlewarePipeline from './middlewares/middlewarePipeline'
 // components
 import defaultComponent from '@/layouts/default.vue';
 import productsComponent from '@/pages/products.vue';
-import products_2Component from '@/pages/products_2.vue';
+
 
 import ordersComponent from '@/pages/orders.vue';
 import recipesComponent from '@/pages/recipes.vue';
@@ -41,7 +41,7 @@ const router = createRouter({
         },
         {
           path: "/products",
-          component: products_2Component,
+          component: productsComponent,
           meta: {
             middleware: [
               auth

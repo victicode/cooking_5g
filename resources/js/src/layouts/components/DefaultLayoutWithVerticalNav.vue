@@ -64,7 +64,7 @@ const vuetifyTheme = useTheme()
       />
       <VerticalDropdownNavLink 
         class="mt-3"
-        v-if="isAdmin"
+        v-if="this.getCurrentAccount.rol_id == 1 "
         :item="{
           title: 'Usuarios - Chefs',
           items:[
@@ -128,10 +128,6 @@ import { mapGetters } from "vuex";
       isAdmin:false
     }),
     methods:{
-    },
-    mounted(){
-      this.isAdmin = this.getCurrentAccount.role_id == 1 ?  true : false
-
     },
     computed: {
       ...mapGetters(["currentUser"]),

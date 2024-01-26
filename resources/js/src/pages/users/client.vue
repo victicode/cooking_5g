@@ -265,6 +265,8 @@
         </div>
       </div>
       <viewOrderModal :order="selectedUser.selectedOrder" v-if="selectedUser.selectedOrder" @actionModal="hideInternalModal()"  />
+      <viewTimelineOrderModal :order="selectedUser.selectedOrder" v-if="selectedUser.selectedOrder" @actionModal="hideInternalModal()"/>
+
     </div>
     <div class="modal animate__animated animate__fadeInDown"  id="createNewUser" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg mt-10" >

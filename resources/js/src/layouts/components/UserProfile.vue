@@ -11,7 +11,7 @@ import { LOGOUT } from "@/core/services/store/auth.module";
     offset-y="3"
     color="success"
     bordered 
-    v-if="isReady"
+    v-if="user.name"
   >
     <VAvatar
       class="cursor-pointer"
@@ -105,10 +105,7 @@ import { inject } from "vue";
       }
     },
     mounted(){
-      setTimeout(() => {
-        this.isReady = true;
-      }, 2000);
-      
+    
     },
     methods:{
       logout(){

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Models\Recipe;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Yajra\DataTables\DataTables;
 
 class RecipeController extends Controller
 {
@@ -15,6 +17,16 @@ class RecipeController extends Controller
     public function index()
     {
         //
+    }
+    public function getRecipesTable(){
+        $recipes = Recipe::query()->with(['chef', 'products',]);
+
+
+        return DataTables::of($recipes)->filter(function ($query) {
+            // if (!empty(request('filter_name'))) {
+            //   $query->where('name','like','%'.request('filter_name').'%');
+            // }
+          })->toJson();
     }
 
     /**
