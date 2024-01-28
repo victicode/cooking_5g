@@ -97,7 +97,6 @@
     <div v-if="Object.keys(selectedOrder).length > 2">
       <viewOrderModal :order="selectedOrder"  @actionModal="modalAction" />
       <viewCreateOutOrderModal :order="selectedOrder"  @actionModal="modalAction"  @createOutOrder="createOutOrder"  />
-      <viewOutOrderModal v-if="selectedOrder.out_order" :order="selectedOrder" @actionModal="hideInternalModal" />
       <viewTimelineOrderModal :order="selectedOrder"  @actionModal="hideInternalModal" />
       <div class="modal animate__animated animate__fadeInDown" id="confirmOrder" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg mt-10" >

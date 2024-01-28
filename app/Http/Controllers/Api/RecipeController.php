@@ -14,9 +14,13 @@ class RecipeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         //
+
+        $order = Recipe::withCount('products')->with('chef');
+
+        return $this->returnSuccess(200, $order->paginate(15) );
     }
     public function getRecipesTable(){
         $recipes = Recipe::query()->with(['chef', 'products',]);

@@ -89,6 +89,11 @@ Route::middleware('jwt.verify')->prefix('lotes')->name('lotes.')->group(function
     Route::delete('/{id}',[LoteController::class, 'deleteLote']);
 
 });
+Route::middleware('jwt.verify')->prefix('recipes')->name('recipes.')->group(function () {
+    Route::get('/',[RecipeController::class, 'index']);
+    Route::get('/get-by-id/{id}',[RecipeController::class, 'getRecipeById']);
+    Route::delete('/{id}',[RecipeController::class, 'deleteRecipe']);
 
+});
 
 
