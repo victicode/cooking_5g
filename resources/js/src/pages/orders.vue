@@ -43,11 +43,11 @@
 
           </VCol>
         </VRow>
-        <VRow class="ma-0  justify-center align-center justify-md-start pa-2 px-0 mb-10 mb-md-2">
-          <VCol cols="12" md="4" class="form-group">
+        <VRow class="ma-0  justify-center align-center justify-md-start pa-2 px-0 mb-0 mb-md-2">
+          <VCol cols="6" md="4" class="form-group px-2">
             <VTextField
               placeholder="Desde - Hasta"
-              label="Buscar por fecha de pedido"
+              label="Buscar por fecha"
               type="text"
               name="date"
               ref="range_date"
@@ -68,7 +68,7 @@
               class="boder-0 d-none end_date"
             />
           </VCol>
-          <VCol cols="12" md="4" class="form-group">
+          <VCol cols="6" md="4" class="form-group px-2">
             <VTextField
               placeholder="Buscar por Track ID"
               label="Buscar por Track ID"
@@ -88,6 +88,8 @@
             </VBtn>
           </VCol>
         </VRow>
+      </VCard>
+      <VCard class="pt-8 pb-8 mt-5 px-2">
         <div class="card-datatable table-responsive ">
           <table class="datatables-basic table display nowrap" id="data-table">
           </table>

@@ -61,6 +61,10 @@
             </VBtn>
           </VCol>
         </VRow>
+        
+      </VCard>
+
+      <VCard class="mt-2">
         <div class="card-datatable table-responsive">
           <table class="max-width-700 datatables-basic display table" id="data-table">
           </table>
@@ -83,10 +87,10 @@
               >
                 <VCard class="modal__content">
                   <div class="modal__close-button" >
-                  <v-col  class="pa-0 pe-4">
-                    <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
-                  </v-col>
-                </div>
+                    <v-col  class="pa-0 pe-4">
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                    </v-col>
+                  </div>
                   <div class="d-flex  flex-wrap align-center flex-md-nowrap flex-column flex-md-row">
                     <VDivider :vertical="$vuetify.display.mdAndUp" />
 
@@ -1291,6 +1295,12 @@
         })
         this.modal.show()
       },
+      hideModal(){
+        this.modal.hide()
+        this.destroyFormVal();
+        this.resetNewProductForm()
+        this.resetStockForm();
+      },
       filterColumn(){
         debounce(()=>{
           this.table.clear();
@@ -1389,12 +1399,6 @@
         return type == 2 
         ? this.newProduct.dismantling[index].piece_product_id = e
         : this.selectedProduct.product.dismantling[index].piece_product_id = e
-      },
-      hideModal(){
-        this.modal.hide()
-        this.destroyFormVal();
-        this.resetNewProductForm()
-        this.resetStockForm();
       },
       resetStockForm(){
         

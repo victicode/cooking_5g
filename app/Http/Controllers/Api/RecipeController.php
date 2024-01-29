@@ -18,9 +18,13 @@ class RecipeController extends Controller
     {
         //
 
-        $order = Recipe::withCount('products')->with('chef');
+        $recipes = Recipe::withCount('products')->with('chef');
+        
+        if($request->user()->rol_id !== 1){
+            $recipes->where('created_by', $request->user()->id );
+        }
 
-        return $this->returnSuccess(200, $order->paginate(15) );
+        return $this->returnSuccess(200, $recipes->paginate(15) );
     }
     public function getRecipesTable(){
         $recipes = Recipe::query()->with(['chef', 'products',]);
@@ -31,6 +35,10 @@ class RecipeController extends Controller
             //   $query->where('name','like','%'.request('filter_name').'%');
             // }
           })->toJson();
+    }
+
+    public function getRecipeById($id){
+        return $this->returnSuccess(200, Recipe::with(['chef', 'products',])->find($id));
     }
 
     /**

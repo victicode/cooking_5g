@@ -1,18 +1,5 @@
 <script setup >
-  import DataTable from 'datatables.net-vue3';
-  import DataTablesCore from 'datatables.net';
-  import Button from 'datatables.net-buttons';
-  import 'datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css';
-  import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue'
-  import OrderProductsTables from '@/views/pages/tables/OrderProductsTables.vue'
-  import ButtonPrint from 'datatables.net-buttons/js/buttons.print';
-  import ButtonHTML5 from 'datatables.net-buttons/js/buttons.html5';
-  import 'datatables.net-dt/css/jquery.dataTables.min.css';
   import * as bootstrap from 'bootstrap'
-  import flatpickr from "flatpickr";
-  import moment from 'moment';
-  import 'flatpickr/dist/flatpickr.min.css'
-  import { Spanish } from "flatpickr/dist/l10n/es.js"
   import { GET_RECIPES, GET_RECIPE_BY_ID} from "@/core/services/store/recipe.module";
 
 
@@ -22,6 +9,16 @@
   <VRow class="">
     <VCol cols="12">
       <VCard title="Listado de recetas" class="pa-0 px-1 px-md-3 mb-1">
+        <VRow class="ma-0  justify-center justify-md-end pa-2 px-0 mb-0 pb-0">
+          <VCol
+            cols="11"
+            md="3"
+            class="ma-0 px-0 justify-center justify-md-end d-flex"
+          >
+          <VBtn @click=" showModal('createProduct')" color="primary" class="w-100 "><VIcon icon="bx-plus"/> Agregar nueva receta</VBtn>
+
+          </VCol>
+        </VRow>
         <VRow class="ma-0  justify-center align-center justify-md-start pa-2 px-0 mb-0 mb-md-2">
           <VCol cols="6" md="4" class="form-group">
             <VTextField
@@ -72,7 +69,7 @@
                       <h3 class="w-100"> {{ recipe.title }} </h3>
                       
                     </div>
-                    <div class="ms-2 d-flex justify-space-between align-end">
+                    <div class="ms-1 d-flex justify-space-between align-end">
                       <div>
                         <h5 class="text-primary my-1"> Chef: <b class="text-decoration-underline cursor-pointer">{{ recipe.chef.name }}</b> </h5>
                         <v-chip color="primary" class="mt-1 pb-0">
@@ -82,10 +79,10 @@
                         </v-chip>
                       </div>
                       <div class="d-flex">
-                        <v-btn size="x-small" class="d-block d-md-none" color="secondary" @click.stop="drawer = !drawer" icon="majesticons:plus-line" />
-                        <v-btn size="small" class="d-none d-md-block mx-2" color="secondary" icon="carbon:view" />
-                        <v-btn size="small" class="d-none d-md-block mx-2" color="secondary" icon="line-md:edit-twotone-full" />
-                        <v-btn size="small" class="d-none d-md-block mx-2" color="error" icon="mi:delete" />
+                        <v-btn size="x-small" class="d-block d-md-none" color="secondary" @click="selectRecipe(recipe.id)" icon="majesticons:plus-line" />
+                        <v-btn size="small" class="d-none d-md-block mx-2" color="secondary" @click="showAction(recipe.id,'viewRecipe')" icon="carbon:view" />
+                        <v-btn size="small" class="d-none d-md-block mx-2" color="secondary" @click="showAction(recipe.id, 'deleteRecipe' )" icon="line-md:edit-twotone-full" />
+                        <v-btn size="small" class="d-none d-md-block mx-2" color="error" @click="showAction(recipe.id, 'deleteRecipe')" icon="mi:delete" />
                       </div>
                     </div>
                   </div>
@@ -95,28 +92,637 @@
           </VCard>
       </template>
     </VCol>
-    
+    <v-navigation-drawer
+          v-model="drawer"
+          location="bottom"
+          temporary
+          style="height: 180px; background: #f1f1f1; border-top-right-radius: 20px; border-top-left-radius: 20px; overflow-y: visible;"
+        >
+        <div class="text-center d-flex flex-column  h-100" style="position: relative;">
+          <div :class="`drawer__close-button ${drawer ? 'active' : ''}`" >
+            <v-col  class="pa-0 pe-4">
+              <v-btn icon="mingcute:close-fill" class="bg-secondary shadow-button"   @click="drawer = false" ></v-btn>
+            </v-col>
+          </div>
+          <h3 class="mt-4 mb-0">{{selectedRecipe.title}}</h3>
+          <div class="d-flex  justify-space-between mx-8  align-center h-50 mt-4 " style="box-sizing:content-box;">
+            
+            <v-btn size="large" class="d-block mx-2 shadow-button" color="primary" @click="showModal('viewRecipe')" icon="carbon:view" />
+            <v-btn size="large" class="d-block mx-2 shadow-button" color="primary" @click="showModal('deleteRecipe')" icon="line-md:edit-twotone-full" />
+            <v-btn size="large" class="d-block mx-2 shadow-button" color="error" @click="showModal('deleteRecipe')" icon="mi:delete" />
+          </div>
+        </div>
+    </v-navigation-drawer>    
   </VRow>
-  <v-navigation-drawer
-        v-model="drawer"
-        location="bottom"
-        temporary
-      >
-      <v-list nav>
-          <v-list-item class="my-2 pa-3 item-list-drawer" prepend-icon="mdi-email" title="Inbox" value="inbox"></v-list-item>
-          <v-list-item class="my-2 pa-3 item-list-drawer" prepend-icon="mdi-account-supervisor-circle" title="Supervisors" value="supervisors"></v-list-item>
-          <v-list-item class="my-2 pa-3 item-list-drawer" prepend-icon="mdi-clock-start" title="Clock-in" value="clockin"></v-list-item>
-      </v-list>
-  </v-navigation-drawer>
+  <div v-if="Object.keys(selectedRecipe).length > 2" >
+      <div class="modal animate__animated animate__fadeInDown"  id="viewRecipe" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg mt-10" >
+          <div class="modal-content">
+            <VCol
+              cols="12"
+              class="pa-0 d-flex justify-center"
+              style="position: relative;"
+            >
+            
+              <VCol
+                cols="12"
+                class="px-2"  
+              >
+                <VCard class="modal__content">
+                  <div class="modal__close-button" >
+                    <v-col  class="pa-0 pe-4">
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                    </v-col>
+                  </div>
+                  <div class="d-flex  flex-wrap align-center flex-md-nowrap flex-column flex-md-row">
+                    <VDivider :vertical="$vuetify.display.mdAndUp" />
+
+                    <div class="w-100">
+                      <VRow class="ma-0 pa-0">
+                        <VCol cols="12" md="4" class="justify-center d-grid">
+                          <div class="ma-auto mx-0 pa-5 pb-0">
+                            <!-- <VImg
+                              width="200"
+                              height="200"
+                              class="rounded"
+                              :src="selectedRecipe.product.img "
+                            /> -->
+                          </div>
+                        </VCol>
+                        <VCol cols="12" md="8" class="mt-0 pt-0 mb-4">
+
+                          <VCardItem class="px-1 ">
+                            <VCardTitle>{{ selectedRecipe.title }}</VCardTitle>
+                            
+                          </VCardItem>
+                          <VCardItem class="px-1 ">
+                            <VChip>
+                              {{ selectedRecipe.type }}
+                            </VChip>
+                            
+                          </VCardItem>
+                          <VCardText class="px-1">
+                            {{ selectedRecipe.description}}
+                          </VCardText>
+                          <div class="mt-0" style="border-top: 1px solid rgba(119, 119, 119, 0.356)">
+
+                            <VCardText class="text-subtitle-1 py-4 px-1">
+                              <span class="font-weight-medium">Ingredientes:</span> <span class="font-weight-bold">
+                                {{ selectedRecipe.ingredients}}
+                              </span>
+                            </VCardText>
+                      
+                          </div>
+                        </VCol>
+                      </VRow>
+                      
+                      <div style="border-top: 1px solid rgba(119, 119, 119, 0.356)">
+                        <VCardText class="text-subtitle-1 py-4 px-1">
+                          <span class="font-weight-medium">Preparación: </span> 
+                          <span class="font-weight-bold">
+                            {{ selectedRecipe.preparation }}
+                          </span>
+                        </VCardText>
+                      </div>
+                    </div>
+                  </div>
+                </VCard>
+              </VCol>
+            </VCol>
+          </div>
+        </div>
+      </div>
+      <!-- <div class="modal animate__animated animate__fadeInDown"  id="editRecipe" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg mt-10" >
+          <div class="modal-content">
+            <VCol
+              cols="12"
+              class="pa-0 d-flex justify-center"
+              style="position: relative;"
+            >
+              <VCol
+                cols="12"
+                class="px-2"  
+              >
+                <VCard class="modal__content">
+                  <div class="modal__close-button" >
+                    <v-col class="pa-0 pe-4">
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                    </v-col>
+                  </div>
+                  <div>
+                    <VCardItem class="justify-center w-100  py-md-6  py-4   ">
+                      <VCardTitle class="text-2xl font-weight-bold">
+                        <div class="card-title d-flex ">
+                          <div class="form-title__part1">Editar Producto</div>
+                          
+                        </div>
+                      </VCardTitle>
+                    </VCardItem>
+                    <VCardText class="mb-5  w-100 pa-0" v-if="alertShow">
+                      <v-alert
+                        :color="alertType"
+                        :text="alertMessage"
+                      ></v-alert>
+                    </VCardText>
+                    <VCardText class="w-100 pb-5 px-3 px-md-6">
+                      <VForm  id="edit_product_form">
+                        <VRow>
+                          
+                          <VCol cols="12"  class=" ">
+                            <div class="img-content mx-auto">
+                              <label for="editProduct-img">
+                                <VImg
+                                  width="200"
+                                  height="200"
+                                  class="rounded "
+                                  :src="selectedRecipe.product.img "
+                                  style="border-radius:10%!important"
+                                />
+                                <div class="overlay-img">
+                                  <VIcon color="white" size="x-large" icon="majesticons:image-plus"/>
+                                </div>
+                              </label>
+                              <VCol cols="12" md="6" class="form-group">
+                                <input type="file" id="editProduct-img" ref="editProductImg" name="edit_product_img"  class="d-none" @change="onFileChange" >
+                              </VCol>
+                            </div>
+                          </VCol>
+                          <VCol cols="12" md="6" class="form-group">
+                            <VTextField
+                              placeholder="Nombre del producto"
+                              label="Nombre del producto"
+                              type="text"
+                              name="edit_product_title"
+                              v-model="selectedRecipe.product.title"
+                              
+                            />
+                          </VCol>
+                          <VCol cols="12" md="6" class="form-group">
+                            <VTextField
+                              placeholder="Descripción corta"
+                              label="Descripción corta"
+                              type="text"
+                              name="edit_product_description_short"
+                              v-model="selectedRecipe.product.short_description"
+                            />
+                          </VCol>
+                          <VCol cols="12" class="form-group">
+                            <v-textarea
+                              label="Descripcion larga"
+                              auto-grow
+                              variant="outlined"
+                              rows="3"
+                              row-height="25"
+                              shaped
+                              name="edit_product_description"
+                              v-model="selectedRecipe.product.description"
+                            ></v-textarea>
+                          </VCol>
+                          
+                          <VCol cols="6" md="6" class="form-group">
+                            <v-combobox
+                              label="Tipo de unidad"
+                              :items="['Selecciona uno','KG', 'UNI', 'PZAS']"
+                              variant="outlined"
+                              v-model="selectedRecipe.product.type_of_unit"
+                            ></v-combobox>
+                          </VCol>
+                          <VCol cols="12" md="6" >
+                            <v-switch
+                              color="primary"
+                              label="Tiene despieces" 
+                              v-model="selectedRecipe.product.is_dismantling" :value="1" 
+                              @change="validateSwitch($event)"
+                            />
+                          </VCol>
+                        </VRow>
+                        <VRow class="ma-0 pa-0  mt-4 align-center" v-if="selectedRecipe.product.is_dismantling">
+                              <VCol cols="12" class="form-group">
+                                <h3>Despieces:</h3>
+                              </VCol>
+                              <VCol cols="12" md="4" class="mt-0 py-0 px-0">
+                                <v-tooltip text="Agregar nuevo despiece">
+                                    <template v-slot:activator="{ props }">
+                                      <v-col cols="auto" class="">
+                                        <VBtn v-bind="props" color="primary" class="w-100 " @click="addDismantlingInput(1)"><VIcon icon="bx-plus"/> Agregar despiece</VBtn>
+                                      </v-col>
+                                    </template>
+                                  </v-tooltip>
+                              </VCol>
+                              <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
+                                <VRow  v-for="(item,index) in selectedRecipe.product.dismantling"  v-bind:key="item.id" class="pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'product_desmantling_'+index">
+                                  <VCol cols="12"  md="6" class="form-group">
+                                    <v-autocomplete
+                                      :model-value="item.piece_product_id"
+                                      :loading="loading"
+                                      :items="productOption[index+'_'+selectedRecipe.product.id] != undefined ?  productOption[index+'_'+selectedRecipe.product.id] : item.piece_product_id !== null ?[ {id: item.piece_product_id, title: item.products_pieces.title}] : []"
+                                      label="Nombre del producto"
+                                      item-title="title"
+                                      item-value="id"
+                                      placeholder="Nombre del producto"
+                                      variant="outlined"
+                                      clearable
+                                      no-filter
+                                      no-data-text="No se encontraron resultados"
+                                      :name="'product_desmantling_id_'+index"
+                                      @keyup="searchDismantling($event, index+'_'+selectedRecipe.product.id)"
+                                      @click:clear="clearSearchDismantling(index+'_'+selectedRecipe.product.id)"
+                                      @update:modelValue="selectDismantling($event, index, 1)"
+                                    ></v-autocomplete>
+                                  </VCol>
+                                  <VCol cols="8"  md="4" class="form-group">
+                                    <VTextField
+                                      placeholder="Unidades que trae"
+                                      label="Unidades que trae"
+                                      type="number"
+                                      :name="'product_desmantling_quantity_'+index"
+                                      v-model="item.quantity"
+                                      
+                                    />
+                                  </VCol>
+                                  <VCol cols="4" md="1" class="form-group pa-0">
+                                    <v-tooltip text="Eliminar despiece">
+                                      <template v-slot:activator="{ props }">
+                                        <v-col cols="auto" class="">
+                                          <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeDismantlingInput(1,index)"></v-btn>
+                                        </v-col>
+                                      </template>
+                                    </v-tooltip>
+                                  </VCol> 
+                                </VRow>
+                              </div>
+                        </VRow>
+                        <VRow class="ma-0 pa-0  mt-8 align-center">
+                          <VCol cols="12" md="4" offset-md="4" class="mt-0 py-0 px-0">
+                            <v-col cols="auto" class="">
+                              <VBtn  color="primary" class="w-100 " type="submit" disabled id="edit_product_form_button" > Guardar </VBtn>
+                            </v-col>
+                          </VCol>
+                        </VRow>
+                      </VForm>
+                    </VCardText>
+                  </div>
+                </VCard>
+              </VCol>
+            </VCol>
+          </div>
+        </div>
+      </div> -->
+      <div class="modal animate__animated animate__fadeInDown" id="deleteRecipe" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+        
+        <div class="modal-dialog modal-lg mt-10">
+          <div class="modal-content">
+            <VCol
+              cols="12"
+              class="pa-0 d-flex justify-center"
+              style="position: relative;"
+            >
+              <VCol
+                cols="12"
+                class="px-2"  
+              >
+                <VCard class="modal__content">
+                  <div class="modal__close-button" >
+                    <v-col class="pa-0 pe-4">
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                    </v-col>
+                  </div>
+                  <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
+                    <VRow  class="mb-2 ma-0">
+                      <VCol
+                        cols="12"
+                        class="py-0"
+                      >
+                        <div class="my-md-4 my-2 text-center">
+                          <h2>Eliminar Producto</h2>
+                        </div>
+                      </VCol>
+                      <VCol
+                        cols="12"
+                        class="px-md-10 px-0 text-center"
+                        style=""
+                      >
+                        <h2>¿Seguro que deseas eliminar <b class="text-primary">{{selectedRecipe.title}}</b>?</h2>
+                      </VCol>
+                    </VRow>
+                      
+                    <VDivider  />
+                    <div class="mt-5 w-100 d-md-flex  d-block justify-center">
+                      <VCardActions class=" justify-center w-100 d-md-flex  d-flex">
+                        <VBtn
+                          color="white"
+                          class="bg-error text-white w-50 mx-0 mx-md-5 my-2"
+                          @click="deleteProduct()"
+                        >
+                          <span class="">Eliminar</span>
+                        </VBtn>
+                      </VCardActions>
+                    </div>
+                  </div>
+                </VCard>
+              </VCol>
+            </VCol>
+          </div>
+        </div>
+      </div>
+  </div>
+  <div class="modal animate__animated animate__fadeInDown"  id="createProduct" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg mt-10" >
+        <div class="modal-content">
+          <VCol
+            cols="12"
+            class="pa-0 d-flex justify-center"
+            style="position: relative;"
+          >
+            <VCol
+              cols="12"
+              class="px-2"
+            >
+              <VCard class="modal__content">
+                <div class="modal__close-button" >
+                  <v-col class="pa-0 pe-4">
+                    <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                  </v-col>
+                </div>
+                <div>
+                  <VCardItem class="justify-center w-100  py-md-6  py-4   ">
+                    <VCardTitle class="text-2xl font-weight-bold">
+                      <div class="card-title d-flex ">
+                        <div class="form-title__part1">Crear Nuevo Producto</div>
+                        
+                      </div>
+                    </VCardTitle>
+                  </VCardItem>
+                  <VCardText class="mb-5  w-100 pa-0" v-if="alertShow">
+                    <v-alert
+                      :color="alertType"
+                      :text="alertMessage"
+                    ></v-alert>
+                  </VCardText>
+                  <VCardText class="w-100 pb-5 px-3 px-md-6">
+                    <VRow >
+                        
+                        <v-stepper v-model="stepperNewProduct" class="losv">
+                          <template v-slot:default="">
+                            <v-stepper-header class="">
+                              <v-stepper-item
+                                  :complete="stepperNewProduct > 1"
+                                  step="Detalles del producto"
+                                  :value="1"
+                                  icon="icon-park-outline:chef-hat"
+                                  class="pb-5"
+                                >
+                                  Datos
+                                </v-stepper-item>
+
+                                <v-stepper-item
+                                  :complete="stepperNewProduct > 2"
+                                  step="Detalles del producto"
+                                  :value="2"
+                                  icon="bi:basket"
+                                  class="pb-5"
+                                >
+                                  Ingredientes
+                                </v-stepper-item>
+                                <v-stepper-item
+                                  :complete="stepperNewProduct > 2"
+                                  step="Detalles del producto"
+                                  :value="2"
+                                  icon="material-symbols:cooking"
+                                  class="pb-5"
+                                >
+                                  Preparación
+                                </v-stepper-item>
+                            </v-stepper-header>
+                            <v-stepper-window class="mx-2" >
+                              <v-stepper-window-item
+                                :value="1"
+                                
+                              >
+                                <template class="d-block" >
+                                  <VForm  id="new_product_form">
+                                    <VRow>
+                                      <VCol cols="12"  class=" ">
+                                        <div class="img-content mx-auto">
+                                          <label for="newProduct-img">
+                                            <VImg
+                                              width="200"
+                                              height="200"
+                                              class="rounded"
+                                              :src="newProduct.img"
+                                              style="border-radius:10%!important"
+                                              id="newProduct-img-content"
+                                            />
+                                            <div class="overlay-img">
+                                              <VIcon color="white" size="x-large" icon="majesticons:image-plus"/>
+                                            </div>
+                                          </label>
+                                          <VCol cols="12" md="12"  class="form-group text-center ma-0 mt-0 pa-0">
+              
+                                            <input type="file"  id="newProduct-img" ref="newProductImg" name="new_product_img" class="d-none" @change="onFileChange" >
+                                          </VCol>
+                                        </div>
+                                      </VCol>
+                                      <VCol cols="12" md="6" class="form-group">
+                                          <VTextField
+                                            placeholder="Nombre de la receta"
+                                            label="Nombre de la receta"
+                                            type="text"
+                                            name="new_product_title"
+                                            autocomplete="off"
+                                            v-model="newProduct.title"
+                                          />
+                                      </VCol>
+                                      <VCol cols="12" class="form-group">
+                                        <v-textarea
+                                          label="Descripcion larga"
+                                          auto-grow
+                                          variant="outlined"
+                                          rows="3"
+                                          row-height="25"
+                                          shaped
+                                          name="new_product_description"
+                                          v-model="newProduct.description"
+                                        ></v-textarea>
+                                      </VCol>
+                                      <VCol cols="6" md="4" class="form-group">
+                                        <v-select
+                                            label="Tipo de unidad"
+                                            :items="['KG', 'UNI', 'PZAS']"
+                                            variant="outlined"
+                                            v-model="newProduct.unit"
+                                        ></v-select>
+                                      </VCol>
+                                      <VCol cols="12" md="4" class="px-5">
+                                        <v-switch
+                                          color="primary"
+                                          label="Tiene despieces" 
+                                          :value="1" 
+                                          v-model="newProduct.isDismantling"
+                                          @change="validateSwitch($event)"
+                                        />
+                                      </VCol>
+                                    </VRow>
+                                    <VRow class="ma-0 pa-0  mt-8 align-center">
+                                      <VCol cols="12" md="4" offset-md="4" class="mt-0 py-0 px-0">
+                                        <v-col cols="auto" class="">
+                                          <VBtn  color="primary" class="w-100" type="submit"  disabled id="new_product_form_button" > Siguente</VBtn>
+                                        </v-col>
+                                      </VCol>
+                                    </VRow>
+                                  </VForm>
+                                  
+                                </template>
+                              </v-stepper-window-item>
+                              <v-stepper-window-item
+                                :value="2"
+                              >
+                                <template class="d-block">
+                                  <VForm  id="new_product_form_2">
+                                    <VRow>
+                                      <VCol cols="6" md="4" class="form-group">
+                                        <VTextField
+                                          placeholder="Número de lote"
+                                          label="Número de lote"
+                                          type="text"
+                                          name="new_product_init_lot"
+                                          autocomplete="off"
+                                          variant="underlined"
+                                          v-model="newProduct.init_lote"
+                                          disabled
+                                        />
+                                      </VCol>
+                                      <VCol cols="6" md="4" class="form-group">
+                                        <VTextField
+                                          placeholder="Stock"
+                                          label="Stock"
+                                          type="number"
+                                          name="new_product_stock"
+                                          autocomplete="off"
+                                          v-model="newProduct.stock"
+                                        />
+                                      </VCol>
+                                    </VRow>
+                                    <VRow class="ma-0 pa-0  mt-8 align-center">
+                                      <VCol cols="5" md="4"  class="mt-0 py-0 px-0">
+                                        <v-col cols="auto" class="">
+                                          <VBtn  color="secondary" class="w-100" @click="stepperNewProduct = 1" >
+                                            <span class="d-block d-md-hidden ">
+                                              <VIcon icon="ion:arrow-back-outline" color="white"></VIcon>  
+                                            </span>
+                                            <span class="d-md-block d-none ">Volver</span>
+  
+                                            
+                                          </VBtn>
+                                        </v-col>
+                                      </VCol>
+                                      <VCol cols="5" md="4" offset="2" offset-md="4" class="mt-0 py-0 px-0">
+                                        <v-col cols="auto" class="">
+                                          <VBtn  color="primary" class="w-100 " type="submit" disabled id="new_product_form_2_button"> Guardar</VBtn>
+                                        </v-col>
+                                      </VCol>
+                                    </VRow>
+                                  </VForm>
+                                </template>
+                              </v-stepper-window-item>
+                              <v-stepper-window-item
+                                :value="2"
+                              >
+                                <template class="d-block">
+                                  <VForm  id="new_product_form_2">
+                                    <VRow>
+                                      <VCol cols="6" md="6" class="form-group">
+                                        <VTextField
+                                          placeholder="Número de lote"
+                                          label="Número de lote"
+                                          type="text"
+                                          name="new_product_init_lot"
+                                          autocomplete="off"
+                                          variant="underlined"
+                                          v-model="newProduct.init_lote"
+                                          disabled
+                                        />
+                                      </VCol>
+                                      <VCol cols="6" md="6" class="form-group">
+                                        <VTextField
+                                          placeholder="Stock"
+                                          label="Stock"
+                                          type="number"
+                                          name="new_product_stock"
+                                          autocomplete="off"
+                                          v-model="newProduct.stock"
+                                        />
+                                      </VCol>
+                                    
+                                    </VRow>
+                                    <VRow class="ma-0 pa-0  mt-8 align-center">
+                                      <VCol cols="5" md="4"  class="mt-0 py-0 px-0">
+                                        <v-col cols="auto" class="">
+                                          <VBtn  color="secondary" class="w-100" @click="stepperNewProduct = 2" >
+                                            <span class="d-block d-md-hidden ">
+                                              <VIcon icon="ion:arrow-back-outline" color="white"></VIcon>  
+                                            </span>
+                                            <span class="d-md-block d-none ">Volver</span>
+  
+                                            
+                                          </VBtn>
+                                        </v-col>
+                                      </VCol>
+                                      <VCol cols="5" md="4" offset="2" offset-md="4" class="mt-0 py-0 px-0">
+                                        <v-col cols="auto" class="">
+                                          <VBtn  color="primary" class="w-100 " type="submit" disabled id="new_product_form_2_button"> Guardar</VBtn>
+                                        </v-col>
+                                      </VCol>
+                                    </VRow>
+                                  </VForm>
+                                </template>
+                              </v-stepper-window-item>
+                            </v-stepper-window>                          
+                          </template>
+                        </v-stepper>
+                    </VRow>
+                  </VCardText>
+                </div>
+              </VCard>
+            </VCol>
+          </VCol>
+        </div>
+      </div>
+  </div>
 </template>
 <style lang="scss" >
-
+.losv .v-stepper-item__avatar.v-avatar{
+  width: 40px!important;
+  height: 40px!important;
+  & > svg{
+    width: 20px!important;
+    height: 20px!important;
+  }
+}
+.shadow-button{
+  box-shadow: 0px 2px 10px 2px #57575775;
+}
 table.recipes-table > thead > tr > th:nth-child(n+1){
   width: max-content!important
 }
 
 .item-list-drawer{
   border-bottom: 1px solid rgba(165, 165, 165, 0.822); border-radius: 0px;
+}
+.drawer__close-button{
+  position: absolute;
+  top: 0px;
+  right: -20px;
+  transition: all 0.5s ease;
+  &.active{
+  top:-20px!important
+ }
+
+}
+.v-navigation-drawer__content{
+  overflow: visible!important;
+  overflow-x: hidden;
 }
 </style>
 
@@ -127,168 +733,21 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
       modal: '',
       items:['editar','eliminar', 'ver'],
       drawer:false,
-      selectedOrder:{},
+      selectedRecipe:{},
       recipes:[],
-      table:'',
-      tableData:{
-        ajax:{
-          "url": import.meta.env.VITE_VUE_APP_BACKEND_URL+"api/get-recipes",
-          "type": "POST",
-          data: function ( data ) {
-            // data.filter_tracker_id = document.querySelector('[name="chef_name"]').value;
-            // data.filter_start_date = document.querySelector('[name="recipe_title"]').value;
-            // data.filter_end_date = document.querySelector('[name="end_date"]').value;
-          },
-          "crossDomain": true,
-          "beforeSend": function (xhr) {
-            xhr.setRequestHeader("Authorization","Bearer" + window.localStorage.getItem('id_token'))
-          },
-        },
-        dataType:'json',
-        processing: true,
-        serverSide: true,
-        columns: [
-          { 
-            title: 'Receta',
-            class:'text-start',
-            orderable: false, 
-            render: ( data, type, row, meta ) =>{ 
-              return ` ${row.title} `
-            } 
-
-          },
-          { 
-            title: 'Chef',  
-            class:'text-center date',
-            render: ( data, type, row, meta ) =>{ 
-              return `
-              ${row.chef.name}
-              `
-            }   
-          },
-          { 
-            title: 'Estilo',
-            class:'text-center justify-center px-0 px-md-3',
-            orderable: false, 
-            render: ( data, type, row, meta ) =>{ 
-              return ` ${ moment(row.created_at).format('DD-MM-YYYY') }`
-            } 
-
-          },
-          { 
-            title: 'Acciones',
-            orderable: false, 
-            searchable: false, 
-            class:'text-center px-0 px-md-3',
-            render: ( data, type, row, meta ) =>{ 
-              return `
-              <div class="d-md-flex d-none justify-center ">
-                <span data-id="${row.id}" class="view" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver detalles">
-                  <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-5 iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
-                    <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
-                </span>
-                <span data-bs-toggle="tooltip" data-id="${row.id}" class="change" data-bs-placement="top" data-bs-title="Actualizar estado">
-                  <svg data-id="${row.id}"  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-5 iconify iconify--icon-park-outline" aria-describedby="v-tooltip-35" width="1em" height="1em" viewBox="0 0 48 48">
-                    <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
-                      <path data-id="${row.id}" d="M24 44c11.046 0 20-8.954 20-20S35.046 4 24 4S4 12.954 4 24s8.954 20 20 20"></path><path d="M33.542 27c-1.274 4.057-5.064 7-9.542 7c-4.477 0-8.268-2.943-9.542-7v6m19.084-18v6c-1.274-4.057-5.064-7-9.542-7c-4.477 0-8.268 2.943-9.542 7"></path></g></svg>
-                </span>
-                <span data-bs-toggle="tooltip"  data-id="${row.id}"class="cancel data-bs-placement="top" data-bs-title="Cancelar Orden">
-                  <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default  iconify iconify--ic" aria-describedby="v-tooltip-11" width="1em" height="1em" viewBox="0 0 24 24">
-                    <path data-id="${row.id}" fill="currentColor" d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m3.59-13L12 10.59L8.41 7L7 8.41L10.59 12L7 15.59L8.41 17L12 13.41L15.59 17L17 15.59L13.41 12L17 8.41z"></path></svg>
-                </span>
-              </div>
-              <!- Vista en moviles ->
-              <div class="d-md-none d-flex justify-center position-relative relative ">
-                <div class="dropdown dropup ">
-                  <button type="button dropup" data-bs-toggle="dropdown" aria-expanded="false">
-                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="button" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default v-icon--clickable iconify iconify--mdi" aria-haspopup="menu" aria-expanded="false" aria-owns="v-menu-46" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z"></path></svg>
-                  </button>
-                  <div class="dropdown-menu animate__animated animate__rubberBand">
-                    <span  data-id="${row.id}" class="view me-5" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ver detalles">
-                      <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" aria-describedby="v-tooltip-19" width="1em" height="1em" viewBox="0 0 24 24">
-                        <path data-id="${row.id}" fill="currentColor" d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"></path></svg>
-                    </span>
-                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="change me-5"  data-bs-placement="top" data-bs-title="Actualizar estado">
-                      <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--icon-park-outline" aria-describedby="v-tooltip-35" width="1em" height="1em" viewBox="0 0 48 48">
-                        <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
-                          <path data-id="${row.id}" d="M24 44c11.046 0 20-8.954 20-20S35.046 4 24 4S4 12.954 4 24s8.954 20 20 20"></path><path d="M33.542 27c-1.274 4.057-5.064 7-9.542 7c-4.477 0-8.268-2.943-9.542-7v6m19.084-18v6c-1.274-4.057-5.064-7-9.542-7c-4.477 0-8.268 2.943-9.542 7"></path></g></svg>
-                    </span>
-                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="cancel" data-bs-placement="top" data-bs-title="Cancelar Orden">
-                      <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--ic" aria-describedby="v-tooltip-11" width="1em" height="1em" viewBox="0 0 24 24">
-                        <path data-id="${row.id}" fill="currentColor" d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m3.59-13L12 10.59L8.41 7L7 8.41L10.59 12L7 15.59L8.41 17L12 13.41L15.59 17L17 15.59L13.41 12L17 8.41z"></path></svg>
-                    </span>
-                  </div>
-                </div>
-              </div> 
-
-              
-              
-              
-              `
-            } 
-          },
-
-        ],
-        pageLength: 25,
-        lengthChange: false,
-        dom:
-          '<"v-row mx-0 mb-md-5"' +
-          // '<"v-col v-col-md-6 v-col-12 mb-5 mb-md-0"f>' +
-          // '<"v-col v-col-md-6 v-col-12 "<" justify-center justify-md-end  d-flex "B>>' +
-          '>t' +
-          '<"v-row  mt-2 mx-2"' +
-          '<"v-col v-col-md-6 v-col-12 mt-0 text-primary"i>' +
-          '<"v-col v-col-md-6 v-col-12 mt-0 text-primary"p>' +
-          '>',	   
-        language: {
-          sLengthMenu: '_MENU_',
-          search: '',
-          searchPlaceholder: 'Ingresa el Tracker ID',
-          processing: "Procesando...",
-          lengthMenu: "Mostrar _MENU_ registros",
-          zeroRecords: "No se encontraron resultados",
-          emptyTable: "Ningún dato disponible en esta tabla",
-          infoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
-          infoFiltered: "(filtrado de un total de _MAX_ registros)",
-          info: "Mostrando _END_ de _TOTAL_ registros",
-          paginate: {
-            next: "Siguiente",
-            previous: "Anterior"
-          },
-          
-        },
-        buttons: [
-          {
-            extend: 'collection',
-            className: 'v-btn v-btn--elevated v-theme--light bg-secondary v-btn--density-default v-btn--size-default v-btn--variant-elevated w-100',
-            text: '<i class="ti ti-screen-share me-1 ti-xs text-white"></i>Exportar',
-            buttons: [
-              {
-                extend: 'csv',
-                text: '<i class="ti ti-file-text me-2" ></i>Csv',
-                className: 'dropdown-item',
-                title: 'Reporte de movimientos',
-              },
-              {
-                extend: 'excel',
-                text: '<i class="ti ti-file-text me-2" ></i>Excel',
-                className: 'dropdown-item',
-                title: 'Reporte de movimientos',
-              },
-              {
-                extend: 'pdf',
-                text: '<i class="ti ti-file-code-2 me-2"></i>Pdf',
-                className: 'dropdown-item',
-                title: 'Reporte de movimientos',
-              },
-            ]
-          },
-        ],
-        drawCallback: function( settings ) {
-          const TableElement = document.getElementById('data-table');
-          const event = new Event("OptionsActionTable")
-          TableElement.dispatchEvent(event);
-        },
+      stepperNewProduct: 1,
+      steps: 2,
+      newProduct:{
+        img:'images/product/default.png',
+        title:'',
+        description:'',
+        short_description:'',
+        stock:'',
+        unit:'KG',
+        isDismantling: 0 ,
+        dismantling:[],
+        init_due_date:'',
+        init_lote:''
       },
     }),
     methods:{
@@ -329,14 +788,17 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
           })	
         })
       },
-      async selectOrder(idAccount){
+      async selectRecipe(idAccount){
         this.$store
           .dispatch(GET_RECIPE_BY_ID, idAccount)
           .then((response) => {
-            this.selectedOrder = Object.assign({}, response.data);
-            return new Promise((resolve) => {
-                resolve(response.data);
-            });
+            this.selectedRecipe = Object.assign({}, response.data);
+            setTimeout(() => {
+              this.drawer = true;
+              return new Promise((resolve) => {
+                  resolve(response.data);
+              });
+            }, 700);
           })
           .catch((err) => {
             console.log(err)
@@ -353,22 +815,39 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
           const dropdownList = [...dropdownElementList].map(dropdownToggleEl => new bootstrap.Dropdown(dropdownToggleEl))
         }, 2000);
       },
-      filterColumn(){
-        this.table.clear();
-        this.table.draw('full-hold');
-      },
       clearFilters(){
         document.querySelector('[name="chef_name"]').value = '';
         document.querySelector('[name="recipe_title"]').value = '';
         this.table.clear();
         this.table.columns().search('').draw('full-hold')
       },
+      showAction(id, modal){
+        this.selectProduct(id).finally((data)=>{
+          setTimeout(() => {
+            this.showModal(modal)
+          }, 800);
+        })
+      },
       showModal(modal) {
+        try {
+          this.modal.hide()
+        } catch (error) {
+          
+        }
         this.modal = new bootstrap.Modal(document.getElementById(modal), {
           keyboard: false,              
           backdrop:'static'
         })
         this.modal.show()
+      },
+      hideModal(){
+        this.modal.hide()
+      },
+      onFileChange(e) {
+        const file = e.target.files[0];
+       return e.target.id == 'newProduct-img' 
+       ? this.newProduct.img = URL.createObjectURL(file)
+       : this.selectedProduct.product.img = URL.createObjectURL(file)
       },
     },
     mounted(){
