@@ -1235,7 +1235,7 @@
               return new Promise((resolve) => {
                   resolve(response.data);
               });
-            }, 200);
+            }, 700);
           })
           .catch((err) => {
             console.log(err)

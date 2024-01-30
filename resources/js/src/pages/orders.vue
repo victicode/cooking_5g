@@ -784,7 +784,7 @@
               return new Promise((resolve) => {
                   resolve(response.data);
               });
-            }, 1500);
+            }, 700);
           })
           .catch((err) => {
             console.log(err)
