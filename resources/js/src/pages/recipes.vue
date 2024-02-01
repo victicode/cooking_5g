@@ -2,6 +2,11 @@
   import * as bootstrap from 'bootstrap'
   import { GET_RECIPES, GET_RECIPE_BY_ID} from "@/core/services/store/recipe.module";
 
+  import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
+  import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
+  import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
+  import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
+  import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
 
 </script>
 
@@ -264,7 +269,7 @@
                                 label="Descripción corta"
                                 type="text"
                                 name="edit_product_description_short"
-                                v-model="selectedRecipe.product.short_description"
+                                v-model="selectedRecipe.product.type"
                               />
                             </VCol>
                             <VCol cols="12" class="form-group">
@@ -449,7 +454,7 @@
                     <VCardItem class="justify-center w-100  py-md-6  py-4   ">
                       <VCardTitle class="text-2xl font-weight-bold">
                         <div class="card-title d-flex ">
-                          <div class="form-title__part1">Crear Nuevo Producto</div>
+                          <div class="form-title__part1">Crear nueva receta</div>
                           
                         </div>
                       </VCardTitle>
@@ -468,7 +473,7 @@
                               <v-stepper-header class="">
                                 <v-stepper-item
                                     :complete="stepperNewProduct > 1"
-                                    step="Detalles del producto"
+                                    step="Detalles de la receta"
                                     :value="1"
                                     icon="icon-park-outline:chef-hat"
                                     class="pb-5"
@@ -478,7 +483,7 @@
   
                                   <v-stepper-item
                                     :complete="stepperNewProduct > 2"
-                                    step="Detalles del producto"
+                                    step="ingredientes"
                                     :value="2"
                                     icon="bi:basket"
                                     class="pb-5"
@@ -486,9 +491,9 @@
                                     Ingredientes
                                   </v-stepper-item>
                                   <v-stepper-item
-                                    :complete="stepperNewProduct > 2"
-                                    step="Detalles del producto"
-                                    :value="2"
+                                    :complete="stepperNewProduct > 3"
+                                    step="perparación"
+                                    :value="3"
                                     icon="material-symbols:cooking"
                                     class="pb-5"
                                   >
@@ -501,18 +506,18 @@
                                   
                                 >
                                   <template class="d-block" >
-                                    <VForm  id="new_product_form">
+                                    <VForm  id="new_recipe_form">
                                       <VRow>
                                         <VCol cols="12"  class=" ">
                                           <div class="img-content mx-auto">
-                                            <label for="newProduct-img">
+                                            <label for="newRecipe-img">
                                               <VImg
                                                 width="200"
                                                 height="200"
                                                 class="rounded"
-                                                :src="newProduct.img"
+                                                :src="newRecipe.img"
                                                 style="border-radius:10%!important"
-                                                id="newProduct-img-content"
+                                                id="newRecipe-img-content"
                                               />
                                               <div class="overlay-img">
                                                 <VIcon color="white" size="x-large" icon="majesticons:image-plus"/>
@@ -520,7 +525,7 @@
                                             </label>
                                             <VCol cols="12" md="12"  class="form-group text-center ma-0 mt-0 pa-0">
                 
-                                              <input type="file"  id="newProduct-img" ref="newProductImg" name="new_product_img" class="d-none" @change="onFileChange" >
+                                              <input type="file"  id="newRecipe-img" ref="newRecipeImg" name="new_recipe_img" class="d-none" @change="onFileChange" >
                                             </VCol>
                                           </div>
                                         </VCol>
@@ -529,9 +534,19 @@
                                               placeholder="Nombre de la receta"
                                               label="Nombre de la receta"
                                               type="text"
-                                              name="new_product_title"
+                                              name="new_recipe_title"
                                               autocomplete="off"
-                                              v-model="newProduct.title"
+                                              v-model="newRecipe.title"
+                                            />
+                                        </VCol>
+                                        <VCol cols="12" md="6" class="form-group">
+                                            <VTextField
+                                              placeholder="EJ: Postre, Entrada, Plato fuerte"
+                                              label="Tipo de plato"
+                                              type="text"
+                                              name="new_recipe_type"
+                                              autocomplete="off"
+                                              v-model="newRecipe.type"
                                             />
                                         </VCol>
                                         <VCol cols="12" class="form-group">
@@ -542,32 +557,15 @@
                                             rows="3"
                                             row-height="25"
                                             shaped
-                                            name="new_product_description"
-                                            v-model="newProduct.description"
+                                            name="new_recipe_description"
+                                            v-model="newRecipe.description"
                                           ></v-textarea>
-                                        </VCol>
-                                        <VCol cols="6" md="4" class="form-group">
-                                          <v-select
-                                              label="Tipo de unidad"
-                                              :items="['KG', 'UNI', 'PZAS']"
-                                              variant="outlined"
-                                              v-model="newProduct.unit"
-                                          ></v-select>
-                                        </VCol>
-                                        <VCol cols="12" md="4" class="px-5">
-                                          <v-switch
-                                            color="primary"
-                                            label="Tiene despieces" 
-                                            :value="1" 
-                                            v-model="newProduct.isDismantling"
-                                            @change="validateSwitch($event)"
-                                          />
                                         </VCol>
                                       </VRow>
                                       <VRow class="ma-0 pa-0  mt-8 align-center">
                                         <VCol cols="12" md="4" offset-md="4" class="mt-0 py-0 px-0">
                                           <v-col cols="auto" class="">
-                                            <VBtn  color="primary" class="w-100" type="submit"  disabled id="new_product_form_button" > Siguente</VBtn>
+                                            <VBtn  color="primary" class="w-100" type="submit" disabled id="new_recipe_form_button" >Siguiente</VBtn>
                                           </v-col>
                                         </VCol>
                                       </VRow>
@@ -579,35 +577,24 @@
                                   :value="2"
                                 >
                                   <template class="d-block">
-                                    <VForm  id="new_product_form_2">
+                                    <VForm  id="new_recipe_form_2">
                                       <VRow>
-                                        <VCol cols="6" md="4" class="form-group">
+
+                                        <VCol cols="6" md="4" class="form-group" v-for="(item, index) in newRecipe.ingredients" :key="index">
                                           <VTextField
-                                            placeholder="Número de lote"
-                                            label="Número de lote"
+                                            placeholder="EJ: Azucar, Sal"
+                                            :label="`Ingrediente ${(index+1)}`"
                                             type="text"
-                                            name="new_product_init_lot"
+                                            :name="`new_recipe_stock_${(index+1)}`"
                                             autocomplete="off"
-                                            variant="underlined"
-                                            v-model="newProduct.init_lote"
-                                            disabled
-                                          />
-                                        </VCol>
-                                        <VCol cols="6" md="4" class="form-group">
-                                          <VTextField
-                                            placeholder="Stock"
-                                            label="Stock"
-                                            type="number"
-                                            name="new_product_stock"
-                                            autocomplete="off"
-                                            v-model="newProduct.stock"
+                                            v-model="item.name"
                                           />
                                         </VCol>
                                       </VRow>
                                       <VRow class="ma-0 pa-0  mt-8 align-center">
                                         <VCol cols="5" md="4"  class="mt-0 py-0 px-0">
                                           <v-col cols="auto" class="">
-                                            <VBtn  color="secondary" class="w-100" @click="stepperNewProduct = 1" >
+                                            <VBtn  color="secondary" class="w-100" @click="backStep()" >
                                               <span class="d-block d-md-hidden ">
                                                 <VIcon icon="ion:arrow-back-outline" color="white"></VIcon>  
                                               </span>
@@ -619,7 +606,7 @@
                                         </VCol>
                                         <VCol cols="5" md="4" offset="2" offset-md="4" class="mt-0 py-0 px-0">
                                           <v-col cols="auto" class="">
-                                            <VBtn  color="primary" class="w-100 " type="submit" disabled id="new_product_form_2_button"> Guardar</VBtn>
+                                            <VBtn  color="primary" class="w-100 " type="submit" disabled id="new_recipe_form_2_button"> Siguiente</VBtn>
                                           </v-col>
                                         </VCol>
                                       </VRow>
@@ -627,20 +614,20 @@
                                   </template>
                                 </v-stepper-window-item>
                                 <v-stepper-window-item
-                                  :value="2"
+                                  :value="3"
                                 >
                                   <template class="d-block">
-                                    <VForm  id="new_product_form_2">
+                                    <VForm  id="new_recipe_form_3">
                                       <VRow>
                                         <VCol cols="6" md="6" class="form-group">
                                           <VTextField
                                             placeholder="Número de lote"
                                             label="Número de lote"
                                             type="text"
-                                            name="new_product_init_lot"
+                                            name="new_recipe_init_lot"
                                             autocomplete="off"
                                             variant="underlined"
-                                            v-model="newProduct.init_lote"
+                                            v-model="newRecipe.init_lote"
                                             disabled
                                           />
                                         </VCol>
@@ -649,9 +636,9 @@
                                             placeholder="Stock"
                                             label="Stock"
                                             type="number"
-                                            name="new_product_stock"
+                                            name="new_recipe_stockss"
                                             autocomplete="off"
-                                            v-model="newProduct.stock"
+                                            v-model="newRecipe.stock"
                                           />
                                         </VCol>
                                       
@@ -671,7 +658,7 @@
                                         </VCol>
                                         <VCol cols="5" md="4" offset="2" offset-md="4" class="mt-0 py-0 px-0">
                                           <v-col cols="auto" class="">
-                                            <VBtn  color="primary" class="w-100 " type="submit" disabled id="new_product_form_2_button"> Guardar</VBtn>
+                                            <VBtn  color="primary" class="w-100 " type="submit" disabled id="new_recipe_form_3_button"> Guardar</VBtn>
                                           </v-col>
                                         </VCol>
                                       </VRow>
@@ -737,21 +724,191 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
       selectedRecipe:{},
       recipes:[],
       stepperNewProduct: 1,
-      steps: 2,
-      newProduct:{
+      steps: 3,
+      forms:[],
+      newRecipe:{
         img:'images/product/default.png',
         title:'',
+        type:'',
         description:'',
-        short_description:'',
-        stock:'',
+        ingredients:[
+          {
+            name:'',
+            cantidad:'',
+          }
+        ],
         unit:'KG',
         isDismantling: 0 ,
         dismantling:[],
         init_due_date:'',
-        init_lote:''
+        init_lote:'',
+        
       },
     }),
     methods:{
+      nextStep(){
+        console.log(this.stepperNewProduct )
+        this.stepperNewProduct =  this.stepperNewProduct + 1 ;
+
+        console.log(this.stepperNewProduct)
+
+        
+        setTimeout(() => {
+          this.stepperNewProduct > 2 ? console.log('hh') : this.validateFormItem('new_recipe_form_2')
+        }, 500);
+      },
+      backStep(){
+        this.stepperNewProduct = this.stepperNewProduct - 1 ;
+        setTimeout(() => {
+          this.stepperNewProduct > 2 ? this.destroyValidate('new_recipe_form_3') : this.destroyValidate('new_recipe_form_2')
+        }, 500);
+      },
+      validateFormItem(id){
+        const fieldToValidate = this.itemsValidateByForm(id)
+        this.forms[id] = formValidation(document.getElementById(id), {
+          fields: fieldToValidate,
+          plugins: {
+            trigger: new Trigger(),
+            submitButton: new SubmitButton(),
+            bootstrap: new Bootstrap({
+                  // Use this for enabling/changing valid/invalid class
+                  // eleInvalidClass: '',
+                  // eleValidClass: '',
+                }),
+          }
+        });
+        setTimeout( ()=>this.formsActions(id), 500)
+      },
+      itemsValidateByForm(id){
+        let fieldByForm = {}
+        switch (id) {
+          case 'new_recipe_form':
+            fieldByForm = {
+              new_recipe_img: {
+                validators: {
+                  notEmpty: {
+                    message: "Debes subir una foto"
+                  },
+                }
+              },
+              new_recipe_title: {
+                validators: {
+                  notEmpty: {
+                    message: "El titulo es obligatorio"
+                  },
+                  regexp: {
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@,$_ñ_ ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+              new_recipe_type: {
+                validators: {
+                  notEmpty: {
+                    message: "El tipo de plato es necesario"
+                  },
+                  regexp: {
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+,/&@$_ñ_ ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+              new_recipe_description: {
+                validators: {
+                  notEmpty: {
+                    message: "La descripción es necesaria"
+                  },
+                  regexp: {
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+,/&@$_ñ_ ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+            }
+            break;
+          case 'new_recipe_form_2':
+            fieldByForm = {
+              new_recipe_stock_1:{
+                validators: {
+                  notEmpty: {
+                    message: "El ingrediente es obligatorio"
+                  },
+                  regexp: {
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@,$_ñ_ ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+            }
+            break;
+          case 'new_recipe_form_3':
+            fieldByForm = {
+              new_product_init_lot:{
+                validators: {
+                  notEmpty: {
+                    message: "El lote inicial es requerido"
+                  }
+                }
+              },
+              new_product_stock: {
+                validators: {
+                  notEmpty: {
+                    message: "Debes agregar un stock Inicial"
+                  },
+                  regexp: {
+                    regexp: /^[0-9]+$/i,
+                    message: "Debe ser númerico",
+                  },
+                }
+              },
+              new_product_due_date:{
+                validators: {
+                  notEmpty: {
+                    message: "La fecha de vencimiento es requerida"
+                  }
+                }
+              },
+            }
+            break;
+          default:
+            break;
+        }
+        return fieldByForm
+      },
+      destroyValidate(id){
+        this.forms[id].destroy()
+      },
+      formsActions(id){
+        const sendButton = document.getElementById(id+'_button')
+       
+        this.forms[id].on("core.form.valid", () => {
+          switch (id) {
+            case 'new_recipe_form':
+              this.nextStep()
+              
+              break;
+            case 'new_recipe_form_2':
+              this.nextStep()
+              break;
+            case 'new_recipe_form_3':
+              this.createdProduct()
+              break;
+          }
+
+        }).on("core.field.valid", () => {
+          sendButton.disabled = false
+          sendButton.classList.remove('v-btn--disabled')
+
+        }).on("core.form.invalid", () => {
+          sendButton.disabled = true
+          sendButton.classList.add('v-btn--disabled')
+
+        }).on("core.field.invalid", () => {
+          sendButton.disabled = true
+          sendButton.classList.add('v-btn--disabled')
+
+        });
+      },
       initOptionsTable(){
         document.getElementById('data-table').addEventListener('OptionsActionTable', () => this.activeOptionsTable() )	
       },
@@ -848,8 +1005,8 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
       },
       onFileChange(e) {
         const file = e.target.files[0];
-       return e.target.id == 'newProduct-img' 
-       ? this.newProduct.img = URL.createObjectURL(file)
+       return e.target.id == 'newRecipe-img' 
+       ? this.newRecipe.img = URL.createObjectURL(file)
        : this.selectedProduct.product.img = URL.createObjectURL(file)
       },
     },
@@ -858,6 +1015,7 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
       // this.table = new DataTablesCore('#data-table', this.tableData)
       // this.bootstrapOptions();
       this.getRecipes()
+      this.validateFormItem('new_recipe_form')
     },
     created(){
       
