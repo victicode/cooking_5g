@@ -35,16 +35,6 @@
               @change="filterColumn()"
             />
           </VCol>
-          <VCol cols="6" md="4" class="form-group">
-            <VTextField
-              placeholder="Buscar por chef"
-              label="Buscar por chef"
-              type="text"
-              ref="chef"
-              name="chef_name"
-              @change="filterColumn()"
-            />
-          </VCol>
           <VCol cols="12" md="4" class="my-0 py-0">
             <VBtn
               color="white"
@@ -74,9 +64,22 @@
                       <h3 class="w-100"> {{ recipe.title }} </h3>
                       
                     </div>
-                    <div class="ms-1 d-flex justify-space-between align-end">
+                    <div class="ms-1  d-flex justify-space-between align-end">
                       <div>
-                        <h5 class="text-primary my-1"> Chef: <b class="text-decoration-underline cursor-pointer">{{ recipe.chef.name }}</b> </h5>
+                        <div class="d-flex">
+                          <div class="d-flex align-center">
+                            <VIcon icon="fa6-solid:users"  size="x-small" />
+                            <h4 class=" my-1 ms-1 text-primary"> 
+                             <b>2</b> 
+                            </h4>
+                          </div>
+                          <div class="d-flex align-center ms-5">
+                            <VIcon icon="icon-park-outline:big-clock" size="x-small" />
+                            <h4 class=" my-1 ms-1 text-primary"> 
+                             <b>4 horas</b> 
+                            </h4>
+                          </div>
+                        </div> 
                         <v-chip color="primary" class="mt-1 pb-0">
                             <b>
                               {{ recipe.type }}
@@ -549,6 +552,27 @@
                                               v-model="newRecipe.type"
                                             />
                                         </VCol>
+                                        <VCol cols="12" md="6" class="form-group">
+                                            <VTextField
+                                              placeholder="Cantidad de personas"
+                                              label="Cantidad de personas"
+                                              type="number"
+                                              name="new_recipe_person_count"
+                                              autocomplete="off"
+                                              v-model="newRecipe.personCount"
+                                            />
+                                        </VCol>
+                                        <VCol cols="12" md="6" class="form-group">
+                                            <VTextField
+                                              placeholder="Tiempo total"
+                                              label="Tiempo total"
+                                              type="text"
+                                              name="new_recipe_time_total"
+                                              autocomplete="off"
+                                              v-model="newRecipe.timeTotal"
+                                            />
+                                        </VCol>
+
                                         <VCol cols="12" class="form-group">
                                           <v-textarea
                                             label="Descripcion larga"
@@ -591,6 +615,64 @@
                                           />
                                         </VCol>
                                       </VRow>
+                                      <VRow 
+                                      class="ma-0 pa-0  mt-4 align-center" 
+                                      >
+                                          <VCol cols="12" class="form-group">
+                                            <h3>Productos</h3>
+                                          </VCol>
+                                          <VCol cols="12" md="4" class="mt-0 py-0 px-0">
+                                            <v-tooltip text="Agregar nuevo despiece">
+                                                <template v-slot:activator="{ props }">
+                                                  <v-col cols="auto" class="">
+                                                    <VBtn v-bind="props" color="primary" class="w-100"  ><VIcon icon="bx-plus"/> Agregar despiece</VBtn>
+                                                  </v-col>
+                                                </template>
+                                              </v-tooltip>
+                                          </VCol>
+                                          <!-- <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
+                                            <VRow  v-for="(item,index) in newProduct.dismantling"  v-bind:key="item.id" class="pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'new_product_desmantling_'+index">
+                                              <VCol cols="12"  md="6" class="form-group">
+                                                <v-autocomplete
+                                                  :model-value="item.piece_product_id"
+                                                  :items="productOption[index] ?  productOption[index] :item.piece_product_id !== null ? [ {id: item.piece_product_id, title: item.products_pieces.title}] : []"
+                                                  label="Nombre del producto"
+                                                  item-props="stock"
+                                                  item-title="title"
+                                                  item-value="id"
+                                                  placeholder="Nombre del producto"
+                                                  variant="outlined"
+                                                  clearable
+                                                  no-filter
+                                                  :name="'product_desmantling_id_'+index"
+                                                  no-data-text="No se encontraron resultados"
+                                                  @keyup="searchDismantling($event,index )"
+                                                  @click:clear="clearSearchDismantling(index)"
+                                                  @update:modelValue="selectDismantling($event, index,2)"
+                                                ></v-autocomplete>
+                                              </VCol>
+                                              <VCol cols="8"  md="4" class="form-group">
+                                                <VTextField
+                                                  placeholder="Unidades que trae"
+                                                  label="Unidades que trae"
+                                                  type="number"
+                                                  :name="'product_desmantling_quantity_'+index"
+                                                  v-model="item.quantity"
+                                                  
+                                                />
+                                              </VCol>
+                                              <VCol cols="4" md="1" class="form-group pa-0">
+                                                <v-tooltip text="Eliminar despiece">
+                                                  <template v-slot:activator="{ props }">
+                                                    <v-col cols="auto" class="">
+                                                      <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeDismantlingInput(2, index)"></v-btn>
+                                                    </v-col>
+                                                  </template>
+                                                </v-tooltip>
+                                              </VCol> 
+                                            </VRow>
+                                          </div> -->
+                                    </VRow>
                                       <VRow class="ma-0 pa-0  mt-8 align-center">
                                         <VCol cols="5" md="4"  class="mt-0 py-0 px-0">
                                           <v-col cols="auto" class="">
@@ -747,12 +829,7 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
     }),
     methods:{
       nextStep(){
-        console.log(this.stepperNewProduct )
         this.stepperNewProduct =  this.stepperNewProduct + 1 ;
-
-        console.log(this.stepperNewProduct)
-
-        
         setTimeout(() => {
           this.stepperNewProduct > 2 ? console.log('hh') : this.validateFormItem('new_recipe_form_2')
         }, 500);
@@ -817,6 +894,28 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
                 validators: {
                   notEmpty: {
                     message: "La descripción es necesaria"
+                  },
+                  regexp: {
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+,/&@$_ñ_ ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+              new_recipe_person_count: {
+                validators: {
+                  notEmpty: {
+                    message: "La cantidad de personas"
+                  },
+                  regexp: {
+                    regexp: /^[0-9]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                  },
+                }
+              },
+              new_recipe_time_total: {
+                validators: {
+                  notEmpty: {
+                    message: "Agrega el tiempo total"
                   },
                   regexp: {
                     regexp: /^[A-Za-z0-9À-ÿ .*-+,/&@$_ñ_ ]+$/i,
