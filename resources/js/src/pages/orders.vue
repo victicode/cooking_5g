@@ -353,15 +353,6 @@
                                     v-model="item.quantity"
                                   />
                                 </VCol>
-                                <!-- <VCol cols="2" md="1" class="form-group pa-0 mb-md-5 d-none d-md-block ">
-                                  <v-tooltip text="Quitar producto">
-                                    <template v-slot:activator="{ props }">
-                                      <v-col cols="auto" class="pa-0">
-                                        <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeProductInput(index)"></v-btn>
-                                      </v-col>
-                                    </template>
-                                  </v-tooltip>
-                                </VCol>  -->
                                 <div class="form-group pa-0 mb-md-5  small-delete-product-button ">
                                   <v-tooltip text="Quitar producto">
                                     <template v-slot:activator="{ props }">
