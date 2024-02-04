@@ -14,7 +14,6 @@
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue';
   import viewOrderModal from '@/views/pages/modals/viewOrderModal.vue';
   import viewCreateOutOrderModal from '@/views/pages/modals/viewCreateOutOrderModal.vue';
-  import viewOutOrderModal from '@/views/pages/modals/viewOutOrderModal.vue';
   import viewTimelineOrderModal from '@/views/pages/modals/viewTimelineOrderModal.vue';
   import * as bootstrap from 'bootstrap';
   import debounce from 'debounce';

@@ -25,29 +25,6 @@ class ProductController extends Controller
     {
         return $this->returnSuccess(200, Product::with(['dismantling.products_pieces', 'lotes:due_date'])->get());
     }
-    public function getProductsTable(Request $request){
-        $products = Product::query()->with(['dismantling.products_pieces', 'lotes']);
-     
-        if($request->user()->rol_id !== 1){
-            $products->where('created_by', $request->user()->id );
-        }
-        
-        if(!empty(request('order_title')))  $products->orderBy('title', request('order_title'));
-
-        if(!empty(request('order_stock')))  $products->orderBy('stock', request('order_stock'));
-        
-        if (!empty(request('filter_product_title'))) {
-            $products->where('title','like','%'.request('filter_product_title').'%');
-        }
-        if(!empty(request('order_due_date'))) {
-            if(!empty(request('order_due_date')))  $products->orderBy('due_date_most_evenly', request('order_due_date'));
-
-        }
-        
-
-        return DataTables::of($products)->toJson();
-  
-    }
     public function getlotesOfProductsTable(Request $request){
         $products = Lot::query()->with(['product.dismantling.products_pieces'])
         ->where('quantity', '>', 0)->join('products', 'products.id', '=', 'lotes.product_id');
@@ -123,8 +100,6 @@ class ProductController extends Controller
         $formatLote = $this->formatInputLot($request);
         $lote = $this->addLote($product->id, $formatLote);
         
-        $product->due_date_most_evenly = $lote->due_date;
-        $product->save();
 
         return $this->returnSuccess(200, $product);
 

@@ -27,8 +27,10 @@ class AuthController extends Controller
 		if($validator->fails()){
 				return response()->json($validator->errors(),442);
 		}
-		if(! $token = JWTAuth::attempt($validator->validate())){
-				return response()->json(['data' => ['code' => 500, 'messagge'=> 'Estas credenciales no coinciden con nuestros registros.']],403);
+
+		$token = JWTAuth::attempt($validator->validate());
+		if(!$token){
+				return response()->json(['data' => ['ll' => [$validator->validate()] ,'code' => 500, 'messagge'=> 'Estas credenciales no coinciden con nuestros registros.']],403);
 		}
 		return response()->json([ 'data'=>['code'=>200,'access_token' => $token]], 200);
 	}

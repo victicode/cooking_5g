@@ -35,8 +35,7 @@ class Order extends Model
     );
     // protected $appends = ['status_label', 'lote'];
     protected $appends = ['status_label'];
-
-
+    
     public function getStatusLabelAttribute()
     {
       return  $this->statuses[$this->status];  

@@ -22,7 +22,17 @@ class Product extends Model
         'updated_by', 
         'due_date_most_evenly'
     ];
+    protected $appends = ['stock_total'];
 
+    public function getstockTotalAttribute()
+    {
+        $total = 0;
+        foreach ($this->lotes as $lote) {
+            $total = $total + $lote->quantity;
+        }
+        return $total;
+        
+    }
     public function orders()
     {
         return $this->belongsToMany(Order::class, 'products_x_orders');

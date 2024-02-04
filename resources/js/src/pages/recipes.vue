@@ -9,6 +9,7 @@
   import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
   import { GET_PRODUCT_BY_SEARCH } from "@/core/services/store/product.module";
   import debounce from 'debounce';
+  import viewRecipePreparationModal from '@/views/pages/modals/viewRecipePreparationModal.vue';
 
 </script>
 
@@ -22,7 +23,7 @@
             md="3"
             class="ma-0 px-0 justify-center justify-md-end d-flex"
           >
-          <VBtn @click=" showModal('createProduct')" color="primary" class="w-100 "><VIcon icon="bx-plus"/> Agregar nueva receta</VBtn>
+          <VBtn @click=" showModal('createRecipe')" color="primary" class="w-100 "><VIcon icon="bx-plus"/> Agregar nueva receta</VBtn>
 
           </VCol>
         </VRow>
@@ -224,7 +225,7 @@
                     <VCardItem class="justify-center w-100  py-md-6  py-4   ">
                       <VCardTitle class="text-2xl font-weight-bold">
                         <div class="card-title d-flex ">
-                          <div class="form-title__part1">Editar Producto</div>
+                          <div class="form-title__part1">Receta</div>
                           
                         </div>
                       </VCardTitle>
@@ -260,8 +261,8 @@
                           </VCol>
                           <VCol cols="12" md="6" class="form-group">
                             <VTextField
-                              placeholder="Nombre del producto"
-                              label="Nombre del producto"
+                              placeholder="NombReceta"
+                              label="NombReceta"
                               type="text"
                               name="edit_product_title"
                               v-model="selectedRecipe.product.title"
@@ -326,11 +327,11 @@
                                     <v-autocomplete
                                       :model-value="item.piece_product_id"
                                       :loading="loading"
-                                      :items="productOption[index+'_'+selectedRecipe.product.id] != undefined ?  productOption[index+'_'+selectedRecipe.product.id] : item.piece_product_id !== null ?[ {id: item.piece_product_id, title: item.products_pieces.title}] : []"
-                                      label="Nombre del producto"
+                                      :Recetaption[index+'_'+selectedRecipe.product.id] != undefiRecetaption[index+'_'+selectedRecipe.product.id] : item.piece_product_id !== null ?[ {id: item.piece_product_id, title: item.products_pieces.title}] : []"
+                                      label="NombReceta"
                                       item-title="title"
                                       item-value="id"
-                                      placeholder="Nombre del producto"
+                                      placeholder="NombReceta"
                                       variant="outlined"
                                       clearable
                                       no-filter
@@ -405,7 +406,7 @@
                         class="py-0"
                       >
                         <div class="my-md-4 my-2 text-center">
-                          <h2>Eliminar Producto</h2>
+                          <h2>Eliminar Receta</h2>
                         </div>
                       </VCol>
                       <VCol
@@ -437,7 +438,8 @@
         </div>
       </div>
     </div>
-    <div class="modal animate__animated animate__fadeInDown"  id="createProduct" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+
+    <div class="modal animate__animated animate__fadeInDown"  id="createRecipe" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg mt-10" >
           <div class="modal-content">
             <VCol
@@ -472,374 +474,273 @@
                     </VCardText>
                     <VCardText class="w-100 pb-5 px-3 px-md-6">
                       <VRow >
-                          
-                          <v-stepper v-model="stepperNewProduct" class="losv">
-                            <template v-slot:default="">
-                              <v-stepper-header class="">
-                                <v-stepper-item
-                                    :complete="stepperNewProduct > 1"
-                                    step="Detalles de la receta"
-                                    :value="1"
-                                    icon="icon-park-outline:chef-hat"
-                                    class="pb-5"
-                                  >
-                                    Datos
-                                  </v-stepper-item>
-  
-                                  <v-stepper-item
-                                    :complete="stepperNewProduct > 2"
-                                    step="ingredientes"
-                                    :value="2"
-                                    icon="bi:basket"
-                                    class="pb-5"
-                                  >
-                                    Ingredientes
-                                  </v-stepper-item>
-                                  <v-stepper-item
-                                    :complete="stepperNewProduct > 3"
-                                    step="perparación"
-                                    :value="3"
-                                    icon="material-symbols:cooking"
-                                    class="pb-5"
-                                  >
-                                    Preparación
-                                  </v-stepper-item>
-                              </v-stepper-header>
-                              <v-stepper-window class="mx-2" >
-                                <v-stepper-window-item
+                        <v-stepper v-model="stepperNewProduct" class="losv">
+                          <template v-slot:default="">
+                            <v-stepper-header class="">
+                              <v-stepper-item
+                                  :complete="stepperNewProduct > 1"
+                                  step="Detalles de la receta"
                                   :value="1"
-                                  
+                                  icon="icon-park-outline:chef-hat"
+                                  class="pb-5"
                                 >
-                                  <template class="d-block" >
-                                    <VForm  id="new_recipe_form">
-                                      <VRow>
-                                        <VCol cols="12"  class=" ">
-                                          <div class="img-content mx-auto">
-                                            <label for="newRecipe-img">
-                                              <VImg
-                                                width="200"
-                                                height="200"
-                                                class="rounded"
-                                                :src="newRecipe.img"
-                                                style="border-radius:10%!important"
-                                                id="newRecipe-img-content"
-                                              />
-                                              <div class="overlay-img">
-                                                <VIcon color="white" size="x-large" icon="majesticons:image-plus"/>
-                                              </div>
-                                            </label>
-                                            <VCol cols="12" md="12"  class="form-group text-center ma-0 mt-0 pa-0">
-                
-                                              <input type="file"  id="newRecipe-img" ref="newRecipeImg" name="new_recipe_img" class="d-none" @change="onFileChange" >
-                                            </VCol>
-                                          </div>
-                                        </VCol>
-                                        <VCol cols="12" class="form-group">
-                                            <VTextField
-                                              placeholder="Nombre de la receta"
-                                              label="Nombre de la receta"
-                                              type="text"
-                                              name="new_recipe_title"
-                                              autocomplete="off"
-                                              v-model="newRecipe.title"
-                                            />
-                                        </VCol>
-                                        <VCol cols="12" class="form-group">
-                                            <VTextField
-                                              placeholder="EJ: Postre, Entrada, Plato fuerte"
-                                              label="Tipo de plato"
-                                              type="text"
-                                              name="new_recipe_type"
-                                              autocomplete="off"
-                                              v-model="newRecipe.type"
-                                            />
-                                        </VCol>
-                                        <VCol cols="6" class="form-group">
-                                            <VTextField
-                                              placeholder="Cantidad de personas"
-                                              label="Cant. de personas"
-                                              type="number"
-                                              name="new_recipe_person_count"
-                                              autocomplete="off"
-                                              v-model="newRecipe.personCount"
-                                            />
-                                        </VCol>
-                                        <VCol cols="6" class="form-group">
-                                            <VTextField
-                                              placeholder="Tiempo total"
-                                              label="Tiempo total"
-                                              type="text"
-                                              name="new_recipe_time_total"
-                                              autocomplete="off"
-                                              v-model="newRecipe.timeTotal"
-                                            />
-                                        </VCol>
+                                  Datos
+                                </v-stepper-item>
 
-                                        <VCol cols="12" class="form-group">
-                                          <v-textarea
-                                            label="Descripcion larga"
-                                            auto-grow
-                                            variant="outlined"
-                                            rows="3"
-                                            row-height="25"
-                                            shaped
-                                            name="new_recipe_description"
-                                            v-model="newRecipe.description"
-                                          ></v-textarea>
-                                        </VCol>
-                                      </VRow>
-                                      <VRow class="ma-0 pa-0  mt-8 align-center">
-                                        <VCol cols="12" md="4" offset-md="4" class="mt-0 py-0 px-0">
-                                          <v-col cols="auto" class="">
-                                            <VBtn  color="primary" class="w-100" type="submit" disabled id="new_recipe_form_button" >Siguiente</VBtn>
-                                          </v-col>
-                                        </VCol>
-                                      </VRow>
-                                    </VForm>
-                                    
-                                  </template>
-                                </v-stepper-window-item>
-                                <v-stepper-window-item
+                                <v-stepper-item
+                                  :complete="stepperNewProduct > 2"
+                                  step="ingredientes"
                                   :value="2"
+                                  icon="bi:basket"
+                                  class="pb-5"
                                 >
-                                  <template class="d-block">
-                                    <VForm  id="new_recipe_form_2">
-                                      <VRow 
-                                      class="ma-0 pa-0  mt-4 align-center" 
-                                      >
-                                        <VCol cols="12" class="form-group">
-                                          <h3>Ingrendientes cooking 5G</h3>
-                                        </VCol>
-                                        <VCol cols="12" md="5" class="mt-0 py-0 px-0 mb-4">
-                                          <v-tooltip text="Agregar nuevo despiece">
-                                              <template v-slot:activator="{ props }">
-                                                <v-col cols="auto" class="">
-                                                  <VBtn v-bind="props" color="primary" class="w-100" @click="addCookingIngredient('cooking_ingredients')" ><VIcon icon="bx-plus"/>Agregar otro ingrediente</VBtn>
-                                                </v-col>
-                                              </template>
-                                            </v-tooltip>
-                                        </VCol>
-                                        <VCol cols="12"  class="mt-0 py-0 px-0 mb-4">   
-                                          <VRow v-for="(item, index) in newRecipe.cooking_ingredients" :key="index" class="position-realative relative mb-2" >
-                                            <VCol cols="6" class="form-group ">
-                                              <v-autocomplete
-                                                :model-value="item.id"
-                                                :items="productsForRecipe[index] ?  productsForRecipe[index] : item.id !== null ? [ {id: item.id, title: item.title, stock: item.quantity}] : []"
-                                                :label="`Ingrediente ${(index+1)}`"
-                                                :name="`new_recipe_cooking_product_${(index+1)}`"
-                                                item-title="title"
-                                                item-value="id"
-                                                placeholder="EJ: Lomo de cerdo, Pollo entero"
-                                                variant="outlined"
-                                                persistent-hint
-                                                clearable
-                                                no-filter
-                                                no-data-text="No se encontraron resultados"
-                                                @click="searchProductsForRecipe($event,index )"
-                                                @keyup="searchProductsForRecipe($event,index )"
-                                                @click:clear="clearProductSearch(index)"
-                                                @update:modelValue="selectedProduct($event, index)"
-                                              ></v-autocomplete>
-                                            </VCol>
-                                            <VCol cols="6" class="form-group">
-                                              <VTextField
-                                                placeholder="Cantidad"
-                                                label="Cantidad"
-                                                type="text"
-                                                :name="`new_recipe_cooking_product_quantity_${(index+1)}`"
-                                                v-model="item.quantity"
-                                                autocomplete="off"
-                                              />
-                                            </VCol>
-                                            <div class="form-group pa-0 mb-md-5  small-delete-product-button_recipe ">
-                                              <v-tooltip text="Quitar producto">
-                                                <template v-slot:activator="{ props }">
-                                                  <v-col cols="auto" class="pa-0">
-                                                    <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeProductInRecipe('cooking_ingredients', index)"></v-btn>
-                                                  </v-col>
-                                                </template>
-                                              </v-tooltip>
-                                            </div>
-                                          </VRow>
-                                        </VCol>
-                                      </VRow>
-                                      <VRow 
-                                      class="ma-0 pa-0  mt-4 align-center" 
-                                      >
-                                        <VCol cols="12" class="form-group">
-                                          <h3>Ingrendientes</h3>
-                                        </VCol>
-                                        <VCol cols="12" md="5" class="mt-0 py-0 px-0 mb-4">
-                                          <v-tooltip text="Agregar nuevo despiece">
-                                              <template v-slot:activator="{ props }">
-                                                <v-col cols="auto" class="">
-                                                  <VBtn v-bind="props" color="primary" class="w-100" @click="addCookingIngredient('ingredients')" ><VIcon icon="bx-plus"/> Agregar otro ingrediente</VBtn>
-                                                </v-col>
-                                              </template>
-                                            </v-tooltip>
-                                        </VCol>
-                                        <VCol cols="12"  class="mt-0 py-0 px-0 mb-4"> 
-                                          <VRow v-for="(item, index) in newRecipe.ingredients" :key="index" class="position-realative relative mb-2" >
-                                            <VCol cols="6" class="form-group">
-                                              <VTextField
-                                                placeholder="EJ: Azucar, Sal"
-                                                :label="`Ingrediente ${(index+1)}`"
-                                                type="text"
-                                                :name="`new_recipe_product_${(index+1)}`"
-                                                v-model="item.name"
-                                                autocomplete="off"
-                                              />
-                                            </VCol>
-                                            <VCol cols="6" class="form-group">
-                                              <VTextField
-                                                placeholder="Cantidad"
-                                                label="Cantidad"
-                                                type="text"
-                                                :name="`new_recipe_product_quantity${(index+1)}`"
-                                                v-model="item.quantity"
-                                                autocomplete="off"
-                                              />
-                                            </VCol>
-                                            <div class="form-group pa-0 mb-md-5  small-delete-product-button_recipe ">
-                                              <v-tooltip text="Quitar producto">
-                                                <template v-slot:activator="{ props }">
-                                                  <v-col cols="auto" class="pa-0">
-                                                    <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeProductInRecipe('ingredients',index)"></v-btn>
-                                                  </v-col>
-                                                </template>
-                                              </v-tooltip>
-                                            </div>
-                                          </VRow>
-                                        </VCol>
-                                      </VRow>
-                                      <VRow class="ma-0 pa-0  mt-8 align-center">
-                                        <VCol cols="5" md="4"  class="mt-0 py-0 px-0">
-                                          <v-col cols="auto" class="">
-                                            <VBtn  color="secondary" class="w-100" @click="backStep()" >
-                                              <span class="d-block d-md-hidden ">
-                                                <VIcon icon="ion:arrow-back-outline" color="white"></VIcon>  
-                                              </span>
-                                              <span class="d-md-block d-none ">Volver</span>
-    
-                                              
-                                            </VBtn>
-                                          </v-col>
-                                        </VCol>
-                                        <VCol cols="5" md="4" offset="2" offset-md="4" class="mt-0 py-0 px-0">
-                                          <v-col cols="auto" class="">
-                                            <VBtn  color="primary" class="w-100 " type="submit" id="new_recipe_form_2_button"> Siguiente</VBtn>
-                                          </v-col>
-                                        </VCol>
-                                      </VRow>
-                                    </VForm>
-                                  </template>
-                                </v-stepper-window-item>
-                                <v-stepper-window-item
+                                  Ingredientes
+                                </v-stepper-item>
+                                <v-stepper-item
+                                  :complete="stepperNewProduct > 3"
+                                  step="perparación"
                                   :value="3"
+                                  icon="material-symbols:cooking"
+                                  class="pb-5"
                                 >
-                                  <template class="d-block">
-                                    <VForm  id="new_recipe_form_3">
-                                      <VRow 
-                                      class="ma-0 pa-0  mt-4 align-center" 
-                                      >
-                                        <VCol cols="12" class="form-group">
-                                          <h3>Añadir Preparación</h3>
-                                        </VCol>
-                                        <VCol cols="12" md="5" class="mt-0 py-0 px-0 mb-4">
-                                          <v-tooltip text="Agregar nuevo despiece">
-                                              <template v-slot:activator="{ props }">
-                                                <v-col cols="auto" class="">
-                                                  <VBtn v-bind="props" color="primary" class="w-100" @click="addCookingIngredient('cooking_ingredients')" >
-                                                    <VIcon icon="bx-plus"/>
-                                                    Agregar pasos a seguir
-                                                  </VBtn>
-                                                </v-col>
-                                              </template>
-                                            </v-tooltip>
-                                        </VCol>
-                                        <VCol cols="12" md="4" class="mt-0 py-0 px-0 mb-4">
-                                          <v-tooltip text="Agregar nuevo despiece">
-                                              <template v-slot:activator="{ props }">
-                                                <v-col cols="auto" class="">
-                                                  <VBtn v-bind="props" color="primary" class="w-100" @click="addCookingIngredient('cooking_ingredients')" >
-                                                    <VIcon icon="bx-plus"/>
-                                                    Agregar preparación
-                                                  </VBtn>
-                                                </v-col>
-                                              </template>
-                                            </v-tooltip>
-                                        </VCol>
-                                        <VCol cols="12" md="3" class="mt-0 py-0 px-0 mb-4">
-                                          <v-tooltip text="Agregar nuevo despiece">
-                                              <template v-slot:activator="{ props }">
-                                                <v-col cols="auto" class="">
-                                                  <VBtn v-bind="props" color="primary" class="w-100" @click="addCookingIngredient('cooking_ingredients')" >
-                                                    <VIcon icon="bx-plus"/>
-                                                    Agregar video
-                                                  </VBtn>
-                                                </v-col>
-                                              </template>
-                                            </v-tooltip>
-                                        </VCol>
-                                        <VCol cols="12"  class="mt-0 py-0 px-0 mb-4">   
-                                          <VRow v-for="(item, index) in newRecipe.preparation" :key="index" class="position-realative relative mb-2" >
-                                            <VCol cols="6" class="form-group">
-                                              <VTextField
-                                                placeholder="Cantidad"
-                                                label="Cantidad"
-                                                type="text"
-                                                :name="`new_recipe_cooking_product_quantity_${(index+1)}`"
-                                                v-model="item.quantity"
-                                                autocomplete="off"
-                                              />
-                                            </VCol>
-                                            <VCol cols="6" class="form-group">
-                                              <VTextField
-                                                placeholder="Cantidad"
-                                                label="Cantidad"
-                                                type="text"
-                                                :name="`new_recipe_cooking_product_quantity_${(index+1)}`"
-                                                v-model="item.quantity"
-                                                autocomplete="off"
-                                              />
-                                            </VCol>
-                                            <div class="form-group pa-0 mb-md-5  small-delete-product-button_recipe ">
-                                              <v-tooltip text="Quitar producto">
-                                                <template v-slot:activator="{ props }">
-                                                  <v-col cols="auto" class="pa-0">
-                                                    <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeProductInRecipe('cooking_ingredients', index)"></v-btn>
-                                                  </v-col>
-                                                </template>
-                                              </v-tooltip>
+                                  Preparación
+                                </v-stepper-item>
+                            </v-stepper-header>
+                            <v-stepper-window class="mx-2" >
+                              <v-stepper-window-item
+                                :value="1"
+                              >
+                                <template class="d-block" >
+                                  <VForm  id="new_recipe_form">
+                                    <VRow>
+                                      <VCol cols="12"  class=" ">
+                                        <div class="img-content mx-auto">
+                                          <label for="newRecipe-img">
+                                            <VImg
+                                              width="200"
+                                              height="200"
+                                              class="rounded"
+                                              :src="newRecipe.img"
+                                              style="border-radius:10%!important"
+                                              id="newRecipe-img-content"
+                                            />
+                                            <div class="overlay-img">
+                                              <VIcon color="white" size="x-large" icon="majesticons:image-plus"/>
                                             </div>
-                                          </VRow>
-                                        </VCol>
-                                      </VRow>
-                                      <VRow class="ma-0 pa-0  mt-8 align-center">
-                                        <VCol cols="5" md="4"  class="mt-0 py-0 px-0">
-                                          <v-col cols="auto" class="">
-                                            <VBtn  color="secondary" class="w-100" @click="backStep()" >
-                                              <span class="d-block d-md-hidden ">
-                                                <VIcon icon="ion:arrow-back-outline" color="white"></VIcon>  
-                                              </span>
-                                              <span class="d-md-block d-none ">Volver</span>
-    
-                                              
-                                            </VBtn>
-                                          </v-col>
-                                        </VCol>
-                                        <VCol cols="5" md="4" offset="2" offset-md="4" class="mt-0 py-0 px-0">
-                                          <v-col cols="auto" class="">
-                                            <VBtn  color="primary" class="w-100 " type="submit" disabled id="new_recipe_form_3_button"> Guardar</VBtn>
-                                          </v-col>
-                                        </VCol>
-                                      </VRow>
-                                    </VForm>
-                                  </template>
-                                </v-stepper-window-item>
-                              </v-stepper-window>                          
-                            </template>
-                          </v-stepper>
+                                          </label>
+                                          <VCol cols="12" md="12"  class="form-group text-center ma-0 mt-0 pa-0">
+              
+                                            <input type="file"  id="newRecipe-img" ref="newRecipeImg" name="new_recipe_img" class="d-none" @change="onFileChange" >
+                                          </VCol>
+                                        </div>
+                                      </VCol>
+                                      <VCol cols="12" class="form-group">
+                                          <VTextField
+                                            placeholder="Nombre de la receta"
+                                            label="Nombre de la receta"
+                                            type="text"
+                                            name="new_recipe_title"
+                                            autocomplete="off"
+                                            v-model="newRecipe.title"
+                                          />
+                                      </VCol>
+                                      <VCol cols="12" class="form-group">
+                                          <VTextField
+                                            placeholder="EJ: Postre, Entrada, Plato fuerte"
+                                            label="Tipo de plato"
+                                            type="text"
+                                            name="new_recipe_type"
+                                            autocomplete="off"
+                                            v-model="newRecipe.type"
+                                          />
+                                      </VCol>
+                                      <VCol cols="6" class="form-group">
+                                          <VTextField
+                                            placeholder="Cantidad de personas"
+                                            label="Cant. de personas"
+                                            type="number"
+                                            name="new_recipe_person_count"
+                                            autocomplete="off"
+                                            v-model="newRecipe.personCount"
+                                          />
+                                      </VCol>
+                                      <VCol cols="6" class="form-group">
+                                          <VTextField
+                                            placeholder="Tiempo total"
+                                            label="Tiempo total"
+                                            type="text"
+                                            name="new_recipe_time_total"
+                                            autocomplete="off"
+                                            v-model="newRecipe.timeTotal"
+                                          />
+                                      </VCol>
+                                      <VCol cols="12" class="form-group">
+                                        <v-textarea
+                                          label="Descripcion larga"
+                                          auto-grow
+                                          variant="outlined"
+                                          rows="3"
+                                          row-height="25"
+                                          shaped
+                                          name="new_recipe_description"
+                                          v-model="newRecipe.description"
+                                        ></v-textarea>
+                                      </VCol>
+                                    </VRow>
+                                    <VRow class="ma-0 pa-0  mt-8 align-center">
+                                      <VCol cols="12" md="4" offset-md="4" class="mt-0 py-0 px-0">
+                                        <v-col cols="auto" class="">
+                                          <VBtn  color="primary" class="w-100" type="submit" disabled id="new_recipe_form_button" >Siguiente</VBtn>
+                                        </v-col>
+                                      </VCol>
+                                    </VRow>
+                                  </VForm>
+                                  
+                                </template>
+                              </v-stepper-window-item>
+                              <v-stepper-window-item
+                                :value="2"
+                              >
+                                <template class="d-block">
+                                  <VForm  id="new_recipe_form_2">
+                                    <VRow 
+                                    class="ma-0 pa-0  mt-4 align-center" 
+                                    >
+                                      <VCol cols="12" class="form-group">
+                                        <h3>Ingrendientes cooking 5G</h3>
+                                      </VCol>
+                                      <VCol cols="12" md="5" class="mt-0 py-0 px-0 mb-4">
+                                        <v-tooltip text="Agregar nuevo despiece">
+                                            <template v-slot:activator="{ props }">
+                                              <v-col cols="auto" class="">
+                                                <VBtn v-bind="props" color="primary" class="w-100" @click="addIngredientInRecipe('cooking_ingredients')" ><VIcon icon="bx-plus"/>Agregar otro ingrediente</VBtn>
+                                              </v-col>
+                                            </template>
+                                          </v-tooltip>
+                                      </VCol>
+                                      <VCol cols="12"  class="mt-0 py-0 px-0 mb-4">   
+                                        <VRow v-for="(item, index) in newRecipe.cooking_ingredients" :key="index" class="position-realative relative mb-2" >
+                                          <VCol cols="6" class="form-group ">
+                                            <v-autocomplete
+                                              :model-value="item.id"
+                                              :items="productsForRecipe[index] ?  productsForRecipe[index] : item.id !== null ? [ {id: item.id, title: item.title, stock: item.quantity}] : []"
+                                              :label="`Ingrediente ${(index+1)}`"
+                                              :name="`new_recipe_cooking_product_${(index+1)}`"
+                                              item-title="title"
+                                              item-value="id"
+                                              placeholder="EJ: Lomo de cerdo, Pollo entero"
+                                              variant="outlined"
+                                              persistent-hint
+                                              clearable
+                                              no-filter
+                                              no-data-text="No se encontraron resultados"
+                                              @click="searchProductsForRecipe($event,index )"
+                                              @keyup="searchProductsForRecipe($event,index )"
+                                              @click:clear="clearProductSearch(index)"
+                                              @update:modelValue="selectedProduct($event, index)"
+                                            ></v-autocomplete>
+                                          </VCol>
+                                          <VCol cols="6" class="form-group">
+                                            <VTextField
+                                              placeholder="Cantidad"
+                                              label="Cantidad"
+                                              type="text"
+                                              :name="`new_recipe_cooking_product_quantity_${(index+1)}`"
+                                              v-model="item.quantity"
+                                              autocomplete="off"
+                                            />
+                                          </VCol>
+                                          <div class="form-group pa-0 mb-md-5  small-delete-product-button_recipe ">
+                                            <v-tooltip text="Receta">
+                                              <template v-slot:activator="{ props }">
+                                                <v-col cols="auto" class="pa-0">
+                                                  <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeIngredientInRecipe('cooking_ingredients', index)"></v-btn>
+                                                </v-col>
+                                              </template>
+                                            </v-tooltip>
+                                          </div>
+                                        </VRow>
+                                      </VCol>
+                                    </VRow>
+                                    <VRow 
+                                    class="ma-0 pa-0  mt-4 align-center" 
+                                    >
+                                      <VCol cols="12" class="form-group">
+                                        <h3>Ingrendientes</h3>
+                                      </VCol>
+                                      <VCol cols="12" md="5" class="mt-0 py-0 px-0 mb-4">
+                                        <v-tooltip text="Agregar nuevo despiece">
+                                            <template v-slot:activator="{ props }">
+                                              <v-col cols="auto" class="">
+                                                <VBtn v-bind="props" color="primary" class="w-100" @click="addIngredientInRecipe('ingredients')" ><VIcon icon="bx-plus"/> Agregar otro ingrediente</VBtn>
+                                              </v-col>
+                                            </template>
+                                          </v-tooltip>
+                                      </VCol>
+                                      <VCol cols="12"  class="mt-0 py-0 px-0 mb-4"> 
+                                        <VRow v-for="(item, index) in newRecipe.ingredients" :key="index" class="position-realative relative mb-2" >
+                                          <VCol cols="6" class="form-group">
+                                            <VTextField
+                                              placeholder="EJ: Azucar, Sal"
+                                              :label="`Ingrediente ${(index+1)}`"
+                                              type="text"
+                                              :name="`new_recipe_product_${(index+1)}`"
+                                              v-model="item.name"
+                                              autocomplete="off"
+                                            />
+                                          </VCol>
+                                          <VCol cols="6" class="form-group">
+                                            <VTextField
+                                              placeholder="Cantidad"
+                                              label="Cantidad"
+                                              type="text"
+                                              :name="`new_recipe_product_quantity${(index+1)}`"
+                                              v-model="item.quantity"
+                                              autocomplete="off"
+                                            />
+                                          </VCol>
+                                          <div class="form-group pa-0 mb-md-5  small-delete-product-button_recipe ">
+                                            <v-tooltip text="Receta">
+                                              <template v-slot:activator="{ props }">
+                                                <v-col cols="auto" class="pa-0">
+                                                  <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeIngredientInRecipe('ingredients',index)"></v-btn>
+                                                </v-col>
+                                              </template>
+                                            </v-tooltip>
+                                          </div>
+                                        </VRow>
+                                      </VCol>
+                                    </VRow>
+                                    <VRow class="ma-0 pa-0  mt-8 align-center">
+                                      <VCol cols="5" md="4"  class="mt-0 py-0 px-0">
+                                        <v-col cols="auto" class="">
+                                          <VBtn  color="secondary" class="w-100" @click="backStep()" >
+                                            <span class="d-block d-md-hidden ">
+                                              <VIcon icon="ion:arrow-back-outline" color="white"></VIcon>  
+                                            </span>
+                                            <span class="d-md-block d-none ">Volver</span>
+  
+                                            
+                                          </VBtn>
+                                        </v-col>
+                                      </VCol>
+                                      <VCol cols="5" md="4" offset="2" offset-md="4" class="mt-0 py-0 px-0">
+                                        <v-col cols="auto" class="">
+                                          <VBtn  color="primary" class="w-100 " @click="nextStep()" id="new_recipe_form_2_button"> Siguiente</VBtn>
+                                        </v-col>
+                                      </VCol>
+                                    </VRow>
+                                  </VForm>
+                                </template>
+                              </v-stepper-window-item>
+                              <v-stepper-window-item
+                                :value="3"
+                              >
+                                <viewRecipePreparationModal @backStep="backStep()"></viewRecipePreparationModal>
+                              </v-stepper-window-item>
+                            </v-stepper-window>                          
+                          </template>
+                        </v-stepper>
                       </VRow>
                     </VCardText>
                   </div>
@@ -948,7 +849,7 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
           this.stepperNewProduct > 2 ? this.destroyValidate('new_recipe_form_3') : this.destroyValidate('new_recipe_form_2')
         }, 500);
       },
-      removeProductInRecipe(id,index){
+      removeIngredientInRecipe(id,index){
         setTimeout(() => {
           try{
             this.newRecipe[id].splice(index, 1)
@@ -959,7 +860,7 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
         }, 200);
         
       },
-      addCookingIngredient(id){
+      addIngredientInRecipe(id){
       
         let newIngredient = {
           id:null,
