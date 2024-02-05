@@ -42,11 +42,11 @@ import debounce from 'debounce';
       <VRow class="ma-0 pa-0  mt-8 align-center">
         <VCol cols="5" md="4"  class="mt-0 py-0 px-0">
           <v-col cols="auto" class="">
-            <VBtn  color="secondary" class="w-100"  >
+            <VBtn  color="secondary" class="w-100" @click="backStep()" >
               <span class="d-block d-md-hidden ">
                 <VIcon icon="ion:arrow-back-outline" color="white"></VIcon>  
               </span>
-              <span class="d-md-block d-none " @click="backStep()">Volver</span>
+              <span class="d-md-block d-none " >Volver</span>
   
             </VBtn>
           </v-col>
@@ -72,40 +72,77 @@ import debounce from 'debounce';
               cols="12"
               class="px-2"  
             >
-              <VCard class="modal__content">
+              <VCard class="modal__content" style="box-shadow: 0px 10px 20px 0px #272727;">
                 <div class="modal__close-button" >
                   <v-col class="pa-0 pe-4">
                     <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
                   </v-col>
                 </div>
-                <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
+                <div class="d-flex justify-space-between  flex-column pa-5 pa-md-5 ">
                   <VRow  class="mb-2 ma-0">
                     <VCol
                       cols="12"
-                      class="py-0"
+                      class="py-0 mt-3"
                     >
                       <div class="my-md-4 my-2 text-center">
-                        <h2>Eliminar Receta</h2>
+                        <h2>Añadir Pasos a seguir</h2>
                       </div>
                     </VCol>
-                    <VCol
-                      cols="12"
-                      class="px-md-10 px-0 text-center"
-                      style=""
-                    >
-                      <h2>¿Seguro que deseas eliminar <b class="text-primary">dd</b>?</h2>
+                    <VCol cols="12"  class="mt-0 py-0 px-0 mb-4"> 
+                      <VRow v-for="(item, index) in preparation.steps" :key="index" class="position-realative relative my-4" >
+                        <VCol cols="12" class="form-group">
+                          <VTextField
+                            placeholder="EJ: Preparación del pollo"
+                            :label="`Titulo del paso ${(index+1)}`"
+                            type="text"
+                            :name="`new_recipe_product_${(index+1)}`"
+                            v-model="item.title"
+                            autocomplete="off"
+                          />
+                        </VCol>
+                        <VCol cols="12" class="form-group">
+                          <v-textarea
+                            label="Descripción de este paso"
+                            auto-grow
+                            variant="outlined"
+                            rows="10"
+                            row-height="25"
+                            shaped
+                            name="new_product_description"
+                            v-model="item.description"
+                          ></v-textarea>
+                        </VCol>
+                        <div class="form-group pa-0 mb-md-5  small-delete-product-button_recipe ">
+                          <v-tooltip text="Receta">
+                            <template v-slot:activator="{ props }">
+                              <v-col cols="auto" class="pa-0">
+                                <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeIngredientInRecipe('ingredients',index)"></v-btn>
+                              </v-col>
+                            </template>
+                          </v-tooltip>
+                        </div>
+                      </VRow>
                     </VCol>
-                  </VRow>
                     
+                  </VRow>
                   <VDivider  />
-                  <div class="mt-5 w-100 d-md-flex  d-block justify-center">
-                    <VCardActions class=" justify-center w-100 d-md-flex  d-flex">
+                  <div class="mt-5 w-100 d-flex  d-block justify-center">
+                    <VCardActions class=" justify-center w-500 d-md-flex  d-flex">
                       <VBtn
                         color="white"
-                        class="bg-error text-white w-50 mx-0 mx-md-5 my-2"
-                        @click="deleteProduct()"
+                        class="bg-primary text-white w-100 mx-0 mx-md-5 my-2"
+                        @click="addVideo()"
                       >
-                        <span class="">Eliminar</span>
+                        <span class="">Agregar nuevo paso</span>
+                      </VBtn>
+                    </VCardActions>
+                    <VCardActions class=" justify-center w-50 d-md-flex  d-flex">
+                      <VBtn
+                        color="white"
+                        class="bg-primary text-white w-100 mx-0 mx-md-5 my-2"
+                        @click="addVideo()"
+                      >
+                        <span class="">Guardar</span>
                       </VBtn>
                     </VCardActions>
                   </div>
@@ -129,20 +166,20 @@ import debounce from 'debounce';
               cols="12"
               class="px-2"  
             >
-              <VCard class="modal__content">
+              <VCard class="modal__content" style="box-shadow: 0px 10px 20px 0px #272727;">
                 <div class="modal__close-button" >
                   <v-col class="pa-0 pe-4">
                     <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
                   </v-col>
                 </div>
-                <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
+                <div class="d-flex justify-space-between  flex-column pa-5 pa-md-5 ">
                   <VRow  class="mb-2 ma-0">
                     <VCol
                       cols="12"
-                      class="py-0"
+                      class="py-0 mt-3"
                     >
                       <div class="my-md-4 my-2 text-center">
-                        <h2>Eliminar Receta</h2>
+                        <h2>Añadir video de la receta</h2>
                       </div>
                     </VCol>
                     <VCol
@@ -150,7 +187,15 @@ import debounce from 'debounce';
                       class="px-md-10 px-0 text-center"
                       style=""
                     >
-                      <h2>¿Seguro que deseas eliminar <b class="text-primary">dd</b>?</h2>
+                      <div class="" id="app">
+                        <v-file-input
+                          chips
+                          label="Sube tu video aquí"
+                          variant="outlined"
+                          ref="recipe_video"
+                          :prepend-icon=" !preparation.video ?  'ic:round-attach-file' : 'icon-park-outline:check-one' "
+                        ></v-file-input>
+                      </div>
                     </VCol>
                   </VRow>
                     
@@ -159,10 +204,10 @@ import debounce from 'debounce';
                     <VCardActions class=" justify-center w-100 d-md-flex  d-flex">
                       <VBtn
                         color="white"
-                        class="bg-error text-white w-50 mx-0 mx-md-5 my-2"
-                        @click="deleteProduct()"
+                        class="bg-primary text-white w-50 mx-0 mx-md-5 my-2"
+                        @click="addVideo()"
                       >
-                        <span class="">Eliminar</span>
+                        <span class="">Agregar</span>
                       </VBtn>
                     </VCardActions>
                   </div>
@@ -178,15 +223,22 @@ import debounce from 'debounce';
 <script>
 export default {
 
+  data: () => ({
+    modal: '',
+    preparation: {
+      video: null,
+      steps: [
+        { 
+          title:'',
+          description:''
+        }
+      ]
+    },
+  }),
   methods:{
-    data: () => ({
-      modal: '',
-      newRecipe:{
-        preparation: []
-      },
-    }),
-    addPreparation(id){
-      console.log(id)
+    addVideo(id){
+      this.preparation.video = this.$refs.recipe_video.files[0]
+      this.hideModal()
     },
     showModal(modal) {
         try {

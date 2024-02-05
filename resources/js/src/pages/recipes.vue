@@ -439,7 +439,7 @@
       </div>
     </div>
 
-    <div class="modal animate__animated animate__fadeInDown"  id="createRecipe" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+    <div class="modal animate__animated animate__fadeInDown pe-0"  id="createRecipe" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg mt-10" >
           <div class="modal-content">
             <VCol
@@ -913,7 +913,7 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
           setTimeout(() => {
             this.newRecipe.cooking_ingredients[index].selected_lote = this.newRecipe.cooking_ingredients[index].lotes[0]
             this.newRecipe.cooking_ingredients[index].maxValue = this.newRecipe.cooking_ingredients[index].lotes[0].quantity
-            this.addValidate(this.newRecipe.cooking_ingredients[index].maxValue)
+            // this.addValidate(this.newRecipe.cooking_ingredients[index].maxValue)
 
           }, 200);
           
