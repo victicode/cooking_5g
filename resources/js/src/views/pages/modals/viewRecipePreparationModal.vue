@@ -15,10 +15,10 @@ import debounce from 'debounce';
           <h3>Añadir Preparación</h3>
         </VCol>
         <VCol cols="12" md="5" class="mt-0 py-0 px-0 mb-4">
-          <v-tooltip text="Agregar nuevo despiece">
+          <v-tooltip text="Agregar nuevo ingrediente de cooking 5g">
               <template v-slot:activator="{ props }">
                 <v-col cols="auto" class="">
-                  <VBtn v-bind="props" color="primary" class="w-100" @click="showModal('Pasos')" >
+                  <VBtn v-bind="props" :color=" isValidateSteps ? 'success' : 'primary' "  class="w-100" @click="showModal('Pasos')" >
                     <VIcon icon="bx-plus"/>
                     Agregar pasos a seguir
                   </VBtn>
@@ -27,7 +27,7 @@ import debounce from 'debounce';
             </v-tooltip>
         </VCol>
         <VCol cols="12" md="4" class="mt-0 py-0 px-0 mb-4">
-          <v-tooltip text="Agregar nuevo despiece">
+          <v-tooltip text="Agregar nuevo ingrediente">
               <template v-slot:activator="{ props }">
                 <v-col cols="auto" class="">
                   <VBtn v-bind="props" color="primary" class="w-100" @click="showModal('Video')" >
@@ -59,7 +59,7 @@ import debounce from 'debounce';
       </VRow>
   
     </VForm>
-    <div class="modal animate__animated animate__fadeInDown" id="Pasos" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+    <div class="modal animate__animated animate__fadeInDown me-0" id="Pasos" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
         
       <div class="modal-dialog modal-lg mt-10">
         <div class="modal-content">
@@ -85,11 +85,11 @@ import debounce from 'debounce';
                       class="py-0 mt-3"
                     >
                       <div class="my-md-4 my-2 text-center">
-                        <h2>Añadir Pasos a seguir</h2>
+                        <h2>Añadir nuevo paso seguir</h2>
                       </div>
                     </VCol>
                     <VCol cols="12"  class="mt-0 py-0 px-0 mb-4"> 
-                      <VRow v-for="(item, index) in preparation.steps" :key="index" class="position-realative relative my-4" >
+                      <VRow v-for="(item, index) in preparation.steps" :key="index" class="position-realative relative mt-7" >
                         <VCol cols="12" class="form-group">
                           <VTextField
                             placeholder="EJ: Preparación del pollo"
@@ -116,7 +116,7 @@ import debounce from 'debounce';
                           <v-tooltip text="Receta">
                             <template v-slot:activator="{ props }">
                               <v-col cols="auto" class="pa-0">
-                                <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeIngredientInRecipe('ingredients',index)"></v-btn>
+                                <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeStepRecipe(index)"></v-btn>
                               </v-col>
                             </template>
                           </v-tooltip>
@@ -126,26 +126,27 @@ import debounce from 'debounce';
                     
                   </VRow>
                   <VDivider  />
-                  <div class="mt-5 w-100 d-flex  d-block justify-center">
-                    <VCardActions class=" justify-center w-500 d-md-flex  d-flex">
+                  <VRow class="mt-0  d-flex  d-block justify-center">
+                    <VCol col="12" md="6" class=" ">
                       <VBtn
                         color="white"
-                        class="bg-primary text-white w-100 mx-0 mx-md-5 my-2"
-                        @click="addVideo()"
+                        class="bg-secondary text-white w-100 mx-0 mx-md-5 my-2"
+                        @click="addNewStepRecipe()"
+                        
                       >
-                        <span class="">Agregar nuevo paso</span>
+                      <VIcon icon="bx-plus"/>Agregar nuevo paso
                       </VBtn>
-                    </VCardActions>
-                    <VCardActions class=" justify-center w-50 d-md-flex  d-flex">
+                    </VCol>
+                    <VCol col="12" md="6" class=" ">
                       <VBtn
                         color="white"
                         class="bg-primary text-white w-100 mx-0 mx-md-5 my-2"
-                        @click="addVideo()"
+                        @click="validatorSteps()"
                       >
                         <span class="">Guardar</span>
                       </VBtn>
-                    </VCardActions>
-                  </div>
+                    </VCol>
+                  </VRow>
                 </div>
               </VCard>
             </VCol>
@@ -153,7 +154,7 @@ import debounce from 'debounce';
         </div>
       </div>
     </div>
-    <div class="modal animate__animated animate__fadeInDown" id="Video" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+    <div class="modal animate__animated animate__fadeInDown me-0" id="Video" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
         
       <div class="modal-dialog modal-lg mt-10">
         <div class="modal-content">
@@ -225,6 +226,7 @@ export default {
 
   data: () => ({
     modal: '',
+    isValidateSteps:false,
     preparation: {
       video: null,
       steps: [
@@ -240,6 +242,32 @@ export default {
       this.preparation.video = this.$refs.recipe_video.files[0]
       this.hideModal()
     },
+    addNewStepRecipe(){
+      let newStep = {
+        title:'',
+        description:''
+      }
+
+      this.preparation.steps.push(newStep)
+    },
+    validatorSteps(){
+
+      if( this.preparation.steps.length == 1 ) return this.isValidateSteps = false
+
+      this.hideModal()
+      return this.isValidateSteps = true
+      
+      
+    },
+    removeStepRecipe(index){
+        setTimeout(() => {
+          try{
+            this.preparation.steps.splice(index, 1)
+          }catch(e){
+
+          }
+        }, 200);
+      },
     showModal(modal) {
         try {
           this.modal.hide()
@@ -252,6 +280,7 @@ export default {
         })
         this.modal.show()
     },
+
     hideModal(){
       this.modal.hide()
     },

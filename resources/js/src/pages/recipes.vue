@@ -604,21 +604,13 @@
                                 <template class="d-block">
                                   <VForm  id="new_recipe_form_2">
                                     <VRow 
-                                    class="ma-0 pa-0  mt-4 align-center" 
+                                    class="ma-0 pa-0  mt-4 align-center pb-4" 
+                                    style="border-bottom: 1px solid rgba(90, 90, 90, 0.288);"
                                     >
-                                      <VCol cols="12" class="form-group">
+                                      <VCol cols="12" class="form-group mb-4">
                                         <h3>Ingrendientes cooking 5G</h3>
                                       </VCol>
-                                      <VCol cols="12" md="5" class="mt-0 py-0 px-0 mb-4">
-                                        <v-tooltip text="Agregar nuevo despiece">
-                                            <template v-slot:activator="{ props }">
-                                              <v-col cols="auto" class="">
-                                                <VBtn v-bind="props" color="primary" class="w-100" @click="addIngredientInRecipe('cooking_ingredients')" ><VIcon icon="bx-plus"/>Agregar otro ingrediente</VBtn>
-                                              </v-col>
-                                            </template>
-                                          </v-tooltip>
-                                      </VCol>
-                                      <VCol cols="12"  class="mt-0 py-0 px-0 mb-4">   
+                                      <VCol cols="12"  class="mt-0 py-0 px-0 mb-0">   
                                         <VRow v-for="(item, index) in newRecipe.cooking_ingredients" :key="index" class="position-realative relative mb-2" >
                                           <VCol cols="6" class="form-group ">
                                             <v-autocomplete
@@ -661,21 +653,23 @@
                                           </div>
                                         </VRow>
                                       </VCol>
+                                      <VCol cols="12" md="5" class="mt-0 py-0 px-0 mb-4">
+                                        <v-tooltip text="Agregar nuevo despiece">
+                                            <template v-slot:activator="{ props }">
+                                              <v-col cols="auto" class=" pa-0">
+                                                <VBtn v-bind="props" color="primary" class="w-100" @click="addIngredientInRecipe('cooking_ingredients')" >
+                                                  <VIcon icon="bx-plus"/>Agregar otro ingrediente C5G
+                                                </VBtn>
+                                              </v-col>
+                                            </template>
+                                          </v-tooltip>
+                                      </VCol>
                                     </VRow>
                                     <VRow 
                                     class="ma-0 pa-0  mt-4 align-center" 
                                     >
-                                      <VCol cols="12" class="form-group">
+                                      <VCol cols="12" class="form-group mb-4">
                                         <h3>Ingrendientes</h3>
-                                      </VCol>
-                                      <VCol cols="12" md="5" class="mt-0 py-0 px-0 mb-4">
-                                        <v-tooltip text="Agregar nuevo despiece">
-                                            <template v-slot:activator="{ props }">
-                                              <v-col cols="auto" class="">
-                                                <VBtn v-bind="props" color="primary" class="w-100" @click="addIngredientInRecipe('ingredients')" ><VIcon icon="bx-plus"/> Agregar otro ingrediente</VBtn>
-                                              </v-col>
-                                            </template>
-                                          </v-tooltip>
                                       </VCol>
                                       <VCol cols="12"  class="mt-0 py-0 px-0 mb-4"> 
                                         <VRow v-for="(item, index) in newRecipe.ingredients" :key="index" class="position-realative relative mb-2" >
@@ -709,6 +703,15 @@
                                             </v-tooltip>
                                           </div>
                                         </VRow>
+                                      </VCol>
+                                      <VCol cols="12" md="5" class="mt-0 py-0 px-0 mb-4">
+                                        <v-tooltip text="Agregar nuevo despiece">
+                                            <template v-slot:activator="{ props }">
+                                              <v-col cols="auto" class="pa-0">
+                                                <VBtn v-bind="props" color="primary" class="w-100" @click="addIngredientInRecipe('ingredients')" ><VIcon icon="bx-plus"/> Agregar otro ingrediente</VBtn>
+                                              </v-col>
+                                            </template>
+                                          </v-tooltip>
                                       </VCol>
                                     </VRow>
                                     <VRow class="ma-0 pa-0  mt-8 align-center">
@@ -788,7 +791,7 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
 .small-delete-product-button_recipe{
       position: absolute;
       top: -10px;
-      right: 8px;
+      right: 6px;
     }
   @media screen and (max-width: 780px){
     .small-delete-product-button_recipe{
@@ -858,7 +861,6 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
 
           }
         }, 200);
-        
       },
       addIngredientInRecipe(id){
       
