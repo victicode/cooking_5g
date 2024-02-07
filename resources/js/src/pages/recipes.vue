@@ -1,6 +1,6 @@
 <script setup >
   import * as bootstrap from 'bootstrap'
-  import { GET_RECIPES, GET_RECIPE_BY_ID} from "@/core/services/store/recipe.module";
+  import { GET_RECIPES, GET_RECIPE_BY_ID, STORE_RECIPE} from "@/core/services/store/recipe.module";
 
   import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
   import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
@@ -58,7 +58,7 @@
             <VRow class="ma-0  justify-center align-center justify-md-start pa-0 px-md-5 px-0 mb-0 mb-md-0">
               <VCol cols="12"  class="d-flex align-center">
                 <div>
-                  <img src="https://casadepaellas.com/wp-content/uploads/2015/11/Paella-de-Marisco-300x300.jpg" width="100" height="100" style="border-radius: 20%;">
+                  <img :src="recipe.image_url" width="100" height="100" style="border-radius: 20%;">
                 </div>
                 <div class="px-2 w-100">
                   <div>
@@ -688,7 +688,7 @@
                                               placeholder="Cantidad"
                                               label="Cantidad"
                                               type="text"
-                                              :name="`new_recipe_product_quantity${(index+1)}`"
+                                              :name="`new_recipe_product_quantity_${(index+1)}`"
                                               v-model="item.quantity"
                                               autocomplete="off"
                                             />
@@ -729,7 +729,7 @@
                                       </VCol>
                                       <VCol cols="5" md="4" offset="2" offset-md="4" class="mt-0 py-0 px-0">
                                         <v-col cols="auto" class="">
-                                          <VBtn  color="primary" class="w-100 " @click="nextStep()" id="new_recipe_form_2_button"> Siguiente</VBtn>
+                                          <VBtn  color="primary" class="w-100 "  type="submit" disabled id="new_recipe_form_2_button"> Siguiente</VBtn>
                                         </v-col>
                                       </VCol>
                                     </VRow>
@@ -739,7 +739,7 @@
                               <v-stepper-window-item
                                 :value="3"
                               >
-                                <viewRecipePreparationModal @backStep="backStep()"></viewRecipePreparationModal>
+                                <viewRecipePreparationModal @backStep="backStep()" @preparation="getPreparation" />
                               </v-stepper-window-item>
                             </v-stepper-window>                          
                           </template>
@@ -836,7 +836,8 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
             quantity:'',
           }
         ],
-        preparation: []
+        preparation: [],
+        video:'',
       },
     }),
     methods:{
@@ -1011,7 +1012,7 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
             break;
           case 'new_recipe_form_2':
             fieldByForm = {
-              new_recipe_stock_1:{
+              new_recipe_product_1:{
                 validators: {
                   notEmpty: {
                     message: "El ingrediente es obligatorio"
@@ -1022,35 +1023,17 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
                   },
                 }
               },
-            }
-            break;
-          case 'new_recipe_form_3':
-            fieldByForm = {
-              new_product_init_lot:{
+              new_recipe_product_quantity_1:{
                 validators: {
                   notEmpty: {
-                    message: "El lote inicial es requerido"
-                  }
-                }
-              },
-              new_product_stock: {
-                validators: {
-                  notEmpty: {
-                    message: "Debes agregar un stock Inicial"
+                    message: "El ingrediente es obligatorio"
                   },
                   regexp: {
-                    regexp: /^[0-9]+$/i,
-                    message: "Debe ser númerico",
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@,$_ñ_ ]+$/i,
+                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
                   },
                 }
-              },
-              new_product_due_date:{
-                validators: {
-                  notEmpty: {
-                    message: "La fecha de vencimiento es requerida"
-                  }
-                }
-              },
+              }
             }
             break;
           default:
@@ -1073,9 +1056,6 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
             case 'new_recipe_form_2':
               this.nextStep()
               break;
-            case 'new_recipe_form_3':
-              this.createdProduct()
-              break;
           }
 
         }).on("core.field.valid", () => {
@@ -1097,6 +1077,7 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
       },
       getRecipes(){
         this.$store.dispatch(GET_RECIPES).then((data)=>{
+          console.log(data)
           this.recipes = data.data.data
         })
       },
@@ -1163,6 +1144,21 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
        ? this.newRecipe.img = URL.createObjectURL(file)
        : this.selectedProduct.product.img = URL.createObjectURL(file)
       },
+      getPreparation(preparation){
+        this.newRecipe.preparation = preparation.steps;
+        this.newRecipe.video = preparation.video
+        
+        this.createRecipe()
+      },
+      createRecipe(){
+        console.log(this.newRecipe)
+        
+        // const recipeFormData = new FormData
+        // recipeFormData.append('title', )
+
+        // this.$store
+        // .dispatch(STORE_RECIPE, recipeFormData)
+      }
     },
     mounted(){
       // this.initOptionsTable()

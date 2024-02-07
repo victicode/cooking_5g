@@ -57,9 +57,25 @@ class RecipeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function storeRecipe(Request $request)
     {
         //
+
+        $newRecipe = Recipe::create([
+            'title'         =>  'Camarones al ajillo',
+            'description'   =>  'saborsa paella',
+            'preparation'   =>  'paso 1 echar agua',
+            'person_count'  =>  '2',
+            'type'          =>  'Entrada',
+            'total_time'    =>  '45 Minutos',
+            'ingredients'   =>  'agua, sal',
+            'image_url'     =>  'https://glotoncubano.com/wp-content/uploads/2019/05/Como-Hacer-Camarones-al-Ajillo.webp',
+            'video_url'     =>  null,
+            'created_by'    =>  1,
+
+        ]);
+
+        return $newRecipe;
     }
 
     /**

@@ -1,13 +1,16 @@
 <script setup>
 import moment from 'moment';
 import * as bootstrap from 'bootstrap'
-import { GET_PRODUCT_BY_SEARCH } from "@/core/services/store/product.module";
-import debounce from 'debounce';
+import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
+import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
+import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
+import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
+import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
 </script>
 <template class="d-block">
   <VRow>
 
-    <VForm  id="new_recipe_form_3">
+    <VForm  id="new_recipe_form_3" class="w-100">
       <VRow 
       class="ma-0 pa-0  mt-4 align-center" 
       >
@@ -15,11 +18,11 @@ import debounce from 'debounce';
           <h3>Añadir Preparación</h3>
         </VCol>
         <VCol cols="12" md="5" class="mt-0 py-0 px-0 mb-4">
-          <v-tooltip text="Agregar nuevo ingrediente de cooking 5g">
+          <v-tooltip text="Agregar nuevo paso">
               <template v-slot:activator="{ props }">
                 <v-col cols="auto" class="">
                   <VBtn v-bind="props" :color=" isValidateSteps ? 'success' : 'primary' "  class="w-100" @click="showModal('Pasos')" >
-                    <VIcon icon="bx-plus"/>
+                    <VIcon class="me-1" :icon="isValidateSteps ? 'streamline:check-solid' : 'bx-plus' " />
                     Agregar pasos a seguir
                   </VBtn>
                 </v-col>
@@ -27,11 +30,11 @@ import debounce from 'debounce';
             </v-tooltip>
         </VCol>
         <VCol cols="12" md="4" class="mt-0 py-0 px-0 mb-4">
-          <v-tooltip text="Agregar nuevo ingrediente">
+          <v-tooltip text="Agregar video">
               <template v-slot:activator="{ props }">
                 <v-col cols="auto" class="">
-                  <VBtn v-bind="props" color="primary" class="w-100" @click="showModal('Video')" >
-                    <VIcon icon="bx-plus"/>
+                  <VBtn v-bind="props" :color=" isValidateVideoUpload ? 'success' : 'primary' "  class="w-100" @click="showModal('Video')" >
+                    <VIcon class="me-1" :icon="isValidateVideoUpload ? 'streamline:check-solid' : 'bx-plus' " />
                     Agregar video
                   </VBtn>
                 </v-col>
@@ -53,13 +56,13 @@ import debounce from 'debounce';
         </VCol>
         <VCol cols="5" md="4" offset="2" offset-md="4" class="mt-0 py-0 px-0">
           <v-col cols="auto" class="">
-            <VBtn  color="primary" class="w-100 " type="submit" disabled id="new_recipe_form_3_button"> Guardar</VBtn>
+            <VBtn  id="new_recipe_form_3_button" color="primary" class="w-100 "  :disabled="!isValidateSteps" @click="sendPreration()"> Guardar</VBtn>
           </v-col>
         </VCol>
       </VRow>
   
     </VForm>
-    <div class="modal animate__animated animate__fadeInDown me-0" id="Pasos" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+    <div class="modal animate__animated animate__fadeInDown pe-0" id="Pasos" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
         
       <div class="modal-dialog modal-lg mt-10">
         <div class="modal-content">
@@ -79,74 +82,78 @@ import debounce from 'debounce';
                   </v-col>
                 </div>
                 <div class="d-flex justify-space-between  flex-column pa-5 pa-md-5 ">
-                  <VRow  class="mb-2 ma-0">
-                    <VCol
-                      cols="12"
-                      class="py-0 mt-3"
-                    >
-                      <div class="my-md-4 my-2 text-center">
-                        <h2>Añadir nuevo paso seguir</h2>
-                      </div>
-                    </VCol>
-                    <VCol cols="12"  class="mt-0 py-0 px-0 mb-4"> 
-                      <VRow v-for="(item, index) in preparation.steps" :key="index" class="position-realative relative mt-7" >
-                        <VCol cols="12" class="form-group">
-                          <VTextField
-                            placeholder="EJ: Preparación del pollo"
-                            :label="`Titulo del paso ${(index+1)}`"
-                            type="text"
-                            :name="`new_recipe_product_${(index+1)}`"
-                            v-model="item.title"
-                            autocomplete="off"
-                          />
-                        </VCol>
-                        <VCol cols="12" class="form-group">
-                          <v-textarea
-                            label="Descripción de este paso"
-                            auto-grow
-                            variant="outlined"
-                            rows="10"
-                            row-height="25"
-                            shaped
-                            name="new_product_description"
-                            v-model="item.description"
-                          ></v-textarea>
-                        </VCol>
-                        <div class="form-group pa-0 mb-md-5  small-delete-product-button_recipe ">
-                          <v-tooltip text="Receta">
-                            <template v-slot:activator="{ props }">
-                              <v-col cols="auto" class="pa-0">
-                                <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeStepRecipe(index)"></v-btn>
-                              </v-col>
-                            </template>
-                          </v-tooltip>
+                  <VForm id="steps_form" >
+                    <VRow  class="mb-2 ma-0">
+                      <VCol
+                        cols="12"
+                        class="py-0 mt-3"
+                      >
+                        <div class="my-md-4 my-2 text-center">
+                          <h2>Añadir nuevo paso seguir</h2>
                         </div>
-                      </VRow>
-                    </VCol>
-                    
-                  </VRow>
-                  <VDivider  />
-                  <VRow class="mt-0  d-flex  d-block justify-center">
-                    <VCol col="12" md="6" class=" ">
-                      <VBtn
-                        color="white"
-                        class="bg-secondary text-white w-100 mx-0 mx-md-5 my-2"
-                        @click="addNewStepRecipe()"
-                        
-                      >
-                      <VIcon icon="bx-plus"/>Agregar nuevo paso
-                      </VBtn>
-                    </VCol>
-                    <VCol col="12" md="6" class=" ">
-                      <VBtn
-                        color="white"
-                        class="bg-primary text-white w-100 mx-0 mx-md-5 my-2"
-                        @click="validatorSteps()"
-                      >
-                        <span class="">Guardar</span>
-                      </VBtn>
-                    </VCol>
-                  </VRow>
+                      </VCol>
+                      <VCol cols="12" class="mt-0 py-0 px-0 mb-4"> 
+                          <VRow v-for="(item, index) in preparation.steps" :key="index" class="position-realative relative mt-7" >
+                            <VCol cols="12" class="form-group">
+                              <VTextField
+                                placeholder="EJ: Preparación del pollo"
+                                :label="`Titulo del paso ${(index+1)}`"
+                                type="text"
+                                :name="`new_recipe_preparation_title_${(index+1)}`"
+                                v-model="item.title"
+                                autocomplete="off"
+                              />
+                            </VCol>
+                            <VCol cols="12" class="form-group">
+                              <v-textarea
+                                label="Descripción de este paso"
+                                auto-grow
+                                variant="outlined"
+                                counter
+                                row-height="25"
+                                shaped
+                                class="prepation_textarea"
+                                persistent-counter
+                                :name="`new_recipe_preparation_description_${(index+1)}`"
+                                v-model="item.description"
+                              ></v-textarea>
+                            </VCol>
+                            <div class="form-group pa-0 mb-md-5  small-delete-product-button_recipe ">
+                              <v-tooltip text="Receta">
+                                <template v-slot:activator="{ props }">
+                                  <v-col cols="auto" class="pa-0">
+                                    <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeStepRecipe(index)"></v-btn>
+                                  </v-col>
+                                </template>
+                              </v-tooltip>
+                            </div>
+                          </VRow>
+                      </VCol>
+                    </VRow>
+                    <VDivider  />
+                    <VRow class="mt-0  d-flex  d-block justify-center">
+                      <VCol col="12" md="6" class=" ">
+                        <VBtn
+                          color="white"
+                          class="bg-secondary text-white w-100 mx-0 my-2"
+                          @click="addNewStepRecipe()"
+                          
+                        >
+                        <VIcon icon="bx-plus"/>Agregar nuevo paso
+                        </VBtn>
+                      </VCol>
+                      <VCol col="12" md="6" class=" ">
+                        <VBtn
+                          id="steps_form_button"
+                          color="white"
+                          type="submit"
+                          class="bg-primary text-white w-100 mx-0 my-2"
+                        >
+                          <span class="">Guardar</span>
+                        </VBtn>
+                      </VCol>
+                    </VRow>
+                  </VForm>
                 </div>
               </VCard>
             </VCol>
@@ -221,12 +228,21 @@ import debounce from 'debounce';
     </div>
   </VRow>
 </template>
+<style>
+  .prepation_textarea > .v-input__details{
+    position: absolute;
+    bottom: calc(0% + 20px);
+    right: 10px;
+  }
+</style>
 <script>
 export default {
 
   data: () => ({
     modal: '',
     isValidateSteps:false,
+    isValidateVideoUpload:false,
+    forms:'',
     preparation: {
       video: null,
       steps: [
@@ -252,12 +268,30 @@ export default {
     },
     validatorSteps(){
 
-      if( this.preparation.steps.length == 1 ) return this.isValidateSteps = false
+      this.hideModal() 
+      if( this.preparation.steps.length > 1 ){
+        this.isValidateSteps = true
+      } 
+      console.log(this.preparation[0])
+
+      if( this.preparation.steps[0].title.length > 1 && this.preparation.steps[0].description.length > 1) {
+
+        console.log(this.isValidateSteps )
+        return this.isValidateSteps = true
+
+      }
+
+      console.log(this.isValidateSteps )
+      return this.isValidateSteps = false
+
+  
+    },
+    validatorVideoUpload(){
 
       this.hideModal()
-      return this.isValidateSteps = true
-      
-      
+      if( !this.preparation.video ) return this.isValidateVideoUpload = false
+      return this.isValidateVideoUpload = true
+
     },
     removeStepRecipe(index){
         setTimeout(() => {
@@ -287,6 +321,78 @@ export default {
     backStep(){
       this.$emit('backStep')
     },
+    validateFormItem(){
+        const fieldToValidate = this.itemsValidateByForm()
+        const sendButton = document.getElementById('steps_form_button')
+
+        this.forms = formValidation(document.getElementById('steps_form'), {
+          fields: fieldToValidate,
+          plugins: {
+            trigger: new Trigger(),
+            submitButton: new SubmitButton(),
+            bootstrap: new Bootstrap({
+                  // Use this for enabling/changing valid/invalid class
+                  // eleInvalidClass: '',
+                  // eleValidClass: '',
+                }),
+          }
+        }).on("core.form.valid", () => {
+          this.validatorSteps()
+        }).on("core.field.valid", () => {
+          sendButton.disabled = false
+          sendButton.classList.remove('v-btn--disabled')
+
+        }).on("core.form.invalid", () => {
+          sendButton.disabled = true
+          sendButton.classList.add('v-btn--disabled')
+
+        }).on("core.field.invalid", () => {
+          sendButton.disabled = true
+          sendButton.classList.add('v-btn--disabled')
+
+        });
+      },
+      itemsValidateByForm(){
+        let fieldByForm ={
+            new_recipe_preparation_title_1:{
+              validators: {
+                notEmpty: {
+                  message: "Por favor coloca un titulo"
+                },
+                regexp: {
+                  regexp: /^[A-Za-z0-9À-ÿ .*-+/&@,$_ñ\s+_ ]+$/i,
+                  message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                },
+              }
+            },
+            new_recipe_preparation_description_1:{
+              validators: {
+                notEmpty: {
+                  message: "La descripción de este paso es requerida"
+                },
+                regexp: {
+                  regexp: /^[A-Za-z0-9À-ÿ .*-+/&@,$_ñ\s+_ ]+$/i,
+                  message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+                },
+                stringLength: {
+                    min: 50,
+                    message: 'Debe tener 50 caracteres minimo',
+                }
+
+              }
+            },
+          };
+        return fieldByForm
+      }, 
+    sendPreration(){
+      this.$emit('preparation',{
+        steps: this.preparation.steps,
+        video: this.$refs.recipe_video.files[0]
+      })
+    }
+  },
+  mounted(){
+    this.validateFormItem()
   }
 
 
