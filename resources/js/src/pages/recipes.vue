@@ -823,6 +823,8 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
         title:'',
         type:'',
         description:'',
+        personCount:'',
+        timeTotal:'',
         ingredients:[
           {
             name:'',
@@ -981,7 +983,7 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
                     message: "La descripción es necesaria"
                   },
                   regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+,/&@$_ñ_ ]+$/i,
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+,/&@$_\s+ñ_ ]+$/i,
                     message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
                   },
                 }
@@ -1145,7 +1147,7 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
        : this.selectedProduct.product.img = URL.createObjectURL(file)
       },
       getPreparation(preparation){
-        this.newRecipe.preparation = preparation.steps;
+        this.newRecipe.preparation = JSON.stringify(preparation.steps);
         this.newRecipe.video = preparation.video
         
         this.createRecipe()
@@ -1153,11 +1155,25 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
       createRecipe(){
         console.log(this.newRecipe)
         
-        // const recipeFormData = new FormData
-        // recipeFormData.append('title', )
+        const recipeFormData = new FormData
+        recipeFormData.append('title', this.newRecipe.title )
+        recipeFormData.append('description', this.newRecipe.description )
+        recipeFormData.append('preparation', this.newRecipe.preparation)
+        recipeFormData.append('person_count',this.newRecipe.personCount)
+        recipeFormData.append('type', this.newRecipe.type )
+        recipeFormData.append('total_time', this.newRecipe.timeTotal)
+        recipeFormData.append('ingredients', JSON.stringify(this.newRecipe.ingredients))
+        recipeFormData.append('cooking_ingredients', JSON.stringify(this.newRecipe.cooking_ingredients))
+        recipeFormData.append('image_url', this.$refs.newRecipeImg.files[0])
 
-        // this.$store
-        // .dispatch(STORE_RECIPE, recipeFormData)
+        recipeFormData.append('video_url', this.newRecipe.video ? this.newRecipe.video  : false)
+ 
+
+        this.$store
+        .dispatch(STORE_RECIPE, recipeFormData)
+        .then((data) =>{
+          console.log(data)
+        })
       }
     },
     mounted(){

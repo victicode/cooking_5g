@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Models\Recipe;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Exception;
 use Yajra\DataTables\DataTables;
-
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\File;
 class RecipeController extends Controller
 {
     /**
@@ -60,24 +62,84 @@ class RecipeController extends Controller
     public function storeRecipe(Request $request)
     {
         //
+        $validated = $this->validateFieldsFromInput($request->all()) ;
+        if (count($validated) > 0) return $this->returnFail(400, $validated[0]);
 
-        $newRecipe = Recipe::create([
-            'title'         =>  'Camarones al ajillo',
-            'description'   =>  'saborsa paella',
-            'preparation'   =>  'paso 1 echar agua',
-            'person_count'  =>  '2',
-            'type'          =>  'Entrada',
-            'total_time'    =>  '45 Minutos',
-            'ingredients'   =>  'agua, sal',
-            'image_url'     =>  'https://glotoncubano.com/wp-content/uploads/2019/05/Como-Hacer-Camarones-al-Ajillo.webp',
-            'video_url'     =>  null,
-            'created_by'    =>  1,
+        if (!$request->File('image_url')) {
+            return $this->returnFail(400, "El vaucher es requerido.");
+        }
 
-        ]);
+
+        $imgPath = '';
+        if ($request->image_url) {
+            $imgPath = 'images/product/' . trim(str_replace(' ', '_', $request->title )).'.'.$request->File('image_url')->extension();
+            $request->file('image_url')->move(public_path() . '/images/product/', $imgPath);
+        }
+
+        try {
+            $newRecipe = Recipe::create([
+                'title'         =>  $request->title,
+                'description'   =>  $request->description,
+                'preparation'   =>  $request->preparation,
+                'person_count'  =>  $request->person_count,
+                'type'          =>  $request->type,
+                'total_time'    =>  $request->total_time,
+                'ingredients'   =>  $request->ingredients,
+                'image_url'     =>  $imgPath,
+                'video_url'     =>  null,
+                'created_by'    =>  1,
+    
+            ]);
+        } catch (Exception $th) {
+            return $th->getMessage();
+        }
+        
 
         return $newRecipe;
     }
+    private function validateFieldsFromInput($inputs, $type = 'new'){
 
+        $rules=[
+            'title'                 => ['required', 'regex:/^[^$%&|<>#]*$/'],
+            'description'           => ['required', 'regex:/^[^$%&|<>#]*$/'],
+            'preparation'           => ['required', 'regex:/^[^$%&|<>#]*$/'],
+            'person_count'          => ['required', 'integer'],
+            'type'                  => ['required', 'regex:/^[^$%&|<>#]*$/'],
+            'total_time'            => ['required', 'regex:/^[^$%&|<>#]*$/'],
+            'ingredients'           => ['required', 'regex:/^[^$%&|<>#]*$/' ],
+            'cooking_ingredients'   => ['required', 'regex:/^[^$%&|<>#]*$/' ],
+            'image_url'             => ['required',File::types(['png', 'jpg', 'webp'])],
+        ];
+        $messages = [
+            'title.required'                => 'El titulo es requerido.',
+            'title.regex'                   => 'titulo no valido',
+            'description.required'          => 'La descripción es requerido.',
+            'description.regex'             => 'Descripción no valida',
+            'preparation.required'          => 'La preparación es requerido.',
+            'preparation.regex'             => 'Preparación no valido',
+            'person_count.required'         => 'El número de personas es requerido.',
+            'person_count.integer'          => 'Número de personas no valido',
+            'type.required'                 => 'El tipo de plato es requerido.',
+            'type.regex'                    => 'Tipo de plato no valido',
+            'total_time.required'           => 'El tiempo total es requerido.',
+            'total_time.regex'              => 'tiempo total no valido',
+            'ingredients.required'          => 'Los ingredientes son requerido.',
+            'ingredients.regex'             => 'ingredientes no valido',
+            'cooking_ingredients.required'  => 'Los ingredientes son requerido.',
+            'cooking_ingredients.regex'     => 'ingredientes no valido',
+            'image_url.required'            => 'El archivo es requerido.',
+            'image_url.file'                => 'Archivo no valido',
+        ];
+
+
+        $validator = Validator::make($inputs, $rules, $messages)->errors();
+
+        return $validator->all() ;
+
+        
+
+
+    }
     /**
      * Display the specified resource.
      *

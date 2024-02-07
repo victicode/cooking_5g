@@ -16,55 +16,15 @@ use Yajra\DataTables\CollectionDataTable;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         return $this->returnSuccess(200, Product::with(['dismantling.products_pieces', 'lotes:due_date'])->get());
     }
-    public function getlotesOfProductsTable(Request $request){
-        $products = Lot::query()->with(['product.dismantling.products_pieces'])
-        ->where('quantity', '>', 0)->join('products', 'products.id', '=', 'lotes.product_id');
 
-        
-        if(!empty(request('order_title')))  $products->orderBy('products.title', request('order_title'));
-        
-        
-        if(!empty(request('order_due_date')))  $products->orderBy('due_date', request('order_due_date'));
-
-        if(!empty(request('order_stock')))  $products->orderBy('quantity', request('order_stock'));
-        
-        if (!empty(request('filter_product_title'))) {
-            $products->where('products.title','like','%'.request('filter_product_title').'%');
-        }
-    
-        if($request->user()->rol_id !== 1){
-            $products->where('created_by', $request->user()->id );
-        }
-        return DataTables::of($products)->toJson();
-  
-    }
-    public function getProductsCriticalStock(Request $request)
-    {
-
-        $products = Lot::query()->with(['product.dismantling.products_pieces'])
-        ->where('quantity', '<', '20')->join('products', 'products.id', '=', 'lotes.product_id')
-        ->orderBy('quantity', 'asc')->take(5);
-
-        if($request->user()->rol_id !== 1){
-            $products->where('created_by', $request->user()->id );
-        }
-        return $this->returnSuccess(200, $products->get());
+    public function getProductById($id){
+        return $this->returnSuccess(200, Product::with(['dismantling.products_pieces','lotes'])->find($id));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function storeProduct(Request $request)
     {
         $imgPath = '';
@@ -104,6 +64,7 @@ class ProductController extends Controller
         return $this->returnSuccess(200, $product);
 
     }
+
     public function updateProduct(Request $request, $id)
     {
         $product = Product::find($id);
@@ -142,6 +103,7 @@ class ProductController extends Controller
         
         return $this->returnSuccess(200, Product::with(['dismantling.products_pieces'])->find($product->id));
     }
+
     public function addStock(Request $request, $id)
     {
         $product = Product::find($id);
@@ -152,9 +114,7 @@ class ProductController extends Controller
 
         return $this->returnSuccess(200, [$product]);
     }
-    public function getProductById($id){
-        return $this->returnSuccess(200, Product::with(['dismantling.products_pieces','lotes'])->find($id));
-    }
+
     public function getProductBySearch(Request $request){
         $products = Product::query()->with(['dismantling.products_pieces','lotes']);
 
@@ -164,12 +124,6 @@ class ProductController extends Controller
 
         return $this->returnSuccess(200, $products->take(10)->get());
     }   
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function deleteProduct($productId)
     {
         if (!$productId) {
@@ -188,6 +142,40 @@ class ProductController extends Controller
 
 
         return $this->returnSuccess(200, ['id' => $productId, 'deleted_at' => $product->deleted_at]);
+    }
+    public function getlotesOfProductsTable(Request $request){
+        $products = Lot::query()->with(['product.dismantling.products_pieces'])
+        ->where('quantity', '>', 0)->join('products', 'products.id', '=', 'lotes.product_id');
+
+        
+        if(!empty(request('order_title')))  $products->orderBy('products.title', request('order_title'));
+        
+        
+        if(!empty(request('order_due_date')))  $products->orderBy('due_date', request('order_due_date'));
+
+        if(!empty(request('order_stock')))  $products->orderBy('quantity', request('order_stock'));
+        
+        if (!empty(request('filter_product_title'))) {
+            $products->where('products.title','like','%'.request('filter_product_title').'%');
+        }
+    
+        if($request->user()->rol_id !== 1){
+            $products->where('created_by', $request->user()->id );
+        }
+        return DataTables::of($products)->toJson();
+  
+    }
+    public function getProductsCriticalStock(Request $request)
+    {
+
+        $products = Lot::query()->with(['product.dismantling.products_pieces'])
+        ->where('quantity', '<', '20')->join('products', 'products.id', '=', 'lotes.product_id')
+        ->orderBy('quantity', 'asc')->take(5);
+
+        if($request->user()->rol_id !== 1){
+            $products->where('created_by', $request->user()->id );
+        }
+        return $this->returnSuccess(200, $products->get());
     }
     public function getLastLoteFromProduct($productId){
        return Lot::withTrashed()->where('product_id', $productId)->count();
