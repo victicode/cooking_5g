@@ -9,10 +9,7 @@ use App\Models\Product;
 use App\Models\Dismantling;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
-use PhpParser\Node\Expr\FuncCall;
 use App\Http\Controllers\Controller;
-use Illuminate\Database\Query\Builder;
-use Yajra\DataTables\CollectionDataTable;
 
 class ProductController extends Controller
 {

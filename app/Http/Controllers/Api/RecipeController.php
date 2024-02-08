@@ -9,6 +9,8 @@ use Exception;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\File;
+use Illuminate\Support\Facades\DB;
+
 class RecipeController extends Controller
 {
     /**
@@ -20,7 +22,7 @@ class RecipeController extends Controller
     {
         //
 
-        $recipes = Recipe::withCount('products')->with('chef');
+        $recipes = Recipe::withCount('cooking_ingredients')->with('cooking_ingredients');
         
         if($request->user()->rol_id !== 1){
             $recipes->where('created_by', $request->user()->id );
@@ -29,7 +31,7 @@ class RecipeController extends Controller
         return $this->returnSuccess(200, $recipes->paginate(15) );
     }
     public function getRecipesTable(){
-        $recipes = Recipe::query()->with(['chef', 'products',]);
+        $recipes = Recipe::query()->with(['chef', 'cooking_ingredients',]);
 
 
         return DataTables::of($recipes)->filter(function ($query) {
@@ -40,25 +42,9 @@ class RecipeController extends Controller
     }
 
     public function getRecipeById($id){
-        return $this->returnSuccess(200, Recipe::with(['chef', 'products',])->find($id));
+        return $this->returnSuccess(200, Recipe::with(['chef', 'cooking_ingredients',])->find($id));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function storeRecipe(Request $request)
     {
         //
@@ -94,8 +80,21 @@ class RecipeController extends Controller
             return $th->getMessage();
         }
         
+        try {
+            $this->addProductforRecipe ($newRecipe->id, json_decode($request->cooking_ingredients,true) );
+        } catch (Exception $th) {
+             return [
+                'message' => $th->getMessage(),
+                'ingredients_c'  =>   json_decode($request->cooking_ingredients,true)
 
-        return $newRecipe;
+             ];
+        }
+        
+
+        return [
+           'id'             => $newRecipe,
+           'ingredients_c'  =>   json_decode($request->cooking_ingredients,true)
+        ];
     }
     private function validateFieldsFromInput($inputs, $type = 'new'){
 
@@ -139,6 +138,18 @@ class RecipeController extends Controller
         
 
 
+    }
+    private function addProductforRecipe($recipe, $products,){
+
+        foreach ($products as $key) {
+            DB::table('products_x_recipes')->insert([
+                'recipe_id'     => $recipe,
+                'product_id'    => $key['id'],
+                'quantity'      => $key['quantity'],
+            ]);
+        }
+        return ;
+        
     }
     /**
      * Display the specified resource.
