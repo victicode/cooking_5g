@@ -215,30 +215,30 @@
                           cols="12"
                           class="py-0"
                         >
-                        <template>
-                            <v-carousel
-                              cycle
-                              height="400"
-                              hide-delimiter-background
-                              show-arrows="hover"
+                          <v-carousel
+                            :continuous="false"
+                            :show-arrows="false"
+                            hide-delimiter-background
+                            delimiter-icon="mdi-square"
+                            height="400"
+      
+                          >
+                            <v-carousel-item
+                              v-for="(slide, i) in slides"
+                              :key="i"
                             >
-                              <v-carousel-item
-                                v-for="(slide, i) in slides"
-                                :key="i"
+                              <v-sheet
+                                :color="colors[i]"
+                                height="100%"
                               >
-                                <v-sheet
-                                  :color="colors[i]"
-                                  height="100%"
-                                >
-                                  <div class="d-flex fill-height justify-center align-center">
-                                    <div class="text-h2">
-                                      {{ slide }} Slide
-                                    </div>
+                                <div class="d-flex fill-height justify-center align-center">
+                                  <div class="text-h2">
+                                    {{ slide }} Slide
                                   </div>
-                                </v-sheet>
-                              </v-carousel-item>
-                            </v-carousel>
-                          </template>
+                                </div>
+                              </v-sheet>
+                            </v-carousel-item>
+                          </v-carousel>
                         </VCol>
                       </VRow>
                     </div>
