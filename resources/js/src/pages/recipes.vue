@@ -10,6 +10,7 @@
   import { GET_PRODUCT_BY_SEARCH } from "@/core/services/store/product.module";
   import debounce from 'debounce';
   import viewRecipePreparationModal from '@/views/pages/modals/viewRecipePreparationModal.vue';
+  import viewProductModal from '@/views/pages/modals/viewProductModal.vue';
 
 </script>
 
@@ -155,7 +156,7 @@
                               </VCardItem>
                               <v-tooltip text="Ver pasos">
                                 <template v-slot:activator="{ props }">
-                                  <v-btn v-bind="props" icon="material-symbols:skillet-cooktop-outline"  @click="showInterModal('stepsRecipe')" size="small"  class="me-5" variant="tonal" />
+                                  <v-btn v-bind="props" icon="material-symbols:menu-book-outline"  @click="showInterModal('stepsRecipe')"   class="me-5" variant="tonal" />
                                 </template>
                               </v-tooltip>
                               
@@ -209,34 +210,95 @@
                         <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideInternalModal()" ></v-btn>
                       </v-col>
                     </div>
-                    <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
-                      <VRow  class="mb-2 ma-0">
+                    <div class="d-flex justify-space-between  flex-column pa-2 pb-0 pt-md-5  px-md-5 ">
+                      <VRow  class="mb-2 ma-0 mt-7">
                         <VCol
                           cols="12"
-                          class="py-0"
+                          class="py-0 px-0"
                         >
                           <v-carousel
                             :continuous="false"
                             :show-arrows="false"
+                            :touch="true"
                             hide-delimiter-background
-                            delimiter-icon="mdi-square"
+                            delimiter-icon="ic:outline-circle"
                             height="400"
-      
+                            v-model="sliderPosition"
                           >
                             <v-carousel-item
-                              v-for="(slide, i) in slides"
-                              :key="i"
+                              :value="1"
                             >
-                              <v-sheet
-                                :color="colors[i]"
-                                height="100%"
-                              >
-                                <div class="d-flex fill-height justify-center align-center">
-                                  <div class="text-h2">
-                                    {{ slide }} Slide
-                                  </div>
+                              <div class="d-flex  flex-wrap align-center flex-md-nowrap flex-column flex-md-row">
+                                <div class="w-100">
+                                  <h3 class="mb-4" >Ingredientes</h3>
+                                  <VRow class="ma-0 pa-0">
+                                    <VCol cols="12" class="justify-center pa-0">
+                                      <div class="mt-0" style="border-top: 1px solid rgba(119, 119, 119, 0.356)">
+                                        <VCardText class="text-subtitle-1 py-4 px-1">
+                                          <div class="font-weight-medium"> <h3>Ingredientes cooking 5G:</h3> </div> 
+                                          <div class="font-weight-bold my-3" v-for="(ingredient, index) in selectedRecipe.cooking_ingredients" :key="index">
+                                            <a class="blank-modal" @click="selectProductView(index)"> 
+                                              - {{ `${ingredient.pivot.quantity} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }}
+                                            </a>
+                                          </div>
+                                        </VCardText>
+                                        <VCardText class="text-subtitle-1 py-4 px-1">
+                                          <div class="font-weight-medium"> <h3>Otros ingredientes:</h3> </div> 
+                                          <div class="font-weight-medium my-3" v-for="(ingredient, index) in JSON.parse(selectedRecipe.ingredients)" :key="index">
+                                            - {{ `${ingredient.quantity} ${ingredient.quantity.length > 1 ?'de':''}`}} {{ ingredient.name }}
+                                          </div>
+                                        </VCardText>
+                                      </div>
+                                    </VCol>
+                                  </VRow>
                                 </div>
-                              </v-sheet>
+                              </div>
+                            </v-carousel-item>
+                            <v-carousel-item
+                              v-for="(step, index) in JSON.parse(selectedRecipe.preparation)"
+                                :key="index"
+                                :value="index+2"
+
+                            >
+                              <div class="d-flex  flex-wrap align-center flex-md-nowrap flex-column flex-md-row">
+                                <div class="w-100">
+                                  <h5>Paso {{ index+1 }} de {{ JSON.parse(selectedRecipe.preparation).length }}</h5>  
+                                  <h3 class="mb-4" >{{ step.title }}</h3>
+                                  <VRow class="ma-0 pa-0">
+                                    <VCol cols="12" class="justify-center pa-0">
+                                      <div class="mt-0" style="border-top: 1px solid rgba(119, 119, 119, 0.356)">
+                                        <VCardText class=" py-4 px-1" style="line-height:1.5">
+
+                                          {{  step.description }} 
+                                        </VCardText>
+                                      </div>
+                                    </VCol>
+                                  </VRow>
+                                </div>
+                              </div>
+                            </v-carousel-item>
+                            <v-carousel-item
+                              v-if="selectedRecipe.video_url"
+                              :value="JSON.parse(selectedRecipe.preparation).length + 2"
+                            >
+                              <div class="d-flex  flex-wrap align-center flex-md-nowrap flex-column flex-md-row">
+                                <div class="w-100">
+                                  <h3 class="mb-4" >Video</h3>
+                                  <VRow class="ma-0 pa-0">
+                                    <VCol cols="12" class="justify-center pa-0">
+                                      <div class="mt-0" style="border-top: 1px solid rgba(119, 119, 119, 0.356)">
+                                        <VCardText class="text-subtitle-1 py-4 px-1">
+                                          <div class="font-weight-bold my-3" >
+                                            
+                                            {{ selectedRecipe.video_url }}
+                                            
+                                          </div>
+                                        </VCardText>
+                                      </div>
+                                    </VCol>
+                                  </VRow>
+                                </div>
+                              </div>
                             </v-carousel-item>
                           </v-carousel>
                         </VCol>
@@ -248,7 +310,6 @@
             </div>
           </div>
       </div>
-        
       <!-- <div class="modal animate__animated animate__fadeInDown"  id="editRecipe" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
           <div class="modal-dialog modal-lg mt-10" >
             <div class="modal-content">
@@ -483,6 +544,9 @@
             </div>
           </div>
       </div>
+    </div>
+    <div v-if="Object.keys(selectedProductInRecipe).length > 2" >
+      <viewProductModal :product="selectedProductInRecipe" @hiddenModal="hideInternalModal" />
     </div>
     <div class="modal animate__animated animate__fadeInDown pe-0"  id="createRecipe" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg mt-10" >
@@ -894,23 +958,10 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
 
   export default {
     data: () => ({
-      colors: [
-          'indigo',
-          'warning',
-          'pink darken-2',
-          'red lighten-1',
-          'deep-purple accent-4',
-        ],
-        slides: [
-          'First',
-          'Second',
-          'Third',
-          'Fourth',
-          'Fifth',
-        ],
+      sliderPosition:1,
       modal: '',
       internalModal:'',
-      ckShow:false,
+      snackShow:false,
       snackMessage:'',
       snackType:'',
       snacktimeOut:5000,
@@ -945,6 +996,7 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
         preparation: [],
         video:'',
       },
+      selectedProductInRecipe:{},
     }),
     methods:{
       nextStep(){
@@ -1235,6 +1287,7 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
         } catch (error) {
           
         }
+        this.drawer = false
         this.modal = new bootstrap.Modal(document.getElementById(modal), {
           keyboard: false,              
           backdrop:'static'
@@ -1260,13 +1313,13 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
       },
       hideInternalModal(){
         this.internalModal.hide();
+        this.sliderPosition = 1
         this.modal.show()
       },
       onFileChange(e) {
         const file = e.target.files[0];
-       return e.target.id == 'newRecipe-img' 
-       ? this.newRecipe.img = URL.createObjectURL(file)
-       : this.selectedProduct.product.img = URL.createObjectURL(file)
+       return  this.newRecipe.img = URL.createObjectURL(file)
+
       },
       getPreparation(preparation){
         this.newRecipe.preparation = JSON.stringify(preparation.steps);
@@ -1311,7 +1364,18 @@ table.recipes-table > thead > tr > th:nth-child(n+1){
         this.snackMessage = messagge
       },
       selectProductView(index){
-        console.log(this.selectedRecipe.cooking_ingredients[index])
+
+        this.selectedProductInRecipe = Object.assign({}, this.selectedRecipe.cooking_ingredients[index]);
+
+        setTimeout(() => {
+          
+          console.log(this.selectedProductInRecipe)
+        }, 400);
+        
+        // setTimeout(() => {
+        //   console.log(Object.keys(this.selectedProductInRecipe).length )
+        //   this.showInterModal('viewProduct')
+        // }, 400);
       }
     },
     mounted(){

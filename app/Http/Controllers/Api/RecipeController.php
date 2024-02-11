@@ -42,7 +42,7 @@ class RecipeController extends Controller
     }
 
     public function getRecipeById($id){
-        return $this->returnSuccess(200, Recipe::with(['chef', 'cooking_ingredients',])->find($id));
+        return $this->returnSuccess(200, Recipe::with(['chef', 'cooking_ingredients.dismantling', 'cooking_ingredients.getCurrentLote'])->find($id));
     }
 
     public function storeRecipe(Request $request)

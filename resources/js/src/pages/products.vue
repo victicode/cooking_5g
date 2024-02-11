@@ -15,13 +15,15 @@
   import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
   import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
   import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
+
+  import viewProductModal from '@/views/pages/modals/viewProductModal.vue';
   
+
   import moment from 'moment';
   import flatpickr from "flatpickr";
   import 'flatpickr/dist/flatpickr.min.css'
   import { Spanish } from "flatpickr/dist/l10n/es.js"
   import { GET_LOTE_OF_PRODUCT, GET_PRODUCT_BY_SEARCH, STORE_PRODUCT, UPDATE_PRODUCT, ADD_STOCK, DELETE_LOTE_OF_PRODUCT, GET_LAST_LOTE, } from "@/core/services/store/product.module";
-  import { func } from '@/core/services/utils/utils.js'
 
 </script>
 <template>
@@ -70,110 +72,7 @@
       </VCard>
     </VCol>
     <div v-if="Object.keys(selectedProduct).length > 2" >
-      <div class="modal animate__animated animate__fadeInDown"  id="viewProduct" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg mt-10" >
-          <div class="modal-content">
-            <VCol
-              cols="12"
-              class="pa-0 d-flex justify-center"
-              style="position: relative;"
-            >
-            
-              <VCol
-                cols="12"
-                class="px-2"  
-              >
-                <VCard class="modal__content">
-                  <div class="modal__close-button" >
-                    <v-col  class="pa-0 pe-4">
-                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
-                    </v-col>
-                  </div>
-                  <div class="d-flex  flex-wrap align-center flex-md-nowrap flex-column flex-md-row">
-                    <VDivider :vertical="$vuetify.display.mdAndUp" />
-
-                    <div class="w-100">
-                      <VRow class="ma-0 pa-0">
-                        <VCol cols="12" md="4" class="justify-center d-grid">
-                          <div class="ma-auto mx-0 pa-5 pb-0">
-                            <VImg
-                              width="200"
-                              height="200"
-                              class="rounded"
-                              :src="selectedProduct.product.img "
-                            />
-                          </div>
-                        </VCol>
-                        <VCol cols="12" md="8" class="mt-0 pt-0 mb-4">
-
-                          <VCardItem class="px-1 ">
-                            <VCardTitle>{{ selectedProduct.product.title }}</VCardTitle>
-                          </VCardItem>
-    
-                          <VCardText class="px-1">
-                            {{ selectedProduct.product.description}}
-                          </VCardText>
-                          <div class="mt-0" style="border-top: 1px solid rgba(119, 119, 119, 0.356)">
-
-                            <VCardText class="text-subtitle-1 py-4 px-1">
-                              <span class="font-weight-medium">Fecha de entrada:</span> <span class="font-weight-bold">
-                                {{ moment(selectedProduct.created_at_lote).format('DD-MM-YYYY')  }}
-                              </span>
-                            </VCardText>
-                            <VCardText class="text-subtitle-1 py-4 px-1">
-                              <span class="font-weight-medium">Número Lote:</span> <span class="font-weight-bold">
-                                {{ 
-                                    selectedProduct.lote_code
-                                      
-                                }}</span>
-                            </VCardText>
-                            
-                            <VCardText class="text-subtitle-1 py-4 px-1">
-                              <span class="font-weight-medium">Stock del lote: </span> 
-                              <span class="font-weight-bold" v-if="selectedProduct.quantity > 0">
-                                {{func.numberFormat(selectedProduct.quantity)}} {{selectedProduct.product.type_of_unit }}
-                              </span>
-                              <span class="font-weight-bold text-error" v-else>
-                                SIN STOCK
-                              </span>
-                            </VCardText>
-                            <VCardText class="text-subtitle-1 pt-0 px-1 d-flex align-center">
-                              <div class="font-weight-medium my-0">Fecha de vencimiento:</div>
-                              <div class="font-weight-bold mx-2">
-                                <v-chip :class=" Math.round(moment.duration(moment(selectedProduct.due_date).diff(new moment())).as('days') ) > 30 ? 'bg-success' : 'bg-warning'">
-                                  {{ moment(selectedProduct.due_date).format('DD-MM-YYYY') }}
-                                </v-chip>
-                              </div>
-                            </VCardText>
-                            
-                          </div>
-                        </VCol>
-                      </VRow>
-                      
-                      <div style="border-top: 1px solid rgba(119, 119, 119, 0.356)" v-if="selectedProduct.product.is_dismantling && selectedProduct.product.dismantling.length > 0">
-                        <VCardText class="text-subtitle-1 pb-4">
-                          <span class="font-weight-medium">Cantidad de despices:</span> <span class="font-weight-bold">{{ selectedProduct.product.dismantling.length}}</span>
-                        </VCardText>
-                        <VCardText class="text-subtitle-1">
-                          <p class="mb-0">Despieces:</p> 
-                        <div class="d-block d-md-flex">
-                          <b v-for="item in selectedProduct.product.dismantling" v-bind:key="item.id">
-                            <p class="mb-0 ms-2 mt-3" >  
-                              <b class="d-inline-flex d-md-none">*</b> {{ item.products_pieces.title}}: {{item.quantity}} {{ item.quantity > 1 ? 'Piezas' : 'Pieza' }} <b class="d-none d-md-inline-flex">||</b>
-                            </p> 
-                          </b>
-                        </div>
-                        </VCardText>
-                      </div>
-
-                    </div>
-                  </div>
-                </VCard>
-              </VCol>
-            </VCol>
-          </div>
-        </div>
-      </div>
+      <viewProductModal :product="selectedProduct" @hiddenModal="hideModal" />
       <div class="modal animate__animated animate__fadeInDown"  id="editProduct" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg mt-10" >
           <div class="modal-content">
