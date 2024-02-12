@@ -38,7 +38,7 @@ import { func } from '@/core/services/utils/utils.js'
                           width="200"
                           height="200"
                           class="rounded"
-                          :src="product.product.img "
+                          :src="product.product.product.product.img "
                         />
                       </div>
                     </VCol>

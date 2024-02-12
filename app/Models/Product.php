@@ -47,9 +47,4 @@ class Product extends Model
     public function lotes(){
         return $this->hasMany(Lot::class, 'product_id', 'id')->orderBy('due_date', 'ASC')->where('quantity', '>', 0);
     }
-    public function currentLote(){
-
-        return $this->hasOne(Lot::class, 'product_id', 'id')->orderBy('due_date', 'ASC')->where('quantity', '>', 0);
-        
-    }
 }

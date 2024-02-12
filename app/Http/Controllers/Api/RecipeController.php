@@ -22,7 +22,8 @@ class RecipeController extends Controller
     {
         //
 
-        $recipes = Recipe::withCount('cooking_ingredients')->with('cooking_ingredients');
+        $recipes = Recipe::withCount('cooking_ingredients')->with('cooking_ingredients')
+                    ->where('title', 'like', '%'.$request->product_title.'%');
         
         if($request->user()->rol_id !== 1){
             $recipes->where('created_by', $request->user()->id );
@@ -40,11 +41,9 @@ class RecipeController extends Controller
             // }
           })->toJson();
     }
-
     public function getRecipeById($id){
-        return $this->returnSuccess(200, Recipe::with(['chef', 'cooking_ingredients.dismantling', 'cooking_ingredients.getCurrentLote'])->find($id));
+        return $this->returnSuccess(200, Recipe::with(['chef', 'cooking_ingredients.dismantling' ])->find($id));
     }
-
     public function storeRecipe(Request $request)
     {
         //
@@ -52,7 +51,7 @@ class RecipeController extends Controller
         if (count($validated) > 0) return $this->returnFail(400, $validated[0]);
 
         if (!$request->File('image_url')) {
-            return $this->returnFail(400, "El vaucher es requerido.");
+            return $this->returnFail(400, "La imagen es requerida.");
         }
 
 
@@ -95,6 +94,74 @@ class RecipeController extends Controller
            'id'             => $newRecipe,
            'ingredients_c'  =>   json_decode($request->cooking_ingredients,true)
         ];
+    }
+    public function updateRecipe(Request $request, $recipeId)
+    {
+        //
+        $recipe = Recipe::find($recipeId);
+
+        if(!$recipe) return $this->returnFail(400, 'Receta no encontrado');
+
+
+        // $validated = $this->validateFieldsFromInput($request->all()) ;
+        // if (count($validated) > 0) return $this->returnFail(400, $validated[0]);
+
+    
+
+        $imgPath = $recipe->image_url;
+        if ($request->image_url) {
+            $imgPath = 'images/product/' . trim(str_replace(' ', '_', $request->title )).'.'.$request->File('image_url')->extension();
+            $request->file('image_url')->move(public_path() . '/images/product/', $imgPath);
+        }
+
+        try {
+            $recipe->title         =  $request->title;
+            $recipe->description   =  $request->description;
+            $recipe->preparation   =  $request->preparation;
+            $recipe->person_count  =  $request->person_count;
+            $recipe->type          =  $request->type;
+            $recipe->total_time    =  $request->total_time;
+            $recipe->ingredients   =  $request->ingredients;
+            $recipe->image_url     =  $imgPath;
+            $recipe->video_url     =  null;
+            $recipe->created_by    =  1; 
+        } catch (Exception $th) {
+            return $th->getMessage();
+        }
+        
+        try {
+            $this->addProductforRecipe ($recipe->id, json_decode($request->cooking_ingredients,true) );
+        } catch (Exception $th) {
+            //  return [
+            //     'message' => $th->getMessage(),
+            //     'ingredients_c'  =>   json_decode($request->cooking_ingredients,true)
+
+            //  ];
+            return $this->returnFail(400, 'Error al cargar productos de cooking');
+        }
+        
+
+        return [
+           'id'             => $recipe,
+           'ingredients_c'  =>   json_decode($request->cooking_ingredients,true)
+        ];
+    }
+    public function deleteRecipe($recipeId){
+        if (!$recipeId) {
+            return $this->returnFail(400, "El identificador del usuario.");
+        }
+
+        $recipe = Recipe::find($recipeId);
+
+
+        if (!$recipe) {
+            return $this->returnFail(404, "Usuario no encontrado.");
+        }
+
+        $recipe->delete();
+
+
+        return $this->returnSuccess(200, ['id' => $recipeId, 'deleted_at' => $recipe->deleted_at]);
     }
     private function validateFieldsFromInput($inputs, $type = 'new'){
 
