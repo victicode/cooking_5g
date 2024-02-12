@@ -547,7 +547,7 @@
                                                 :model-value="item.id"
                                                 :items="productsForRecipe[index] ?  productsForRecipe[index] : item.id !== null ? [ {id: item.id, title: item.title, stock: item.quantity}] : []"
                                                 :label="`Ingrediente ${(index+1)}`"
-                                                :name="`new_recipe_cooking_product_${(index+1)}`"
+                                                :name="`update_recipe_cooking_product_${(index+1)}`"
                                                 item-title="title"
                                                 item-value="id"
                                                 placeholder="EJ: Lomo de cerdo, Pollo entero"
@@ -567,7 +567,7 @@
                                                 placeholder="Cantidad"
                                                 label="Cantidad"
                                                 type="text"
-                                                :name="`new_recipe_cooking_product_quantity_${(index+1)}`"
+                                                :name="`update_recipe_cooking_product_quantity_${(index+1)}`"
                                                 v-model="item.pivot.quantity"
                                                 autocomplete="off"
                                               />
@@ -576,7 +576,7 @@
                                               <v-tooltip text="Receta">
                                                 <template v-slot:activator="{ props }">
                                                   <v-col cols="auto" class="pa-0">
-                                                    <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeIngredientInRecipe('cooking_ingredients', index)"></v-btn>
+                                                    <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" data-typeAction="update" :data-indexRecipe="index" @click="removeIngredientInRecipe('cooking_ingredients', $event)"></v-btn>
                                                   </v-col>
                                                 </template>
                                               </v-tooltip>
@@ -587,7 +587,7 @@
                                           <v-tooltip text="Agregar nuevo despiece">
                                               <template v-slot:activator="{ props }">
                                                 <v-col cols="auto" class=" pa-0">
-                                                  <VBtn v-bind="props" color="primary" class="w-100" @click="addIngredientInRecipe('cooking_ingredients')" >
+                                                  <VBtn v-bind="props" color="primary" class="w-100" data-typeAction="update" @click="addIngredientInRecipe('cooking_ingredients', 'update')" >
                                                     <VIcon icon="bx-plus"/>Agregar otro ingrediente C5G
                                                   </VBtn>
                                                 </v-col>
@@ -627,7 +627,7 @@
                                               <v-tooltip text="Receta">
                                                 <template v-slot:activator="{ props }">
                                                   <v-col cols="auto" class="pa-0">
-                                                    <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeIngredientInRecipe('ingredients',index)"></v-btn>
+                                                    <v-btn icon="mdi-cancel-bold" v-bind="props" size="small"  data-typeAction="update" :data-indexRecipe="index " @click="removeIngredientInRecipe('ingredients', $event)"></v-btn>
                                                   </v-col>
                                                 </template>
                                               </v-tooltip>
@@ -894,7 +894,7 @@
                                             <v-tooltip text="Receta">
                                               <template v-slot:activator="{ props }">
                                                 <v-col cols="auto" class="pa-0">
-                                                  <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeIngredientInRecipe('cooking_ingredients', index)"></v-btn>
+                                                  <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" data-typeAction="new" :data-indexRecipe="index" @click="removeIngredientInRecipe('cooking_ingredients', $event)"></v-btn>
                                                 </v-col>
                                               </template>
                                             </v-tooltip>
@@ -945,7 +945,7 @@
                                             <v-tooltip text="Receta">
                                               <template v-slot:activator="{ props }">
                                                 <v-col cols="auto" class="pa-0">
-                                                  <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeIngredientInRecipe('ingredients',index)"></v-btn>
+                                                  <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" data-typeAction="new" :data-indexRecipe="index" @click="removeIngredientInRecipe('ingredients', $event)"></v-btn>
                                                 </v-col>
                                               </template>
                                             </v-tooltip>
@@ -1148,7 +1148,9 @@
           ? setTimeout(() => {
             this.stepperNewProduct > 2 ? '' : this.validateFormItem('new_recipe_form_2')
           }, 500)
-          : console.log('avispa')
+          : setTimeout(() => {
+            this.stepperUpdateProduct > 2 ? '' : this.validateFormItem('update_recipe_form_2')
+          }, 500)
     
       },
       backStep(action){
@@ -1163,15 +1165,25 @@
           : console.log('avispa')
       
       },
-      removeIngredientInRecipe(id,index){
-        setTimeout(() => {
-          try{
-            this.newRecipe[id].splice(index, 1)
-            this.productsForRecipe.splice(index, 1)
-          }catch(e){
+      removeIngredientInRecipe(id,event){
+        const data = event.target.closest('button').dataset
 
-          }
-        }, 200);
+
+
+        console.log(data)
+        setTimeout(() => {
+            try{
+              data.typeaction == 'new' 
+              ? this.newRecipe[id].splice(data.indexrecipe, 1)
+              : this.newRecipe[id].splice(data.indexrecipe, 1)
+              
+              if (id == 'cooking_ingredients') this.productsForRecipe.splice(data.indexrecipe, 1)
+
+            }catch(e){
+
+            }
+          }, 200)
+        
       },
       addIngredientInRecipe(id){
       
