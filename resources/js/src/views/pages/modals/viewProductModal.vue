@@ -38,7 +38,7 @@ import { func } from '@/core/services/utils/utils.js'
                           width="200"
                           height="200"
                           class="rounded"
-                          :src="product.product.product.product.img "
+                          :src="product.product.img "
                         />
                       </div>
                     </VCol>
@@ -88,19 +88,19 @@ import { func } from '@/core/services/utils/utils.js'
                     </VCol>
                   </VRow>
                   
-                  <div style="border-top: 1px solid rgba(119, 119, 119, 0.356)" v-if="product.product.is_dismantling && product.product.dismantling.length > 0">
+                  <div style="border-top: 1px solid rgba(119, 119, 119, 0.356)" v-if="product.product.is_dismantling !=0 && product.product.dismantling.length > 0">
                     <VCardText class="text-subtitle-1 pb-4">
                       <span class="font-weight-medium">Cantidad de despices:</span> <span class="font-weight-bold">{{ product.product.dismantling.length}}</span>
                     </VCardText>
                     <VCardText class="text-subtitle-1">
                       <p class="mb-0">Despieces:</p> 
-                    <div class="d-block d-md-flex">
-                      <b v-for="item in product.product.dismantling" v-bind:key="item.id">
-                        <p class="mb-0 ms-2 mt-3" >  
-                          <b class="d-inline-flex d-md-none">*</b> {{ item.products_pieces.title}}: {{item.quantity}} {{ item.quantity > 1 ? 'Piezas' : 'Pieza' }} <b class="d-none d-md-inline-flex">||</b>
-                        </p> 
-                      </b>
-                    </div>
+                      <div class="d-block d-md-flex">
+                        <b v-for="item in product.product.dismantling" v-bind:key="item.id">
+                          <p class="mb-0 ms-2 mt-3" >  
+                            <b class="d-inline-flex d-md-none">*</b> {{ item.products_pieces.title}}: {{item.quantity}} {{ item.quantity > 1 ? 'Piezas' : 'Pieza' }} <b class="d-none d-md-inline-flex">||</b>
+                          </p> 
+                        </b>
+                      </div>
                     </VCardText>
                   </div>
 

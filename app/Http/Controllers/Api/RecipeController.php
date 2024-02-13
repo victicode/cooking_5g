@@ -42,7 +42,7 @@ class RecipeController extends Controller
           })->toJson();
     }
     public function getRecipeById($id){
-        return $this->returnSuccess(200, Recipe::with(['chef', 'cooking_ingredients.dismantling' ])->find($id));
+        return $this->returnSuccess(200, Recipe::with(['chef', 'cooking_ingredients.dismantling.products_pieces' ])->find($id));
     }
     public function storeRecipe(Request $request)
     {
@@ -206,60 +206,24 @@ class RecipeController extends Controller
 
 
     }
-    private function addProductforRecipe($recipe, $products,){
+    private function addProductforRecipe($recipeId, $products){
+
+        try {
+            $recipe=DB::table('products_x_recipes')->where('recipe_id', $recipeId)->delete();
+
+        } catch (\Throwable $th) {
+
+        }
+
 
         foreach ($products as $key) {
             DB::table('products_x_recipes')->insert([
-                'recipe_id'     => $recipe,
+                'recipe_id'     => $recipeId,
                 'product_id'    => $key['id'],
                 'quantity'      => $key['quantity'],
             ]);
         }
         return ;
         
-    }
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 }

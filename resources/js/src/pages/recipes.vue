@@ -43,16 +43,12 @@
             <VBtn
               color="white"
               class="bg-primary text-white w-30 mx-0 mx-md-5 my-2"
-              @click="clearFilters()"
+              @click="$refs.recipe_title_search.value='';searchRecipe()"
             >
               <span class="">Restaurar</span>
             </VBtn>
           </VCol>
         </VRow>
-        <!-- <div class="card-datatable table-responsive">
-          <table class="datatables-basic table recipes-table" id="data-table">
-          </table>
-        </div> -->
       </VCard>
       <template v-if="recipes.length > 0">
           <VCard class="mt-3" v-for="recipe in recipes" :key="recipe.id" >
@@ -73,15 +69,15 @@
                         <div class="d-flex">
                           <div class="d-flex align-center">
                             <VIcon icon="fa6-solid:users"  size="x-small" />
-                            <h4 class=" my-1 ms-1 text-primary"> 
-                             <b>{{recipe.person_count}} {{ recipe.person_count == 1 ? 'Persona' : 'Personas' }} </b> 
-                            </h4>
+                            <h5 class=" my-1 ms-1 text-primary"> 
+                              <b>{{recipe.person_count}} {{ recipe.person_count == 1 ? 'Persona' : 'Personas' }} </b> 
+                            </h5>
                           </div>
                           <div class="d-flex align-center ms-5">
                             <VIcon icon="icon-park-outline:big-clock" size="x-small" />
-                            <h4 class=" my-1 ms-1 text-primary"> 
-                             <b>{{recipe.total_time}}</b> 
-                            </h4>
+                            <h5 class=" my-1 ms-1 text-primary"> 
+                              <b>{{recipe.total_time}}</b> 
+                            </h5>
                           </div>
                         </div> 
                         <v-chip color="primary" class="mt-1 pb-0">
@@ -104,7 +100,7 @@
           </VCard>
       </template>
     </VCol>
-    <div v-if="Object.keys(selectedRecipe).length > 2" >
+    <div v-if="isRecipe" >
       <div class="modal animate__animated animate__fadeInDown"  id="viewRecipe" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg mt-10" >
           <div class="modal-content">
@@ -176,7 +172,7 @@
                             </VCardText>
                             <VCardText class="text-subtitle-1 py-4 px-1">
                               <div class="font-weight-medium"><h3>Otros ingredientes:</h3> </div> 
-                              <div class="font-weight-medium my-2" v-for="(ingredient, index) in JSON.parse(selectedRecipe.ingredients)" :key="index">
+                              <div class="font-weight-medium my-2" v-for="(ingredient, index) in selectedRecipe.ingredients" :key="index">
                                 - {{ `${ingredient.quantity} ${ingredient.quantity.length > 1 ?'de':''}`}} {{ ingredient.name }}
                               </div>
                             </VCardText>
@@ -244,7 +240,7 @@
                                         </VCardText>
                                         <VCardText class="text-subtitle-1 py-4 px-1">
                                           <div class="font-weight-medium"> <h3>Otros ingredientes:</h3> </div> 
-                                          <div class="font-weight-medium my-3" v-for="(ingredient, index) in JSON.parse(selectedRecipe.ingredients)" :key="index">
+                                          <div class="font-weight-medium my-3" v-for="(ingredient, index) in selectedRecipe.ingredients" :key="index">
                                             - {{ `${ingredient.quantity} ${ingredient.quantity.length > 1 ?'de':''}`}} {{ ingredient.name }}
                                           </div>
                                         </VCardText>
@@ -391,17 +387,11 @@
                       <VCardItem class="justify-center w-100  py-md-6  py-4   ">
                         <VCardTitle class="text-2xl font-weight-bold">
                           <div class="card-title d-flex ">
-                            <div class="form-title__part1">Crear nueva receta</div>
+                            <div class="form-title__part1">Editar Receta</div>
                             
                           </div>
                         </VCardTitle>
                       </VCardItem>
-                      <VCardText class="mb-5  w-100 pa-0" v-if="alertShow">
-                        <v-alert
-                          :color="alertType"
-                          :text="alertMessage"
-                        ></v-alert>
-                      </VCardText>
                       <VCardText class="w-100 pb-5 px-3 px-md-6">
                         <VRow >
                           <v-stepper v-model="stepperUpdateProduct" class="losv">
@@ -556,10 +546,11 @@
                                                 clearable
                                                 no-filter
                                                 no-data-text="No se encontraron resultados"
+                                                data-actionTipe="update"
                                                 @click="searchProductsForRecipe($event,index )"
                                                 @keyup="searchProductsForRecipe($event,index )"
                                                 @click:clear="clearProductSearch(index)"
-                                                @update:modelValue="selectedProduct($event, index)"
+                                                @update:modelValue="selectedProduct($event, index, 'update')"
                                               ></v-autocomplete>
                                             </VCol>
                                             <VCol cols="6" class="form-group">
@@ -587,7 +578,7 @@
                                           <v-tooltip text="Agregar nuevo despiece">
                                               <template v-slot:activator="{ props }">
                                                 <v-col cols="auto" class=" pa-0">
-                                                  <VBtn v-bind="props" color="primary" class="w-100" data-typeAction="update" @click="addIngredientInRecipe('cooking_ingredients', 'update')" >
+                                                  <VBtn v-bind="props" color="primary" class="w-100" data-typeAction="update" @click="addIngredientInRecipe($event,'cooking_ingredients')" >
                                                     <VIcon icon="bx-plus"/>Agregar otro ingrediente C5G
                                                   </VBtn>
                                                 </v-col>
@@ -602,7 +593,7 @@
                                           <h3>Ingrendientes</h3>
                                         </VCol>
                                         <VCol cols="12"  class="mt-0 py-0 px-0 mb-4"> 
-                                          <VRow v-for="(item, index) in JSON.parse(selectedRecipe.ingredients)" :key="index" class="position-realative relative mb-2" >
+                                          <VRow v-for="(item, index) in selectedRecipe.ingredients" :key="index" class="position-realative relative mb-2" >
                                             <VCol cols="6" class="form-group">
                                               <VTextField
                                                 placeholder="EJ: Azucar, Sal"
@@ -638,7 +629,7 @@
                                           <v-tooltip text="Agregar nuevo despiece">
                                               <template v-slot:activator="{ props }">
                                                 <v-col cols="auto" class="pa-0">
-                                                  <VBtn v-bind="props" color="primary" class="w-100" @click="addIngredientInRecipe('ingredients')" ><VIcon icon="bx-plus"/> Agregar otro ingrediente</VBtn>
+                                                  <VBtn v-bind="props" color="primary" class="w-100" data-typeAction="update" @click="addIngredientInRecipe($event,'ingredients')" ><VIcon icon="bx-plus"/> Agregar otro ingrediente</VBtn>
                                                 </v-col>
                                               </template>
                                             </v-tooltip>
@@ -669,7 +660,7 @@
                                 <v-stepper-window-item
                                   :value="3"
                                 >
-                                  <viewRecipePreparationModal @backStep="backStep('update')" @preparation="getPreparation" />
+                                  <viewRecipePreparationModal @backStep="backStep('update')" @preparation="getPreparation" :type="'update'" :preparation="JSON.parse(selectedRecipe.preparation)"/>
                                 </v-stepper-window-item>
                               </v-stepper-window>                          
                             </template>
@@ -714,12 +705,6 @@
                         </div>
                       </VCardTitle>
                     </VCardItem>
-                    <VCardText class="mb-5  w-100 pa-0" v-if="alertShow">
-                      <v-alert
-                        :color="alertType"
-                        :text="alertMessage"
-                      ></v-alert>
-                    </VCardText>
                     <VCardText class="w-100 pb-5 px-3 px-md-6">
                       <VRow >
                         <v-stepper v-model="stepperNewProduct" class="losv">
@@ -905,7 +890,7 @@
                                         <v-tooltip text="Agregar nuevo despiece">
                                             <template v-slot:activator="{ props }">
                                               <v-col cols="auto" class=" pa-0">
-                                                <VBtn v-bind="props" color="primary" class="w-100" @click="addIngredientInRecipe('cooking_ingredients')" >
+                                                <VBtn v-bind="props" color="primary" class="w-100" data-typeAction="new" @click="addIngredientInRecipe($event,'cooking_ingredients')" >
                                                   <VIcon icon="bx-plus"/>Agregar otro ingrediente C5G
                                                 </VBtn>
                                               </v-col>
@@ -956,7 +941,7 @@
                                         <v-tooltip text="Agregar nuevo despiece">
                                             <template v-slot:activator="{ props }">
                                               <v-col cols="auto" class="pa-0">
-                                                <VBtn v-bind="props" color="primary" class="w-100" @click="addIngredientInRecipe('ingredients')" ><VIcon icon="bx-plus"/> Agregar otro ingrediente</VBtn>
+                                                <VBtn v-bind="props" color="primary" class="w-100" data-typeAction="new" @click="addIngredientInRecipe($event,'ingredients')" ><VIcon icon="bx-plus"/> Agregar otro ingrediente</VBtn>
                                               </v-col>
                                             </template>
                                           </v-tooltip>
@@ -987,7 +972,7 @@
                               <v-stepper-window-item
                                 :value="3"
                               >
-                                <viewRecipePreparationModal @backStep="backStep('new')" @preparation="getPreparation" />
+                                <viewRecipePreparationModal @backStep="backStep('new')" @preparation="getPreparation" :type="'new'" :preparation="newRecipe.preparation" />
                               </v-stepper-window-item>
                             </v-stepper-window>                          
                           </template>
@@ -1097,13 +1082,14 @@
 
   export default {
     data: () => ({
+      isRecipe:false,
       sliderPosition:1,
       modal: '',
       internalModal:'',
       snackShow:false,
       snackMessage:'',
       snackType:'',
-      snacktimeOut:5000,
+      snacktimeOut:1000,
       items:['editar','eliminar', 'ver'],
       drawer:false,
       selectedRecipe:{},
@@ -1133,7 +1119,12 @@
             quantity:'',
           }
         ],
-        preparation: [],
+        preparation: [
+            { 
+              title:'',
+              description:''
+            }
+        ],
         video:'',
       },
       selectedProductInRecipe:{},
@@ -1162,20 +1153,16 @@
           ? setTimeout(() => {
             this.stepperNewProduct >= 2 ? this.destroyValidate('new_recipe_form_3') : this.destroyValidate('new_recipe_form_2')
           }, 500)
-          : console.log('avispa')
+          : ''
       
       },
       removeIngredientInRecipe(id,event){
         const data = event.target.closest('button').dataset
-
-
-
-        console.log(data)
         setTimeout(() => {
             try{
               data.typeaction == 'new' 
               ? this.newRecipe[id].splice(data.indexrecipe, 1)
-              : this.newRecipe[id].splice(data.indexrecipe, 1)
+              : this.selectedRecipe[id].splice(data.indexrecipe, 1)
               
               if (id == 'cooking_ingredients') this.productsForRecipe.splice(data.indexrecipe, 1)
 
@@ -1185,26 +1172,29 @@
           }, 200)
         
       },
-      addIngredientInRecipe(id){
-      
+      addIngredientInRecipe(event,id){
+        const data = event.target.closest('button').dataset
+
         let newIngredient = {
           id:null,
           name:'',
           quantity:'',
-          ingredient:''
+          ingredient:'',
+          pivot:{
+            quantity:''
+          }
         }
-        this.newRecipe[id].push(newIngredient)
-      
+        data.typeaction == 'new' 
+        ? this.newRecipe[id].push(newIngredient)
+        : this.selectedRecipe[id].push(newIngredient)
+
+          
       },
       getProducts(search = "", index){
         this.$store
           .dispatch(GET_PRODUCT_BY_SEARCH, search)
           .then((response) => {
-            console.log(response)
             this.productsForRecipe[index] = response.data
-
-
-            console.log(this.productsForRecipe)
           })
           .catch((err) => {
             return new Promise((resolve) => {
@@ -1222,25 +1212,13 @@
         this.newRecipe.cooking_ingredients[index].selected_lote =''
         this.getProducts('',index)
       },
-      selectedProduct(e,index){
+      selectedProduct(e,index, type="new"){
         if(!e) return
-
-        if(!this.productsForRecipe[index].filter(product => product.id == e)[0].stock) return
-        
-        if(this.productsForRecipe[index].filter(product => product.id == e)[0].stock == 0 ){
-          alert('Esta producto no tiene Stock')
-          return
-        }
         try {
-          this.newRecipe.cooking_ingredients[index].id = e
-          this.newRecipe.cooking_ingredients[index].lotes = this.productsForRecipe[index].filter(product => product.id == e)[0].lotes
-
-          setTimeout(() => {
-            this.newRecipe.cooking_ingredients[index].selected_lote = this.newRecipe.cooking_ingredients[index].lotes[0]
-            this.newRecipe.cooking_ingredients[index].maxValue = this.newRecipe.cooking_ingredients[index].lotes[0].quantity
-            // this.addValidate(this.newRecipe.cooking_ingredients[index].maxValue)
-
-          }, 200);
+         
+         type=='new'
+          ? this.newRecipe.cooking_ingredients[index].id = e
+          : this.selectedRecipe.cooking_ingredients[index].id = e
           
         } catch (error) {
           
@@ -1498,17 +1476,21 @@
 
       },
       async selectRecipe(idAccount){
+        this.isRecipe = false
         this.$store
           .dispatch(GET_RECIPE_BY_ID, idAccount)
           .then((response) => {
-            this.selectedRecipe = Object.assign({}, response.data);
+
+            this.selectedRecipe = Object.assign({}, response.data); 
+            this.selectedRecipe.ingredients = JSON.parse(response.data.ingredients)
+            this.isRecipe = true
+            console.log(JSON.parse(response.data.preparation))
             setTimeout(() => {
-              console.log(this.selectedRecipe)
               if(window.screen.width < 480) this.drawer = true;
               return new Promise((resolve) => {
                   resolve(response.data);
               });
-            }, 900);
+            }, 1000);
           })
           .catch((err) => {
             console.log(err)
@@ -1535,7 +1517,7 @@
         this.selectRecipe(id).finally((data)=>{
           setTimeout(() => {
             this.showModal(modal)
-          }, 800);
+          }, 1000);
         })
       },
       showModal(modal) {
@@ -1583,19 +1565,31 @@
        return  this.newRecipe.img = URL.createObjectURL(file)
 
       },
-      getPreparation(preparation){
-        this.newRecipe.preparation = JSON.stringify(preparation.steps);
-        this.newRecipe.video = preparation.video
+      getPreparation(preparation, type){
+
+
+
+
+        if(type=="new"){
+          this.newRecipe.preparation = preparation.steps; 
+          this.newRecipe.video = preparation.video; 
+
+          
+        }else {
+
+          this.selectedRecipe.preparation = preparation.steps; 
+          this.selectedRecipe.video = preparation.video 
+        }
         
+
+        console.log(this.newRecipe.preparation)
         this.createRecipe()
       },
       createRecipe(){
-        console.log(this.newRecipe)
-        
         const recipeFormData = new FormData
         recipeFormData.append('title', this.newRecipe.title )
         recipeFormData.append('description', this.newRecipe.description )
-        recipeFormData.append('preparation', this.newRecipe.preparation)
+        recipeFormData.append('preparation', JSON.stringify(this.newRecipe.preparation))
         recipeFormData.append('person_count',this.newRecipe.personCount)
         recipeFormData.append('type', this.newRecipe.type )
         recipeFormData.append('total_time', this.newRecipe.timeTotal)
@@ -1609,7 +1603,35 @@
         this.$store
         .dispatch(STORE_RECIPE, recipeFormData)
         .then((data) =>{
-          console.log(data)
+          setTimeout(() => {
+            this.getRecipes()
+            this.showSnackbar('success','Receta creada con exito')
+            this.modal.hide();
+          }, 500);
+        }).catch((err) => {
+          this.modal.hide()
+          this.showSnackbar('error','Error al crear la receta')
+
+       });
+      },
+      updateRecipe(){
+        const recipeFormData = new FormData
+        recipeFormData.append('title', this.selectedRecipe.title )
+        recipeFormData.append('description', this.selectedRecipe.description )
+        recipeFormData.append('preparation', this.selectedRecipe.preparation)
+        recipeFormData.append('person_count',this.selectedRecipe.personCount)
+        recipeFormData.append('type', this.selectedRecipe.type )
+        recipeFormData.append('total_time', this.selectedRecipe.timeTotal)
+        recipeFormData.append('ingredients', JSON.stringify(this.selectedRecipe.ingredients))
+        recipeFormData.append('cooking_ingredients', JSON.stringify(this.selectedRecipe.cooking_ingredients))
+        recipeFormData.append('image_url', this.$refs.updateImg.files[0])
+
+        recipeFormData.append('video_url', this.selectedRecipe.video ? this.selectedRecipe.video  : false)
+ 
+
+        this.$store
+        .dispatch(UPDATE_RECIPE, recipeFormData)
+        .then((data) =>{
           setTimeout(() => {
             this.getRecipes()
             this.showSnackbar('success','Receta creada con exito')
@@ -1625,6 +1647,7 @@
         this.$store.dispatch(DELETE_RECIPE, this.selectedRecipe.id).then((data)=>{
           setTimeout(() => {
             this.modal.hide()
+            this.clearNewRecipeForm()
             this.showSnackbar('success','Receta eliminada con exito')
             this.getRecipes()
           }, 500);
@@ -1644,9 +1667,43 @@
         this.selectedProductInRecipe =  this.selectedRecipe.cooking_ingredients[index].lotes[0]
         this.selectedProductInRecipe.product = Object.assign({}, this.selectedRecipe.cooking_ingredients[index]);
         setTimeout(() => {
-          console.log(Object.keys(this.selectedProductInRecipe).length )
           this.showInterModal('viewProduct')
         }, 400);
+      },
+      clearNewRecipeForm(){
+
+          this.stepperNewProduct = 1;
+          this.newRecipe = {
+            img:'images/product/default.png',
+            title:'',
+            type:'',
+            description:'',
+            personCount:'',
+            timeTotal:'',
+            ingredients:[
+              {
+                name:'',
+                quantity:'',
+              }
+            ],
+            cooking_ingredients:[
+              {
+                id:null,
+                name:'',
+                quantity:'',
+              }
+            ],
+            preparation: [
+                { 
+                  title:'',
+                  description:''
+                }
+            ],
+            video:'',
+          };
+
+
+
       }
     },
     mounted(){

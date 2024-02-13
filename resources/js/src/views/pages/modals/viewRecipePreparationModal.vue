@@ -6,6 +6,12 @@ import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
 import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
 import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
 import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
+
+const props = defineProps({
+  preparation: Object,
+  type: String,
+
+})
 </script>
 <template class="d-block">
   <VRow>
@@ -93,7 +99,7 @@ import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/Submi
                         </div>
                       </VCol>
                       <VCol cols="12" class="mt-0 py-0 px-0 mb-4"> 
-                          <VRow v-for="(item, index) in preparation.steps" :key="index" class="position-realative relative mt-7" >
+                          <VRow v-for="(item, index) in preparation" :key="index" class="position-realative relative mt-7" >
                             <VCol cols="12" class="form-group">
                               <VTextField
                                 placeholder="EJ: Preparación del pollo"
@@ -201,7 +207,7 @@ import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/Submi
                           label="Sube tu video aquí"
                           variant="outlined"
                           ref="recipe_video"
-                          :prepend-icon=" !preparation.video ?  'ic:round-attach-file' : 'icon-park-outline:check-one' "
+                          :prepend-icon=" !video ?  'ic:round-attach-file' : 'icon-park-outline:check-one' "
                         ></v-file-input>
                       </div>
                     </VCol>
@@ -243,19 +249,11 @@ export default {
     isValidateSteps:false,
     isValidateVideoUpload:false,
     forms:'',
-    preparation: {
-      video: null,
-      steps: [
-        { 
-          title:'',
-          description:''
-        }
-      ]
-    },
+    video:''
   }),
   methods:{
     addVideo(id){
-      this.preparation.video = this.$refs.recipe_video.files[0]
+      this.video = this.$refs.recipe_video.files[0]
       this.hideModal()
     },
     addNewStepRecipe(){
@@ -264,44 +262,36 @@ export default {
         description:''
       }
 
-      this.preparation.steps.push(newStep)
+      this.preparation.push(newStep)
     },
     validatorSteps(){
 
       this.hideModal() 
-      if( this.preparation.steps.length > 1 ){
+      if( this.preparation.length > 1 ){
         this.isValidateSteps = true
       } 
-      console.log(this.preparation[0])
 
-      if( this.preparation.steps[0].title.length > 1 && this.preparation.steps[0].description.length > 1) {
-
-        console.log(this.isValidateSteps )
+      if( this.preparation[0].title.length > 1 && this.preparation[0].description.length > 1) {
         return this.isValidateSteps = true
-
       }
-
-      console.log(this.isValidateSteps )
       return this.isValidateSteps = false
-
-  
     },
     validatorVideoUpload(){
 
       this.hideModal()
-      if( !this.preparation.video ) return this.isValidateVideoUpload = false
+      if( !this.video ) return this.isValidateVideoUpload = false
       return this.isValidateVideoUpload = true
 
     },
     removeStepRecipe(index){
         setTimeout(() => {
           try{
-            this.preparation.steps.splice(index, 1)
+            this.preparation.splice(index, 1)
           }catch(e){
 
           }
         }, 200);
-      },
+    },
     showModal(modal) {
         try {
           this.modal.hide()
@@ -351,44 +341,44 @@ export default {
           sendButton.classList.add('v-btn--disabled')
 
         });
-      },
-      itemsValidateByForm(){
-        let fieldByForm ={
-            new_recipe_preparation_title_1:{
-              validators: {
-                notEmpty: {
-                  message: "Por favor coloca un titulo"
-                },
-                regexp: {
-                  regexp: /^[A-Za-z0-9À-ÿ .*-+/&@,$_ñ\s+_ ]+$/i,
-                  message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
-                },
+    },
+    itemsValidateByForm(){
+      let fieldByForm ={
+          new_recipe_preparation_title_1:{
+            validators: {
+              notEmpty: {
+                message: "Por favor coloca un titulo"
+              },
+              regexp: {
+                regexp: /^[A-Za-z0-9À-ÿ .*-+/&@,$_ñ\s+_ ]+$/i,
+                message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+              },
+            }
+          },
+          new_recipe_preparation_description_1:{
+            validators: {
+              notEmpty: {
+                message: "La descripción de este paso es requerida"
+              },
+              regexp: {
+                regexp: /^[A-Za-z0-9À-ÿ .*-+/&@,$_ñ\s+_ ]+$/i,
+                message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
+              },
+              stringLength: {
+                  min: 50,
+                  message: 'Debe tener 50 caracteres minimo',
               }
-            },
-            new_recipe_preparation_description_1:{
-              validators: {
-                notEmpty: {
-                  message: "La descripción de este paso es requerida"
-                },
-                regexp: {
-                  regexp: /^[A-Za-z0-9À-ÿ .*-+/&@,$_ñ\s+_ ]+$/i,
-                  message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
-                },
-                stringLength: {
-                    min: 50,
-                    message: 'Debe tener 50 caracteres minimo',
-                }
 
-              }
-            },
-          };
-        return fieldByForm
-      }, 
+            }
+          },
+        };
+      return fieldByForm
+    }, 
     sendPreration(){
       this.$emit('preparation',{
-        steps: this.preparation.steps,
+        steps: this.preparation,
         video: this.$refs.recipe_video.files[0]
-      })
+      }, this.type)
     }
   },
   mounted(){
