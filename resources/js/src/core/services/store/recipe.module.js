@@ -12,11 +12,10 @@ export const DELETE_RECIPE    = "DELETE_RECIPE";
 const actions = {
     [GET_RECIPES](context, query) {
 
-      console.log(query)
         return new Promise((resolve, reject) => {
           if (JwtService.getToken()) {
             ApiService.setHeader();
-            ApiService.get("api/recipes?product_title="+query+"&")
+            ApiService.get("api/recipes?page="+query.page+"&product_title="+query.search+"&")
             .then(( { data } ) => {
                 // console.log(data)
                 resolve(data);

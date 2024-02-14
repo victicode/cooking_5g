@@ -156,9 +156,9 @@ class ProductController extends Controller
             $products->where('products.title','like','%'.request('filter_product_title').'%');
         }
     
-        if($request->user()->rol_id !== 1){
-            $products->where('created_by', $request->user()->id );
-        }
+        // if($request->user()->rol_id !== 1){
+        //     $products->where('created_by', $request->user()->id );
+        // }
         return DataTables::of($products)->toJson();
   
     }

@@ -383,6 +383,7 @@ export default {
   },
   mounted(){
     this.validateFormItem()
+    this.isValidateSteps = this.type == 'update' ? true :false;
   }
 
 

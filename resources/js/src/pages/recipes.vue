@@ -98,7 +98,24 @@
               </VCol>
             </VRow>
           </VCard>
+          <VRow>
+            <VCol class="d-flex justify-center" col="12" md="4" offset-md="4">
+
+              <div class="text-center mt-8  bg-white w-100 rounded-lg elevation-24">
+                <v-pagination
+                  v-model="pagination.currentPage"
+                  :length="pagination.totalPage"
+                  rounded="circle"
+                  active-color="primary"
+                  color="rgb(99 92 92)"
+                  @update:modelValue="getRecipes()"
+                />
+                  
+              </div>
+            </VCol>
+          </VRow>
       </template>
+
     </VCol>
     <div v-if="isRecipe" >
       <div class="modal animate__animated animate__fadeInDown"  id="viewRecipe" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
@@ -251,14 +268,14 @@
                               </div>
                             </v-carousel-item>
                             <v-carousel-item
-                              v-for="(step, index) in JSON.parse(selectedRecipe.preparation)"
+                              v-for="(step, index) in selectedRecipe.preparation"
                                 :key="index"
                                 :value="index+2"
 
                             >
                               <div class="d-flex  flex-wrap align-center flex-md-nowrap flex-column flex-md-row">
                                 <div class="w-100">
-                                  <h5>Paso {{ index+1 }} de {{ JSON.parse(selectedRecipe.preparation).length }}</h5>  
+                                  <h5>Paso {{ index+1 }} de {{ selectedRecipe.preparation.length }}</h5>  
                                   <h3 class="mb-4" >{{ step.title }}</h3>
                                   <VRow class="ma-0 pa-0">
                                     <VCol cols="12" class="justify-center pa-0">
@@ -276,7 +293,7 @@
                             </v-carousel-item>
                             <v-carousel-item
                               v-if="selectedRecipe.video_url"
-                              :value="JSON.parse(selectedRecipe.preparation).length + 2"
+                              :value="selectedRecipe.preparation.length + 2"
                             >
                               <div class="d-flex  flex-wrap align-center flex-md-nowrap flex-column flex-md-row">
                                 <div class="w-100">
@@ -450,7 +467,7 @@
                                             </label>
                                             <VCol cols="12" md="12"  class="form-group text-center ma-0 mt-0 pa-0">
                 
-                                              <input type="file"  id="update-img" ref="updateImg" name="update_recipe_img" class="d-none" @change="onFileChange" >
+                                              <input type="file"  id="update-img" ref="updateImg" name="update_recipe_img" class="d-none" @change="onFileChange($event, 'update')" >
                                             </VCol>
                                           </div>
                                         </VCol>
@@ -660,7 +677,7 @@
                                 <v-stepper-window-item
                                   :value="3"
                                 >
-                                  <viewRecipePreparationModal @backStep="backStep('update')" @preparation="getPreparation" :type="'update'" :preparation="JSON.parse(selectedRecipe.preparation)"/>
+                                  <viewRecipePreparationModal @backStep="backStep('update')" @preparation="getPreparation" :type="'update'" :preparation="selectedRecipe.preparation"/>
                                 </v-stepper-window-item>
                               </v-stepper-window>                          
                             </template>
@@ -763,7 +780,7 @@
                                           </label>
                                           <VCol cols="12" md="12"  class="form-group text-center ma-0 mt-0 pa-0">
               
-                                            <input type="file"  id="newRecipe-img" ref="newRecipeImg" name="new_recipe_img" class="d-none" @change="onFileChange" >
+                                            <input type="file"  id="newRecipe-img" ref="newRecipeImg" name="new_recipe_img" class="d-none" @change="onFileChange($event, 'new')" >
                                           </VCol>
                                         </div>
                                       </VCol>
@@ -972,7 +989,7 @@
                               <v-stepper-window-item
                                 :value="3"
                               >
-                                <viewRecipePreparationModal @backStep="backStep('new')" @preparation="getPreparation" :type="'new'" :preparation="newRecipe.preparation" />
+                                <viewRecipePreparationModal v-if="stepperNewProduct == 3 " @backStep="backStep('new')" @preparation="getPreparation" :type="'new'" :preparation="newRecipe.preparation" />
                               </v-stepper-window-item>
                             </v-stepper-window>                          
                           </template>
@@ -1084,6 +1101,10 @@
     data: () => ({
       isRecipe:false,
       sliderPosition:1,
+      pagination:{
+        currentPage:1,
+        totalPage:0,
+      },
       modal: '',
       internalModal:'',
       snackShow:false,
@@ -1151,9 +1172,11 @@
 
          action=='new' 
           ? setTimeout(() => {
-            this.stepperNewProduct >= 2 ? this.destroyValidate('new_recipe_form_3') : this.destroyValidate('new_recipe_form_2')
+            this.stepperNewProduct >= 2 ? '' : this.destroyValidate('new_recipe_form_2')
           }, 500)
-          : ''
+          : setTimeout(() => {
+            this.stepperUpdateProduct >= 2 ? '' : this.destroyValidate('update_recipe_form_2')
+          }, 500)
       
       },
       removeIngredientInRecipe(id,event){
@@ -1178,12 +1201,18 @@
         let newIngredient = {
           id:null,
           name:'',
-          quantity:'',
           ingredient:'',
-          pivot:{
+          
+        }
+
+        data.typeaction == 'new' 
+        ? newIngredient.quantity = ''
+        : newIngredient.pivot ={
             quantity:''
           }
-        }
+
+
+
         data.typeaction == 'new' 
         ? this.newRecipe[id].push(newIngredient)
         : this.selectedRecipe[id].push(newIngredient)
@@ -1207,9 +1236,6 @@
         debounce(this.getProducts, 200)(e.target.value, index)
       },
       clearProductSearch(index){
-        this.newRecipe.cooking_ingredients[index].maxValue = 0;
-        this.newRecipe.cooking_ingredients[index].lotes =[]
-        this.newRecipe.cooking_ingredients[index].selected_lote =''
         this.getProducts('',index)
       },
       selectedProduct(e,index, type="new"){
@@ -1465,14 +1491,19 @@
 
         });
       },
-      getRecipes(query=""){
-        this.$store.dispatch(GET_RECIPES, query).then((data)=>{
-          console.log(data)
+      getRecipes(){
+        const data ={
+          page:this.pagination.currentPage,
+          search:this.$refs.recipe_title_search.value
+        }
+        this.$store.dispatch(GET_RECIPES, data ).then((data)=>{
           this.recipes = data.data.data
+          this.pagination.totalPage = data.data.last_page
+
         })
       },
       searchRecipe(){
-        debounce(this.getRecipes, 200)(this.$refs.recipe_title_search.value)
+        debounce(this.getRecipes, 200)()
 
       },
       async selectRecipe(idAccount){
@@ -1481,10 +1512,13 @@
           .dispatch(GET_RECIPE_BY_ID, idAccount)
           .then((response) => {
 
+           
             this.selectedRecipe = Object.assign({}, response.data); 
             this.selectedRecipe.ingredients = JSON.parse(response.data.ingredients)
+            this.selectedRecipe.preparation = JSON.parse(response.data.preparation)
+            
             this.isRecipe = true
-            console.log(JSON.parse(response.data.preparation))
+            console.log(this.selectedRecipe)
             setTimeout(() => {
               if(window.screen.width < 480) this.drawer = true;
               return new Promise((resolve) => {
@@ -1497,7 +1531,7 @@
             return new Promise((resolve) => {
               resolve(false);
             });
-          });
+          })
       },
       bootstrapOptions(){
         setTimeout(() => {
@@ -1515,6 +1549,7 @@
       },
       showAction(id, modal){
         this.selectRecipe(id).finally((data)=>{
+          
           setTimeout(() => {
             this.showModal(modal)
           }, 1000);
@@ -1522,7 +1557,7 @@
       },
       showModal(modal) {
         try {
-          this.modal.hide()
+          this.hideModal()
         } catch (error) {
           
         }
@@ -1538,7 +1573,7 @@
 
       },
       showInterModal(modal){
-        this.modal.hide()
+        this.hideModal()
 
         try {
           this.internalModal.hide()
@@ -1552,49 +1587,47 @@
         this.internalModal.show()
       },
       hideModal(){
-        this.productsForRecipe = []
+        
+        this.clearNewRecipeForm()
+        // this.clearUpdateRecipeForm()
         this.modal.hide();
+
       },
       hideInternalModal(){
         this.internalModal.hide();
         this.sliderPosition = 1
         this.modal.show()
       },
-      onFileChange(e) {
+      onFileChange(e, type) {
         const file = e.target.files[0];
-       return  this.newRecipe.img = URL.createObjectURL(file)
 
+
+       return  type=='new'
+        ? this.newRecipe.img = URL.createObjectURL(file)
+        : this.selectedRecipe.image_url = URL.createObjectURL(file)
       },
       getPreparation(preparation, type){
-
-
-
-
         if(type=="new"){
           this.newRecipe.preparation = preparation.steps; 
           this.newRecipe.video = preparation.video; 
-
-          
-        }else {
-
-          this.selectedRecipe.preparation = preparation.steps; 
-          this.selectedRecipe.video = preparation.video 
+          this.createRecipe()
+          return
         }
+        this.selectedRecipe.preparation = preparation.steps; 
+        this.selectedRecipe.video = preparation.video 
+        this.updateRecipe()
         
-
-        console.log(this.newRecipe.preparation)
-        this.createRecipe()
       },
       createRecipe(){
         const recipeFormData = new FormData
         recipeFormData.append('title', this.newRecipe.title )
         recipeFormData.append('description', this.newRecipe.description )
-        recipeFormData.append('preparation', JSON.stringify(this.newRecipe.preparation))
         recipeFormData.append('person_count',this.newRecipe.personCount)
         recipeFormData.append('type', this.newRecipe.type )
         recipeFormData.append('total_time', this.newRecipe.timeTotal)
         recipeFormData.append('ingredients', JSON.stringify(this.newRecipe.ingredients))
         recipeFormData.append('cooking_ingredients', JSON.stringify(this.newRecipe.cooking_ingredients))
+        recipeFormData.append('preparation', JSON.stringify(this.newRecipe.preparation))
         recipeFormData.append('image_url', this.$refs.newRecipeImg.files[0])
 
         recipeFormData.append('video_url', this.newRecipe.video ? this.newRecipe.video  : false)
@@ -1605,11 +1638,12 @@
         .then((data) =>{
           setTimeout(() => {
             this.getRecipes()
+            this.clearNewRecipeForm()
             this.showSnackbar('success','Receta creada con exito')
-            this.modal.hide();
+            this.hideModal();
           }, 500);
         }).catch((err) => {
-          this.modal.hide()
+          this.hideModal()
           this.showSnackbar('error','Error al crear la receta')
 
        });
@@ -1618,42 +1652,44 @@
         const recipeFormData = new FormData
         recipeFormData.append('title', this.selectedRecipe.title )
         recipeFormData.append('description', this.selectedRecipe.description )
-        recipeFormData.append('preparation', this.selectedRecipe.preparation)
-        recipeFormData.append('person_count',this.selectedRecipe.personCount)
+        recipeFormData.append('person_count',this.selectedRecipe.person_count)
         recipeFormData.append('type', this.selectedRecipe.type )
-        recipeFormData.append('total_time', this.selectedRecipe.timeTotal)
+        recipeFormData.append('total_time', this.selectedRecipe.total_time)
         recipeFormData.append('ingredients', JSON.stringify(this.selectedRecipe.ingredients))
         recipeFormData.append('cooking_ingredients', JSON.stringify(this.selectedRecipe.cooking_ingredients))
+        recipeFormData.append('preparation', JSON.stringify(this.selectedRecipe.preparation))
+
         recipeFormData.append('image_url', this.$refs.updateImg.files[0])
 
         recipeFormData.append('video_url', this.selectedRecipe.video ? this.selectedRecipe.video  : false)
  
 
         this.$store
-        .dispatch(UPDATE_RECIPE, recipeFormData)
+        .dispatch(UPDATE_RECIPE, {id:this.selectedRecipe.id, data:recipeFormData})
         .then((data) =>{
+          console.log(data)
+
           setTimeout(() => {
             this.getRecipes()
             this.showSnackbar('success','Receta creada con exito')
-            this.modal.hide();
+            this.hideModal();
+            this.clearUpdateRecipeForm()
           }, 500);
         }).catch((err) => {
-          this.modal.hide()
-          this.showSnackbar('error','Error al crear la receta')
+          this.showSnackbar(err)
 
        });
       },
       deleteRecipe(){
         this.$store.dispatch(DELETE_RECIPE, this.selectedRecipe.id).then((data)=>{
           setTimeout(() => {
-            this.modal.hide()
-            this.clearNewRecipeForm()
+            this.hideModal()
             this.showSnackbar('success','Receta eliminada con exito')
             this.getRecipes()
           }, 500);
 
         }).catch((err)=>{
-          this.modal.hide()
+          this.hideModal()
           this.showSnackbar('error','Error al eliminar la receta')
         })
       },
@@ -1671,7 +1707,7 @@
         }, 400);
       },
       clearNewRecipeForm(){
-
+          this.productsForRecipe = [];
           this.stepperNewProduct = 1;
           this.newRecipe = {
             img:'images/product/default.png',
@@ -1701,8 +1737,19 @@
             ],
             video:'',
           };
-
-
+          try {
+            this.destroyValidate('new_recipe_form_2')
+            
+          } catch (error) {
+            
+          }
+      },
+      clearUpdateRecipeForm(){
+          this.productsForRecipe = [];
+          this.stepperUpdateProduct = 1;
+          this.selectedRecipe = {}
+          this.destroyValidate('update_recipe_form_2')
+          this.destroyValidate('update_recipe_form')
 
       }
     },

@@ -93,7 +93,7 @@ Route::middleware('jwt.verify')->prefix('recipes')->name('recipes.')->group(func
     Route::post('/',[RecipeController::class, 'storeRecipe']);
     Route::get('/',[RecipeController::class, 'index']);
     Route::get('/get-by-id/{id}',[RecipeController::class, 'getRecipeById']);
-    Route::post('/{id}',[RecipeController::class, 'deleteRecipe']);
+    Route::post('/{id}',[RecipeController::class, 'updateRecipe']);
     Route::delete('/{id}',[RecipeController::class, 'deleteRecipe']);
 
 

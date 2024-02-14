@@ -55,9 +55,11 @@ const vuetifyTheme = useTheme()
         }"
       />
       <VerticalNavLink
+        v-if="this.getCurrentAccount.rol_id !== 3 "
+
         class="mt-3"
         :item="{
-          title: currentUser.rol_id == 1 ? 'Productos' : 'Tus Productos',
+          title: currentUser.rol_id !== 3  ? 'Productos' : 'Tus Productos',
           icon: 'bx-package',
           to: '/products',
         }"
@@ -66,15 +68,15 @@ const vuetifyTheme = useTheme()
         class="mt-3"
         v-if="this.getCurrentAccount.rol_id == 1 "
         :item="{
-          title: 'Usuarios - Chefs',
+          title: 'Chefs',
           items:[
             {
-              title: 'Usuarios',
+              title: 'Chefs usuario',
               icon: 'mdi-users-group-outline',
               to: '/user-list',
             },
             {
-              title: 'Chef',
+              title: 'Chef Master',
               icon: 'icon-park-twotone:chef-hat',
               to: '/chef-list',
             }
@@ -82,19 +84,21 @@ const vuetifyTheme = useTheme()
         }"
       />
       <VerticalNavLink
+      
         class="mt-3"
         :item="{
-          title: 'Ordenes',
+          title: currentUser.rol_id !== 3 ?'Ordenes' : 'Mis Ordenes',
           icon: 'bx-task',
           to: '/orders',
         }"
       />
       <VerticalNavLink
+
         class="mt-3"
         :item="{
-          title: currentUser.rol_id == 1 ? 'Recetas' : 'Tus Recetas',
+          title:  'Recetas',
           icon: 'bx-receipt',
-          to: '/recipes',
+          to: currentUser.rol_id !== 3 ? '/recipes' : '/view-recipes',
         }"
       />
 

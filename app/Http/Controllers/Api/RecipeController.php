@@ -29,20 +29,10 @@ class RecipeController extends Controller
             $recipes->where('created_by', $request->user()->id );
         }
 
-        return $this->returnSuccess(200, $recipes->paginate(15) );
-    }
-    public function getRecipesTable(){
-        $recipes = Recipe::query()->with(['chef', 'cooking_ingredients',]);
-
-
-        return DataTables::of($recipes)->filter(function ($query) {
-            // if (!empty(request('filter_name'))) {
-            //   $query->where('name','like','%'.request('filter_name').'%');
-            // }
-          })->toJson();
+        return $this->returnSuccess(200, $recipes->paginate(10) );
     }
     public function getRecipeById($id){
-        return $this->returnSuccess(200, Recipe::with(['chef', 'cooking_ingredients.dismantling.products_pieces' ])->find($id));
+        return $this->returnSuccess(200, Recipe::with(['cooking_ingredients.dismantling.products_pieces' ])->find($id));
     }
     public function storeRecipe(Request $request)
     {
@@ -90,30 +80,17 @@ class RecipeController extends Controller
         }
         
 
-        return [
-           'id'             => $newRecipe,
-           'ingredients_c'  =>   json_decode($request->cooking_ingredients,true)
-        ];
+        return $this->returnSuccess(200, $newRecipe);
     }
-    public function updateRecipe(Request $request, $recipeId)
-    {
+    public function updateRecipe(Request $request, $recipeId){
         //
         $recipe = Recipe::find($recipeId);
-
         if(!$recipe) return $this->returnFail(400, 'Receta no encontrado');
-
-
-        // $validated = $this->validateFieldsFromInput($request->all()) ;
-        // if (count($validated) > 0) return $this->returnFail(400, $validated[0]);
-
-    
-
         $imgPath = $recipe->image_url;
-        if ($request->image_url) {
+        if ($request->hasFile('image_url')) {
             $imgPath = 'images/product/' . trim(str_replace(' ', '_', $request->title )).'.'.$request->File('image_url')->extension();
             $request->file('image_url')->move(public_path() . '/images/product/', $imgPath);
         }
-
         try {
             $recipe->title         =  $request->title;
             $recipe->description   =  $request->description;
@@ -125,26 +102,21 @@ class RecipeController extends Controller
             $recipe->image_url     =  $imgPath;
             $recipe->video_url     =  null;
             $recipe->created_by    =  1; 
+
+
+            $recipe->save();
         } catch (Exception $th) {
             return $th->getMessage();
         }
-        
         try {
             $this->addProductforRecipe ($recipe->id, json_decode($request->cooking_ingredients,true) );
         } catch (Exception $th) {
-            //  return [
-            //     'message' => $th->getMessage(),
-            //     'ingredients_c'  =>   json_decode($request->cooking_ingredients,true)
-
-            //  ];
-            return $this->returnFail(400, 'Error al cargar productos de cooking');
+            return $this->returnFail(400, ['message'=>$th->getMessage(),  'data'=> json_decode($request->cooking_ingredients,true)]  ) ;
         }
         
+        return $this->returnSuccess(200,['data'=>$recipe,  'ongredientes' => json_decode($request->cooking_ingredients,true)]);
 
-        return [
-           'id'             => $recipe,
-           'ingredients_c'  =>   json_decode($request->cooking_ingredients,true)
-        ];
+
     }
     public function deleteRecipe($recipeId){
         if (!$recipeId) {
@@ -220,7 +192,7 @@ class RecipeController extends Controller
             DB::table('products_x_recipes')->insert([
                 'recipe_id'     => $recipeId,
                 'product_id'    => $key['id'],
-                'quantity'      => $key['quantity'],
+                'quantity'      => $key['pivot']['quantity'] ?? $key['quantity']  ,
             ]);
         }
         return ;
