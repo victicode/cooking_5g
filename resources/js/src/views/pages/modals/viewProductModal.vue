@@ -1,10 +1,10 @@
 <script setup>
 import moment from 'moment';
 
+import { func } from '@/core/services/utils/utils.js'
 const props = defineProps({
   product: Object,
 })
-import { func } from '@/core/services/utils/utils.js'
 
 </script>
 <template>
@@ -78,8 +78,12 @@ import { func } from '@/core/services/utils/utils.js'
                         <VCardText class="text-subtitle-1 pt-0 px-1 d-flex align-center">
                           <div class="font-weight-medium my-0">Fecha de vencimiento:</div>
                           <div class="font-weight-bold mx-2">
-                            <v-chip :class=" Math.round(moment.duration(moment(product.due_date).diff(new moment())).as('days') ) > 30 ? 'bg-success' : 'bg-warning'">
-                              {{ moment(product.due_date).format('DD-MM-YYYY') }}
+                            <v-chip :class=" Math.round(moment.duration(moment(product.due_date).diff(new moment())).as('days') ) < 0 ? 'bg-error' : Math.round(moment.duration(moment(product.due_date).diff(new moment())).as('days') ) > 30 ? 'bg-success' : 'bg-warning'">
+                              {{ 
+                                Math.round(moment.duration(moment(product.due_date).diff(new moment())).as('days') ) < 0 
+                                ? moment(product.due_date).format('DD-MM-YYYY') + ' (LV)'
+                                : moment(product.due_date).format('DD-MM-YYYY') 
+                              }}
                             </v-chip>
                           </div>
                         </VCardText>
@@ -97,7 +101,7 @@ import { func } from '@/core/services/utils/utils.js'
                       <div class="d-block d-md-flex">
                         <b v-for="item in product.product.dismantling" v-bind:key="item.id">
                           <p class="mb-0 ms-2 mt-3" >  
-                            <b class="d-inline-flex d-md-none">*</b> {{ item.products_pieces.title}}: {{item.quantity}} {{ item.quantity > 1 ? 'Piezas' : 'Pieza' }} <b class="d-none d-md-inline-flex">||</b>
+                            <!-- <b class="d-inline-flex d-md-none">*</b> {{ item.products_pieces.title}}: {{item.quantity}} {{ item.quantity > 1 ? 'Piezas' : 'Pieza' }} <b class="d-none d-md-inline-flex">||</b> -->
                           </p> 
                         </b>
                       </div>
@@ -116,7 +120,9 @@ import { func } from '@/core/services/utils/utils.js'
 <script>
 
 export default {
-
+  mounted(){
+    console.log(this.product)
+  },
   methods:{
     hideModal(){
       this.$emit('hiddenModal',)

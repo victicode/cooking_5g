@@ -29,6 +29,6 @@ class Recipe extends Model
     }
     public function cooking_ingredients()
     {
-        return $this->belongsToMany(Product::class, 'products_x_recipes')->withPivot(['quantity']);
+        return $this->belongsToMany(Product::class, 'products_x_recipes')->withPivot(['quantity'])->withTrashed();
     }
 }

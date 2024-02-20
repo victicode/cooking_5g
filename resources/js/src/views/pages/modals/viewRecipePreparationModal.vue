@@ -249,12 +249,12 @@ export default {
     isValidateSteps:false,
     isValidateVideoUpload:false,
     forms:'',
-    video:''
+    video:null
   }),
   methods:{
     addVideo(id){
       this.video = this.$refs.recipe_video.files[0]
-      this.hideModal()
+      this.validatorVideoUpload()
     },
     addNewStepRecipe(){
       let newStep = {
@@ -375,6 +375,7 @@ export default {
       return fieldByForm
     }, 
     sendPreration(){
+      
       this.$emit('preparation',{
         steps: this.preparation,
         video: this.$refs.recipe_video.files[0]

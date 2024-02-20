@@ -1,7 +1,7 @@
 <script setup >
   import * as bootstrap from 'bootstrap'
   import { GET_RECIPES, GET_RECIPE_BY_ID, STORE_RECIPE, DELETE_RECIPE, UPDATE_RECIPE} from "@/core/services/store/recipe.module";
-
+  import recipeVideo from '@/views/pages/player/recipePlayer.vue';
   import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
   import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
   import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
@@ -11,6 +11,7 @@
   import debounce from 'debounce';
   import viewRecipePreparationModal from '@/views/pages/modals/viewRecipePreparationModal.vue';
   import viewProductModal from '@/views/pages/modals/viewProductModal.vue';
+  import moment from 'moment';
 
 </script>
 
@@ -182,8 +183,17 @@
                             <VCardText class="text-subtitle-1 py-4 px-1">
                               <div class="font-weight-medium"><h3>Ingredientes cooking 5G:</h3> </div> 
                               <div class="font-weight-bold my-2" v-for="(ingredient, index) in selectedRecipe.cooking_ingredients" :key="index">
-                                <a class="blank-modal" @click="selectProductView(index)"> 
+                                <a 
+                                  :class="this.validateIsgoodProduct(ingredient, 'blank-modal', 'recipe-notproduct' ) " 
+                                  @click="this.validateIsgoodProduct(ingredient, selectProductView(index) , '' ) "  
+                                > 
                                   - {{ `${ingredient.pivot.quantity} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }}
+                                  
+                                  {{ 
+                                    this.validateIsgoodProduct(ingredient, '', '(Sin stock)')
+                                  
+                                  }}
+                                  
                                 </a>
                               </div>
                             </VCardText>
@@ -235,7 +245,7 @@
                             :touch="true"
                             hide-delimiter-background
                             delimiter-icon="ic:outline-circle"
-                            height="400"
+                            height="570"
                             v-model="sliderPosition"
                           >
                             <v-carousel-item
@@ -297,14 +307,14 @@
                             >
                               <div class="d-flex  flex-wrap align-center flex-md-nowrap flex-column flex-md-row">
                                 <div class="w-100">
-                                  <h3 class="mb-4" >Video</h3>
+                                  <h3 class="mb-4" >Video de Receta</h3>
                                   <VRow class="ma-0 pa-0">
                                     <VCol cols="12" class="justify-center pa-0">
                                       <div class="mt-0" style="border-top: 1px solid rgba(119, 119, 119, 0.356)">
                                         <VCardText class="text-subtitle-1 py-4 px-1">
                                           <div class="font-weight-bold my-3" >
                                             
-                                            {{ selectedRecipe.video_url }}
+                                            <recipeVideo :video="selectedRecipe.video_url" />
                                             
                                           </div>
                                         </VCardText>
@@ -1093,6 +1103,15 @@
       width: 10%!important;
     }
   }
+
+  .recipe-notproduct{
+    font-weight: bolder;
+    color:#4d5f71;
+    &:hover{
+      color:#4d5f71
+    }
+  }
+  
 </style>
 
 <script>
@@ -1607,10 +1626,16 @@
         : this.selectedRecipe.image_url = URL.createObjectURL(file)
       },
       getPreparation(preparation, type){
+
+
         if(type=="new"){
           this.newRecipe.preparation = preparation.steps; 
           this.newRecipe.video = preparation.video; 
-          this.createRecipe()
+          
+          setTimeout(() => {
+            this.createRecipe()
+            
+          }, 1000);
           return
         }
         this.selectedRecipe.preparation = preparation.steps; 
@@ -1630,7 +1655,10 @@
         recipeFormData.append('preparation', JSON.stringify(this.newRecipe.preparation))
         recipeFormData.append('image_url', this.$refs.newRecipeImg.files[0])
 
-        recipeFormData.append('video_url', this.newRecipe.video ? this.newRecipe.video  : false)
+
+
+         console.log([this.newRecipe.video, this.$refs.newRecipeImg.files[0]])
+        recipeFormData.append('video_url', this.newRecipe.video)
  
 
         this.$store
@@ -1702,9 +1730,12 @@
 
         this.selectedProductInRecipe =  this.selectedRecipe.cooking_ingredients[index].lotes[0]
         this.selectedProductInRecipe.product = Object.assign({}, this.selectedRecipe.cooking_ingredients[index]);
+
+
+        console.log(this.selectedProductInRecipe )
         setTimeout(() => {
           this.showInterModal('viewProduct')
-        }, 400);
+        }, 800);
       },
       clearNewRecipeForm(){
           this.productsForRecipe = [];
@@ -1750,6 +1781,15 @@
           this.selectedRecipe = {}
           this.destroyValidate('update_recipe_form_2')
           this.destroyValidate('update_recipe_form')
+
+      },
+      validateIsgoodProduct(ingredient, messageGood, messageBad){
+        if(ingredient.lotes[0].quantity < 0 || Math.round(moment.duration(moment(ingredient.lotes[0].due_date).diff(new moment())).as('days') ) < 0 ){
+          return messageBad 
+        }
+       return ingredient.deleted_at==null 
+        ? messageGood 
+        : messageBad 
 
       }
     },

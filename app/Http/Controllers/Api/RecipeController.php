@@ -43,12 +43,19 @@ class RecipeController extends Controller
         if (!$request->File('image_url')) {
             return $this->returnFail(400, "La imagen es requerida.");
         }
-
+        if (!$request->File('video_url')) {
+            return $this->returnFail(400, "La imagen es requerida.");
+        }
 
         $imgPath = '';
         if ($request->image_url) {
-            $imgPath = 'images/product/' . trim(str_replace(' ', '_', $request->title )).'.'.$request->File('image_url')->extension();
-            $request->file('image_url')->move(public_path() . '/images/product/', $imgPath);
+            $imgPath = 'images/recipe/' . trim(str_replace(' ', '_', $request->title )).'.'.$request->File('image_url')->extension();
+            $request->file('image_url')->move(public_path() . '/images/recipe/', $imgPath);
+        }
+        $videoUrl = '';
+        if ($request->video_url) {
+            $videoUrl = 'images/recipe/video/' . trim(str_replace(' ', '_', $request->title )).'.'.$request->File('video_url')->extension();
+            $request->file('video_url')->move(public_path() . '/images/recipe/video/', $videoUrl);
         }
 
         try {
@@ -61,7 +68,7 @@ class RecipeController extends Controller
                 'total_time'    =>  $request->total_time,
                 'ingredients'   =>  $request->ingredients,
                 'image_url'     =>  $imgPath,
-                'video_url'     =>  null,
+                'video_url'     =>  $videoUrl == '' ? null : $videoUrl,
                 'created_by'    =>  1,
     
             ]);
@@ -80,7 +87,7 @@ class RecipeController extends Controller
         }
         
 
-        return $this->returnSuccess(200, $newRecipe);
+        return $this->returnSuccess(200, [$newRecipe,$request->video_url]);
     }
     public function updateRecipe(Request $request, $recipeId){
         //
