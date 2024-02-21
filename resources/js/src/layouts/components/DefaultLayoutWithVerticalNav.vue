@@ -55,13 +55,12 @@ const vuetifyTheme = useTheme()
         }"
       />
       <VerticalNavLink
-        v-if="this.getCurrentAccount.rol_id !== 3 "
 
         class="mt-3"
         :item="{
-          title: currentUser.rol_id !== 3  ? 'Productos' : 'Tus Productos',
+          title: currentUser.rol_id !== 3  ? 'Productos' : 'Ver Productos',
           icon: 'bx-package',
-          to: '/products',
+          to: currentUser.rol_id !== 3  ? '/products' : '/products_client', 
         }"
       />
       <VerticalDropdownNavLink 
@@ -128,9 +127,6 @@ const vuetifyTheme = useTheme()
 <script>
 import { mapGetters } from "vuex";
   export default {
-    data: () => ({
-      isAdmin:false
-    }),
     methods:{
     },
     computed: {

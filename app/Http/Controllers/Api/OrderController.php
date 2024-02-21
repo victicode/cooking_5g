@@ -78,13 +78,16 @@ class OrderController extends Controller
         $order = Order::create([
            'client_id'      => $request->client ?? $request->user()->id,
            'other_address'  => $request->address,
-           'status'         => isset($request->isManual) ? '2':'1',
+           'status'         => $request->isManual == 'true '? '2':'1',
            'trancker'       => '00'.rand(10000, 99999),
            'created_by'     => $request->user ?? $request->user()->id,
         ]);
+
+
+
         $this->addProductforOrder($order->id, json_decode($request->products,true), 'order');
 
-        if(isset($request->isManual)){
+        if($request->isManual == 'true'){
     
             $requestOutOrder = new Request([
                 'order'   => $order->id,
@@ -95,7 +98,7 @@ class OrderController extends Controller
             $this->createOutOrder($requestOutOrder);
         }
         
-        return $this->returnSuccess(200, $request->products,true);
+        return $this->returnSuccess(200, $request->isManual);
 
     }
     public function createOutOrder(Request $request)
@@ -157,6 +160,7 @@ class OrderController extends Controller
     private function addProductforOrder($order, $products, $type){
 
         if ($type == 'order') {
+            
             foreach ($products as $key) {
                 DB::table('products_x_orders')->insert([
                     'order_id' => $order,
@@ -222,26 +226,10 @@ class OrderController extends Controller
 
         return json_encode($newProducts) ;
     }
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+    private function productForOrderFormat($data){
+        $product = Product::find($data['id']);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+        // $product->quantity = 
     }
 
     /**

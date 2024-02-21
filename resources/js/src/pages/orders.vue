@@ -24,7 +24,7 @@
   import { Spanish } from "flatpickr/dist/l10n/es.js";
 
   import { GET_ORDER_BY_ID, CHANGE_STATUS, CREATE_ORDER, CREATE_OUT_ORDER } from "@/core/services/store/order.module";
-  import { GET_ALL_USER } from "@/core/services/store/user.module";
+  import { GET_ALL_USER, GET_USER } from "@/core/services/store/user.module";
   import { GET_PRODUCT_BY_SEARCH } from "@/core/services/store/product.module";
 </script>
 
@@ -38,7 +38,9 @@
             md="3"
             class="ma-0 px-0 justify-center justify-md-end d-flex"
           >
-          <VBtn @click=" showModal('createOrder')" color="primary" class="w-100 "><VIcon icon="bx-plus"/>Crear orden manual</VBtn>
+          <VBtn  @click=" showModal('createOrder')" color="primary" class="w-100 "><VIcon icon="bx-plus"/>
+            {{ isUser ? 'Crear orden manual': 'Crear nueva orden'}}
+          </VBtn>
 
           </VCol>
         </VRow>
@@ -266,6 +268,7 @@
                       <VRow class="align-center">
                         <VCol cols="12" md="7" class="form-group">
                           <v-combobox  
+                            v-if="isUser"
                             :items="userForOrder"
                             item-title="name"
                             item-value="id"
@@ -277,6 +280,14 @@
                             autocomplete="off"        
                             @update:modelValue="forms.validateField('new_order_client')"
                           ></v-combobox >
+                          <VTextField
+                             v-else 
+                            placeholder="Usuario"
+                            label="Usuario"
+                            type="text"
+                            disabled
+                            v-model="user.name"
+                          />
                         </VCol>
                         <VCol cols="12"  md="5" class="form-group px-3 my-2">
                           <div class="d-flex align-center">
@@ -305,7 +316,7 @@
                             </VCol>
                             <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
                               <VRow  v-for="(item,index) in newOrder.products"  v-bind:key="item.id" class=" position-relative relative pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'new_order_product_'+index">
-                                <VCol cols="12"  md="5" class="form-group pb-md-0  mb-md-1">
+                                <VCol cols="12"  :md="isUser ? 3 : 6" class="form-group pb-md-0  mb-md-1">
                                   <v-autocomplete
                                     :model-value="item.id"
                                     :items="productsForOrder[index] ?  productsForOrder[index] : item.id !== null ? [ {id: item.id, title: item.title, stock: item.quantity}] : []"
@@ -314,7 +325,8 @@
                                     item-value="id"
                                     placeholder="Nombre del producto"
                                     variant="outlined"
-                                    persistent-hint
+                                    :persistent-hint="isUser ? true : false "
+                                    :hide-details="isUser ? false : true "
                                     clearable
                                     no-filter
                                     :hint="'Stock: ' + item.maxValue"
@@ -326,7 +338,7 @@
                                     @update:modelValue="selectedProduct($event, index)"
                                   ></v-autocomplete>
                                 </VCol>
-                                <VCol cols="12"  md="4" class="form-group pb-md-0  mb-md-1">
+                                <VCol cols="6"  md="4" class="form-group pb-md-0  mb-md-1" v-if="isUser">
                                   <v-combobox  
                                     :items="item.lotes"
                                     item-title="lote_code"
@@ -343,7 +355,7 @@
                                     @update:modelValue="selectedLotes($event,index)"
                                   ></v-combobox >
                                 </VCol>
-                                <VCol cols="6"  md="3" class="form-group pb-md-0 pt-1 mb-md-5">
+                                <VCol cols="12"  :md="isUser ? 3 : 6 " class="form-group pb-md-0  mb-md-1" >
                                   <VTextField
                                     placeholder="Unidades solicitadas"
                                     label="Unidades solicitadas"
@@ -689,8 +701,23 @@
           TableElement.dispatchEvent(event);
         },
       },
+      user:{},
+      isUser:false
     }),
     methods:{
+      getUser(){
+      this.$store.dispatch(GET_USER)
+        .then((data) => {
+          if(data.code !== 200){
+            console.log('alert!!!')
+          }
+          this.user = data.user;
+          if(data.user.rol_id !== 3) this.isUser = true
+        })
+        .catch((e) => {
+          this.logout()
+        });
+    },
       initOptionsTable(){
         document.getElementById('data-table').addEventListener('OptionsActionTable', () => this.activeOptionsTable() )	
       },
@@ -838,9 +865,14 @@
         }
       },
       useClientAddress(e){
+        this.newOrder.userAddress = this.user.user_address
+
+        if(this.isUser){
           this.newOrder.userAddress = e.target.checked 
             ? this.newOrder.user.user_address
             : this.newOrder.userAddress = ''
+        }
+          
           this.forms.validateField('new_order_address')
       },
       showModal(modal) {
@@ -914,13 +946,18 @@
 
       },
       createdNewOrder(){
+        if(!this.validateHaveProducts()) return ;
 
         this.sendingButton('new_order_form_button')
         const formData = new FormData();
-        formData.append('client', this.newOrder.user.id);
+        const user = this.isUser 
+        ? this.newOrder.user.id
+        : this.user.id
+        formData.append('client', user);
         formData.append('address', this.newOrder.userAddress);
         formData.append('products', JSON.stringify(this.newOrder.products));
-        formData.append('isManual', true);
+        formData.append('isManual', this.isUser ? true : false);
+
         this.$store
           .dispatch(CREATE_ORDER, formData)
           .then((response) => {
@@ -994,7 +1031,10 @@
         }
         this.newOrder.products.push(newProducInOrder)
         setTimeout(() => {
-          this.addValidate()
+          if(this.isUser){
+
+            this.addValidate()
+          }
 
         }, 200);
 
@@ -1132,10 +1172,22 @@
           console.log('no hay validación activa')
         }
         
-      },      
+      },
+      validateHaveProducts(){
+        if(this.newOrder.products.length == 0 ){
+          const sendButton = document.getElementById('new_order_form_button')
+          sendButton.disabled = true
+          sendButton.classList.add('v-btn--disabled')
+          alert('Debes ingresar los productos')
+          return false
+        } 
+        return true
+        
+      }  
     },
     mounted(){
-      this.getUsers()
+      this.getUsers();
+      this.getUser();
       this.initOptionsTable()
       this.table = new DataTablesCore('#data-table', this.tableData)
       this.initFlatpickr();

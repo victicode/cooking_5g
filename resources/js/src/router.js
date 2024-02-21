@@ -44,7 +44,8 @@ const router = createRouter({
           component: productsComponent,
           meta: {
             middleware: [
-              auth
+              auth,
+              isAdmin
             ],
             title : 'Productos'
           },
@@ -64,7 +65,7 @@ const router = createRouter({
           component: ordersComponent,
           meta: {
             middleware: [
-              auth
+              auth,
             ],
             title : 'Ordenes'
           },
@@ -74,7 +75,8 @@ const router = createRouter({
           component: clientComponent,
           meta: {
             middleware: [
-              auth
+              auth,
+              isAdmin
             ],
             title : 'Listado de clientes'
           },
@@ -84,7 +86,8 @@ const router = createRouter({
           component: chefComponent,
           meta: {
             middleware: [
-              auth
+              auth,
+              isAdmin
             ],
             title : 'Listado de chefs'
           },

@@ -162,6 +162,28 @@ class ProductController extends Controller
         return DataTables::of($products)->toJson();
   
     }
+    public function getProducts(Request $request){
+        $products = Lot::query()->with(['product.dismantling.products_pieces'])
+        ->where('quantity', '>', 0)->join('products', 'products.id', '=', 'lotes.product_id');
+
+        
+        if(!empty(request('order_title')))  $products->orderBy('products.title', request('order_title'));
+        
+        
+        if(!empty(request('order_due_date')))  $products->orderBy('due_date', request('order_due_date'));
+
+        if(!empty(request('order_stock')))  $products->orderBy('quantity', request('order_stock'));
+        
+        if (!empty(request('filter_product_title'))) {
+            $products->where('products.title','like','%'.request('filter_product_title').'%');
+        }
+    
+        // if($request->user()->rol_id !== 1){
+        //     $products->where('created_by', $request->user()->id );
+        // }
+        return DataTables::of($products)->toJson();
+  
+    }
     public function getProductsCriticalStock(Request $request)
     {
 
