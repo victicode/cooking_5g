@@ -178,7 +178,7 @@
                             />
                           </VCol>
                         </VRow>
-                        <VRow class="ma-0 pa-0  mt-4 align-center" v-if="selectedProduct.product.is_dismantling">
+                        <VRow class="ma-0 pa-0  mt-4 align-center" v-if="selectedProduct.product.is_dismantling ">
                               <VCol cols="12" class="form-group">
                                 <h3>Despieces:</h3>
                               </VCol>
@@ -191,9 +191,9 @@
                                     </template>
                                   </v-tooltip>
                               </VCol>
-                              <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
-                                <VRow  v-for="(item,index) in selectedProduct.product.dismantling"  v-bind:key="item.id" class="pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'product_desmantling_'+index">
-                                  <VCol cols="12"  md="6" class="form-group">
+                              <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items"  v-if="countDismantlingActive(selectedProduct.product.dismantling) > 0">
+                                <VRow  v-for="(item,index) in selectedProduct.product.dismantling" v-bind:key="item.id" class="pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'product_desmantling_'+index" >
+                                  <VCol cols="12"  md="6" class="form-group" v-if="item.products_pieces" >
                                     <v-autocomplete
                                       :model-value="item.piece_product_id"
                                       :loading="loading"
@@ -212,7 +212,7 @@
                                       @update:modelValue="selectDismantling($event, index, 1)"
                                     ></v-autocomplete>
                                   </VCol>
-                                  <VCol cols="8"  md="4" class="form-group">
+                                  <VCol cols="8"  md="4" class="form-group" v-if="item.products_pieces" >
                                     <VTextField
                                       placeholder="Unidades que trae"
                                       label="Unidades que trae"
@@ -222,7 +222,7 @@
                                       
                                     />
                                   </VCol>
-                                  <VCol cols="4" md="1" class="form-group pa-0">
+                                  <VCol cols="4" md="1" class="form-group pa-0" v-if="item.products_pieces" >
                                     <v-tooltip text="Eliminar despiece">
                                       <template v-slot:activator="{ props }">
                                         <v-col cols="auto" class="">
@@ -1274,6 +1274,9 @@
             : 'edit_product_form', 'new')
 
         }, 500);
+
+
+        console.log(this.selectedProduct.product.dismantling)
         return type == 2 
         ? this.newProduct.dismantling.push(newItem)
         : this.selectedProduct.product.dismantling.push(newItem);
@@ -1850,6 +1853,14 @@
         this.forms['add_stock_form'].addField(quantityInput.name, fieldOptions.quantity)
         return
       },
+      countDismantlingActive(dismantlings){
+        let count = 0;
+        dismantlings.forEach((data)=>{
+          if(data.products_pieces) count ++
+        })
+        
+        return count
+      }
     },
     computed: {
       disabled () {

@@ -245,7 +245,7 @@
                             :touch="true"
                             hide-delimiter-background
                             delimiter-icon="ic:outline-circle"
-                            height="570"
+                            :height="sliderPosition == selectedRecipe.preparation .length+2 ? 'max-content': 570"
                             v-model="sliderPosition"
                           >
                             <v-carousel-item
@@ -257,11 +257,20 @@
                                   <VRow class="ma-0 pa-0">
                                     <VCol cols="12" class="justify-center pa-0">
                                       <div class="mt-0" style="border-top: 1px solid rgba(119, 119, 119, 0.356)">
-                                        <VCardText class="text-subtitle-1 py-4 px-1">
+                                        <VCardText class="text-subtitle-1 py-4 px-1" >
                                           <div class="font-weight-medium"> <h3>Ingredientes cooking 5G:</h3> </div> 
-                                          <div class="font-weight-bold my-3" v-for="(ingredient, index) in selectedRecipe.cooking_ingredients" :key="index">
-                                            <a class="blank-modal" @click="selectProductView(index)"> 
+                                          <div class="font-weight-bold my-2" v-for="(ingredient, index) in selectedRecipe.cooking_ingredients" :key="index">
+                                            <a 
+                                              :class="this.validateIsgoodProduct(ingredient, 'blank-modal', 'recipe-notproduct' ) " 
+                                              @click="selectProductView(index) "  
+                                            > 
                                               - {{ `${ingredient.pivot.quantity} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }}
+                                              
+                                              {{ 
+                                                this.validateIsgoodProduct(ingredient, '', '(Sin stock)')
+                                              
+                                              }}
+                                              
                                             </a>
                                           </div>
                                         </VCardText>
@@ -602,7 +611,7 @@
                                           </VRow>
                                         </VCol>
                                         <VCol cols="12" md="5" class="mt-0 py-0 px-0 mb-4">
-                                          <v-tooltip text="Agregar nuevo despiece">
+                                          <v-tooltip text="Agregar nuevo ingrediente C5G">
                                               <template v-slot:activator="{ props }">
                                                 <v-col cols="auto" class=" pa-0">
                                                   <VBtn v-bind="props" color="primary" class="w-100" data-typeAction="update" @click="addIngredientInRecipe($event,'cooking_ingredients')" >
@@ -653,7 +662,7 @@
                                           </VRow>
                                         </VCol>
                                         <VCol cols="12" md="5" class="mt-0 py-0 px-0 mb-4">
-                                          <v-tooltip text="Agregar nuevo despiece">
+                                          <v-tooltip text="Agregar nuevo ingrediente">
                                               <template v-slot:activator="{ props }">
                                                 <v-col cols="auto" class="pa-0">
                                                   <VBtn v-bind="props" color="primary" class="w-100" data-typeAction="update" @click="addIngredientInRecipe($event,'ingredients')" ><VIcon icon="bx-plus"/> Agregar otro ingrediente</VBtn>
@@ -914,7 +923,7 @@
                                         </VRow>
                                       </VCol>
                                       <VCol cols="12" md="5" class="mt-0 py-0 px-0 mb-4">
-                                        <v-tooltip text="Agregar nuevo despiece">
+                                        <v-tooltip text="Agregar nuevo ingrediente C5G">
                                             <template v-slot:activator="{ props }">
                                               <v-col cols="auto" class=" pa-0">
                                                 <VBtn v-bind="props" color="primary" class="w-100" data-typeAction="new" @click="addIngredientInRecipe($event,'cooking_ingredients')" >
@@ -965,7 +974,7 @@
                                         </VRow>
                                       </VCol>
                                       <VCol cols="12" md="5" class="mt-0 py-0 px-0 mb-4">
-                                        <v-tooltip text="Agregar nuevo despiece">
+                                        <v-tooltip text="Agregar nuevo ingrediente">
                                             <template v-slot:activator="{ props }">
                                               <v-col cols="auto" class="pa-0">
                                                 <VBtn v-bind="props" color="primary" class="w-100" data-typeAction="new" @click="addIngredientInRecipe($event,'ingredients')" ><VIcon icon="bx-plus"/> Agregar otro ingrediente</VBtn>
@@ -1217,26 +1226,27 @@
       addIngredientInRecipe(event,id){
         const data = event.target.closest('button').dataset
 
+        
         let newIngredient = {
           id:null,
           name:'',
           ingredient:'',
-          
+        }
+        if(data.typeaction == 'new' ){
+          newIngredient.quantity = ''
         }
 
-        data.typeaction == 'new' 
-        ? newIngredient.quantity = ''
-        : newIngredient.pivot ={
-            quantity:''
-          }
-
+        if(data.typeaction == 'update' ){
+          if(id=='cooking_ingredients') newIngredient.pivot ={ quantity:''}, newIngredient.lotes =[];
+          if(id=='ingredients') newIngredient.quantity = ''
+        }
 
 
         data.typeaction == 'new' 
         ? this.newRecipe[id].push(newIngredient)
         : this.selectedRecipe[id].push(newIngredient)
 
-          
+          console.log(this.selectedRecipe[id])
       },
       getProducts(search = "", index){
         this.$store
@@ -1728,14 +1738,15 @@
       },
       selectProductView(index){
 
-        this.selectedProductInRecipe =  this.selectedRecipe.cooking_ingredients[index].lotes[0]
-        this.selectedProductInRecipe.product = Object.assign({}, this.selectedRecipe.cooking_ingredients[index]);
-
-
-        console.log(this.selectedProductInRecipe )
-        setTimeout(() => {
-          this.showInterModal('viewProduct')
-        }, 800);
+        const val = this.validateIsgoodProduct(this.selectedRecipe.cooking_ingredients[index], true, false)
+        if(val){
+          this.selectedProductInRecipe =  this.selectedRecipe.cooking_ingredients[index].lotes[0]
+          this.selectedProductInRecipe.product = Object.assign({}, this.selectedRecipe.cooking_ingredients[index]);
+          setTimeout(() => {
+            this.showInterModal('viewProduct')
+          }, 800);
+        }
+        
       },
       clearNewRecipeForm(){
           this.productsForRecipe = [];
@@ -1784,14 +1795,22 @@
 
       },
       validateIsgoodProduct(ingredient, messageGood, messageBad){
-        if(ingredient.lotes[0].quantity < 0 || Math.round(moment.duration(moment(ingredient.lotes[0].due_date).diff(new moment())).as('days') ) < 0 ){
-          return messageBad 
+        try {
+          if(ingredient.lotes.length == 0) return messageBad  
+
+          if(ingredient.lotes[0].quantity < 0 || Math.round(moment.duration(moment(ingredient.lotes[0].due_date).diff(new moment())).as('days') ) < 0 ){
+            return messageBad 
+          }
+        } catch (error) {
+          console.log(error)
         }
+        console.log(ingredient)
+        
        return ingredient.deleted_at==null 
         ? messageGood 
         : messageBad 
 
-      }
+      },
     },
     mounted(){
       // this.initOptionsTable()

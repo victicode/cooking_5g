@@ -12,7 +12,7 @@ const props = defineProps({
   <VRow 
   class="ma-0 pa-0  mt-4 align-center" 
   >
-    <VCol cols="12" class="form-group">
+    <VCol cols="12" class="form-group d-flex justify-center mb-5"  >
       <video controls >
         <source  type="video/mp4" :src="video" />
       </video>
