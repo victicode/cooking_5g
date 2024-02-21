@@ -67,7 +67,7 @@ class OrderController extends Controller
         try {
             //code...
             $order = Order::withCount('products')->with(['user', 'products.lotes', 'client', 'outOrder'])->find($id);
-            $order->getStatusLabelAttribute();
+            // $order->getStatusLabelAttribute();
         } catch (Exception $th) {
             return $this->returnFail(400, $th->getMessage());
         }
