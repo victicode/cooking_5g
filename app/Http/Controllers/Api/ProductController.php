@@ -142,8 +142,9 @@ class ProductController extends Controller
     }
     public function getlotesOfProductsTable(Request $request){
         $products = Lot::query()->with(['product.dismantling.products_pieces'])
-        ->where('quantity', '>', 0)->whereHas('product')->join('products', 'products.id', '=', 'lotes.product_id');
-
+        ->whereHas('product')->join('products', 'products.id', '=', 'lotes.product_id');
+ 
+        
         
         if(!empty(request('order_title')))  $products->orderBy('products.title', request('order_title'));
         

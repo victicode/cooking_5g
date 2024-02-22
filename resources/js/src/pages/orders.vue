@@ -316,7 +316,7 @@
                             </VCol>
                             <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
                               <VRow  v-for="(item,index) in newOrder.products"  v-bind:key="item.id" class=" position-relative relative pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'new_order_product_'+index">
-                                <VCol cols="12"  :md="isUser ? 3 : 6" class="form-group pb-md-0  mb-md-1">
+                                <VCol cols="12"  :md="isUser ? 4 : 6" class="form-group pb-md-0  mb-md-1">
                                   <v-autocomplete
                                     :model-value="item.id"
                                     :items="productsForOrder[index] ?  productsForOrder[index] : item.id !== null ? [ {id: item.id, title: item.title, stock: item.quantity}] : []"
@@ -338,7 +338,7 @@
                                     @update:modelValue="selectedProduct($event, index)"
                                   ></v-autocomplete>
                                 </VCol>
-                                <VCol cols="6"  md="4" class="form-group pb-md-0  mb-md-1" v-if="isUser">
+                                <VCol cols="12"  md="5" class="form-group pb-md-0  mb-md-1" v-if="isUser">
                                   <v-combobox  
                                     :items="item.lotes"
                                     item-title="lote_code"
@@ -355,7 +355,7 @@
                                     @update:modelValue="selectedLotes($event,index)"
                                   ></v-combobox >
                                 </VCol>
-                                <VCol cols="12"  :md="isUser ? 3 : 6 " class="form-group pb-md-0  mb-md-1" >
+                                <VCol cols="12"  :md="isUser ? 3 : 6 " :class=" isUser ? 'form-group pb-md-0  mb-md-6' : 'form-group pb-md-0  mb-md-1' " >
                                   <VTextField
                                     placeholder="Unidades solicitadas"
                                     label="Unidades solicitadas"

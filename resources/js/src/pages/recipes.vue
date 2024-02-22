@@ -185,7 +185,7 @@
                               <div class="font-weight-bold my-2" v-for="(ingredient, index) in selectedRecipe.cooking_ingredients" :key="index">
                                 <a 
                                   :class="this.validateIsgoodProduct(ingredient, 'blank-modal', 'recipe-notproduct' ) " 
-                                  @click="this.validateIsgoodProduct(ingredient, selectProductView(index) , '' ) "  
+                                  @click="selectProductView(index)" 
                                 > 
                                   - {{ `${ingredient.pivot.quantity} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }}
                                   
@@ -1795,16 +1795,13 @@
 
       },
       validateIsgoodProduct(ingredient, messageGood, messageBad){
-        try {
+          if(!ingredient.lotes) return messageBad  ;
           if(ingredient.lotes.length == 0) return messageBad  
 
           if(ingredient.lotes[0].quantity < 0 || Math.round(moment.duration(moment(ingredient.lotes[0].due_date).diff(new moment())).as('days') ) < 0 ){
             return messageBad 
           }
-        } catch (error) {
-          console.log(error)
-        }
-        console.log(ingredient)
+
         
        return ingredient.deleted_at==null 
         ? messageGood 
@@ -1813,9 +1810,6 @@
       },
     },
     mounted(){
-      // this.initOptionsTable()
-      // this.table = new DataTablesCore('#data-table', this.tableData)
-      // this.bootstrapOptions();
       this.getRecipes()
       this.validateFormItem('new_recipe_form')
     },

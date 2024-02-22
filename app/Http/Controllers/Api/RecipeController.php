@@ -32,7 +32,7 @@ class RecipeController extends Controller
         return $this->returnSuccess(200, $recipes->paginate(10) );
     }
     public function getRecipeById($id){
-        return $this->returnSuccess(200, Recipe::with(['cooking_ingredients.dismantling.products_pieces' ])->find($id));
+        return $this->returnSuccess(200, Recipe::with(['cooking_ingredients.dismantling.products_pieces', 'cooking_ingredients.lotes' ])->find($id));
     }
     public function storeRecipe(Request $request)
     {

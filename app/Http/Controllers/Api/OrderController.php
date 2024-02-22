@@ -78,7 +78,7 @@ class OrderController extends Controller
         $order = Order::create([
            'client_id'      => $request->client ?? $request->user()->id,
            'other_address'  => $request->address,
-           'status'         => $request->isManual == 'true '? '2':'1',
+           'status'         => $request->isManual == 'true '? '1':'2',
            'trancker'       => '00'.rand(10000, 99999),
            'created_by'     => $request->user ?? $request->user()->id,
         ]);
@@ -87,6 +87,8 @@ class OrderController extends Controller
 
         $this->addProductforOrder($order->id, json_decode($request->products,true), 'order');
 
+
+        $DA = '';
         if($request->isManual == 'true'){
     
             $requestOutOrder = new Request([
@@ -95,10 +97,10 @@ class OrderController extends Controller
                 'products'   => $this->formatedRequestProductsByOrder(json_decode($request->products,true))
             ]);
         
-            $this->createOutOrder($requestOutOrder);
+            $DA =  $this->createOutOrder($requestOutOrder);
         }
         
-        return $this->returnSuccess(200, $request->isManual);
+        return $this->returnSuccess(200, $DA );
 
     }
     public function createOutOrder(Request $request)
@@ -110,7 +112,7 @@ class OrderController extends Controller
 
         try{
 
-            $this->addProductforOrder($out_order->id, json_decode($request->products,true), 'out_order');
+            $this->addProductforOrder($out_order->id,json_decode( $request->products, true), 'out_order');
             $this->decreaseStockInProduct(json_decode($request->products,true));
         }catch(Exception $e){
             return $this->returnFail(400, $e->getMessage());
@@ -124,9 +126,7 @@ class OrderController extends Controller
 
        $this->changeStatus($newStatus, $request->order);
         
-        return $this->returnSuccess(200, [
-            $out_order
-        ]);
+        return json_decode( $request->products, true);
 
     }
     public function printOutOrder(Request $request, $id)
@@ -172,17 +172,17 @@ class OrderController extends Controller
         }
 
         foreach ($products as $product) {
-            foreach ($product as $lotes) {
+            foreach ($product as $lotesh) {
                 DB::table('products_x_out_order')->insert([
                     'out_order_id' => $order,
-                    'product_id' => $lotes['selected_lote']['product_id'],
-                    'quantity'  => $lotes['quantity'],
-                    'lote_id'   => $lotes['selected_lote']['id_lote'],
+                    'product_id' => $lotesh['selected_lote']['product_id'],
+                    'quantity'  => 1,
+                    'lote_id'   => $lotesh['selected_lote']['id_lote'],
                 ]);
              }
         }
 
-        return;
+        
 
     }
     private function decreaseStockInProduct($products){
@@ -191,17 +191,10 @@ class OrderController extends Controller
         foreach ($products as $product) {
             foreach ($product as $lotes) {
                 $lote = Lot::find($lotes['selected_lote']['id_lote']);
-                $product = Product::find($lotes['selected_lote']['product_id']);
-
-
                 $lote->quantity = intval($lote->quantity) - intval($lotes['quantity']);
                 $lote->save();
             
-                $product->due_date_most_evenly = $lote->quantity == 0
-                    ? Lot::where('quantity','>','0')->where('product_id', $product->id)->first()->due_date
-                    : $product->due_date_most_evenly;
-
-                    $product->save();
+               
             }
         }
 
