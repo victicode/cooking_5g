@@ -43,9 +43,7 @@ class RecipeController extends Controller
         if (!$request->File('image_url')) {
             return $this->returnFail(400, "La imagen es requerida.");
         }
-        if (!$request->File('video_url')) {
-            return $this->returnFail(400, "La imagen es requerida.");
-        }
+        
 
         $imgPath = '';
         if ($request->image_url) {
@@ -53,9 +51,11 @@ class RecipeController extends Controller
             $request->file('image_url')->move(public_path() . '/images/recipe/', $imgPath);
         }
         $videoUrl = '';
-        if ($request->video_url) {
-            $videoUrl = 'images/recipe/video/' . trim(str_replace(' ', '_', $request->title )).'.'.$request->File('video_url')->extension();
-            $request->file('video_url')->move(public_path() . '/images/recipe/video/', $videoUrl);
+        if ($request->File('video_url')) {
+            if ($request->video_url) {
+                $videoUrl = 'images/recipe/video/' . trim(str_replace(' ', '_', $request->title )).'.'.$request->File('video_url')->extension();
+                $request->file('video_url')->move(public_path() . '/images/recipe/video/', $videoUrl);
+            }
         }
 
         try {
@@ -87,7 +87,7 @@ class RecipeController extends Controller
         }
         
 
-        return $this->returnSuccess(200, [$newRecipe,$request->video_url]);
+        return $this->returnSuccess(200, $newRecipe);
     }
     public function updateRecipe(Request $request, $recipeId){
         //

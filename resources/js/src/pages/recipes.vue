@@ -180,9 +180,9 @@
                             {{ selectedRecipe.description}}
                           </VCardText>
                           <div class="mt-0" style="border-top: 1px solid rgba(119, 119, 119, 0.356)">
-                            <VCardText class="text-subtitle-1 py-4 px-1">
+                            <VCardText class="text-subtitle-1 pt-4 pb-2 px-1">
                               <div class="font-weight-medium"><h3>Ingredientes cooking 5G:</h3> </div> 
-                              <div class="font-weight-bold my-2" v-for="(ingredient, index) in selectedRecipe.cooking_ingredients" :key="index">
+                              <div class="font-weight-bold mt-2" v-for="(ingredient, index) in selectedRecipe.cooking_ingredients" :key="index">
                                 <a 
                                   :class="this.validateIsgoodProduct(ingredient, 'blank-modal', 'recipe-notproduct' ) " 
                                   @click="selectProductView(index)" 
@@ -190,13 +190,20 @@
                                   - {{ `${ingredient.pivot.quantity} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }}
                                   
                                   {{ 
-                                    this.validateIsgoodProduct(ingredient, '', '(Sin stock)')
+                                    this.validateIsgoodProduct(ingredient, '', '(Sin stock)*')
                                   
                                   }}
                                   
                                 </a>
                               </div>
                             </VCardText>
+                            <div class="mb-5 mt-2">
+                              <div class="stock-notify px-3 py-4" style="">
+                                <p class="text-secondary pa-0 ma-0">
+                                  (*) <b>Nota:</b> Los ingredientes con el stock agotado no están disponibles en este momento. Si tiene interés en realizar esta receta y observa algún ingrediente "sin stock" puede notificarlo al administrador para que lo reponga.
+                                </p>
+                              </div>
+                            </div>
                             <VCardText class="text-subtitle-1 py-4 px-1">
                               <div class="font-weight-medium"><h3>Otros ingredientes:</h3> </div> 
                               <div class="font-weight-medium my-2" v-for="(ingredient, index) in selectedRecipe.ingredients" :key="index">
@@ -400,7 +407,6 @@
             </div>
           </div>
       </div>
-
       <div class="modal animate__animated animate__fadeInDown pe-0"  id="updateRecipe" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
           <div class="modal-dialog modal-lg mt-10" >
             <div class="modal-content">
@@ -1102,6 +1108,13 @@
       top: -10px;
       right: 6px;
     }
+  .stock-notify{
+    border-radius: 15px;
+    background: #dce7ef;
+    & > p{
+      font-size: smaller;
+    }
+  }
   @media screen and (max-width: 780px){
     .small-delete-product-button_recipe{
       position: absolute;
@@ -1687,6 +1700,7 @@
        });
       },
       updateRecipe(){
+        console.log('pajuaaa')
         const recipeFormData = new FormData
         recipeFormData.append('title', this.selectedRecipe.title )
         recipeFormData.append('description', this.selectedRecipe.description )
@@ -1708,10 +1722,10 @@
           console.log(data)
 
           setTimeout(() => {
-            this.getRecipes()
             this.showSnackbar('success','Receta creada con exito')
             this.hideModal();
             this.clearUpdateRecipeForm()
+            this.getRecipes()
           }, 500);
         }).catch((err) => {
           this.showSnackbar(err)
@@ -1789,7 +1803,7 @@
       clearUpdateRecipeForm(){
           this.productsForRecipe = [];
           this.stepperUpdateProduct = 1;
-          this.selectedRecipe = {}
+          // this.selectedRecipe = {}
           this.destroyValidate('update_recipe_form_2')
           this.destroyValidate('update_recipe_form')
 
