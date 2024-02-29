@@ -95,8 +95,9 @@ Route::middleware('jwt.verify')->prefix('recipes')->name('recipes.')->group(func
     Route::get('/get-by-id/{id}',[RecipeController::class, 'getRecipeById']);
     Route::post('/{id}',[RecipeController::class, 'updateRecipe']);
     Route::delete('/{id}',[RecipeController::class, 'deleteRecipe']);
-
-
 });
 
+Route::middleware('jwt.verify')->prefix('notification')->name('notification.')->group(function () {
+    Route::post('/',[Ordercontroller::class, 'newNotification']);
 
+});

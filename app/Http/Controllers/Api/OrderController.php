@@ -219,10 +219,16 @@ class OrderController extends Controller
 
         return json_encode($newProducts) ;
     }
-    private function productForOrderFormat($data){
-        $product = Product::find($data['id']);
+    public function newNotification(){
 
-        // $product->quantity = 
+        $data=[
+            'order'  => orderNumberFormat(Order::find(63)->id),
+            'type' => 1 ,
+            'name'=>Order::find(63)->client->name,
+        ];
+        $notification = createNotification($data);
+        
+        return  $notification;
     }
 
     /**
