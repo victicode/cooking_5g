@@ -3,7 +3,6 @@ import {createRouter, createWebHistory} from "vue-router";
 
 import guest from './middlewares/guest'
 import auth from './middlewares/auth'
-import hasAccount from './middlewares/hasAccount'
 import isAdmin from './middlewares/isAdmin'
 import middlewarePipeline from './middlewares/middlewarePipeline'
 
@@ -58,7 +57,6 @@ const router = createRouter({
           meta: {
             middleware: [
               auth,
-              isAdmin
             ],
             title : 'Productos'
           },
@@ -157,6 +155,13 @@ const router = createRouter({
           guest
         ],
         title: 'Bienvenido'
+      },
+    },
+    {
+      path: '/404',
+      component: () => import('@/pages/[...all].vue'),
+      meta: {
+        title : 'OPPS! 404',
       },
     },
     {

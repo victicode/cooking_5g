@@ -25,6 +25,7 @@ const app = createApp(App)
 router.beforeEach(async (to, from, next) => {
   // Caso 1
   document.title = to.meta.title + ' - Cooking 5G'
+
   if (!to.meta.middleware) {
     return next()
   }
@@ -43,28 +44,25 @@ router.beforeEach(async (to, from, next) => {
       item.forEach(element => document.querySelector('body').removeChild(element))
     })
   }, 200);
-  // // Caso 2
 
-  // if (window.event.type == 'popstate'){  
-  //   next(false);
-  // }else{  
-  //     next(); 
-  // }
-  // Caso 3 
+  if(from.path !== to.path) emitter.emit('displayOverlayLoad', true)
 
-    emitter.emit('displayOverlayLoad', true)
-    const middleware = to.meta.middleware
-    const context = {
-      to,
-      from,
-      next,
-      store
-    }
-    
-    return middleware[0]({
-      ...context,
-      next: middlewarePipeline(context, middleware, 1)
-    })
+  
+  const middleware = to.meta.middleware
+  const context = {
+    to,
+    from,
+    next,
+    store
+  }
+  // setTimeout(() => {
+  //   emitter.emit('displayOverlayLoad', false)
+  // }, 3000);
+
+  return middleware[0]({
+    ...context,
+    next: middlewarePipeline(context, middleware, 1)
+  })
 });
 
 // 

@@ -77,6 +77,7 @@ const actions = {
         ApiService.setHeader();
         ApiService.post("api/logout")
           .then(() => {
+            console.log('anis')
             context.commit(PURGE_AUTH);
             resolve();
           });
@@ -167,9 +168,7 @@ const mutations = {
     state.user = {};
     state.errors = {};
     window.localStorage.removeItem("id_token");
-    window.localStorage.removeItem("has_account");
     window.localStorage.removeItem("is_admin");
-    window.localStorage.removeItem("session_on");
     JwtService.destroyToken();
   }
 };

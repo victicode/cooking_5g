@@ -21,11 +21,12 @@ const props = defineProps({
       <VIcon :icon=" dropdow ? 'bx-chevron-down' : 'bx-chevron-right'"  />  
     </a>
     <ul class="ms-4">
-      <template v-for=" drowpDownItem in item.items">
+      <template v-for=" (drowpDownItem,index) in item.items" :key="index">
         <li
           class="nav-link link-son "
           :class="{ disabled: drowpDownItem.disable }" 
           @click="isSonActive()"
+          
         >
           <Component
             :is="drowpDownItem.to ? 'RouterLink' : 'a'"
