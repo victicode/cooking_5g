@@ -31,6 +31,6 @@ class NotificationCooking implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('notificationCooking');
+        return new Channel('notificationCooking');
     }
 }

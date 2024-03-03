@@ -52,6 +52,9 @@ class Order extends Model
     public function outOrder(){
         return $this->hasOne(OutOrder::class, 'order_id', 'id');
     }
+    public function lastNotifiaction(){
+        return $this->hasMany(Order::class, 'client_id', 'id')->orderBy('created_at', 'ASC')->first();
+    }
     public function products()
     {
         return $this->belongsToMany(Product::class, 'products_x_orders')->withPivot(['quantity']);

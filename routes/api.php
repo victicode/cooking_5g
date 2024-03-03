@@ -98,6 +98,14 @@ Route::middleware('jwt.verify')->prefix('recipes')->name('recipes.')->group(func
 });
 
 Route::middleware('jwt.verify')->prefix('notification')->name('notification.')->group(function () {
+    Route::get('/',function(){
+        return getAllNotifiaction();
+    });
+    Route::get('/see-all/{type}',function($type){
+
+        return seeAllNotifiaction($type);
+    });
     Route::post('/',[Ordercontroller::class, 'newNotification']);
+
 
 });

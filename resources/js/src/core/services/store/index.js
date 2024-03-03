@@ -6,6 +6,7 @@ import user from "./user.module"
 import order from "./order.module"
 import product from "./product.module"
 import recipe from "./recipe.module"
+import notification from "./notification.module"
 
 const store = createStore({
   modules:{
@@ -13,7 +14,8 @@ const store = createStore({
     order,
     product,
     recipe,
-    user
+    user,
+    notification
   }
 })
 

@@ -24,14 +24,14 @@
 <template>
   <VRow class="">
     <VCol cols="12">
-      <VCard title="Listado de clientes" class="pa-3 px-1 px-md-3">
+      <VCard title="Listado chefs master" class="pa-3 px-1 px-md-3">
         <VRow class="ma-0  justify-center justify-md-end pa-2 px-0 mb-0 pb-0">
           <VCol
             cols="11"
             md="3"
             class="ma-0 px-0 justify-center justify-md-end d-flex"
           >
-          <VBtn @click=" showModal('createNewUser')" color="primary" class="w-100 "><VIcon icon="bx-plus"/> Agregar nuevo usuario</VBtn>
+          <VBtn @click=" showModal('createNewUser')" color="primary" class="w-100 "><VIcon icon="bx-plus"/> Agregar nuevo chef</VBtn>
 
           </VCol>
         </VRow>
@@ -84,7 +84,7 @@
                   <VCardItem class="justify-center w-100  py-md-6  py-4  my-5  ">
                     <VCardTitle class="text-2xl font-weight-bold">
                       <div class="card-title d-flex ">
-                        <div class="form-title__part1">Editar usuario</div>
+                        <div class="form-title__part1">Editar Chef</div>
                         
                       </div>
                     </VCardTitle>
@@ -185,7 +185,7 @@
                         class="py-0"
                       >
                         <div class="my-md-4 my-2 text-center">
-                          <h2>Eliminar Producto</h2>
+                          <h2>Eliminar Chef</h2>
                         </div>
                       </VCol>
                       <VCol
@@ -193,7 +193,7 @@
                         class="px-md-10 px-0 text-center"
                         style=""
                       >
-                        <h2>¿Seguro que deseas eliminar a {{ selectedUser.name}} de los usuarios?</h2>
+                        <h2>¿Seguro que deseas eliminar a {{ selectedUser.name}} de los master chef?</h2>
                       </VCol>
                     </VRow>
                       
@@ -508,11 +508,6 @@ table.dataTable tbody th, table.dataTable tbody td{
                     <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                       <path data-id="${row.id}" fill="currentColor" d="M21 12a1 1 0 0 0-1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h6a1 1 0 0 0 0-2H5a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-6a1 1 0 0 0-1-1m-15 .76V17a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .71-.29l6.92-6.93L21.71 8a1 1 0 0 0 0-1.42l-4.24-4.29a1 1 0 0 0-1.42 0l-2.82 2.83l-6.94 6.93a1 1 0 0 0-.29.71m10.76-8.35l2.83 2.83l-1.42 1.42l-2.83-2.83ZM8 13.17l5.93-5.93l2.83 2.83L10.83 16H8Z"/></svg>
                   </span>
-                  <span data-bs-toggle="tooltip" data-id="${row.id}" class="orders mx-2" data-bs-placement="top" data-bs-title="Ver recetas">
-                    <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48">
-                      <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
-                        <path data-id="${row.id}" d="M12 34h24v8H12zm17 0V20m-7 14v-8"/><path d="M12 25v9h24v-9s5-3 5-8s-4-7-9-7c0-2-3-6-8-6s-8 4-8 6c-4 0-9 2-9 7s5 8 5 8"/></g></svg>
-                  </span>
                   <span data-id="${row.id}" class="delete mx-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Eliminar chef">
                     <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                       <path  data-id="${row.id}" fill="currentColor" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4zm2 2h6V4H9zM6.074 8l.857 12H17.07l.857-12zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1"/></svg>
@@ -530,11 +525,6 @@ table.dataTable tbody th, table.dataTable tbody td{
                       <span  data-id="${row.id}" class="edit mx-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editar chef">
                         <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                           <path data-id="${row.id}" fill="currentColor" d="M21 12a1 1 0 0 0-1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h6a1 1 0 0 0 0-2H5a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-6a1 1 0 0 0-1-1m-15 .76V17a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .71-.29l6.92-6.93L21.71 8a1 1 0 0 0 0-1.42l-4.24-4.29a1 1 0 0 0-1.42 0l-2.82 2.83l-6.94 6.93a1 1 0 0 0-.29.71m10.76-8.35l2.83 2.83l-1.42 1.42l-2.83-2.83ZM8 13.17l5.93-5.93l2.83 2.83L10.83 16H8Z"/></svg>
-                      </span>
-                      <span  data-bs-toggle="tooltip" data-id="${row.id}" class="orders mx-2" data-bs-placement="top" data-bs-title="Ver recetas">
-                        <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48">
-                          <g data-id="${row.id}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
-                            <path data-id="${row.id}" d="M12 34h24v8H12zm17 0V20m-7 14v-8"/><path d="M12 25v9h24v-9s5-3 5-8s-4-7-9-7c0-2-3-6-8-6s-8 4-8 6c-4 0-9 2-9 7s5 8 5 8"/></g></svg>
                       </span>
                       <span  data-id="${row.id}" class="delete mx-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Eliminar chef">
                         <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">

@@ -12,6 +12,7 @@ import { mapGetters } from "vuex";
 import Footer from '@/layouts/components/Footer.vue'
 import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
+import NotificationArea from '@/layouts/components/NotificationArea.vue'
 
 const vuetifyTheme = useTheme()
 
@@ -35,10 +36,8 @@ const vuetifyTheme = useTheme()
       
         <VSpacer />
 
-        <IconBtn class="me-2">
-          <VIcon icon="bx-bell" />
-        </IconBtn>
-
+        
+        <NotificationArea />
         <NavbarThemeSwitcher class="me-2" />
 
         <UserProfile />
@@ -125,8 +124,12 @@ const vuetifyTheme = useTheme()
 }
 </style>
 <script>
-import { mapGetters } from "vuex";
+  import { mapGetters } from "vuex";
   export default {
+    data(){
+      return{
+      }
+    },
     methods:{
     },
     computed: {

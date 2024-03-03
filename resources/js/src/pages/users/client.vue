@@ -185,7 +185,7 @@
                         class="py-0"
                       >
                         <div class="my-md-4 my-2 text-center">
-                          <h2>Eliminar Producto</h2>
+                          <h2>Eliminar Usuario</h2>
                         </div>
                       </VCol>
                       <VCol

@@ -78,17 +78,16 @@ class OrderController extends Controller
         $order = Order::create([
            'client_id'      => $request->client ?? $request->user()->id,
            'other_address'  => $request->address,
-           'status'         => $request->isManual == 'true '? '1':'2',
+           'status'         =>  '1',
            'trancker'       => '00'.rand(10000, 99999),
            'created_by'     => $request->user ?? $request->user()->id,
         ]);
-
-
-
         $this->addProductforOrder($order->id, json_decode($request->products,true), 'order');
 
 
-        $DA = '';
+        $this->newNotification(['order'=>$order->id, 'type' => 1]);     
+
+        
         if($request->isManual == 'true'){
     
             $requestOutOrder = new Request([
@@ -97,10 +96,10 @@ class OrderController extends Controller
                 'products'   => $this->formatedRequestProductsByOrder(json_decode($request->products,true))
             ]);
         
-            $DA =  $this->createOutOrder($requestOutOrder);
+            $this->createOutOrder($requestOutOrder);
         }
         
-        return $this->returnSuccess(200, $DA );
+        return $this->returnSuccess(200,  $order);
 
     }
     public function createOutOrder(Request $request)
@@ -124,7 +123,7 @@ class OrderController extends Controller
             'newStatus'   => '2',
         ]);
 
-       $this->changeStatus($newStatus, $request->order);
+        $this->changeStatus($newStatus, $request->order);
         
         return json_decode( $request->products, true);
 
@@ -155,6 +154,7 @@ class OrderController extends Controller
         $order->status = $request->newStatus;
         $order->save();
 
+        $this->newNotification(['order'=>$order->id, 'type' => 3]);   
         return [$order,$request->newStatus] ;
     }
     private function addProductforOrder($order, $products, $type){
@@ -219,14 +219,13 @@ class OrderController extends Controller
 
         return json_encode($newProducts) ;
     }
-    public function newNotification(){
+    public function newNotification($data){
 
-        $data=[
-            'order'  => orderNumberFormat(Order::find(63)->id),
-            'type' => 1 ,
-            'name'=>Order::find(63)->client->name,
+        $notificationData=[
+            'order' => $data['order'],
+            'type'  => $data['type'] ,
         ];
-        $notification = createNotification($data);
+        $notification = createNotification($notificationData);
         
         return  $notification;
     }
