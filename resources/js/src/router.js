@@ -46,7 +46,7 @@ const router = createRouter({
           meta: {
             middleware: [
               auth,
-              isAdmin
+              
             ],
             title : 'Productos'
           },
@@ -151,9 +151,6 @@ const router = createRouter({
       name: "Login",
       component: () => import('@/pages/logins.vue'),
       meta: {
-        middleware: [
-          guest
-        ],
         title: 'Bienvenido'
       },
     },

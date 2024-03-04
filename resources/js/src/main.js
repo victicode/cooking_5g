@@ -55,13 +55,10 @@ router.beforeEach(async (to, from, next) => {
     next,
     store
   }
-  // setTimeout(() => {
-  //   emitter.emit('displayOverlayLoad', false)
-  // }, 3000);
 
   return middleware[0]({
     ...context,
-    next: middlewarePipeline(context, middleware, 1)
+    next: middlewarePipeline(context, middleware, 0)
   })
 });
 

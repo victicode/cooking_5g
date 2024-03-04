@@ -15,13 +15,13 @@ export const GET_LOTE_OF_PRODUCT = "GET_LOTE_OF_PRODUCT";
 export const DELETE_LOTE_OF_PRODUCT = "DELETE_LOTE_OF_PRODUCT";
 
 const actions = {
-    [GET_PRODUCTS](context) {
+    [GET_PRODUCTS](context, query) {
         return new Promise((resolve, reject) => {
           if (JwtService.getToken()) {
             ApiService.setHeader();
-            ApiService.get("api/products")
+            ApiService.get("api/products?page="+query.page+"&product_title="+query.search+"&")
             .then(( { data } ) => {
-                // console.log(data)
+                console.log(data)
                 resolve(data);
                 
             })

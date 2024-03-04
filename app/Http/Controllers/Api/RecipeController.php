@@ -23,7 +23,7 @@ class RecipeController extends Controller
         //
 
         $recipes = Recipe::withCount('cooking_ingredients')->with('cooking_ingredients')
-                    ->where('title', 'like', '%'.$request->product_title.'%');
+                    ->where('title', 'like', '%'.$request->recipe_title.'%');
         
         // if($request->user()->rol_id !== 1){
         //     $recipes->where('created_by', $request->user()->id );

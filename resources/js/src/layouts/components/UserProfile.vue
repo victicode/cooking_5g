@@ -112,11 +112,11 @@ import { inject } from "vue";
         this.emitter.emit("displayOverlayLoad", true)
         this.$store.dispatch(LOGOUT)
         .then(() => { 
-          this.$router.go('/login')
+          window.location.href = "/login";
         
         })
         .catch(()=>{ 
-          this.$router.go('/login')
+          window.location.href = "/login";
         });
       }
       

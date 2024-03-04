@@ -13,9 +13,16 @@ use App\Http\Controllers\Controller;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return $this->returnSuccess(200, Product::with(['dismantling.products_pieces', 'lotes:due_date'])->get());
+
+        $products = Product::with(['dismantling.products_pieces', 'lotes'])->where('title', 'like', '%'.$request->product_title.'%');
+        
+        // if($request->user()->rol_id !== 1){
+        //     $products->where('created_by', $request->user()->id );
+        // }
+
+        return $this->returnSuccess(200, $products->paginate(10) );
     }
 
     public function getProductById($id){
