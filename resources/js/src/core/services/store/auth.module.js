@@ -77,7 +77,6 @@ const actions = {
         ApiService.setHeader();
         ApiService.post("api/logout")
           .then(() => {
-            console.log('anis')
             context.commit(PURGE_AUTH);
             resolve();
           });

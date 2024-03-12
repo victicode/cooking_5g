@@ -22,6 +22,16 @@ class Product extends Model
         'updated_by', 
         'due_date_most_evenly'
     ];
+    protected $appends = ['total_stock'];
+    
+    public function getTotalStockAttribute()
+    {
+        $l= 0;
+        foreach ($this->lotes as $lote) {
+            $l +=  $lote->quantity;
+        }
+      return  $l;  
+    }
     public function orders()
     {
         return $this->belongsToMany(Order::class, 'products_x_orders');
@@ -37,6 +47,6 @@ class Product extends Model
         return $this->hasMany(Notification::class, 'product_id', 'id');
     }
     public function lotes(){
-        return $this->hasMany(Lot::class, 'product_id', 'id')->orderBy('due_date', 'ASC')->where('quantity', '>', 0);
+        return $this->hasMany(Lot::class, 'product_id', 'id')->orderBy('due_date', 'ASC');
     }
 }

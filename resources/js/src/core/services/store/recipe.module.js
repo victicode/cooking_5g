@@ -15,7 +15,7 @@ const actions = {
         return new Promise((resolve, reject) => {
           if (JwtService.getToken()) {
             ApiService.setHeader();
-            ApiService.get("api/recipes?page="+query.page+"&product_title="+query.search+"&")
+            ApiService.get("api/recipes?page="+query.page+"&recipe_title="+query.search+"&")
             .then(( { data } ) => {
                 // console.log(data)
                 resolve(data);
