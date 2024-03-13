@@ -50,7 +50,7 @@
         </div>
       </template>
 
-      <v-list v-if="notifications.length > 0" class="notification-list" style="">
+      <v-list v-if="notifications.length > 0" class="notification-list pb-5" style="">
         <v-list-item
           v-for="(item, i) in notifications"
           :key="i"
@@ -65,8 +65,8 @@
           >
             <Component
               :is="'RouterLink'"
-              :to="item.type == 1 ? '/orders': item.type == 2 ? '/products' : '/products'"
-              :href="item.type == 1 ? '/orders': item.type == 2 ? '/products ' : '/products'"
+              :to="item.type == 1 ? '/orders': item.type == 2 ? '/products' : '/orders'"
+              :href="item.type == 1 ? '/orders': item.type == 2 ? '/products ' : '/orders'"
             >
                 <div class="w-100 text-right notification-time_text text-secondary">
                   {{ moment(item.created_at).startOf('hour').fromNow()  }}

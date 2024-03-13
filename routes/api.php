@@ -2,11 +2,12 @@
 
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\LoteController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\OrderController;
-use App\Http\Controllers\Api\RecipeController;
 
+use App\Http\Controllers\Api\RecipeController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\Auth\AuthController;
 
@@ -87,6 +88,11 @@ Route::middleware('jwt.verify')->prefix('products')->name('product.')->group(fun
 Route::middleware('jwt.verify')->prefix('lotes')->name('lotes.')->group(function () {
     Route::get('/get-by-id/{id}',[LoteController::class, 'getLoteById']);
     Route::delete('/{id}',[LoteController::class, 'deleteLote']);
+
+});
+Route::middleware('jwt.verify')->prefix('cart')->name('cart.')->group(function () {
+    Route::get('/',[CartController::class, 'index']);
+    Route::post('/',[CartController::class, 'store']);
 
 });
 Route::middleware('jwt.verify')->prefix('recipes')->name('recipes.')->group(function () {
