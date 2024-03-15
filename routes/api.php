@@ -93,6 +93,12 @@ Route::middleware('jwt.verify')->prefix('lotes')->name('lotes.')->group(function
 Route::middleware('jwt.verify')->prefix('cart')->name('cart.')->group(function () {
     Route::get('/',[CartController::class, 'index']);
     Route::post('/',[CartController::class, 'store']);
+    Route::post('/item/{id}',[CartController::class, 'deleteItem']);
+    Route::post('/item/quantity/{id}',[CartController::class, 'editItemQuantity']);
+    Route::delete('/{id}',[CartController::class, 'destroy']);
+
+
+
 
 });
 Route::middleware('jwt.verify')->prefix('recipes')->name('recipes.')->group(function () {

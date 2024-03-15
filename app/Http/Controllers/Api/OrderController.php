@@ -77,7 +77,7 @@ class OrderController extends Controller
     {
         $order = Order::create([
            'client_id'      => $request->client ?? $request->user()->id,
-           'other_address'  => $request->address,
+           'other_address'  => $request->address ?? $request->user()->user_address,
            'status'         =>  '1',
            'trancker'       => '00'.rand(10000, 99999),
            'created_by'     => $request->user ?? $request->user()->id,

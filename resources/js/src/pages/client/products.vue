@@ -21,8 +21,8 @@
       <VRow class="ma-0  justify-start align-center justify-md-start pa-2 px-0 mb-0 mb-md-2">
         <VCol cols="12" md="4" class="form-group">
           <VTextField
-            placeholder="Buscar nombre de receta"
-            label="Buscar por receta"
+            placeholder="Buscar producto"
+            label="Buscar producto"
             type="text"
             ref="recipe_title_search"
             name="recipe_title"
@@ -45,7 +45,6 @@
           <VCol
             sm="6"
             cols="6"
-            
             v-for="(product, index) in allProducts" :key="product.id"
             class="pa-0 mb-md-3 mb-2"
             :class="index%2 == 0 ? 'ps-2 ps-md-3 pe-0 pe-md-3' : 'ps-1 ps-md-3 pe-2 pe-md-3' "
@@ -74,15 +73,15 @@
                     
                   >
                     <div class="pb-14 relative position-relative h-100">
-                      <VCardItem >
+                      <VCardItem class="px-4">
                         <h3 class="ma-0 pa-0">{{product.title}}</h3>
                       </VCardItem>
   
-                      <VCardText>
+                      <VCardText class="px-4">
                         {{ product.description}}
                       </VCardText>
   
-                      <VCardText class="text-subtitle-1 d-flex  align-center">
+                      <VCardText class="px-4 text-subtitle-1 d-flex  align-center">
                         <span>Stock :</span> 
                         <span class="font-weight-medium ms-1">
                           <v-chip :class="product.total_stock  < 1 ? 'bg-error' : product.total_stock  >= 30 ? 'bg-success' : 'bg-warning'">
@@ -91,12 +90,15 @@
                         </span>
                       </VCardText>
   
-                       <VCardActions class="justify-end d-flex w-100 add-to-cart__button" >
-                        <v-btn @click="addToCart(product.id)" prepend-icon="iconoir:cart-alt" variant="outlined" class="d-md-none d-flex w-100 elevation-24">
-                          Agregar
+                       <VCardActions class="justify-end d-flex w-100 add-to-cart__button ps-md-0"   >
+                        <v-btn 
+                          @click="productInCart(product.id) ? addToCart(product.id) : showSnackbar('success','Producto ya agregado')" 
+                          :prepend-icon="productInCart(product.id) ? 'iconoir:cart-alt' : 'ic:baseline-check'" variant="outlined" class="d-md-none d-flex w-100 elevation-24">
+                         {{ productInCart(product.id) ?'Agregar':'Agregado'}} 
                         </v-btn>
-                        <v-btn @click="addToCart(product.id)" prepend-icon="iconoir:cart-alt" variant="outlined" class="d-none d-md-flex w-100 elevation-24">
-                          Agregar al carrito
+                        <v-btn  
+                          @click="productInCart(product.id) ? addToCart(product.id) : showSnackbar('success','Producto ya agregado')" :prepend-icon="productInCart(product.id) ? 'iconoir:cart-alt' : 'ic:baseline-check'" variant="outlined" class="d-none d-md-flex w-100 elevation-24 ">
+                          {{ productInCart(product.id) ?'Agregar al carrito':'Agregado al carrito'}} 
                         </v-btn>
                       </VCardActions>
                     </div>
@@ -126,7 +128,7 @@
         </VRow>
     </div>
     <v-snackbar
-    v-model="snackShow"
+      v-model="snackShow"
       :color="snackType"
       rounded="pill"
       :timeout="snacktimeOut"
@@ -142,29 +144,7 @@
         >
         <VBtn  color="white" class="text-white" @click="snackShow=false"> Cerrar</VBtn>
         </template>
-    </v-snackbar>
-    <v-navigation-drawer
-          v-model="drawer"
-          location="bottom"
-          temporary
-          :class="`${drawer ? 'd-block' : 'd-none'}` "
-          style="height: 180px; background: #f1f1f1; border-top-right-radius: 20px; border-top-left-radius: 20px; overflow-y: visible;"
-        >
-        <div class="text-center d-flex flex-column  h-100" style="position: relative;">
-          <div :class="`drawer__close-button ${drawer ? 'active' : ''}`" >
-            <v-col  class="pa-0 pe-4">
-              <v-btn icon="mingcute:close-fill" class="bg-secondary shadow-button"   @click="drawer = false" ></v-btn>
-            </v-col>
-          </div>
-          <h3 class="mt-4 mb-0">hola</h3>
-          <div class="d-flex  justify-space-between mx-8  align-center h-50 mt-4 " style="box-sizing:content-box;">
-            
-            <v-btn size="large" class="d-block mx-2 shadow-button" color="primary" @click="showModal('viewRecipe')" icon="carbon:view" />
-            <v-btn size="large" class="d-block mx-2 shadow-button" color="primary" @click="showModal('updateRecipe')" icon="line-md:edit-twotone-full" />
-            <v-btn size="large" class="d-block mx-2 shadow-button" color="error" @click="showModal('deleteRecipe')" icon="mi:delete" />
-          </div>
-        </div>
-    </v-navigation-drawer>    
+    </v-snackbar>   
     <buyCart />
   </div>
 </template>
@@ -199,6 +179,7 @@
 
   export default {
     data: () => ({
+      productsAreReady:true,
       allProducts:[],
       pagination:{
         currentPage:1,
@@ -210,7 +191,7 @@
       snackShow:false,
       snackMessage:'',
       snackType:'',
-      snacktimeOut:1000,
+      snacktimeOut:2000,
       drawer:false,
 
     }),
@@ -228,6 +209,7 @@
         this.$store.dispatch(GET_PRODUCTS, data ).then((data)=>{
           this.allProducts = data.data.data
           this.pagination.totalPage = data.data.last_page
+          // this.productsAreReady=true
 
         })
       },
@@ -307,11 +289,8 @@
         this.internalModal.show()
       },
       hideModal(){
-        
         this.clearNewRecipeForm()
-        // this.clearUpdateRecipeForm()
         this.modal.hide();
-
       },
       hideInternalModal(){
         this.internalModal.hide();
@@ -355,26 +334,26 @@
       addToCart(id){
         this.selectProduct(id).finally((data)=>{
           setTimeout(() => {
-            this.selectedProduct.cartQuantity = 500;
-
+            this.selectedProduct.quantity = 1;
             const cartFormData = new FormData
             cartFormData.append('products', JSON.stringify(this.selectedProduct))
             this.$store
               .dispatch(ADD_TO_CART, cartFormData)
                 .then((data) =>{
-                  setTimeout(() => {
-                    console.log(data)
-                    // console.log(data.split("-"))
-                  }, 500);
+                  this.emitter.emit('getItems')
+                  this.getProducts()
                 }).catch((err) => {
                   console.log(err)
-
               });
           }, 800);
-        })
-
-        
-      
+        })      
+      },
+      productInCart(id){
+        if(this.$store.cart){
+          const data = this.$store.cart.find((product) => product.id == id);
+           return data ? false : true
+        }
+        return true
       }
       
     },
@@ -383,7 +362,9 @@
       // this.validateFormItem('new_recipe_form')
     },
     created(){
-      
+      this.emitter.on("deleteItemOfCart", () => {
+        this.getProducts()
+      })
       this.emitter.emit('displayOverlayLoad', false)
     }
     

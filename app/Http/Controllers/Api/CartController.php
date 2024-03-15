@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
+use Exception;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -15,7 +16,15 @@ class CartController extends Controller
      */
     public function index(Request $request)
     {
-        return $this->returnSuccess(200, Cart::where('user_id',$request->user()->id,)->first());
+
+        $cart =Cart::where('user_id',$request->user()->id,)->first();
+        if(!$cart){
+            return $this->returnFail(400, 'Carrito no encontrado');
+
+        }
+
+       
+        return $this->returnSuccess(200, $cart );
     }
     
     /**
@@ -52,19 +61,9 @@ class CartController extends Controller
             ]);
             return $this->returnSuccess(200, [$car]);
         }
-
-
-
-
         $currentCart->description .= $request->products.'?';
         $currentCart->save();
         return $this->returnSuccess(200, $currentCart->description);
-    }
-    private function formatCart($cart, $newItem){
-
-        array_push($cart,$newItem);
-        
-        return json_encode($cart);
     }
     /**
      * Display the specified resource.
@@ -83,9 +82,15 @@ class CartController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function editItemQuantity(Request $request, $id)
     {
-        //
+        $currentCart =Cart::where('user_id',$request->user()->id,)->first();
+        $itemsOfCart = explode("?", $currentCart->description);
+        $itemsOfCart[$id] = $request->products;
+
+        $currentCart->description = implode("?", $itemsOfCart);
+        $currentCart->save();
+        return $this->returnSuccess(200, $request->products);
     }
 
     /**
@@ -108,6 +113,18 @@ class CartController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $currentCart =Cart::find($id);
+        $currentCart->description = null;
+        $currentCart->save();
+        return $this->returnSuccess(200, 'success');
+    }
+    public function deleteItem(Request $request,$id){
+        $currentCart =Cart::where('user_id',$request->user()->id,)->first();
+        $itemsOfCart = explode("?", $currentCart->description);
+        unset($itemsOfCart[$id]);
+
+        $currentCart->description = implode("?", $itemsOfCart);
+        $currentCart->save();
+        return $this->returnSuccess(200, $currentCart->description);
     }
 }
