@@ -1,12 +1,7 @@
 <script setup >
   import * as bootstrap from 'bootstrap'
-  import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
   import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
-  import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
-  import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
-  import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
   import debounce from 'debounce';
-  import viewProductModal from '@/views/pages/modals/viewProductModal.vue';
   import moment from 'moment';
   import { GET_PRODUCTS, GET_PRODUCT_BY_ID } from "@/core/services/store/product.module";
   import { ADD_TO_CART } from "@/core/services/store/cart.module";
@@ -92,12 +87,12 @@
   
                        <VCardActions class="justify-end d-flex w-100 add-to-cart__button ps-md-0"   >
                         <v-btn 
-                          @click="productInCart(product.id) ? addToCart(product.id) : showSnackbar('success','Producto ya agregado')" 
+                          @click="productInCart(product.id) ? addToCart(product) : showSnackbar('success','Producto ya agregado')" 
                           :prepend-icon="productInCart(product.id) ? 'iconoir:cart-alt' : 'ic:baseline-check'" variant="outlined" class="d-md-none d-flex w-100 elevation-24">
                          {{ productInCart(product.id) ?'Agregar':'Agregado'}} 
                         </v-btn>
                         <v-btn  
-                          @click="productInCart(product.id) ? addToCart(product.id) : showSnackbar('success','Producto ya agregado')" :prepend-icon="productInCart(product.id) ? 'iconoir:cart-alt' : 'ic:baseline-check'" variant="outlined" class="d-none d-md-flex w-100 elevation-24 ">
+                          @click="productInCart(product.id) ? addToCart(product) : showSnackbar('success','Producto ya agregado')" :prepend-icon="productInCart(product.id) ? 'iconoir:cart-alt' : 'ic:baseline-check'" variant="outlined" class="d-none d-md-flex w-100 elevation-24 ">
                           {{ productInCart(product.id) ?'Agregar al carrito':'Agregado al carrito'}} 
                         </v-btn>
                       </VCardActions>
@@ -331,12 +326,11 @@
         this.snackType = type
         this.snackMessage = messagge
       },
-      addToCart(id){
-        this.selectProduct(id).finally((data)=>{
+      addToCart(product){
           setTimeout(() => {
-            this.selectedProduct.quantity = 1;
+            product.quantity = 1;
             const cartFormData = new FormData
-            cartFormData.append('products', JSON.stringify(this.selectedProduct))
+            cartFormData.append('products', JSON.stringify(product))
             this.$store
               .dispatch(ADD_TO_CART, cartFormData)
                 .then((data) =>{
@@ -345,8 +339,7 @@
                 }).catch((err) => {
                   console.log(err)
               });
-          }, 800);
-        })      
+          }, 800);     
       },
       productInCart(id){
         if(this.$store.cart){

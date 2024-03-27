@@ -1,0 +1,196 @@
+{
+  "_webfontloader-BaGzUOIq.js": {
+    "file": "assets/webfontloader-BaGzUOIq.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-B_SY1GJM.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-C5t_NAKZ.js",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "_webfontloader-BaGzUOIq.js",
+      "resources/js/src/pages/dashboard.vue",
+      "resources/js/src/pages/typography.vue",
+      "resources/js/src/pages/icons.vue",
+      "resources/js/src/pages/cards.vue",
+      "resources/js/src/pages/tables.vue",
+      "resources/js/src/pages/form-layouts.vue",
+      "resources/js/src/pages/logins.vue",
+      "resources/js/src/pages/[...all].vue",
+      "resources/js/src/pages/[...all].vue"
+    ],
+    "css": [
+      "assets/app-BxxQFfz8.css"
+    ],
+    "assets": [
+      "assets/notification4-CtOLJ-sq.mp3",
+      "assets/avatar-1-DL1ARROH.png"
+    ]
+  },
+  "resources/js/src/assets/audio/notification4.mp3": {
+    "file": "assets/notification4-CtOLJ-sq.mp3",
+    "src": "resources/js/src/assets/audio/notification4.mp3"
+  },
+  "resources/js/src/assets/images/avatars/avatar-1.png": {
+    "file": "assets/avatar-1-DL1ARROH.png",
+    "src": "resources/js/src/assets/images/avatars/avatar-1.png"
+  },
+  "resources/js/src/assets/images/avatars/avatar-2.png": {
+    "file": "assets/avatar-2-D-0hhBDR.png",
+    "src": "resources/js/src/assets/images/avatars/avatar-2.png"
+  },
+  "resources/js/src/assets/images/avatars/avatar-3.png": {
+    "file": "assets/avatar-3-BowASP-2.png",
+    "src": "resources/js/src/assets/images/avatars/avatar-3.png"
+  },
+  "resources/js/src/assets/images/avatars/avatar-4.png": {
+    "file": "assets/avatar-4-DTP-WtUz.png",
+    "src": "resources/js/src/assets/images/avatars/avatar-4.png"
+  },
+  "resources/js/src/assets/images/avatars/avatar-8.png": {
+    "file": "assets/avatar-8-DRlSCgqr.png",
+    "src": "resources/js/src/assets/images/avatars/avatar-8.png"
+  },
+  "resources/js/src/assets/images/cards/illustration-john-dark.png": {
+    "file": "assets/illustration-john-dark-CXq7qNOq.png",
+    "src": "resources/js/src/assets/images/cards/illustration-john-dark.png"
+  },
+  "resources/js/src/assets/images/cards/illustration-john-light.png": {
+    "file": "assets/illustration-john-light-1Av6zeMt.png",
+    "src": "resources/js/src/assets/images/cards/illustration-john-light.png"
+  },
+  "resources/js/src/assets/images/eCommerce/2.png": {
+    "file": "assets/2-xjy_pXoW.png",
+    "src": "resources/js/src/assets/images/eCommerce/2.png"
+  },
+  "resources/js/src/assets/images/pages/1.png": {
+    "file": "assets/1-M41J_I81.png",
+    "src": "resources/js/src/assets/images/pages/1.png"
+  },
+  "resources/js/src/assets/images/pages/2.png": {
+    "file": "assets/2--m0KoIht.png",
+    "src": "resources/js/src/assets/images/pages/2.png"
+  },
+  "resources/js/src/assets/images/pages/3.png": {
+    "file": "assets/3-BZq9BJpS.png",
+    "src": "resources/js/src/assets/images/pages/3.png"
+  },
+  "resources/js/src/assets/images/pages/404.png": {
+    "file": "assets/404-KybqypYR.png",
+    "src": "resources/js/src/assets/images/pages/404.png"
+  },
+  "resources/js/src/assets/images/pages/5.jpg": {
+    "file": "assets/5-CFPERer_.jpg",
+    "src": "resources/js/src/assets/images/pages/5.jpg"
+  },
+  "resources/js/src/assets/images/pages/6.jpg": {
+    "file": "assets/6-C2cDgitj.jpg",
+    "src": "resources/js/src/assets/images/pages/6.jpg"
+  },
+  "resources/js/src/pages/[...all].vue": {
+    "file": "assets/_...all_-kwMbOFqQ.js",
+    "src": "resources/js/src/pages/[...all].vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "css": [
+      "assets/_..-LsaygTKB.css"
+    ],
+    "assets": [
+      "assets/404-KybqypYR.png"
+    ]
+  },
+  "resources/js/src/pages/cards.vue": {
+    "file": "assets/cards-6PQ1vR_u.js",
+    "src": "resources/js/src/pages/cards.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "css": [
+      "assets/cards-243IfcMM.css"
+    ],
+    "assets": [
+      "assets/avatar-2-D-0hhBDR.png",
+      "assets/avatar-3-BowASP-2.png",
+      "assets/avatar-4-DTP-WtUz.png",
+      "assets/2-xjy_pXoW.png",
+      "assets/1-M41J_I81.png",
+      "assets/2--m0KoIht.png",
+      "assets/3-BZq9BJpS.png",
+      "assets/5-CFPERer_.jpg",
+      "assets/6-C2cDgitj.jpg",
+      "assets/avatar-8-DRlSCgqr.png"
+    ]
+  },
+  "resources/js/src/pages/dashboard.vue": {
+    "file": "assets/dashboard-DBTJ-QrP.js",
+    "src": "resources/js/src/pages/dashboard.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "css": [
+      "assets/dashboard-zdfEE9Cy.css"
+    ],
+    "assets": [
+      "assets/illustration-john-dark-CXq7qNOq.png",
+      "assets/illustration-john-light-1Av6zeMt.png"
+    ]
+  },
+  "resources/js/src/pages/form-layouts.vue": {
+    "file": "assets/form-layouts-BOaXEPaE.js",
+    "src": "resources/js/src/pages/form-layouts.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "css": [
+      "assets/form-layouts-WW_wraPr.css"
+    ]
+  },
+  "resources/js/src/pages/icons.vue": {
+    "file": "assets/icons-DlJous3L.js",
+    "src": "resources/js/src/pages/icons.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/src/pages/logins.vue": {
+    "file": "assets/logins-BV8ytMmH.js",
+    "src": "resources/js/src/pages/logins.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "css": [
+      "assets/logins-0-2BY3sE.css"
+    ]
+  },
+  "resources/js/src/pages/tables.vue": {
+    "file": "assets/tables-ezoP0pml.js",
+    "src": "resources/js/src/pages/tables.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/src/pages/typography.vue": {
+    "file": "assets/typography-Bjf0ksBE.js",
+    "src": "resources/js/src/pages/typography.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ]
+  }
+}

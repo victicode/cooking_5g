@@ -87,12 +87,12 @@ const token = localStorage.getItem('id_token')
                         Historial
                       </v-btn>
                       <div v-if="order.out_order">
-                        <a :href="'http://10.10.10.69:8085/api/out_order/print/' + order.out_order.id +'?token='+token"  target="_blank" rel="noopener noreferrer">
+                        <a :href="meta.env.VITE_VUE_APP_BACKEND_URL+'api/out_order/print/' + order.out_order.id +'?token='+token"  target="_blank" rel="noopener noreferrer">
                           <v-btn append-icon="carbon:delivery"  class="d-none d-md-flex mx-2" rounded="xs" variant="outlined">
                             Orden de salida
                           </v-btn>
                         </a>
-                        <a :href="'http://10.10.10.69:8085/api/out_order/print/' + order.out_order.id +'?token='+token"  target="_blank" rel="noopener noreferrer">
+                        <a :href="meta.env.VITE_VUE_APP_BACKEND_URL+'api/out_order/print/' + order.out_order.id +'?token='+token"  target="_blank" rel="noopener noreferrer">
                           <v-btn append-icon="carbon:delivery"  class="d-flex d-md-none" rounded="xs" variant="outlined">
                             Ver salida
                           </v-btn>

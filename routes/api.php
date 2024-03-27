@@ -72,7 +72,7 @@ Route::middleware('jwt.verify')->prefix('out_order')->name('out_order.')->group(
     Route::get('/print/{id}', [OrderController::class, 'printOutOrder']);
 
 });
-Route::middleware('jwt.verify')->prefix('products')->name('product.')->group(function () {
+Route::prefix('products')->name('product.')->group(function () {
     Route::get('/', [ProductController::class, 'index']);
     Route::get('/lotes', [ProductController::class, 'index']);
     Route::post('/',[ProductController::class, 'storeProduct']);
@@ -110,14 +110,13 @@ Route::middleware('jwt.verify')->prefix('recipes')->name('recipes.')->group(func
 });
 
 Route::middleware('jwt.verify')->prefix('notification')->name('notification.')->group(function () {
-    Route::get('/',function(){
-        return getAllNotifiaction();
+    Route::get('/{id}',function($id){
+        return getAllNotifiaction($id);
     });
-    Route::get('/see-all/{type}',function($type){
+    Route::get('/see-all/{user}/{type}',function($user,$type){
 
-        return seeAllNotifiaction($type);
+        return seeAllNotifiaction($user, $type);
     });
     Route::post('/',[Ordercontroller::class, 'newNotification']);
-
 
 });

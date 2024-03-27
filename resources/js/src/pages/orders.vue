@@ -508,6 +508,7 @@
               `
             }   
           },
+      
           { 
             title: 'Track ID',
             class:'text-md-center text-start',
@@ -517,6 +518,20 @@
               
               <span class="justify-center">
                 #${row.trancker}
+              </span>
+              `
+            } 
+
+          },
+          { 
+            title: 'Orden N°',
+            class:'text-md-center text-start',
+            orderable: false, 
+            render: ( data, type, row, meta ) =>{ 
+              return `
+              
+              <span class="justify-center">
+                #${window.$orderFormat(row.id)}
               </span>
               `
             } 
@@ -571,11 +586,13 @@
                   </span>
               `
               if(row.status == 1 ){
-                html += `
-                    <span data-bs-toggle="tooltip" data-id="${row.id}" class="process mx-2" data-bs-placement="top" data-bs-title="Procesar salida">
-                      <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24">
-                        <path data-id="${row.id}" fill="currentColor" d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5s.67 1.5 1.5 1.5m1.5-9H17V12h4.46zM6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5s.67 1.5 1.5 1.5M20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4zM3 6v9h.76c.55-.61 1.35-1 2.24-1c.89 0 1.69.39 2.24 1H15V6zm7 1l3.5 3.5L10 14v-2.5H5v-2h5z"/></svg>
-                    </span>`
+                if(window.localStorage.is_admin !='false'){
+                  html += `
+                      <span data-bs-toggle="tooltip" data-id="${row.id}" class="process mx-2" data-bs-placement="top" data-bs-title="Procesar salida">
+                        <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24">
+                          <path data-id="${row.id}" fill="currentColor" d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5s.67 1.5 1.5 1.5m1.5-9H17V12h4.46zM6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5s.67 1.5 1.5 1.5M20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4zM3 6v9h.76c.55-.61 1.35-1 2.24-1c.89 0 1.69.39 2.24 1H15V6zm7 1l3.5 3.5L10 14v-2.5H5v-2h5z"/></svg>
+                      </span>`
+                }
               }
               if(row.status == 2 ){
                 html += `
@@ -608,11 +625,14 @@
                       </span>
               `
               if(row.status == 1 ){
-                html += `
-                <span data-bs-toggle="tooltip" data-id="${row.id}" class="process mx-3" data-bs-placement="top" data-bs-title="Procesar salida">
-                  <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" width="1em" height="1em" viewBox="0 0 24 24">
-                    <path data-id="${row.id}" fill="currentColor" d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5s.67 1.5 1.5 1.5m1.5-9H17V12h4.46zM6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5s.67 1.5 1.5 1.5M20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4zM3 6v9h.76c.55-.61 1.35-1 2.24-1c.89 0 1.69.39 2.24 1H15V6zm7 1l3.5 3.5L10 14v-2.5H5v-2h5z"/></svg>
-                </span>`
+                if(window.localStorage.is_admin !='false'){
+                  
+                  html += `
+                  <span data-bs-toggle="tooltip" data-id="${row.id}" class="process mx-3" data-bs-placement="top" data-bs-title="Procesar salida">
+                    <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--mdi" width="1em" height="1em" viewBox="0 0 24 24">
+                      <path data-id="${row.id}" fill="currentColor" d="M18 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5s.67 1.5 1.5 1.5m1.5-9H17V12h4.46zM6 18.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5s.67 1.5 1.5 1.5M20 8l3 4v5h-2c0 1.66-1.34 3-3 3s-3-1.34-3-3H9c0 1.66-1.34 3-3 3s-3-1.34-3-3H1V6c0-1.11.89-2 2-2h14v4zM3 6v9h.76c.55-.61 1.35-1 2.24-1c.89 0 1.69.39 2.24 1H15V6zm7 1l3.5 3.5L10 14v-2.5H5v-2h5z"/></svg>
+                  </span>`
+                }
               }
               if(row.status == 2 ){
                 html += `
@@ -930,7 +950,6 @@
         ? 'success'
         : 'error';
 
-        console.log(newStatus)
         this.$store
           .dispatch(CHANGE_STATUS, {id:this.selectedOrder.id, newStatus: newStatus})
           .then((response) => {
@@ -978,9 +997,13 @@
         const formData = new FormData();
         formData.append('order', this.selectedOrder.id);
         formData.append('products', JSON.stringify(products));
+
+
+        console.log(products)
         this.$store
           .dispatch(CREATE_OUT_ORDER, formData)
           .then((response) => {
+            console.log(response)
             this.filterColumn()
             this.hideModal()
             this.showSnackbar('success', 'Orden creada con exito')

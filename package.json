@@ -1,8 +1,8 @@
 {
     "private": true,
     "scripts": {
-        "dev-home": "vite --host 192.168.31.60 --port 8086",
-        "dev": "vite --host 10.10.10.69 --port 8086",
+        "dev-home": "vite --host 192.168.31.20 --port 8086",
+        "dev": "vite --host",
         "build": "vite build ",
         "preview": "vite preview "
     },

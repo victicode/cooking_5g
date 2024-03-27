@@ -7,11 +7,11 @@ export const SEE_ALL_NOTIFICATIONS_BY_TYPE = "SEE_ALL_NOTIFICATIONS_BY_TYPE"
 
 
 const actions = {
-  [GET_NOTIFICATIONS](context,body){
+  [GET_NOTIFICATIONS](context,userId){
     return new Promise((resolve, reject) => {
       if (JwtService.getToken()) {
         ApiService.setHeader();
-        ApiService.get("api/notification")
+        ApiService.get("api/notification/"+userId)
         .then(( { data } ) => {
             console.log(data)
             resolve(data);
@@ -24,11 +24,11 @@ const actions = {
       }
     });
   },
-  [SEE_ALL_NOTIFICATIONS_BY_TYPE](context, type){
+  [SEE_ALL_NOTIFICATIONS_BY_TYPE](context, data){
     return new Promise((resolve, reject) => {
       if (JwtService.getToken()) {
         ApiService.setHeader();
-        ApiService.get("api/notification/see-all/"+type)
+        ApiService.get("api/notification/see-all/"+data.id+"/"+data.type)
         .then(( { data } ) => {
             console.log(data)
             resolve(data);

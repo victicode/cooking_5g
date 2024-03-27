@@ -152,7 +152,7 @@ const mutations = {
     JwtService.saveToken(token);
   },
   [SET_IS_ADMIN](state, user) {
-    window.localStorage.setItem("is_admin", user.rol_id === 1 ? true : false);
+    window.localStorage.setItem("is_admin", user.rol_id !== 3 ? true : false);
   },
   [SET_AUTH](state, user) {
     state.isAuthenticated = true;

@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 class Product extends Model
 {
     use HasFactory, SoftDeletes;
@@ -22,19 +24,49 @@ class Product extends Model
         'updated_by', 
         'due_date_most_evenly'
     ];
-    protected $appends = ['total_stock'];
+    protected $appends = ['total_stock', 'total_products_in_order'];
     
     public function getTotalStockAttribute()
     {
-        $l= 0;
+        $stockInLotes= 0;
         foreach ($this->lotes as $lote) {
-            $l +=  $lote->quantity;
+            try {
+                $stockInLotes = $stockInLotes +  floatval($lote->quantity);
+            } catch ( Exception $r) {
+                $stockInLotes = $r->getMessage();
+            }
         }
-      return  $l;  
+        $quintityInOrders = 0;
+        foreach ($this->orders as $order) {
+            if($order->status == 1){
+
+                try {
+                    $quintityInOrders = $quintityInOrders +  floatval($order->pivot->quantity);
+                } catch ( Exception $r) {
+                    $quintityInOrders = $r->getMessage();
+                }
+            }
+        }
+
+      return floatval( $stockInLotes) - floatval($quintityInOrders);  
+    }
+    public function getTotalProductsInOrderAttribute()
+    {
+        $l= 0;
+        foreach ($this->orders as $order) {
+            try {
+                //code...
+                $l = $l +  floatval($order->pivot->quantity);
+            } catch ( Exception $r) {
+                //throw $th;
+                $l = $r->getMessage();
+            }
+        }
+        return $l ;
     }
     public function orders()
     {
-        return $this->belongsToMany(Order::class, 'products_x_orders');
+        return $this->belongsToMany(Order::class, 'products_x_orders')->withPivot(['quantity']);
     }
     public function out_orders()
     {

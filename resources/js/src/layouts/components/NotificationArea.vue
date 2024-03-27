@@ -139,19 +139,22 @@
       }
     },
     methods:{
+  
       getNotifications(){
-        this.$store
-        .dispatch(GET_NOTIFICATIONS)
-        .then((data)=> {
-          this.notifications = data.all ; 
-          this.notifiactions_count = data.new_count ; 
-
-        })
+        setTimeout(() => {
+          this.$store
+          .dispatch(GET_NOTIFICATIONS, this.getCurrentAccount.id)
+          .then((data)=> {
+            this.notifications = data.all ; 
+            this.notifiactions_count = data.new_count ; 
+  
+          })
+        }, 1000);
       },
       seeAllNotificationByType(type){
 
         this.$store
-        .dispatch(SEE_ALL_NOTIFICATIONS_BY_TYPE,type )
+        .dispatch(SEE_ALL_NOTIFICATIONS_BY_TYPE,{type:type, id:this.getCurrentAccount.id} )
         .then((data)=> {
           setTimeout(() => {
             this.getNotifications()
@@ -163,9 +166,9 @@
     },
     mounted(){
       this.getNotifications()
-      Notification.requestPermission().then(function (result) {
-        console.log(result);
-      });
+      // Notification.requestPermission().then(function (result) {
+      //   console.log(result);
+      // });
       window.Echo.channel('notificationCooking')
       .listen('NotificationCooking',(e)=>{
         this.sound.play()
@@ -174,7 +177,7 @@
         setTimeout(() => {
           document.querySelector('.notification__count').classList.toggle('animate__bounce')
           
-        }, 2100);
+        }, 1000);
       })
     },
     computed: {

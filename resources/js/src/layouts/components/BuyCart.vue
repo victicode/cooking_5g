@@ -11,7 +11,7 @@
     <div 
       class="position-fixed cart-float__button" 
       style=""
-      @click="showModal('showCart')" 
+      @click="showModal()" 
     >
     <div>
   
@@ -51,7 +51,7 @@
                       class="py-0"
                     >
                       <div class="my-md-4 my-2 text-center">
-                        <h2>Carrito de compras</h2>
+                        <h2>Carrito de órdenes</h2>
                       </div>
                     </VCol>
                     <template v-if="cartIsReady">
@@ -94,7 +94,7 @@
                                         type="number"
                                         :hint="'Max:'+product.total_stock"
                                         persistent-hint
-                                        @keyup="validateQuantityField(index, product.id)"
+                                        @change="validateQuantityField(index, product.id)"
                                         v-model="product.quantity"
                                         autocomplete="off"
                                         class="cart-quantity-input" 
@@ -262,18 +262,12 @@
           }, 500)
     
       },
-      showModal(modal) {
+      showModal() {
         try {
           this.hideModal()
         } catch (error) {
           
         }
-        this.modal = new bootstrap.Modal(document.getElementById(modal), {
-          keyboard: false,              
-          backdrop:'static'
-        })
-
-
         this.modal.show()
 
       },
@@ -307,6 +301,7 @@
           });
       },
       removeItemOfCart(id){
+        this.cartIsReady = false
         this.$store
           .dispatch(DELETE_PRODUCT_CART, id)
           .then((data) =>{
@@ -347,10 +342,7 @@
         this.sendUpdate(index, product)
       },
       plusItemInCart(id, index){
-
         let product = this.cart.find((product)=>product.id == id)
-
-        console.log(typeof product.quantity)
         product.quantity < product.total_stock
         ? this.cart.find((product)=>product.id == id).quantity = parseFloat(this.cart.find((product)=>product.id == id).quantity) + 1 
         : console.log('')
@@ -377,7 +369,7 @@
         this.$store
           .dispatch(UPDATE_QUANTITY_ITEMS, data)
           .then((response) => {
-            this.showSnackbar('success', 'Orden creada con exito')
+            // this.showSnackbar('success', 'Orden creada con exito')
             this.getCart()
           })
           .catch((err) => {
@@ -451,7 +443,12 @@
 
     },
     mounted(){
-      
+      setTimeout(() => {
+        this.modal = new bootstrap.Modal(document.getElementById('showCart'), {
+          keyboard: false,              
+          backdrop:'static'
+        })
+      }, 1000);
       this.getCart()
     },
     created(){
@@ -460,6 +457,10 @@
         setTimeout(() => {
               this.animationCart()
             }, 200);
+      })
+      this.emitter.on("showCart", () => {
+        this.showModal()
+      
       })
     }
     

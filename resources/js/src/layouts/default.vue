@@ -55,9 +55,9 @@ export default {
       this.$store.dispatch(GET_USER)
         .then((data) => {
           if(data.code !== 200){
-            console.log('alert!!!')
           }
           this.user = data.user;
+          this.$store.user = data.user;
           this.overlayLoad = false
         })
         .catch((e) => {

@@ -136,9 +136,14 @@ const props = defineProps({
                         <div class="card-title text-center">
                           <div class="form-title__part1"><h4>Asignar producto a la orden:</h4></div>
                           <h2 class="my-2">{{ selectedProduct.title }}</h2>
-                          <h6 class="my-2">orden #{{ orderNumberFormat(order.id) }}</h6>
+                          <h5 class="my-2">Orden #{{ orderNumberFormat(order.id) }}</h5>
+                          <div class="d-flex justify-center align-center">
 
-                          <h4 class="my-2">Cantidad solicitada: {{ selectedProduct.pivot.quantity }} {{ selectedProduct.type_of_unit}}</h4>
+                            <h4 class="my-2">
+                              Cantidad solicitada: 
+                            </h4>
+                            <v-chip class="bg-success ms-2">{{ selectedProduct.pivot.quantity }} {{ selectedProduct.type_of_unit}}</v-chip>
+                          </div>
                           
                         </div>
                       </VCardTitle>
@@ -200,10 +205,10 @@ const props = defineProps({
                         </VRow>
                         <VRow class="ma-0 pa-0  mt-8 align-center">
                           <VCol cols="12" md="6"  class="mt-0 py-0 px-0">
-                            <v-tooltip text="Agregar nuevo despiece">
+                            <v-tooltip text="Agregar lote">
                                 <template v-slot:activator="{ props }">
                                   <v-col cols="auto" class="">
-                                    <VBtn v-bind="props" color="primary" class="w-100"  @click="addLoteInput()"><VIcon icon="bx-plus"/> Agregar lote</VBtn>
+                                    <VBtn v-bind="props" color="secondary" class="w-100"  @click="addLoteInput()"><VIcon icon="bx-plus"/> Agregar lote</VBtn>
                                   </v-col>
                                 </template>
                               </v-tooltip>

@@ -52,7 +52,7 @@ import { LOGOUT } from "@/core/services/store/auth.module";
             <VListItemTitle class="font-weight-semibold">
               {{  user.name }}
             </VListItemTitle>
-            <VListItemSubtitle>Admin</VListItemSubtitle>
+            <VListItemSubtitle>{{ user.rol.rol_name }}</VListItemSubtitle>
           </VListItem>
           <VDivider class="my-2" />
 
@@ -105,7 +105,6 @@ import { inject } from "vue";
       }
     },
     mounted(){
-    
     },
     methods:{
       logout(){

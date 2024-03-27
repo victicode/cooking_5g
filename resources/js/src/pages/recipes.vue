@@ -1,5 +1,6 @@
 <script setup >
   import * as bootstrap from 'bootstrap'
+  import { mapGetters } from "vuex";
   import { GET_RECIPES, GET_RECIPE_BY_ID, STORE_RECIPE, DELETE_RECIPE, UPDATE_RECIPE} from "@/core/services/store/recipe.module";
   import recipeVideo from '@/views/pages/player/recipePlayer.vue';
   import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
@@ -12,7 +13,8 @@
   import viewRecipePreparationModal from '@/views/pages/modals/viewRecipePreparationModal.vue';
   import viewProductModal from '@/views/pages/modals/viewProductModal.vue';
   import moment from 'moment';
-
+  import { ADD_TO_CART } from "@/core/services/store/cart.module";
+  import buyCart from "@/layouts/components/BuyCart.vue";
 </script>
 
 <template>
@@ -25,7 +27,9 @@
             md="3"
             class="ma-0 px-0 justify-center justify-md-end d-flex"
           >
-          <VBtn @click=" showModal('createRecipe')" color="primary" class="w-100 "><VIcon icon="bx-plus"/> Agregar nueva receta</VBtn>
+          <VBtn @click=" showModal('createRecipe')" color="primary" class="w-100 " v-if="getCurrentAccount.rol_id !== 3" >
+            <VIcon icon="bx-plus"/> Agregar nueva receta
+          </VBtn>
 
           </VCol>
         </VRow>
@@ -67,7 +71,7 @@
                     </div>
                     <div class="ms-1  d-flex justify-space-between align-end">
                       <div>
-                        <div class="d-flex">
+                        <div class="d-flex my-1">
                           <div class="d-flex align-center">
                             <VIcon icon="fa6-solid:users"  size="x-small" />
                             <h5 class=" my-1 ms-1 text-primary"> 
@@ -88,10 +92,13 @@
                         </v-chip>
                       </div>
                       <div class="d-flex">
-                        <v-btn size="x-small" class="d-block d-md-none" color="secondary" @click="selectRecipe(recipe.id)" icon="majesticons:plus-line" />
-                        <v-btn size="small" class="d-none d-md-block mx-2" color="secondary" @click="showAction(recipe.id,'viewRecipe')" icon="carbon:view" />
-                        <v-btn size="small" class="d-none d-md-block mx-2" color="secondary" @click="showAction(recipe.id, 'updateRecipe' )" icon="line-md:edit-twotone-full" />
-                        <v-btn size="small" class="d-none d-md-block mx-2" color="error" @click="showAction(recipe.id, 'deleteRecipe')" icon="mi:delete" />
+                        <v-btn size="small" v-if="getCurrentAccount.rol_id == 3" class="mx-0" color="secondary" @click="showAction(recipe.id,'viewRecipe')" icon="carbon:view" />
+
+
+                        <v-btn size="x-small" v-if="getCurrentAccount.rol_id !== 3" class="d-block d-md-none" color="secondary" @click="selectRecipe(recipe.id)" icon="majesticons:plus-line" />
+                        <v-btn size="small" v-if="getCurrentAccount.rol_id !== 3" class="d-none d-md-block mx-2" color="secondary" @click="showAction(recipe.id,'viewRecipe')" icon="carbon:view" />
+                        <v-btn size="small" v-if="getCurrentAccount.rol_id !== 3" class="d-none d-md-block mx-2" color="secondary" @click="showAction(recipe.id, 'updateRecipe' )" icon="line-md:edit-twotone-full" />
+                        <v-btn size="small" v-if="getCurrentAccount.rol_id !== 3" class="d-none d-md-block mx-2" color="error" @click="showAction(recipe.id, 'deleteRecipe')" icon="mi:delete" />
                       </div>
                     </div>
                   </div>
@@ -183,24 +190,56 @@
                             <VCardText class="text-subtitle-1 pt-4 pb-2 px-1">
                               <div class="font-weight-medium"><h3>Ingredientes cooking 5G:</h3> </div> 
                               <div class="font-weight-bold mt-2" v-for="(ingredient, index) in selectedRecipe.cooking_ingredients" :key="index">
-                                <a 
-                                  :class="this.validateIsgoodProduct(ingredient, 'blank-modal', 'recipe-notproduct' ) " 
-                                  @click="selectProductView(index)" 
-                                > 
-                                  - {{ `${ingredient.pivot.quantity} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }}
-                                  
-                                  {{ 
-                                    this.validateIsgoodProduct(ingredient, '', '(Sin stock)*')
-                                  
-                                  }}
-                                  
-                                </a>
+                                <div>
+
+                                  <a 
+                                    :class="this.validateIsgoodProduct(ingredient, 'blank-modal', 'recipe-notproduct' ) " 
+                                    @click="selectProductView(index)" 
+                                  > 
+                                    - {{ `${ingredient.pivot.quantity} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }}
+                                    
+                                  </a>
+                                  <span class=" text-error ms-2" v-if="this.validateIsgoodProduct(ingredient, '', '(Sin stock)*') !== ''">
+                                    {{ 
+                                      this.validateIsgoodProduct(ingredient, '', '(Sin stock)*')
+                                    }}
+                                  </span>
+                                </div>
                               </div>
+                            </VCardText>
+                            <VCardText class="text-subtitle-1 pt-4 pb-2 px-1 my-5" v-if="getCurrentAccount.rol_id == 3">
+                              <div class="font-weight-medium"><h3><b class="text-success">En Stock</b> para esta receta:</h3> </div> 
+
+                              <div class="font-weight-bold mt-2"  v-for="(ingredient, index) in selectedRecipe.cooking_ingredients" :key="index">
+                                  <div class="mt-3 d-flex align-center" v-if="this.validateIsgoodProduct(ingredient, '', '(Sin stock)*') == ''">
+                                    <h4 class="me-2">- {{ ingredient.title }}</h4>
+                                    <v-btn 
+                                      v-if="updateInCart"
+                                      size="small"
+                                      @click="productInCart(ingredient.id) ? addToCart(ingredient) : readyItemInCart()" 
+                                      variant="outlined" class=" elevation-24 d-flex justify-center"
+                                      :color="productInCart(ingredient.id) ? 'primary' : 'success'"  
+                                    >
+                                      <v-icon   :icon="productInCart(ingredient.id) ? 'iconoir:cart-alt' : 'bi:clipboard-check' "></v-icon>
+                                    </v-btn>
+                                    <div
+                                    v-else>
+
+                                      <v-skeleton-loader
+                                        
+                                        class="ma-0 cart-skeleton-button"
+                                        max-width="300"
+                                        type="button"
+                                      ></v-skeleton-loader>
+                                    </div>
+                                  </div>
+                              </div>
+  
                             </VCardText>
                             <div class="mb-5 mt-2">
                               <div class="stock-notify px-3 py-4" style="">
                                 <p class="text-secondary pa-0 ma-0">
-                                  (*) <b>Nota:</b> Los ingredientes con el stock agotado no están disponibles en este momento. Si tiene interés en realizar esta receta y observa algún ingrediente "sin stock" puede notificarlo al administrador para que lo reponga.
+                                  <b class="text-error">(*) Nota:</b> Los ingredientes con el stock agotado no están disponibles en este momento. Si tiene interés en realizar esta receta y observa algún ingrediente "sin stock" puede notificarlo al administrador para que lo reponga.
                                 </p>
                               </div>
                             </div>
@@ -221,10 +260,10 @@
           </div>
         </div>
       </div>
-      <div class="modal animate__animated animate__fadeInDown" id="stepsRecipe" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+      <div class="modal animate__animated animate__slideInLeft pe-0" id="stepsRecipe" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
           
-          <div class="modal-dialog modal-lg mt-10">
-            <div class="modal-content">
+          <div class="modal-dialog modal-lg pt-0 ma-0" style="width: 100%; height: 100vh;">
+            <div class="modal-content h-100">
               <VCol
                 cols="12"
                 class="pa-0 d-flex justify-center"
@@ -232,16 +271,16 @@
               >
                 <VCol
                   cols="12"
-                  class="px-2"  
+                  class="pa-0"  
                 >
-                  <VCard class="modal__content">
-                    <div class="modal__close-button" >
+                  <VCard class="modal__content h-100 rounded-0">
+                    <div class="modal__close-button__cart" >
                       <v-col class="pa-0 pe-4">
                         <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideInternalModal()" ></v-btn>
                       </v-col>
                     </div>
-                    <div class="d-flex justify-space-between  flex-column pa-2 pb-0 pt-md-5  px-md-5 ">
-                      <VRow  class="mb-2 ma-0 mt-7">
+                    <div class="d-flex justify-space-between  flex-column pa-2 pb-0 pt-md-5  px-md-5 h-100">
+                      <VRow  class="mb-2 ma-0 mt-16">
                         <VCol
                           cols="12"
                           class="py-0 px-0"
@@ -252,7 +291,7 @@
                             :touch="true"
                             hide-delimiter-background
                             delimiter-icon="ic:outline-circle"
-                            :height="sliderPosition == selectedRecipe.preparation .length+2 ? 'max-content': 570"
+                            :height="sliderPosition == selectedRecipe.preparation .length+2 ? 'max-content': '100%'"
                             v-model="sliderPosition"
                           >
                             <v-carousel-item
@@ -267,18 +306,21 @@
                                         <VCardText class="text-subtitle-1 py-4 px-1" >
                                           <div class="font-weight-medium"> <h3>Ingredientes cooking 5G:</h3> </div> 
                                           <div class="font-weight-bold my-2" v-for="(ingredient, index) in selectedRecipe.cooking_ingredients" :key="index">
-                                            <a 
-                                              :class="this.validateIsgoodProduct(ingredient, 'blank-modal', 'recipe-notproduct' ) " 
-                                              @click="selectProductView(index) "  
-                                            > 
-                                              - {{ `${ingredient.pivot.quantity} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }}
+                                            <div>
+                                              <a 
+                                                :class="this.validateIsgoodProduct(ingredient, 'blank-modal', 'recipe-notproduct' ) " 
+                                                @click="selectProductView(index)" 
+                                              > 
+                                                - {{ `${ingredient.pivot.quantity} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }}
+                                                
+                                                
+                      
+                                              </a>
+                                              <span class=" text-error ms-2" v-if="this.validateIsgoodProduct(ingredient, '', '(Sin stock)*') !== ''">{{ 
+                                                this.validateIsgoodProduct(ingredient, '', '(Sin stock)*')
                                               
-                                              {{ 
-                                                this.validateIsgoodProduct(ingredient, '', '(Sin stock)')
-                                              
-                                              }}
-                                              
-                                            </a>
+                                              }}</span>
+                                            </div>
                                           </div>
                                         </VCardText>
                                         <VCardText class="text-subtitle-1 py-4 px-1">
@@ -1067,10 +1109,18 @@
             <v-btn size="large" class="d-block mx-2 shadow-button" color="error" @click="showModal('deleteRecipe')" icon="mi:delete" />
           </div>
         </div>
-    </v-navigation-drawer>    
+    </v-navigation-drawer>  
+    <buyCart v-if="isAdmin()" />  
   </VRow>
 </template>
 <style lang="scss" >
+  .cart-skeleton-button{
+    width: 53.99px;
+    height: 30px;
+    & > .v-skeleton-loader__bone{
+      margin: 0px!important;
+    }
+  }
   .losv .v-stepper-item__avatar.v-avatar{
     width: 40px!important;
     height: 40px!important;
@@ -1146,6 +1196,8 @@
         currentPage:1,
         totalPage:0,
       },
+      updateInCart:true,
+      isUser:false,
       modal: '',
       internalModal:'',
       snackShow:false,
@@ -1192,6 +1244,10 @@
       selectedProductInRecipe:{},
     }),
     methods:{
+      isAdmin(){
+        console.log(window.localStorage.is_admin =='false')
+        return window.localStorage.is_admin =='false'
+      },
       nextStep(action){
         action=='new' 
          ? this.stepperNewProduct = this.stepperNewProduct + 1 
@@ -1560,9 +1616,8 @@
             this.selectedRecipe.preparation = JSON.parse(response.data.preparation)
             
             this.isRecipe = true
-            console.log(this.selectedRecipe)
             setTimeout(() => {
-              if(window.screen.width < 480) this.drawer = true;
+              if(window.screen.width < 480 && this.getCurrentAccount.rol_id !== 3) this.drawer = true;
               return new Promise((resolve) => {
                   resolve(response.data);
               });
@@ -1812,7 +1867,7 @@
           if(!ingredient.lotes) return messageBad  ;
           if(ingredient.lotes.length == 0) return messageBad  
 
-          if(ingredient.lotes[0].quantity < 0 || Math.round(moment.duration(moment(ingredient.lotes[0].due_date).diff(new moment())).as('days') ) < 0 ){
+          if(ingredient.lotes[0].quantity <=0 || Math.round(moment.duration(moment(ingredient.lotes[0].due_date).diff(new moment())).as('days') ) < 0 ){
             return messageBad 
           }
 
@@ -1822,6 +1877,37 @@
         : messageBad 
 
       },
+      addToCart(ingredient){
+          setTimeout(() => {
+            ingredient.quantity = 1;
+            const cartFormData = new FormData
+            cartFormData.append('products', JSON.stringify(ingredient))
+            this.$store
+              .dispatch(ADD_TO_CART, cartFormData)
+                .then((data) =>{
+                  this.updateInCart = false;
+                  this.showModal('showCart')
+                  this.emitter.emit('getItems')
+                 setTimeout(() => {
+                  this.updateInCart = true;
+                 }, 800); 
+                }).catch((err) => {
+                  console.log(err)
+              });
+          }, 800);    
+      },
+      readyItemInCart(){
+        // this.hideModal()
+        this.showSnackbar('success','Producto ya agregado')
+        this.emitter.emit('showCart')
+      },
+      productInCart(id){
+        if(this.$store.cart){
+          const data = this.$store.cart.find((product) => product.id == id);
+           return data ? false : true
+        }
+        return true
+      }
     },
     mounted(){
       this.getRecipes()
@@ -1830,7 +1916,14 @@
     created(){
       
       this.emitter.emit('displayOverlayLoad', false)
-    }
+    },
+    computed: {
+      ...mapGetters(["currentUser"]),
+
+      getCurrentAccount() {
+        return this.currentUser;
+      },
+    },
     
   };
 </script>

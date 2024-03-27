@@ -66,7 +66,7 @@ class OrderController extends Controller
         
         try {
             //code...
-            $order = Order::withCount('products')->with(['user', 'products.lotes', 'client', 'outOrder'])->find($id);
+            $order = Order::withCount('products')->with(['user', 'products', 'client', 'outOrder'])->find($id);
             // $order->getStatusLabelAttribute();
         } catch (Exception $th) {
             return $this->returnFail(400, $th->getMessage());
@@ -132,7 +132,9 @@ class OrderController extends Controller
     {
         $order = OutOrder::with('products', 'order.client')->where('id',$id)->first();
 
-        if($request->user()->rol_id == 1 ||$request->user()->id == $order->created_by){
+        if($request->user()->rol_id == 1 
+        || $request->user()->id == $order->created_by 
+        || $request->user()->id == $order->order->client_id ){
 
             $order = OutOrder::with('products', 'order.client')->where('id',$id)->first();
     
@@ -140,8 +142,9 @@ class OrderController extends Controller
     
             $pdf = Pdf::loadView('outOrderTemplate2', [ 'order' => $order]);
 
-            return $pdf->stream('Salida ');
+            return $pdf->stream('Salida');
         }
+        return $request->user()->id.' - '.$order->created_by .' - '.$order->order->client_id;
     }
     public function changeStatus(Request $request, $idOrder)
     {
@@ -154,7 +157,7 @@ class OrderController extends Controller
         $order->status = $request->newStatus;
         $order->save();
 
-        $this->newNotification(['order'=>$order->id, 'type' => 3]);   
+        $this->newNotification(['order'=>$order->id, 'type' => 2]);   
         return [$order,$request->newStatus] ;
     }
     private function addProductforOrder($order, $products, $type){
@@ -176,7 +179,7 @@ class OrderController extends Controller
                 DB::table('products_x_out_order')->insert([
                     'out_order_id' => $order,
                     'product_id' => $lotesh['selected_lote']['product_id'],
-                    'quantity'  => 1,
+                    'quantity'  => intval($lotesh['quantity']),
                     'lote_id'   => $lotesh['selected_lote']['id_lote'],
                 ]);
              }

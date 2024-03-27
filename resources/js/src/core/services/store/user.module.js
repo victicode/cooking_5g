@@ -72,6 +72,7 @@ const actions = {
                 reject('Ocurrió un error desconocido al intentar obtener usuario');
             });
           }
+          
         });
       },
     [CREATE_USER](context, body) {

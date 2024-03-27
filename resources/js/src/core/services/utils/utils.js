@@ -53,5 +53,9 @@ export const func = {
         }
         return true;
     },
+    orderFormat: (id) => {
+       return '0000000'.slice( 0, 6 - id.toString().length ) + id 
+    },
 }
 window.$number_format = func.numberFormat
+window.$orderFormat = func.orderFormat
