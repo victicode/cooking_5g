@@ -85,7 +85,7 @@
                         </span>
                       </VCardText>
   
-                       <VCardActions class="justify-end d-flex w-100 add-to-cart__button ps-md-0"   >
+                       <VCardActions class="justify-end d-flex w-100 add-to-cart__button ps-md-0"  v-if="product.total_stock  > 1" >
                         <v-btn 
                           @click="productInCart(product.id) ? addToCart(product) : showSnackbar('success','Producto ya agregado')" 
                           :prepend-icon="productInCart(product.id) ? 'iconoir:cart-alt' : 'ic:baseline-check'" variant="outlined" class="d-md-none d-flex w-100 elevation-24">
@@ -95,6 +95,11 @@
                           @click="productInCart(product.id) ? addToCart(product) : showSnackbar('success','Producto ya agregado')" :prepend-icon="productInCart(product.id) ? 'iconoir:cart-alt' : 'ic:baseline-check'" variant="outlined" class="d-none d-md-flex w-100 elevation-24 ">
                           {{ productInCart(product.id) ?'Agregar al carrito':'Agregado al carrito'}} 
                         </v-btn>
+                      </VCardActions>
+                      <VCardActions class="justify-center d-flex w-100 add-to-cart__button ps-md-0"  v-else>
+                        <v-chip :class="product.total_stock  < 1 ? 'bg-error' : product.total_stock  >= 30 ? 'bg-success' : 'bg-warning'">
+                          No stock
+                        </v-chip>
                       </VCardActions>
                     </div>
                   </VCol>

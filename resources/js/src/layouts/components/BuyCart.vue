@@ -135,7 +135,7 @@
 
                   <VDivider  />
                   <div class="mt-5 w-100 d-md-flex  d-block justify-center">
-                    <VCardActions class=" justify-center w-100 d-md-flex  d-block">
+                    <VCardActions class=" justify-center w-100 d-md-flex  pb-1 pb-md-3   d-block">
                       <VBtn
                         color="white"
                         class="bg-primary text-white w-30 mx-0 mx-md-5 my-2"
@@ -144,6 +144,17 @@
                         v-if="this.cart.length > 0"
                       >
                         <span class="">Realizar pedido</span>
+                      </VBtn>
+                    </VCardActions>
+                  </div>
+                  <div class="mt-0 w-100 d-md-flex  d-block justify-center" v-if="this.cart.length > 0">
+                    <VCardActions class=" justify-center w-100 d-md-flex  d-block">
+                      <VBtn
+                        color="white"
+                        class="bg-secondary text-white w-30 mx-0 mx-md-5 my-0"
+                        @click="hideModal()"
+                      >
+                        <span class="">Agregar mas productos</span>
                       </VBtn>
                     </VCardActions>
                   </div>
@@ -268,6 +279,12 @@
         } catch (error) {
           
         }
+        this.modal = new bootstrap.Modal(document.getElementById('showCart'), {
+          keyboard: false,              
+          backdrop:'static'
+        })
+
+
         this.modal.show()
 
       },
@@ -277,6 +294,7 @@
         this.snackMessage = messagge
       },
       hideModal(){
+        console.log('abe')
         this.modal.hide();
       },
       getCart(){
@@ -443,12 +461,6 @@
 
     },
     mounted(){
-      setTimeout(() => {
-        this.modal = new bootstrap.Modal(document.getElementById('showCart'), {
-          keyboard: false,              
-          backdrop:'static'
-        })
-      }, 1000);
       this.getCart()
     },
     created(){

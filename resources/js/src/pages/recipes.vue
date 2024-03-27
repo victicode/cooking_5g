@@ -224,9 +224,7 @@
                                     </v-btn>
                                     <div
                                     v-else>
-
                                       <v-skeleton-loader
-                                        
                                         class="ma-0 cart-skeleton-button"
                                         max-width="300"
                                         type="button"
@@ -1110,7 +1108,7 @@
           </div>
         </div>
     </v-navigation-drawer>  
-    <buyCart v-if="isAdmin()" />  
+    <buyCart  />  
   </VRow>
 </template>
 <style lang="scss" >
@@ -1886,7 +1884,7 @@
               .dispatch(ADD_TO_CART, cartFormData)
                 .then((data) =>{
                   this.updateInCart = false;
-                  this.showModal('showCart')
+                  this.emitter.emit('showCart')
                   this.emitter.emit('getItems')
                  setTimeout(() => {
                   this.updateInCart = true;
