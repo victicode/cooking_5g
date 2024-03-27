@@ -274,6 +274,7 @@ export default {
     snacktimeOut:5000,
   }),
   mounted(){
+    console.log('prueb')
   },
   methods:{
     showModal(modal) {
@@ -317,12 +318,25 @@ export default {
     },
     removeLote(index){  
       setTimeout(() => {
+        this.removeValidate(index)
         try{
           this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')].splice(index, 1)
         }catch(e){
 
         }
       }, 200);
+      
+    },
+    removeValidate(n){
+      let form = document.getElementById('select_lote_for_order'),
+      quantityInput = form.querySelectorAll('input[name*="product_in_order_lote_"]')[n]
+      
+      console.log(quantityInput)
+      // try {
+      //   this.forms.removeField(quantityInput.name)
+      // } catch (error) {
+      //   console.log('no hay validación activa')
+      // }
       
     },
     addLoteInput(){
@@ -433,7 +447,6 @@ export default {
       this.showAlert('Cantidad ingresada es menor a lo solicitado', 'error')
   
     },
-    
     createValidate(){
 
       let form = document.getElementById('select_lote_for_order'),
