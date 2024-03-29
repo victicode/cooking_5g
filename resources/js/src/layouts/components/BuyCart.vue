@@ -68,8 +68,9 @@
                             v-bind:key="product.id"
                             style="border-bottom: 1px solid #b1b1b17a;"
                             class="px-0"
+                           
                           >
-                            <VRow class="align-center position-relative">
+                            <VRow class="align-center position-relative"  v-if="product.cartType == 1">
                               <VCol cols="4" class="pe-2 d-flex justify-center">
                                 <VImg
                             
@@ -113,6 +114,49 @@
                                 </v-col>
                               </VCol>
                             </VRow>
+                            <VRow class="align-center position-relative"  v-else >
+                              <VCol cols="4" class="pe-2 d-flex justify-center">
+                                <VImg
+                            
+                                  class="rounded client_product_list_cart"
+                                  :src="product.image_url"
+                                />
+                              </VCol>
+                              <VCol cols="8" class="text-start d-flex flex-column align-start ps-0">
+                                <div class="text-h6">{{ product.title }}</div>
+                                <div class="">
+                                  <div class="text-subtitle-1 my-2">
+                                    Cantidad solicitada:
+                                  </div>
+                                  <div class="d-flex align-center">
+                                    <div>
+                                      <v-btn rounded="sm" size="small" class="text-subtitle-1" block @click="minusItemInCart(product.id, index)">-</v-btn>
+                                    </div>
+                                    <div class="d-flex align-center mx-2">
+                                      <VTextField
+                                        variant="underlined"
+                                        placeholder="Cantidad"
+                                        type="number"
+                                        
+                                        @change="validateQuantityField(index, product.id)"
+                                        v-model="product.quantity"
+                                        autocomplete="off"
+                                        class="cart-quantity-input" 
+                                      />
+                                      
+                                    </div>
+                                    <div>
+                                      <v-btn rounded="sm" size="small" class="text-subtitle-1" block @click="plusItemInCart(product.id, index)">+</v-btn>
+                                    </div>
+                                  </div>
+                                </div>
+                              </VCol>
+                              <VCol cols="3" class="d-flex position-absolute form-group pa-0 mb-md-5 delete_item_in_cart ">
+                                <v-col cols="auto" class="pa-0">
+                                  <v-btn icon="mdi-cancel-bold" size="small" @click="removeItemOfCart(index)"></v-btn>
+                                </v-col>
+                              </VCol>
+                            </VRow>
                           </v-list-item>
                         </v-list>
                         
@@ -141,13 +185,13 @@
                         class="bg-primary text-white w-30 mx-0 mx-md-5 my-2"
                         id="create_order_of_cart_button"
                         @click="createdNewOrder()"
-                        v-if="this.cart.length > 0"
+                        v-if="cart.length > 0"
                       >
                         <span class="">Realizar pedido</span>
                       </VBtn>
                     </VCardActions>
                   </div>
-                  <div class="mt-0 w-100 d-md-flex  d-block justify-center" v-if="this.cart.length > 0">
+                  <div class="mt-0 w-100 d-md-flex  d-block justify-center" v-if="cart.length > 0">
                     <VCardActions class=" justify-center w-100 d-md-flex  d-block">
                       <VBtn
                         color="white"
@@ -294,7 +338,6 @@
         this.snackMessage = messagge
       },
       hideModal(){
-        console.log('abe')
         this.modal.hide();
       },
       getCart(){
@@ -360,13 +403,19 @@
         this.sendUpdate(index, product)
       },
       plusItemInCart(id, index){
+       
         let product = this.cart.find((product)=>product.id == id)
-        product.quantity < product.total_stock
-        ? this.cart.find((product)=>product.id == id).quantity = parseFloat(this.cart.find((product)=>product.id == id).quantity) + 1 
-        : console.log('')
 
-        this.sendUpdate(index, product)
+        if(product.cartType == 1){
 
+          product.quantity < product.total_stock
+          ? this.cart.find((product)=>product.id == id).quantity = parseFloat(this.cart.find((product)=>product.id == id).quantity) + 1 
+          : console.log('')
+  
+          this.sendUpdate(index, product)
+          return;
+        }
+        this.cart.find((product)=>product.id == id).quantity = parseFloat(this.cart.find((product)=>product.id == id).quantity) + 1 
       },
       minusItemInCart(id,index){
         const product = this.cart.find((product)=>product.id == id)

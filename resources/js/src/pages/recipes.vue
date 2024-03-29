@@ -193,46 +193,55 @@
                                 <div>
 
                                   <a 
-                                    :class="this.validateIsgoodProduct(ingredient, 'blank-modal', 'recipe-notproduct' ) " 
+                                    :class="validateIsgoodProduct(ingredient, 'blank-modal', 'recipe-notproduct' ) " 
                                     @click="selectProductView(index)" 
                                   > 
                                     - {{ `${ingredient.pivot.quantity} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }}
                                     
                                   </a>
-                                  <span class=" text-error ms-2" v-if="this.validateIsgoodProduct(ingredient, '', '(Sin stock)*') !== ''">
+                                  <span class=" text-error ms-2" v-if="validateIsgoodProduct(ingredient, '', '(Sin stock)*') !== ''">
                                     {{ 
-                                      this.validateIsgoodProduct(ingredient, '', '(Sin stock)*')
+                                      validateIsgoodProduct(ingredient, '', '(Sin stock)*')
                                     }}
                                   </span>
                                 </div>
                               </div>
                             </VCardText>
                             <VCardText class="text-subtitle-1 pt-4 pb-2 px-1 my-5" v-if="getCurrentAccount.rol_id == 3">
-                              <div class="font-weight-medium"><h3><b class="text-success">En Stock</b> para esta receta:</h3> </div> 
-
+                              <div class="font-weight-medium">
+                                <h3>
+                                  <b class="text-success">En Stock</b> para esta receta:
+                                </h3>
+                              </div> 
                               <div class="font-weight-bold mt-2"  v-for="(ingredient, index) in selectedRecipe.cooking_ingredients" :key="index">
-                                  <div class="mt-3 d-flex align-center" v-if="this.validateIsgoodProduct(ingredient, '', '(Sin stock)*') == ''">
-                                    <h4 class="me-2">- {{ ingredient.title }}</h4>
-                                    <v-btn 
-                                      v-if="updateInCart"
-                                      size="small"
-                                      @click="productInCart(ingredient.id) ? addToCart(ingredient) : readyItemInCart()" 
-                                      variant="outlined" class=" elevation-24 d-flex justify-center"
-                                      :color="productInCart(ingredient.id) ? 'primary' : 'success'"  
-                                    >
-                                      <v-icon   :icon="productInCart(ingredient.id) ? 'iconoir:cart-alt' : 'bi:clipboard-check' "></v-icon>
-                                    </v-btn>
-                                    <div
-                                    v-else>
-                                      <v-skeleton-loader
-                                        class="ma-0 cart-skeleton-button"
-                                        max-width="300"
-                                        type="button"
-                                      ></v-skeleton-loader>
-                                    </div>
+                                <div class="mt-3 d-flex align-center" v-if="validateIsgoodProduct(ingredient, '', '(Sin stock)*') == ''">
+                                  <h4 class="me-2">- {{ ingredient.title }}</h4>
+                                  <v-btn 
+                                    v-if="updateInCart"
+                                    size="small"
+                                    @click="productInCart(ingredient.id) ? addToCart(ingredient) : readyItemInCart()" 
+                                    variant="outlined" class=" elevation-24 d-flex justify-center"
+                                    :color="productInCart(ingredient.id) ? 'primary' : 'success'"  
+                                  >
+                                    <v-icon   :icon="productInCart(ingredient.id) ? 'iconoir:cart-alt' : 'bi:clipboard-check' "></v-icon>
+                                  </v-btn>
+                                  <div
+                                  v-else>
+                                    <v-skeleton-loader
+                                      class="ma-0 cart-skeleton-button"
+                                      max-width="300"
+                                      type="button"
+                                    ></v-skeleton-loader>
                                   </div>
+                                </div>
                               </div>
-  
+                              <div class="" v-if="isAllIngredientsInStock()">
+                                <VRow class="ma-0 pa-0  mt-5 align-center">
+                                  <VCol cols="12" md="8" class="mt-0 py-0 px-0">
+                                      <VBtn  color="primary" class="w-100 " @click="addToCart(selectedRecipe)"> Pedir receta (todos los productos)</VBtn>
+                                  </VCol>
+                                </VRow>
+                              </div>
                             </VCardText>
                             <div class="mb-5 mt-2">
                               <div class="stock-notify px-3 py-4" style="">
@@ -306,7 +315,7 @@
                                           <div class="font-weight-bold my-2" v-for="(ingredient, index) in selectedRecipe.cooking_ingredients" :key="index">
                                             <div>
                                               <a 
-                                                :class="this.validateIsgoodProduct(ingredient, 'blank-modal', 'recipe-notproduct' ) " 
+                                                :class="validateIsgoodProduct(ingredient, 'blank-modal', 'recipe-notproduct' ) " 
                                                 @click="selectProductView(index)" 
                                               > 
                                                 - {{ `${ingredient.pivot.quantity} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }}
@@ -314,8 +323,8 @@
                                                 
                       
                                               </a>
-                                              <span class=" text-error ms-2" v-if="this.validateIsgoodProduct(ingredient, '', '(Sin stock)*') !== ''">{{ 
-                                                this.validateIsgoodProduct(ingredient, '', '(Sin stock)*')
+                                              <span class=" text-error ms-2" v-if="validateIsgoodProduct(ingredient, '', '(Sin stock)*') !== ''">{{ 
+                                                validateIsgoodProduct(ingredient, '', '(Sin stock)*')
                                               
                                               }}</span>
                                             </div>
@@ -1614,6 +1623,7 @@
             this.selectedRecipe.preparation = JSON.parse(response.data.preparation)
             
             this.isRecipe = true
+
             setTimeout(() => {
               if(window.screen.width < 480 && this.getCurrentAccount.rol_id !== 3) this.drawer = true;
               return new Promise((resolve) => {
@@ -1730,10 +1740,6 @@
         recipeFormData.append('cooking_ingredients', JSON.stringify(this.newRecipe.cooking_ingredients))
         recipeFormData.append('preparation', JSON.stringify(this.newRecipe.preparation))
         recipeFormData.append('image_url', this.$refs.newRecipeImg.files[0])
-
-
-
-         console.log([this.newRecipe.video, this.$refs.newRecipeImg.files[0]])
         recipeFormData.append('video_url', this.newRecipe.video)
  
 
@@ -1753,7 +1759,6 @@
        });
       },
       updateRecipe(){
-        console.log('pajuaaa')
         const recipeFormData = new FormData
         recipeFormData.append('title', this.selectedRecipe.title )
         recipeFormData.append('description', this.selectedRecipe.description )
@@ -1876,8 +1881,10 @@
 
       },
       addToCart(ingredient){
+        console.log(ingredient)
           setTimeout(() => {
             ingredient.quantity = 1;
+            ingredient.cartType = ingredient.total_stock ? 1 : 2;
             const cartFormData = new FormData
             cartFormData.append('products', JSON.stringify(ingredient))
             this.$store
@@ -1898,6 +1905,16 @@
         // this.hideModal()
         this.showSnackbar('success','Producto ya agregado')
         this.emitter.emit('showCart')
+      },
+      isAllIngredientsInStock(){
+
+        let isOk= true
+        this.selectedRecipe.cooking_ingredients.forEach((item)=>{
+          
+          if(item.total_stock <=0) isOk = false ;
+          
+        })
+        return isOk
       },
       productInCart(id){
         if(this.$store.cart){

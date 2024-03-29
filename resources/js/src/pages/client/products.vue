@@ -334,6 +334,7 @@
       addToCart(product){
           setTimeout(() => {
             product.quantity = 1;
+            product.cartType = 1;
             const cartFormData = new FormData
             cartFormData.append('products', JSON.stringify(product))
             this.$store

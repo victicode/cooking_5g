@@ -188,6 +188,7 @@ const props = defineProps({
                                     :hint="'Stock de lote: ' + (item.selected_lote ? item.selected_lote.quantity  : '----')"
                                     :name="'product_in_order_quantity_'+selectedProduct.title.replace(/ /g,'_')+'_'+index"
                                     v-model="item.quantity"
+                                    :data-product-name="selectedProduct.title.replace(/ /g,'_')+'_'+index"
                                     @keyup="calculateUnitOrders()"
                                   />
                                 </VCol>
@@ -274,7 +275,7 @@ export default {
     snacktimeOut:5000,
   }),
   mounted(){
-    console.log('prueb')
+  
   },
   methods:{
     showModal(modal) {
@@ -317,8 +318,8 @@ export default {
       }, 300);
     },
     removeLote(index){  
+      this.removeValidate()
       setTimeout(() => {
-        this.removeValidate(index)
         try{
           this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')].splice(index, 1)
         }catch(e){
@@ -327,16 +328,22 @@ export default {
       }, 200);
       
     },
-    removeValidate(n){
+    removeValidate(){
+
       let form = document.getElementById('select_lote_for_order'),
-      quantityInput = form.querySelectorAll('input[name*="product_in_order_lote_"]')[n]
-      
-      console.log(quantityInput)
-      // try {
-      //   this.forms.removeField(quantityInput.name)
-      // } catch (error) {
-      //   console.log('no hay validación activa')
-      // }
+      loteInput = "product_in_order_lote_"+this.selectedProduct.title.replace(/ /g,'_') +"_"+ (form.querySelectorAll('input[name*="product_in_order_lote_"]').length - 1),
+      quantityInput = "product_in_order_quantity_"+this.selectedProduct.title.replace(/ /g,'_') +"_"+ (form.querySelectorAll('input[name*="product_in_order_lote_"]').length - 1)
+      console.log(this.forms)
+      try {
+        this.forms.removeField(loteInput)
+        this.forms.removeField(quantityInput)
+        
+      } catch (error) {
+        console.log('no hay validación activa')
+      }
+
+      console.log(this.forms)
+
       
     },
     addLoteInput(){
@@ -493,15 +500,6 @@ export default {
       const sendButton = document.getElementById(id)
       sendButton.disabled = true
       sendButton.classList.add('v-btn--disabled')
-    },
-    removeValidate(){
-      let form = document.getElementById('new_order_form'),
-      quantityInput = form.querySelectorAll('input[name*="product_in_order_quantity_"]')[ form.querySelectorAll('input[name*="product_in_order_quantity_"]').length - 1]
-      try {
-        this.forms.removeField(quantityInput.name)
-      } catch (error) {
-      }
-      
     },
     verifyCheckLotes(){
 
