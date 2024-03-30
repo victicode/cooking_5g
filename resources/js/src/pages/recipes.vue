@@ -196,7 +196,7 @@
                                     :class="validateIsgoodProduct(ingredient, 'blank-modal', 'recipe-notproduct' ) " 
                                     @click="selectProductView(index)" 
                                   > 
-                                    - {{ `${ingredient.pivot.quantity} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }}
+                                    - {{ `${ingredient.pivot.quantity} ${ingredient.type_of_unit} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }}
                                     
                                   </a>
                                   <span class=" text-error ms-2" v-if="validateIsgoodProduct(ingredient, '', '(Sin stock)*') !== ''">
@@ -219,16 +219,15 @@
                                   <v-btn 
                                     v-if="updateInCart"
                                     size="small"
-                                    @click="productInCart(ingredient.id) ? addToCart(ingredient) : readyItemInCart()" 
+                                    @click="productInCart(ingredient) ? addToCart(ingredient) : readyItemInCart()" 
                                     variant="outlined" class=" elevation-24 d-flex justify-center"
-                                    :color="productInCart(ingredient.id) ? 'primary' : 'success'"  
+                                    :color="productInCart(ingredient) ? 'primary' : 'success'"  
                                   >
-                                    <v-icon   :icon="productInCart(ingredient.id) ? 'iconoir:cart-alt' : 'bi:clipboard-check' "></v-icon>
+                                    <v-icon   :icon="productInCart(ingredient) ? 'iconoir:cart-alt' : 'bi:clipboard-check' "></v-icon>
                                   </v-btn>
-                                  <div
-                                  v-else>
+                                  <div v-else>
                                     <v-skeleton-loader
-                                      class="ma-0 cart-skeleton-button"
+                                      class="ma-0 cart-skeleton-button "
                                       max-width="300"
                                       type="button"
                                     ></v-skeleton-loader>
@@ -238,7 +237,21 @@
                               <div class="" v-if="isAllIngredientsInStock()">
                                 <VRow class="ma-0 pa-0  mt-5 align-center">
                                   <VCol cols="12" md="8" class="mt-0 py-0 px-0">
-                                      <VBtn  color="primary" class="w-100 " @click="addToCart(selectedRecipe)"> Pedir receta (todos los productos)</VBtn>
+                                      <VBtn 
+                                        v-if="updateInCart"
+                                       :color="productInCart(selectedRecipe) ? 'primary' : 'success'"  
+                                       class="w-100 " 
+                                       @click="productInCart(selectedRecipe) ? addToCart(selectedRecipe) : readyItemInCart()"
+                                      > 
+                                        {{ productInCart(selectedRecipe) ? 'Pedir receta (todos los productos)' : 'Receta agregada' }}
+                                      </VBtn>
+                                      <div v-else>
+                                      <v-skeleton-loader
+                                        class="ma-0 cart-skeleton-button w-100 recipe-cart-button"
+                                        max-width="100%"
+                                        type="button"
+                                      ></v-skeleton-loader>
+                                    </div>
                                   </VCol>
                                 </VRow>
                               </div>
@@ -318,10 +331,8 @@
                                                 :class="validateIsgoodProduct(ingredient, 'blank-modal', 'recipe-notproduct' ) " 
                                                 @click="selectProductView(index)" 
                                               > 
-                                                - {{ `${ingredient.pivot.quantity} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }}
-                                                
-                                                
-                      
+                                                - {{ `${ingredient.pivot.quantity} ${ingredient.type_of_unit} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }}
+
                                               </a>
                                               <span class=" text-error ms-2" v-if="validateIsgoodProduct(ingredient, '', '(Sin stock)*') !== ''">{{ 
                                                 validateIsgoodProduct(ingredient, '', '(Sin stock)*')
@@ -648,7 +659,7 @@
                                               <VTextField
                                                 placeholder="Cantidad"
                                                 label="Cantidad"
-                                                type="text"
+                                                type="number"
                                                 :name="`update_recipe_cooking_product_quantity_${(index+1)}`"
                                                 v-model="item.pivot.quantity"
                                                 autocomplete="off"
@@ -956,11 +967,11 @@
                                               @update:modelValue="selectedProduct($event, index)"
                                             ></v-autocomplete>
                                           </VCol>
-                                          <VCol cols="6" class="form-group">
+                                          <VCol cols="6" class="form-group d-flex">
                                             <VTextField
                                               placeholder="Cantidad"
                                               label="Cantidad"
-                                              type="text"
+                                              type="number"
                                               :name="`new_recipe_cooking_product_quantity_${(index+1)}`"
                                               v-model="item.quantity"
                                               autocomplete="off"
@@ -1127,6 +1138,9 @@
     & > .v-skeleton-loader__bone{
       margin: 0px!important;
     }
+  }
+  .recipe-cart-button > .v-skeleton-loader__button{
+    max-width:100%!important
   }
   .losv .v-stepper-item__avatar.v-avatar{
     width: 40px!important;
@@ -1880,26 +1894,38 @@
         : messageBad 
 
       },
+      setQuantity(ingredient){
+        let quantity = 1 
+        if(ingredient.total_stock){
+
+          quantity =  ingredient.pivot.quantity.replace(/[^0-9 ./\\]/g, '')
+         
+          if(quantity.split('/').length > 1){
+            quantity = ( parseInt(quantity.split('/')[0])/parseInt(quantity.split('/')[1])).toFixed(3)
+          }
+        }
+        console.log(quantity)
+        return quantity
+      },
       addToCart(ingredient){
-        console.log(ingredient)
-          setTimeout(() => {
-            ingredient.quantity = 1;
-            ingredient.cartType = ingredient.total_stock ? 1 : 2;
-            const cartFormData = new FormData
-            cartFormData.append('products', JSON.stringify(ingredient))
-            this.$store
-              .dispatch(ADD_TO_CART, cartFormData)
-                .then((data) =>{
-                  this.updateInCart = false;
-                  this.emitter.emit('showCart')
-                  this.emitter.emit('getItems')
-                 setTimeout(() => {
-                  this.updateInCart = true;
-                 }, 800); 
-                }).catch((err) => {
-                  console.log(err)
-              });
-          }, 800);    
+        this.updateInCart = false;
+        setTimeout(() => {
+          ingredient.quantity = this.setQuantity(ingredient)
+          ingredient.cartType = ingredient.total_stock ? 1 : 2;
+          const cartFormData = new FormData
+          cartFormData.append('products', JSON.stringify(ingredient))
+          this.$store
+            .dispatch(ADD_TO_CART, cartFormData)
+              .then((data) =>{
+                this.emitter.emit('showCart')
+                this.emitter.emit('getItems')
+                setTimeout(() => {
+                this.updateInCart = true;
+                }, 800); 
+              }).catch((err) => {
+                console.log(err)
+            });
+        }, 200);    
       },
       readyItemInCart(){
         // this.hideModal()
@@ -1916,10 +1942,17 @@
         })
         return isOk
       },
-      productInCart(id){
+      productInCart(selectedProduct){
         if(this.$store.cart){
-          const data = this.$store.cart.find((product) => product.id == id);
-           return data ? false : true
+          if(selectedProduct.total_stock){
+            const data = this.$store.cart.find((product) => product.id == selectedProduct.id  && product.cartType == 1);
+            return data ? false : true
+          }
+          if(selectedProduct.ingredients){
+
+            const data = this.$store.cart.find((product) => product.id == selectedProduct.id && product.cartType == 2);
+            return data ? false : true
+          }
         }
         return true
       }

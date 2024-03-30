@@ -73,7 +73,7 @@
                       </VCardItem>
   
                       <VCardText class="px-4">
-                        {{ product.description}}
+                        {{ product.short_description}}
                       </VCardText>
   
                       <VCardText class="px-4 text-subtitle-1 d-flex  align-center">

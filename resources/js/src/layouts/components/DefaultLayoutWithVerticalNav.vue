@@ -64,7 +64,7 @@ const vuetifyTheme = useTheme()
       />
       <VerticalDropdownNavLink 
         class="mt-3"
-        v-if="this.getCurrentAccount.rol_id == 1 "
+        v-if="getCurrentAccount.rol_id == 1 "
         :item="{
           title: 'Chefs',
           items:[
@@ -82,21 +82,21 @@ const vuetifyTheme = useTheme()
         }"
       />
       <VerticalNavLink
-      
-        class="mt-3"
-        :item="{
-          title: currentUser.rol_id !== 3 ?'Ordenes' : 'Mis Ordenes',
-          icon: 'bx-task',
-          to: '/orders',
-        }"
-      />
-      <VerticalNavLink
 
         class="mt-3"
         :item="{
           title:  'Recetas',
           icon: 'bx-receipt',
           to: currentUser.rol_id !== 3 ? '/recipes' : '/recipes',
+        }"
+      />
+      <VerticalNavLink
+      
+        class="mt-3"
+        :item="{
+          title: currentUser.rol_id !== 3 ?'Ordenes' : 'Mis Ordenes',
+          icon: 'bx-task',
+          to: '/orders',
         }"
       />
 

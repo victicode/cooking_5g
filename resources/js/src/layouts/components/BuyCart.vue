@@ -86,7 +86,7 @@
                                   </div>
                                   <div class="d-flex align-center">
                                     <div>
-                                      <v-btn rounded="sm" size="small" class="text-subtitle-1" block @click="minusItemInCart(product.id, index)">-</v-btn>
+                                      <v-btn rounded="sm" size="small" class="text-subtitle-1" block @click="minusItemInCart(index)">-</v-btn>
                                     </div>
                                     <div class="d-flex align-center mx-2">
                                       <VTextField
@@ -103,7 +103,7 @@
                                       <span class="text-subtitle-1 h-100" style=" margin-top: -20px;  margin-left:-15px; background:white;z-index: 2;">{{  product.type_of_unit}}</span>
                                     </div>
                                     <div>
-                                      <v-btn rounded="sm" size="small" class="text-subtitle-1" block @click="plusItemInCart(product.id, index)">+</v-btn>
+                                      <v-btn rounded="sm" size="small" class="text-subtitle-1" block @click="plusItemInCart(index)">+</v-btn>
                                     </div>
                                   </div>
                                 </div>
@@ -125,19 +125,31 @@
                               <VCol cols="8" class="text-start d-flex flex-column align-start ps-0">
                                 <div class="text-h6">{{ product.title }}</div>
                                 <div class="">
+                                  <div class="text-subtitle-1 my-0">
+                                    Productos:
+                                  </div>
+                                  <div class="align-center">
+                                    <template v-for="ingredient in product.cooking_ingredients" :key="ingredient.id">
+                                      <div class="text-subtitle-2 ms-2" >
+                                        - {{ ingredient.title }}: {{ ingredient.pivot.quantity }} {{ ingredient.type_of_unit }}
+                                      </div>
+                                       
+                                    </template>
+                                  </div>
+                                </div>
+                                <div class="">
                                   <div class="text-subtitle-1 my-2">
                                     Cantidad solicitada:
                                   </div>
                                   <div class="d-flex align-center">
                                     <div>
-                                      <v-btn rounded="sm" size="small" class="text-subtitle-1" block @click="minusItemInCart(product.id, index)">-</v-btn>
+                                      <v-btn rounded="sm" size="small" class="text-subtitle-1" block @click="minusItemInCart(index)">-</v-btn>
                                     </div>
                                     <div class="d-flex align-center mx-2">
                                       <VTextField
                                         variant="underlined"
                                         placeholder="Cantidad"
                                         type="number"
-                                        
                                         @change="validateQuantityField(index, product.id)"
                                         v-model="product.quantity"
                                         autocomplete="off"
@@ -146,7 +158,7 @@
                                       
                                     </div>
                                     <div>
-                                      <v-btn rounded="sm" size="small" class="text-subtitle-1" block @click="plusItemInCart(product.id, index)">+</v-btn>
+                                      <v-btn rounded="sm" size="small" class="text-subtitle-1" block @click="plusItemInCart(index)">+</v-btn>
                                     </div>
                                   </div>
                                 </div>
@@ -402,28 +414,36 @@
         }
         this.sendUpdate(index, product)
       },
-      plusItemInCart(id, index){
+      plusItemInCart(index){
        
-        let product = this.cart.find((product)=>product.id == id)
-
+        let product = this.cart[index]
+        console.log(product.quantity < product.total_stock)
         if(product.cartType == 1){
 
           product.quantity < product.total_stock
-          ? this.cart.find((product)=>product.id == id).quantity = parseFloat(this.cart.find((product)=>product.id == id).quantity) + 1 
-          : console.log('')
+          ? this.cart[index].quantity = parseFloat(this.cart[index].quantity) + 1 
+          : this.cart[index].quantity = product.total_stock
   
           this.sendUpdate(index, product)
           return;
         }
-        this.cart.find((product)=>product.id == id).quantity = parseFloat(this.cart.find((product)=>product.id == id).quantity) + 1 
+        this.cart[index].quantity = parseFloat(this.cart[index].quantity) + 1 
       },
-      minusItemInCart(id,index){
-        const product = this.cart.find((product)=>product.id == id)
-        product.quantity > 1
-        ? this.cart.find((product)=>product.id == id).quantity = parseFloat(this.cart.find((product)=>product.id == id).quantity) - 1 
-        : console.log('')
+      minusItemInCart(index){
 
-        this.sendUpdate(index, product)
+        let product = this.cart[index]
+        if(product.cartType == 1){
+          const product = this.cart[index]
+          product.quantity > 1
+          ? this.cart[index].quantity = parseFloat(this.cart[index].quantity) - 1 
+          : console.log('')
+          this.sendUpdate(index, product)
+          return;
+        }
+        this.cart[index].quantity = parseFloat(this.cart[index].quantity) + 1 
+      },
+      maxQuantityInRecipe(id,index){
+
       },
       sendUpdate(index, product){
         const cartFormData = new FormData
@@ -437,7 +457,7 @@
           .dispatch(UPDATE_QUANTITY_ITEMS, data)
           .then((response) => {
             // this.showSnackbar('success', 'Orden creada con exito')
-            this.getCart()
+            // this.getCart()
           })
           .catch((err) => {
             console.log(err)
