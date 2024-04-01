@@ -417,28 +417,29 @@
       plusItemInCart(index){
        
         let product = this.cart[index]
+        if(product.cartType == 2) this.cart[index].quantity = parseFloat(this.cart[index].quantity) + 1 
         if(product.cartType == 1){
 
           product.quantity < product.total_stock
           ? this.cart[index].quantity = parseFloat(this.cart[index].quantity) + 1 
           : this.cart[index].quantity = product.total_stock
-  
-          this.sendUpdate(index, product)
-          return;
         }
-        this.cart[index].quantity = parseFloat(this.cart[index].quantity) + 1 
+        
+        this.sendUpdate(index, product)
+        return;
       },
       minusItemInCart(index){
         let product = this.cart[index]
+        if(product.cartType == 2) this.cart[index].quantity = parseFloat(this.cart[index].quantity) - 1 
         if(product.cartType == 1){
           const product = this.cart[index]
           product.quantity > 1
           ? this.cart[index].quantity = parseFloat(this.cart[index].quantity) - 1 
-          : console.log('')
-          this.sendUpdate(index, product)
-          return;
+          : 1
         }
-        this.cart[index].quantity = parseFloat(this.cart[index].quantity) + 1 
+        this.sendUpdate(index, product)
+        return;
+        
       },
       sendUpdate(index, product){
         const cartFormData = new FormData

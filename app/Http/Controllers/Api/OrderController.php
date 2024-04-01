@@ -232,6 +232,9 @@ class OrderController extends Controller
         
         return  $notification;
     }
+    public function isRecipeOrder(){
+        
+    }
 
     /**
      * Show the form for editing the specified resource.
