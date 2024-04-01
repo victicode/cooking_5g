@@ -131,7 +131,7 @@
                                   <div class="align-center">
                                     <template v-for="ingredient in product.cooking_ingredients" :key="ingredient.id">
                                       <div class="text-subtitle-2 ms-2" >
-                                        - {{ ingredient.title }}: {{ ingredient.pivot.quantity }} {{ ingredient.type_of_unit }}
+                                        - {{ ingredient.title }}: {{ parseFloat(ingredient.pivot.quantity) * parseFloat(product.quantity) }} {{ ingredient.type_of_unit }}
                                       </div>
                                        
                                     </template>
@@ -417,7 +417,6 @@
       plusItemInCart(index){
        
         let product = this.cart[index]
-        console.log(product.quantity < product.total_stock)
         if(product.cartType == 1){
 
           product.quantity < product.total_stock
@@ -430,7 +429,6 @@
         this.cart[index].quantity = parseFloat(this.cart[index].quantity) + 1 
       },
       minusItemInCart(index){
-
         let product = this.cart[index]
         if(product.cartType == 1){
           const product = this.cart[index]
@@ -441,9 +439,6 @@
           return;
         }
         this.cart[index].quantity = parseFloat(this.cart[index].quantity) + 1 
-      },
-      maxQuantityInRecipe(id,index){
-
       },
       sendUpdate(index, product){
         const cartFormData = new FormData
