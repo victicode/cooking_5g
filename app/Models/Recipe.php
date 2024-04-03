@@ -31,4 +31,12 @@ class Recipe extends Model
     {
         return $this->belongsToMany(Product::class, 'products_x_recipes')->withPivot(['quantity'])->withTrashed();
     }
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class, 'products_x_orders');
+    }
+    public function outOrders()
+    {
+        return $this->belongsToMany(OutOrder::class, 'products_x_out_order');
+    }
 }

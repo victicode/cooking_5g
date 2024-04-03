@@ -142,7 +142,7 @@
                 <VCard class="modal__content">
                   <div class="modal__close-button" >
                     <v-col  class="pa-0 pe-4">
-                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal('all')" ></v-btn>
                     </v-col>
                   </div>
                   <div class="d-flex  flex-wrap align-center flex-md-nowrap flex-column flex-md-row">
@@ -1705,11 +1705,19 @@
         })
         this.internalModal.show()
       },
-      hideModal(){
+      hideModal(action=""){
         
+        this.modal.hide();
+        if(action !==""){
+          setTimeout(() => {
+            let trashElement = document.querySelectorAll('.modal-backdrop');
+            trashElement.forEach((item)=>{
+              document.querySelector('body').removeChild(item);
+            })
+          }, 100);
+        }
         this.clearNewRecipeForm()
         // this.clearUpdateRecipeForm()
-        this.modal.hide();
 
       },
       hideInternalModal(){
@@ -1904,7 +1912,6 @@
             quantity = ( parseInt(quantity.split('/')[0])/parseInt(quantity.split('/')[1])).toFixed(3)
           }
         }
-        console.log(quantity)
         return quantity
       },
       addToCart(ingredient){
@@ -1917,6 +1924,7 @@
           this.$store
             .dispatch(ADD_TO_CART, cartFormData)
               .then((data) =>{
+                console.log('coroto')
                 this.emitter.emit('showCart')
                 this.emitter.emit('getItems')
                 setTimeout(() => {
@@ -1930,7 +1938,7 @@
       readyItemInCart(){
         // this.hideModal()
         this.showSnackbar('success','Producto ya agregado')
-        this.emitter.emit('showCart')
+      
       },
       isAllIngredientsInStock(){
 

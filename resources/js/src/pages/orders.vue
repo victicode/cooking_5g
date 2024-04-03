@@ -381,7 +381,7 @@
                           <v-tooltip text="Agregar producto">
                               <template v-slot:activator="{ props }">
                                 <v-col cols="auto" class="">
-                                  <VBtn v-bind="props" color="primary" class="w-100"  @click="addProductInput()"><VIcon icon="bx-plus"/> Agregar producto</VBtn>
+                                  <VBtn v-bind="props" color="secondary" class="w-100"  @click="addProductInput()"><VIcon icon="bx-plus"/> Agregar producto</VBtn>
                                 </v-col>
                               </template>
                             </v-tooltip>
@@ -909,6 +909,12 @@
       },
       hideModal(){
         this.modal.hide()
+        setTimeout(() => {
+              let trashElement = document.querySelectorAll('.modal-backdrop');
+              trashElement.forEach((item)=>{
+                document.querySelector('body').removeChild(item);
+              })
+            }, 200);
         this.clearNewOrderForm()
       },
       modalAction(action){ 
@@ -997,9 +1003,6 @@
         const formData = new FormData();
         formData.append('order', this.selectedOrder.id);
         formData.append('products', JSON.stringify(products));
-
-
-        console.log(products)
         this.$store
           .dispatch(CREATE_OUT_ORDER, formData)
           .then((response) => {

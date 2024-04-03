@@ -66,7 +66,7 @@ class OrderController extends Controller
         
         try {
             //code...
-            $order = Order::withCount('products')->with(['user', 'products', 'client', 'outOrder'])->find($id);
+            $order = Order::withCount('products')->with(['user', 'products', 'client', 'outOrder', 'recipes'])->find($id);
             // $order->getStatusLabelAttribute();
         } catch (Exception $th) {
             return $this->returnFail(400, $th->getMessage());
@@ -130,7 +130,7 @@ class OrderController extends Controller
     }
     public function printOutOrder(Request $request, $id)
     {
-        $order = OutOrder::with('products', 'order.client')->where('id',$id)->first();
+        $order = OutOrder::with('products', 'order.client', 'recipes')->where('id',$id)->first();
 
         if($request->user()->rol_id == 1 
         || $request->user()->id == $order->created_by 
@@ -145,6 +145,7 @@ class OrderController extends Controller
             return $pdf->stream('Salida');
         }
         return $request->user()->id.' - '.$order->created_by .' - '.$order->order->client_id;
+        // return $order;
     }
     public function changeStatus(Request $request, $idOrder)
     {
@@ -163,13 +164,17 @@ class OrderController extends Controller
     private function addProductforOrder($order, $products, $type){
 
         if ($type == 'order') {
-            
             foreach ($products as $key) {
-                DB::table('products_x_orders')->insert([
-                    'order_id' => $order,
-                    'product_id' => $key['id'],
-                    'quantity'  => $key['quantity'],
-                ]);
+                if(isset($key['cartType']) && $key['cartType'] == 2){
+                    $this->isRecipeOrder($key,$order);
+                }else{
+                    DB::table('products_x_orders')->insert([
+                        'order_id' => $order,
+                        'product_id' => $key['id'],
+                        'quantity'  => $key['quantity'],
+                    ]);
+                    
+                }
             }
             return ;
         }
@@ -181,6 +186,7 @@ class OrderController extends Controller
                     'product_id' => $lotesh['selected_lote']['product_id'],
                     'quantity'  => intval($lotesh['quantity']),
                     'lote_id'   => $lotesh['selected_lote']['id_lote'],
+                    'recipe_id' => $lotesh['inOrder'] ?? NULL,
                 ]);
              }
         }
@@ -232,8 +238,16 @@ class OrderController extends Controller
         
         return  $notification;
     }
-    public function isRecipeOrder(){
-        
+    private function isRecipeOrder($recipe, $order){
+        foreach ($recipe['cooking_ingredients'] as $key) {
+
+            DB::table('products_x_orders')->insert([
+                'order_id' => $order,
+                'product_id' => $key['id'],
+                'recipe_id' => $recipe['id'],
+                'quantity'  => floatval($key['pivot']['quantity'])  * floatval($recipe['quantity'])  ,
+            ]);
+        }
     }
 
     /**

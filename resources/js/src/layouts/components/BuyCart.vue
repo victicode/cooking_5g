@@ -463,6 +463,7 @@
       },
       createdNewOrder(){
         if(!this.validateHaveProducts()) return ;
+        // console.log(this.cart)
 
         this.sendingButton('create_order_of_cart_button')
         const formData = new FormData();

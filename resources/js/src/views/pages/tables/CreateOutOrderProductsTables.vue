@@ -3,6 +3,7 @@
 
 const props = defineProps({
   products: Object,
+  recipes: Array
 })
 const as = window
 </script>
@@ -29,8 +30,18 @@ const as = window
           v-for="product in products"
           :key="product.id"
         >
-          <td class="px-2">
-            {{ product.title }}
+        <td class="px-2 ">
+            <div class="">
+
+              {{ product.title }} 
+              <v-chip color="primary"  v-if="flagTitle(product)!==''">
+  
+                <span class="font-italic">
+    
+                  {{ flagTitle(product) }}
+                </span>
+              </v-chip>
+            </div>
           </td>
           <td class="text-center px-2"> 
             {{  product.pivot.quantity }}
@@ -68,6 +79,11 @@ export default {
 
   }),
   methods:{
+    flagTitle(product){
+      return product.pivot.recipe_id 
+        ? this.recipes.find((recipe) => recipe.id == product.pivot.recipe_id ).title
+        :''
+    },
     selectProduct(id){
       this.$emit('selectProduct',id)
     }

@@ -13,7 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        //
+        Schema::table('products_x_orders', function (Blueprint $table) {
+            $table->integer('isRecipe')->nullable();
+            $table->unsignedBigInteger('recipe_id')->after('product_id')->nullable();
+            $table->foreign('recipe_id')->references('id')->on('recipes')->onDelete('cascade');
+
+        });
     }
 
     /**

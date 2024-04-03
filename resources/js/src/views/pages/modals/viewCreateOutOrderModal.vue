@@ -90,7 +90,7 @@ const props = defineProps({
                   </VCol>
                 </VRow>
                 <div class="w-100">
-                  <CreateOutOrderProductsTables :products="order.products" @selectProduct="selectProduct" />
+                  <CreateOutOrderProductsTables :products="order.products" :recipes="order.recipes" @selectProduct="selectProduct" />
                 </div>
                 <VDivider  />
                 <div class="mt-5 w-100 d-flex  justify-center">
@@ -135,7 +135,14 @@ const props = defineProps({
                       <VCardTitle class="text-2xl font-weight-bold">
                         <div class="card-title text-center">
                           <div class="form-title__part1"><h4>Asignar producto a la orden:</h4></div>
-                          <h2 class="my-2">{{ selectedProduct.title }}</h2>
+                          <div>
+                            <h2 class="my-2">{{ selectedProduct.title }}</h2>
+                            <v-chip color="primary"  v-if="flagTitle(selectedProduct)" class="mb-2">
+                              <span class="font-italic">
+                                {{ flagTitle(selectedProduct).title }}
+                              </span>
+                            </v-chip>
+                          </div>
                           <h5 class="my-2">Orden #{{ orderNumberFormat(order.id) }}</h5>
                           <div class="d-flex justify-center align-center">
 
@@ -313,6 +320,7 @@ export default {
     selectProduct(id){
       this.selectedProduct = this.order.products.filter(product => product.id == id)[0]
       setTimeout(() => {
+        console.log(this.selectedProduct)
         this.showModal('selectedProductLote')
         this.validateFormItem()
       }, 300);
@@ -333,7 +341,6 @@ export default {
       let form = document.getElementById('select_lote_for_order'),
       loteInput = "product_in_order_lote_"+this.selectedProduct.title.replace(/ /g,'_') +"_"+ (form.querySelectorAll('input[name*="product_in_order_lote_"]').length - 1),
       quantityInput = "product_in_order_quantity_"+this.selectedProduct.title.replace(/ /g,'_') +"_"+ (form.querySelectorAll('input[name*="product_in_order_lote_"]').length - 1)
-      console.log(this.forms)
       try {
         this.forms.removeField(loteInput)
         this.forms.removeField(quantityInput)
@@ -342,9 +349,6 @@ export default {
         console.log('no hay validación activa')
       }
 
-      console.log(this.forms)
-
-      
     },
     addLoteInput(){
       let newLote = {selected_lote:'', quantity:'', selected_lote_id:''}
@@ -354,7 +358,8 @@ export default {
       } catch (error) {
         this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')] = [newLote]
       }
-      this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')]['idProduct']=this.selectedProduct.id
+      this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')]['idProduct'] = this.selectedProduct.id
+      
       setTimeout(() => {
         this.createValidate()
 
@@ -364,7 +369,7 @@ export default {
     selectedLotes(e, index){
       this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')][index].indexLote = index
       this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')][index].product_id = this.selectedProduct.id
-
+      this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')][index]['inOrder'] = this.flagTitle(this.selectedProduct).id
       setTimeout(() => {
         this.forms.validateField('product_in_order_lote_'+this.selectedProduct.title.replace(/ /g,'_')+'_'+index)
           this.addValidate(this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')][index])
@@ -521,7 +526,14 @@ export default {
       ];
     
     },
+    flagTitle(product){
+      return product.pivot.recipe_id 
+        ? this.order.recipes.find((recipe) => recipe.id == product.pivot.recipe_id )
+        :''
+    },
     createOutOrder(){
+
+      // console.log(this.selectedsLotes)
       if(this.verifyCheckLotes()){
         this.disabledButton('create_order_'+this.order.id)
         this.$emit('createOutOrder', Object.values(this.selectedsLotes))
