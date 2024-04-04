@@ -58,14 +58,14 @@
       <template v-if="recipes.length > 0">
           <VCard class="mt-3" v-for="recipe in recipes" :key="recipe.id" >
             <VRow class="ma-0  justify-center align-center justify-md-start pa-0 px-md-5 px-0 mb-0 mb-md-0">
-              <VCol cols="12"  class="d-flex align-center">
-                <div>
+              <VCol cols="12"  class="d-flex align-center px-1">
+                <div @click="showAction(recipe.id,'viewRecipe')" >
                   <img :src="recipe.image_url" width="100" height="100" style="border-radius: 20%;">
                 </div>
                 <div class="px-2 w-100">
                   <div>
 
-                    <div class="d-flex text-md-start ">
+                    <div class="d-flex text-md-start " @click="showAction(recipe.id,'viewRecipe')" >
                       <h3 class="w-100"> {{ recipe.title }} </h3>
                       
                     </div>
@@ -92,8 +92,25 @@
                         </v-chip>
                       </div>
                       <div class="d-flex">
-                        <v-btn size="small" v-if="getCurrentAccount.rol_id == 3" class="mx-0" color="secondary" @click="showAction(recipe.id,'viewRecipe')" icon="carbon:view" />
+                        <!-- <v-btn size="small" 
+                        v-if="getCurrentAccount.rol_id == 3" class="mx-0" color="secondary" @click="showAction(recipe.id,'viewRecipe')" icon="carbon:view" /> -->
+                        <div v-if="getCurrentAccount.rol_id == 3">
 
+                          <v-btn 
+                            v-if="updateInCart" 
+                            size="small" 
+                            class="ms-1" :color="productInCart(recipe) ? 'primary' : 'success'"  
+                            @click="productInCart(recipe) ? addToCart(recipe) : readyItemInCart()"
+                            :icon="productInCart(recipe) ? 'iconoir:cart-alt' : 'bi:clipboard-check' " 
+                          />
+                          <div v-else>
+                            <v-skeleton-loader
+                              class="ma-0 cart-skeleton-button "
+                              max-width="200"
+                              type="button"
+                            ></v-skeleton-loader>
+                          </div>
+                        </div>
 
                         <v-btn size="x-small" v-if="getCurrentAccount.rol_id !== 3" class="d-block d-md-none" color="secondary" @click="selectRecipe(recipe.id)" icon="majesticons:plus-line" />
                         <v-btn size="small" v-if="getCurrentAccount.rol_id !== 3" class="d-none d-md-block mx-2" color="secondary" @click="showAction(recipe.id,'viewRecipe')" icon="carbon:view" />
@@ -207,8 +224,8 @@
                                 </div>
                               </div>
                             </VCardText>
-                            <VCardText class="text-subtitle-1 pt-4 pb-2 px-1 my-5" v-if="getCurrentAccount.rol_id == 3">
-                              <div class="font-weight-medium">
+                           <VCardText class="text-subtitle-1 pt-4 pb-2 px-1 my-5" v-if="getCurrentAccount.rol_id == 3">
+                               <!-- <div class="font-weight-medium">
                                 <h3>
                                   <b class="text-success">En Stock</b> para esta receta:
                                 </h3>
@@ -233,7 +250,7 @@
                                     ></v-skeleton-loader>
                                   </div>
                                 </div>
-                              </div>
+                              </div>-->
                               <div class="" v-if="isAllIngredientsInStock()">
                                 <VRow class="ma-0 pa-0  mt-5 align-center">
                                   <VCol cols="12" md="8" class="mt-0 py-0 px-0">
@@ -255,11 +272,13 @@
                                   </VCol>
                                 </VRow>
                               </div>
-                            </VCardText>
+                            </VCardText> 
                             <div class="mb-5 mt-2">
                               <div class="stock-notify px-3 py-4" style="">
                                 <p class="text-secondary pa-0 ma-0">
-                                  <b class="text-error">(*) Nota:</b> Los ingredientes con el stock agotado no están disponibles en este momento. Si tiene interés en realizar esta receta y observa algún ingrediente "sin stock" puede notificarlo al administrador para que lo reponga.
+                                  <b class="text-error">(*) Nota:</b> 
+                                  De forma ocasional, la entrega del pedido podría demorar algunos días si alguno de sus ingredientes 
+                                  se encuentra sin stock en origen por parte de nuestros distribuidores.
                                 </p>
                               </div>
                             </div>
@@ -1128,15 +1147,18 @@
           </div>
         </div>
     </v-navigation-drawer>  
-    <buyCart  />  
+    <buyCart v-if="getCurrentAccount.rol_id == 3" />  
   </VRow>
 </template>
 <style lang="scss" >
   .cart-skeleton-button{
-    width: 53.99px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
+    border-radius: 10%!important;
     & > .v-skeleton-loader__bone{
       margin: 0px!important;
+      border-radius: 50%!important;
+
     }
   }
   .recipe-cart-button > .v-skeleton-loader__button{
@@ -1924,8 +1946,8 @@
           this.$store
             .dispatch(ADD_TO_CART, cartFormData)
               .then((data) =>{
-                console.log('coroto')
-                this.emitter.emit('showCart')
+                // console.log('coroto')
+                // this.emitter.emit('showCart')
                 this.emitter.emit('getItems')
                 setTimeout(() => {
                 this.updateInCart = true;
@@ -1970,7 +1992,13 @@
       this.validateFormItem('new_recipe_form')
     },
     created(){
+      this.emitter.on("updateRecipesInCart", () => {
+        this.updateInCart = false
+        setTimeout(() => {
+          this.updateInCart = true
+        }, 500);
       
+      })
       this.emitter.emit('displayOverlayLoad', false)
     },
     computed: {

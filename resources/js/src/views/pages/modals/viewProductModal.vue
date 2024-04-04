@@ -1,5 +1,6 @@
 <script setup>
 import moment from 'moment';
+import { mapGetters } from "vuex";
 
 import { func } from '@/core/services/utils/utils.js'
 const props = defineProps({
@@ -51,14 +52,14 @@ const props = defineProps({
                       <VCardText class="px-1">
                         {{ product.product.description}}
                       </VCardText>
-                      <div class="mt-0" style="border-top: 1px solid rgba(119, 119, 119, 0.356)">
+                      <div   class="mt-0" style="border-top: 1px solid rgba(119, 119, 119, 0.356)">
 
-                        <VCardText class="text-subtitle-1 py-4 px-1">
+                        <VCardText class="text-subtitle-1 py-4 px-1" v-if="getCurrentAccount.rol_id !== 3">
                           <span class="font-weight-medium">Fecha de entrada:</span> <span class="font-weight-bold">
                             {{ moment(product.created_at_lote).format('DD-MM-YYYY')  }}
                           </span>
                         </VCardText>
-                        <VCardText class="text-subtitle-1 py-4 px-1">
+                        <VCardText class="text-subtitle-1 py-4 px-1" v-if="getCurrentAccount.rol_id !== 3">
                           <span class="font-weight-medium">Número Lote:</span> <span class="font-weight-bold">
                             {{ 
                                 product.lote_code
@@ -66,16 +67,19 @@ const props = defineProps({
                             }}</span>
                         </VCardText>
                         
-                        <VCardText class="text-subtitle-1 py-4 px-1">
-                          <span class="font-weight-medium">Stock del lote: </span> 
-                          <span class="font-weight-bold" v-if="product.quantity > 0">
-                            {{func.numberFormat(product.quantity)}} {{product.product.type_of_unit }}
+                        <VCardText class="text-subtitle-1 py-4 px-1 d-flex align-center">
+                          <span class="font-weight-medium">Stock total: </span> 
+                          <span class="font-weight-bold mx-2" v-if="product.quantity > 0">
+                            <v-chip :class=" product.product.total_stock < 0 ? 'bg-error' : product.product.total_stock > 30 ? 'bg-success' : 'bg-warning'">
+
+                            {{func.numberFormat(product.product.total_stock)}} {{product.product.type_of_unit }}
+                            </v-chip>
                           </span>
                           <span class="font-weight-bold text-error" v-else>
                             SIN STOCK
                           </span>
                         </VCardText>
-                        <VCardText class="text-subtitle-1 pt-0 px-1 d-flex align-center">
+                        <VCardText class="text-subtitle-1 pt-0 px-1 d-flex align-center" v-if="getCurrentAccount.rol_id !== 3">
                           <div class="font-weight-medium my-0">Fecha de vencimiento:</div>
                           <div class="font-weight-bold mx-2">
                             <v-chip :class=" Math.round(moment.duration(moment(product.due_date).diff(new moment())).as('days') ) < 0 ? 'bg-error' : Math.round(moment.duration(moment(product.due_date).diff(new moment())).as('days') ) > 30 ? 'bg-success' : 'bg-warning'">
@@ -91,21 +95,23 @@ const props = defineProps({
                       </div>
                     </VCol>
                   </VRow>
-                  
-                  <div style="border-top: 1px solid rgba(119, 119, 119, 0.356)" v-if="product.product.is_dismantling !=0 && this.countDismantlingActive(product.product.dismantling) > 0">
-                    <VCardText class="text-subtitle-1 pb-4">
-                      <span class="font-weight-medium">Cantidad de despices:</span> <span class="font-weight-bold">{{ this.countDismantlingActive(product.product.dismantling) }}</span>
-                    </VCardText>
-                    <VCardText class="text-subtitle-1">
-                      <p class="mb-0">Despieces:</p> 
-                      <div class="d-block d-md-flex">
-                        <b v-for="item in product.product.dismantling" v-bind:key="item.id">
-                          <p class="mb-0 ms-2 mt-3" v-if="item.products_pieces" >  
-                            <b class="d-inline-flex d-md-none">*</b> {{ item.products_pieces.title}}: {{item.quantity}} {{ item.quantity > 1 ? 'Piezas' : 'Pieza' }} <b class="d-none d-md-inline-flex">||</b>
-                          </p> 
-                        </b>
-                      </div>
-                    </VCardText>
+                  <div v-if="getCurrentAccount.rol_id !== 3">
+
+                    <div style="border-top: 1px solid rgba(119, 119, 119, 0.356)" v-if="product.product.is_dismantling !=0 && this.countDismantlingActive(product.product.dismantling) > 0">
+                      <VCardText class="text-subtitle-1 pb-4">
+                        <span class="font-weight-medium">Cantidad de despices:</span> <span class="font-weight-bold">{{ this.countDismantlingActive(product.product.dismantling) }}</span>
+                      </VCardText>
+                      <VCardText class="text-subtitle-1">
+                        <p class="mb-0">Despieces:</p> 
+                        <div class="d-block d-md-flex">
+                          <b v-for="item in product.product.dismantling" v-bind:key="item.id">
+                            <p class="mb-0 ms-2 mt-3" v-if="item.products_pieces" >  
+                              <b class="d-inline-flex d-md-none">*</b> {{ item.products_pieces.title}}: {{item.quantity}} {{ item.quantity > 1 ? 'Piezas' : 'Pieza' }} <b class="d-none d-md-inline-flex">||</b>
+                            </p> 
+                          </b>
+                        </div>
+                      </VCardText>
+                    </div>
                   </div>
 
                 </div>
@@ -135,7 +141,14 @@ export default {
       
       return count
     }
-  }
+  },
+  computed: {
+    ...mapGetters(["currentUser"]),
+
+    getCurrentAccount() {
+      return this.currentUser;
+    },
+  },
 
 
 };
