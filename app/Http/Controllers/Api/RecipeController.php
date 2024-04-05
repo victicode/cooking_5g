@@ -34,6 +34,15 @@ class RecipeController extends Controller
     public function getRecipeById($id){
         return $this->returnSuccess(200, Recipe::with(['cooking_ingredients.dismantling.products_pieces', 'cooking_ingredients.lotes' ])->find($id));
     }
+    public function getRecipeBySearch(Request $request){
+        $products = Recipe::query()->withCount('cooking_ingredients')->with('cooking_ingredients');
+
+        if(!empty($request->title)){
+            $products->where('title', 'like', '%'.$request->title.'%');
+        }
+
+        return $this->returnSuccess(200, $products->take(10)->get());
+    }
     public function storeRecipe(Request $request)
     {
         //

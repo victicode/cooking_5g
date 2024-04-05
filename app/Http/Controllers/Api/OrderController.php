@@ -165,16 +165,7 @@ class OrderController extends Controller
 
         if ($type == 'order') {
             foreach ($products as $key) {
-                if(isset($key['cartType']) && $key['cartType'] == 2){
-                    $this->isRecipeOrder($key,$order);
-                }else{
-                    DB::table('products_x_orders')->insert([
-                        'order_id' => $order,
-                        'product_id' => $key['id'],
-                        'quantity'  => $key['quantity'],
-                    ]);
-                    
-                }
+                $this->isRecipeOrder($key,$order);
             }
             return ;
         }
