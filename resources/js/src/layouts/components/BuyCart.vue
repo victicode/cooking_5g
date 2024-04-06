@@ -437,6 +437,7 @@
           .then((response) => {
             if (response.code == 200) {
               this.hideModal()
+              this.emitter.emit('updateRecipesInCart')
               
               this.readyButton('create_order_of_cart_button')
               this.showSnackbar('success', 'Orden creada con exito')
@@ -485,24 +486,6 @@
             // this.hideModal()
             this.showSnackbar('error', err )
           })
-      },
-      maxStockRecipe(index){
-   
-        let InStock = true;
-        let product = this.cart[index]
-
-        product.cooking_ingredients.forEach((ingredient)=>{
-          console.log( 
-            `
-            ${ingredient.title}: ${parseFloat(ingredient.pivot.quantity) * (parseFloat(this.cart[index].quantity) + 1)} > ${ingredient.total_stock}
-            
-            `
-          ) 
-          if(( parseFloat(ingredient.pivot.quantity) * (parseFloat(this.cart[index].quantity) + 1) ) > ingredient.total_stock ) InStock = false
-
-        })
-
-        return InStock
       },
       maxStockRecipeInput(index){
         let product = this.cart[index]

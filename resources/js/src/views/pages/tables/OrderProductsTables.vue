@@ -10,44 +10,38 @@ const as = window
 
 <template>
   <div class="w-100 overflow-x-table">
-    <VTable class="border-bottom table-b" style="">
+    <VTable class="border-bottom table-a" style="">
       <thead>
         <tr>
           <th class="text-uppercase px-2">
             Nombre del producto
           </th>
-          <th style="width: 200px; " class="px-2">
+          <th style="width: 300px; " class="px-2">
             Cantidad solicitadas
-          </th>
-          <th style="width: 90px; " class="px-2">
-            Despieces
           </th>
         </tr>
       </thead>
 
       <tbody>
         <tr
-          v-for="product in products"
-          :key="product.id"
+          v-for="recipe in recipes"
+          :key="recipe.id"
         >
           <td class="px-2 ">
             <div class="">
 
-              {{ product.title }} 
-              <v-chip color="primary"  v-if="flagTitle(product)!==''">
+              {{ recipe.title }} 
+              <!-- <v-chip color="primary"  v-if="flagTitle(recipe)!==''">
   
                 <span class="font-italic">
     
-                  {{ flagTitle(product) }}
+                  {{ flagTitle(recipe) }}
                 </span>
-              </v-chip>
+              </v-chip> -->
             </div>
           </td>
           <td class="text-center px-2"> 
-            {{  product.pivot.quantity }}
-          </td>
-          <td class="text-center px-2">
-            {{ product.is_dismantling ? 'Si' : 'No'}}
+            {{  recipe.pivot.quantity }}
           </td>
         </tr>
       </tbody>
@@ -58,9 +52,11 @@ const as = window
 <style>
 @media only screen and (max-width: 600px){
   
-  .table-b{
-    width: 00px !important;
-    max-width: max-content!important;
+  .table-a{
+    width: 100%!important;
+    max-width: 100%!important;
+    /* width: 600px!important;
+    max-width: max-content!important; */
   }
   .overflow-x-table{
     overflow-x: scroll;

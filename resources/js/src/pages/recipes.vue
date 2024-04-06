@@ -94,21 +94,24 @@
                       <div class="d-flex">
                         <!-- <v-btn size="small" 
                         v-if="getCurrentAccount.rol_id == 3" class="mx-0" color="secondary" @click="showAction(recipe.id,'viewRecipe')" icon="carbon:view" /> -->
-                        <div v-if="getCurrentAccount.rol_id == 3">
+                        <div v-if="maxStockRecipeInput(recipe) > 0">
 
-                          <v-btn 
-                            v-if="updateInCart" 
-                            size="small" 
-                            class="ms-1" :color="productInCart(recipe) ? 'primary' : 'success'"  
-                            @click="productInCart(recipe) ? addToCart(recipe) : readyItemInCart()"
-                            :icon="productInCart(recipe) ? 'iconoir:cart-alt' : 'bi:clipboard-check' " 
-                          />
-                          <div v-else>
-                            <v-skeleton-loader
-                              class="ma-0 cart-skeleton-button "
-                              max-width="200"
-                              type="button"
-                            ></v-skeleton-loader>
+                          <div v-if="getCurrentAccount.rol_id == 3">
+  
+                            <v-btn 
+                              v-if="updateInCart" 
+                              size="small" 
+                              class="ms-1" :color="productInCart(recipe) ? 'primary' : 'success'"  
+                              @click="productInCart(recipe) ? addToCart(recipe) : readyItemInCart()"
+                              :icon="productInCart(recipe) ? 'iconoir:cart-alt' : 'bi:clipboard-check' " 
+                            />
+                            <div v-else>
+                              <v-skeleton-loader
+                                class="ma-0 cart-skeleton-button "
+                                max-width="200"
+                                type="button"
+                              ></v-skeleton-loader>
+                            </div>
                           </div>
                         </div>
 
@@ -1391,6 +1394,17 @@
           
         }
         
+      },
+      maxStockRecipeInput(product){
+        let minus = 0;
+        product.cooking_ingredients.forEach((ingredient, index)=>{
+          if(index==0) minus = ingredient.total_stock /parseFloat(ingredient.pivot.quantity)
+
+          minus = minus > (ingredient.total_stock /parseFloat(ingredient.pivot.quantity) )
+          ? ingredient.total_stock /parseFloat(ingredient.pivot.quantity) 
+          : minus
+        })
+        return minus.toFixed(0)
       },
       validateFormItem(id){
         const fieldToValidate = this.itemsValidateByForm(id)

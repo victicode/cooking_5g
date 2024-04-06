@@ -26,32 +26,34 @@ const as = window
       </thead>
 
       <tbody>
-        <tr
-          v-for="product in products"
-          :key="product.id"
-        >
-        <td class="px-2 ">
-            <div class="">
-
-              {{ product.title }} 
-              <v-chip color="primary"  v-if="flagTitle(product)!==''">
-  
-                <span class="font-italic">
-    
-                  {{ flagTitle(product) }}
-                </span>
-              </v-chip>
-            </div>
-          </td>
-          <td class="text-center px-2"> 
-            {{  product.pivot.quantity }}
-          </td>
-          <td class="text-center px-2"> 
-            <v-chip  :append-icon="!product.in_order ? 'fa-solid:truck-loading' : 'fluent:box-checkmark-20-regular'" :color="!product.in_order ? 'warning' : 'success'" @click="selectProduct(product.id)">
-              {{!product.in_order ? 'Agregar' : 'Agregado'}}
-            </v-chip>
-          </td>
-        </tr>
+       <template v-for="(recipe, index) in recipes"> 
+         <tr
+           v-for="product in recipe.cooking_ingredients"
+           :key="product.id"
+         >
+         <td class="px-2 ">
+             <div class="d-block">
+ 
+               {{ product.title }} 
+               <v-chip color="primary"  v-if="flagTitle(product)!==''">
+   
+                 <span class="font-italic">
+     
+                   {{ recipe.title}}
+                 </span>
+               </v-chip>
+             </div>
+           </td>
+           <td class="text-center px-2"> 
+             {{  parseFloat(recipe.pivot.quantity) * parseFloat(product.pivot.quantity) }}
+           </td>
+           <td class="text-center px-2"> 
+             <v-chip  :append-icon="!product.in_order ? 'fa-solid:truck-loading' : 'fluent:box-checkmark-20-regular'" :color="!product.in_order ? 'warning' : 'success'" @click="selectProduct(product.id, index)">
+               {{!product.in_order ? 'Agregar' : 'Agregado'}}
+             </v-chip>
+           </td>
+         </tr>
+       </template>
       </tbody>
     </VTable>
   </div>
@@ -84,11 +86,13 @@ export default {
         ? this.recipes.find((recipe) => recipe.id == product.pivot.recipe_id ).title
         :''
     },
-    selectProduct(id){
-      this.$emit('selectProduct',id)
+    selectProduct(id, index){
+      this.$emit('selectProduct',id,index)
     }
+  },
+  mounted(){
+ console.log(this.recipes)
   }
-
 
 };
 

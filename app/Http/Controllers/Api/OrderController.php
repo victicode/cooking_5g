@@ -66,7 +66,7 @@ class OrderController extends Controller
         
         try {
             //code...
-            $order = Order::withCount('products')->with(['user', 'products', 'client', 'outOrder', 'recipes'])->find($id);
+            $order = Order::withCount('products')->with(['user', 'products', 'client', 'outOrder', 'recipes.cooking_ingredients'])->find($id);
             // $order->getStatusLabelAttribute();
         } catch (Exception $th) {
             return $this->returnFail(400, $th->getMessage());
@@ -165,7 +165,12 @@ class OrderController extends Controller
 
         if ($type == 'order') {
             foreach ($products as $key) {
-                $this->isRecipeOrder($key,$order);
+                DB::table('products_x_orders')->insert([
+                    'order_id' => $order,
+                    'product_id' => null,
+                    'recipe_id' => $key['id'],
+                    'quantity'  =>  floatval($key['quantity'])  ,
+                ]);
             }
             return ;
         }
@@ -174,9 +179,9 @@ class OrderController extends Controller
             foreach ($product as $lotesh) {
                 DB::table('products_x_out_order')->insert([
                     'out_order_id' => $order,
-                    'product_id' => $lotesh['selected_lote']['product_id'],
+                    'product_id' => null,
                     'quantity'  => intval($lotesh['quantity']),
-                    'lote_id'   => $lotesh['selected_lote']['id_lote'],
+                    'lote_id'   => null,
                     'recipe_id' => $lotesh['inOrder'] ?? NULL,
                 ]);
              }

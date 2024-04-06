@@ -317,10 +317,10 @@ export default {
       this.snackType = type
       this.snackMessage = messagge
     },
-    selectProduct(id){
-      this.selectedProduct = this.order.products.filter(product => product.id == id)[0]
+    selectProduct(id, index){
+      this.selectedProduct = this.order.recipes[index].cooking_ingredients.find(product => product.id == id)
       setTimeout(() => {
-        console.log(this.selectedProduct)
+        // console.log(this.selectedProduct)
         this.showModal('selectedProductLote')
         this.validateFormItem()
       }, 300);

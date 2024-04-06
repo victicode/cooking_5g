@@ -102,7 +102,7 @@ const token = localStorage.getItem('id_token')
                   </VCol>
                 </VRow>
                 <div class="w-100 mb-5">
-                  <OrderProductsTables :products="order.products" :recipes="order.recipes" />
+                  <OrderProductsTables :recipes="order.recipes" />
                 </div>
                 <VDivider  />
                 <!-- <div class="mt-5 w-100 d-flex  justify-center">
