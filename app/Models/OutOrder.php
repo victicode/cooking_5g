@@ -35,6 +35,6 @@ class OutOrder extends Model
     }
     public function recipes()
     {
-        return $this->belongsToMany(Recipe::class, 'products_x_out_order');
+        return $this->belongsToMany(Recipe::class, 'products_x_out_order')->withPivot(['quantity']);
     }
 }

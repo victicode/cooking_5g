@@ -66,7 +66,7 @@ class OrderController extends Controller
         
         try {
             //code...
-            $order = Order::withCount('products')->with(['user', 'products', 'client', 'outOrder', 'recipes'])->find($id);
+            $order = Order::withCount('products')->with(['user', 'products', 'client', 'outOrder', 'recipes.cooking_ingredients'])->find($id);
             // $order->getStatusLabelAttribute();
         } catch (Exception $th) {
             return $this->returnFail(400, $th->getMessage());
@@ -111,7 +111,7 @@ class OrderController extends Controller
 
         try{
 
-            $this->addProductforOrder($out_order->id,json_decode( $request->products, true), 'out_order');
+            $this->addProductforOrder($out_order->id,json_decode( $request->recipes, true), 'out_order');
             $this->decreaseStockInProduct(json_decode($request->products,true));
         }catch(Exception $e){
             return $this->returnFail(400, $e->getMessage());
@@ -165,30 +165,33 @@ class OrderController extends Controller
 
         if ($type == 'order') {
             foreach ($products as $key) {
-                if(isset($key['cartType']) && $key['cartType'] == 2){
-                    $this->isRecipeOrder($key,$order);
-                }else{
-                    DB::table('products_x_orders')->insert([
-                        'order_id' => $order,
-                        'product_id' => $key['id'],
-                        'quantity'  => $key['quantity'],
-                    ]);
-                    
-                }
+                DB::table('products_x_orders')->insert([
+                    'order_id' => $order,
+                    'product_id' => null,
+                    'recipe_id' => $key['id'],
+                    'quantity'  =>  floatval($key['quantity'])  ,
+                ]);
             }
             return ;
         }
 
         foreach ($products as $product) {
-            foreach ($product as $lotesh) {
-                DB::table('products_x_out_order')->insert([
-                    'out_order_id' => $order,
-                    'product_id' => $lotesh['selected_lote']['product_id'],
-                    'quantity'  => intval($lotesh['quantity']),
-                    'lote_id'   => $lotesh['selected_lote']['id_lote'],
-                    'recipe_id' => $lotesh['inOrder'] ?? NULL,
-                ]);
-             }
+            // foreach ($product as $lotesh) {
+            //     DB::table('products_x_out_order')->insert([
+            //         'out_order_id' => $order,
+            //         'product_id' => null,
+            //         'quantity'  => intval($lotesh['quantity']),
+            //         'lote_id'   => null,
+            //         'recipe_id' => $lotesh['inOrder'] ?? NULL,
+            //     ]);
+            //  }
+            DB::table('products_x_out_order')->insert([
+                'out_order_id' => $order,
+                'product_id' => null,
+                'quantity'  => intval($product['pivot']['quantity']),
+                'lote_id'   => null,
+                'recipe_id' => $product['id'] ?? NULL,
+            ]);
         }
 
         

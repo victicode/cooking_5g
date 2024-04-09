@@ -25,7 +25,9 @@
 
   import { GET_ORDER_BY_ID, CHANGE_STATUS, CREATE_ORDER, CREATE_OUT_ORDER } from "@/core/services/store/order.module";
   import { GET_ALL_USER, GET_USER } from "@/core/services/store/user.module";
-  import { GET_PRODUCT_BY_SEARCH } from "@/core/services/store/product.module";
+  // import { GET_PRODUCT_BY_SEARCH } from "@/core/services/store/product.module";
+  import { GET_RECIPE_BY_SEARCH } from "@/core/services/store/recipe.module";
+
 </script>
 
 <template>
@@ -38,7 +40,7 @@
             md="3"
             class="ma-0 px-0 justify-center justify-md-end d-flex"
           >
-          <VBtn  @click=" showModal('createOrder')" color="primary" class="w-100 "><VIcon icon="bx-plus"/>
+          <VBtn v-if="!isUser" @click=" showModal('createOrder')" color="primary" class="w-100 "><VIcon icon="bx-plus"/>
             {{ isUser ? 'Crear orden manual': 'Crear nueva orden'}}
           </VBtn>
 
@@ -320,16 +322,14 @@
                                   <v-autocomplete
                                     :model-value="item.id"
                                     :items="productsForOrder[index] ?  productsForOrder[index] : item.id !== null ? [ {id: item.id, title: item.title, stock: item.quantity}] : []"
-                                    label="Nombre del producto"
+                                    label="Nombre de la receta"
                                     item-title="title"
                                     item-value="id"
-                                    placeholder="Nombre del producto"
+                                    placeholder="Nombre de la receta"
                                     variant="outlined"
                                     :persistent-hint="isUser ? true : false "
-                                    :hide-details="isUser ? false : true "
                                     clearable
                                     no-filter
-                                    :hint="'Stock: ' + item.maxValue"
                                     :name="'product_in_order_'+index"
                                     no-data-text="No se encontraron resultados"
                                     @click="searchProductsForOrder($event,index )"
@@ -360,6 +360,8 @@
                                     placeholder="Unidades solicitadas"
                                     label="Unidades solicitadas"
                                     type="number"
+                                    :hint="  item.maxValue ? 'Max: ' + item.maxValue : 0"
+                                    persistent-hint
                                     :name="'product_in_order_quantity_'+index"
                                     v-model="item.quantity"
                                   />
@@ -844,7 +846,7 @@
       },
       getProducts(search = "", index){
         this.$store
-          .dispatch(GET_PRODUCT_BY_SEARCH, search)
+          .dispatch(GET_RECIPE_BY_SEARCH, search)
           .then((response) => {
             // console.log(response)
             this.productsForOrder[index] = response.data
@@ -982,7 +984,7 @@
         formData.append('address', this.newOrder.userAddress);
         formData.append('products', JSON.stringify(this.newOrder.products));
         formData.append('isManual', this.isUser ? true : false);
-
+        console.log(this.newOrder)
         this.$store
           .dispatch(CREATE_ORDER, formData)
           .then((response) => {
@@ -1003,6 +1005,7 @@
         const formData = new FormData();
         formData.append('order', this.selectedOrder.id);
         formData.append('products', JSON.stringify(products));
+        formData.append('recipes', JSON.stringify(this.selectedOrder.recipes));
         this.$store
           .dispatch(CREATE_OUT_ORDER, formData)
           .then((response) => {
@@ -1050,12 +1053,14 @@
           id:null,
           title:'',
           quantity:'',
-          maxValue:'',
+          maxValue:0,
+          recipe:'',
           lotes:[],
           selected_lote:''
 
         }
         this.newOrder.products.push(newProducInOrder)
+        console.log(this.newOrder.products)
         setTimeout(() => {
           if(this.isUser){
 
@@ -1075,36 +1080,49 @@
         debounce(this.getProducts, 200)(e.target.value, index)
       },
       clearProductSearch(index){
+        this.newOrder.products[index].id = null;
         this.newOrder.products[index].maxValue = 0;
         this.newOrder.products[index].lotes =[]
         this.newOrder.products[index].selected_lote =''
+        this.newOrder.products[index].recipe = ''
         this.getProducts('',index)
       },
       selectedProduct(e,index){
         if(!e) return
-
-        if(!this.productsForOrder[index].filter(product => product.id == e)[0].stock) return
+        if(!this.newOrder.products[index])return
+        this.newOrder.products[index] = this.productsForOrder[index].find(product => product.id == e)
+        this.newOrder.products[index].maxValue = this.maxStockRecipeInput(this.newOrder.products[index])
         
-        if(this.productsForOrder[index].filter(product => product.id == e)[0].stock == 0 ){
+        if( this.newOrder.products[index].maxValue <= 0){
+          this.newOrder.products[index] = {
+          id:null,
+          title:'',
+          quantity:'',
+          maxValue:0,
+          recipe:'',
+          lotes:[],
+          selected_lote:''
+
+        }
           alert('Esta producto no tiene Stock')
           return
         }
-        try {
-          this.newOrder.products[index].id = e
-          this.newOrder.products[index].lotes = this.productsForOrder[index].filter(product => product.id == e)[0].lotes
+        setTimeout(() => {
+          this.addValidate(this.newOrder.products[index].maxValue)
 
-          setTimeout(() => {
-            this.newOrder.products[index].selected_lote = this.newOrder.products[index].lotes[0]
-            this.newOrder.products[index].maxValue = this.newOrder.products[index].lotes[0].quantity
-            // console.log( this.newOrder.products[index].selected_lote )
-            this.addValidate(this.newOrder.products[index].maxValue)
-
-          }, 200);
-          
-        } catch (error) {
-          
-        }
+        }, 200);
         
+      },
+      maxStockRecipeInput(product){
+        let minus = 0;
+        product.cooking_ingredients.forEach((ingredient, index)=>{
+          if(index==0) minus = ingredient.total_stock /parseFloat(ingredient.pivot.quantity)
+
+          minus = minus > (ingredient.total_stock /parseFloat(ingredient.pivot.quantity) )
+          ? ingredient.total_stock /parseFloat(ingredient.pivot.quantity) 
+          : minus
+        })
+        return minus.toFixed(0)
       },
       validateFormItem(){
         this.forms = formValidation(document.getElementById('new_order_form'), {

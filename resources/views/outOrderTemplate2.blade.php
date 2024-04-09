@@ -155,7 +155,7 @@
 							</td>
 							<td>
 							<div class="margin-right:50px">
-								<div style="margin-top: 5px;" >Orden asociada #: <b>{{substr("000000", strlen(strval($order->order->idateid)) ) }}{{$order->order->id}}</b></div >
+								<div style="margin-top: 5px;" >Orden asociada #: <b>{{substr("000000", strlen(strval($order->order->id)) ) }}{{$order->order->id}}</b></div >
 
 								<div style="margin-top: 5px;">Fecha de pedido: <b>{{date("d/m/Y  ", strtotime($order->order->created_at))}}</b></div>
 								<div style="margin-top: 5px;">Fecha de envio: <b>{{date("d/m/Y  ", strtotime($order->created_at))}}</b></div>
@@ -169,31 +169,23 @@
 
 
 			<tr class="heading" style="width:100%; border-bottom:1.2px solid grey; padding:5px; border-left:1px solid grey ; border-right:1px solid grey">
-				<td style=" border-top: 1px solid grey; border-left: 1px solid grey; width:10px;"  class="text-center">Item</td>
-				<td style=" border-top: 1px solid grey; border-left: 1px solid grey;" class="text-center" >Producto</td>
-				<td style=" border-top: 1px solid grey; border-left: 1px solid grey;" class="text-center" >Lote</td>
-				<td style=" border-top: 1px solid grey; border-left: 1px solid grey;" class="text-center" >Cantidad enviada</td>
-				<td style=" border-top: 1px solid grey; border-left: 1px solid grey;" class="text-center" >Fecha de vencimiento</td>
+				<td colspan="1" style=" border-top: 1px solid grey; border-left: 1px solid grey; width:10px;"  class="text-center">Item</td>
+				<td colspan="2" style=" border-top: 1px solid grey; border-left: 1px solid grey;" class="text-center" >Producto</td>
+				<td colspan="2" style=" border-top: 1px solid grey; border-right: 1px solid grey;" class="text-center" >Cantidad enviada</td>
+				
 			</tr>
-			@foreach ($order->products as $product)
+			@foreach ($order->recipes as $product)
 			<tr class="item" style="width:100%; border-bottom:1.2px solid grey; padding:5px; border-left:1px solid grey ; border-right:1px solid grey">
-				<td style=" border-top: 1px solid grey; border-left: 1px solid grey; width:10px;" class="text-center" >{{$loop->index + 1}}</td>
-				<td style=" border-top: 1px solid grey; border-left: 1px solid grey; font-style: italic !important; " class="text-center">
+				<td colspan="1" style=" border-top: 1px solid grey; border-left: 1px solid grey; width:10px;" class="text-center" >{{$loop->index + 1}}</td>
+				<td colspan="2" style=" border-top: 1px solid grey; border-left: 1px solid grey; font-style: italic !important; " class="text-center">
 					<div style="display: block;">
 						<div>
 							
 							{{ $product->title }} 
 						</div>
-						@if($product->pivot->recipe_id)
-						<div style="font-size: 12px; margin-top:5px; border-radius:50%; background:#f9ece4; color:#d17048; padding:5px; line-height:1;">
-							{{recipeOfProduct($product->pivot->recipe_id, $order->recipes)}}
-						</div>
-						@endif
 					</div>
 				</td>
-				<td style=" border-top: 1px solid grey; border-left: 1px solid grey; " class="text-center">{{ $product->lotes[0]->lote_code }}</td>
-				<td style=" border-top: 1px solid grey; border-left: 1px solid grey; " class="text-center">{{ $product->pivot->quantity }}</td>
-				<td style=" border-top: 1px solid grey; border-left: 1px solid grey; " class="text-center">{{ date("d/m/Y", strtotime($product->lotes[0]->due_date))  }}</td>
+				<td colspan="2" style=" border-top: 1px solid grey; border-left: 1px solid grey;  " class="text-center">{{ $product->pivot->quantity  }}</td>
 
 			</tr>
 			@endforeach

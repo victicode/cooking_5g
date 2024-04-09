@@ -54,10 +54,10 @@ const vuetifyTheme = useTheme()
         }"
       />
       <VerticalNavLink
-
+        v-if="getCurrentAccount.rol_id == 1 "
         class="mt-3"
         :item="{
-          title: currentUser.rol_id !== 3  ? 'Productos' : 'Ver Productos',
+          title: 'Productos',
           icon: 'bx-package',
           to: currentUser.rol_id !== 3  ? '/products' : '/products_client', 
         }"

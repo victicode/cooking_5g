@@ -149,7 +149,7 @@ const props = defineProps({
                             <h4 class="my-2">
                               Cantidad solicitada: 
                             </h4>
-                            <v-chip class="bg-success ms-2">{{ selectedProduct.pivot.quantity }} {{ selectedProduct.type_of_unit}}</v-chip>
+                            <v-chip class="bg-success ms-2">{{ this.totalQuantityOfProductInRecipe() }} {{ selectedProduct.type_of_unit}}</v-chip>
                           </div>
                           
                         </div>
@@ -168,7 +168,7 @@ const props = defineProps({
                           >
                             
                             <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
-                              <VRow  v-for="(item,index) in selectedsLotes[selectedProduct.title.replace(/ /g,'_')]"  v-bind:key="item.id" class=" position-relative relative pa-0 ma-0 align-center w-100 mt-5 mt-md-4"  :id="'new_order_product_'+index">
+                              <VRow  v-for="(item,index) in selectedsLotes[loteModalName()]"  v-bind:key="item.id" class=" position-relative relative pa-0 ma-0 align-center w-100 mt-5 mt-md-4"  :id="'new_order_product_'+index">
                                 <VCol cols="12"  md="6" class="form-group pb-md-0  mb-md-1">
                                   <v-combobox  
                                     :items="selectedProduct.lotes"
@@ -282,7 +282,6 @@ export default {
     snacktimeOut:5000,
   }),
   mounted(){
-  
   },
   methods:{
     showModal(modal) {
@@ -317,10 +316,11 @@ export default {
       this.snackType = type
       this.snackMessage = messagge
     },
-    selectProduct(id){
-      this.selectedProduct = this.order.products.filter(product => product.id == id)[0]
+    selectProduct(id, index){
+      this.selectedProduct = this.order.recipes[index].cooking_ingredients.find(product => product.id == id)
+      this.selectedProduct.position = index
       setTimeout(() => {
-        console.log(this.selectedProduct)
+        // console.log(this.selectedProduct)
         this.showModal('selectedProductLote')
         this.validateFormItem()
       }, 300);
@@ -329,7 +329,7 @@ export default {
       this.removeValidate()
       setTimeout(() => {
         try{
-          this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')].splice(index, 1)
+          this.selectedsLotes[this.loteModalName()].splice(index, 1)
         }catch(e){
 
         }
@@ -354,12 +354,12 @@ export default {
       let newLote = {selected_lote:'', quantity:'', selected_lote_id:''}
 
       try {
-        this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')].push(newLote)
+        this.selectedsLotes[this.loteModalName()].push(newLote)
       } catch (error) {
-        this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')] = [newLote]
+        this.selectedsLotes[this.loteModalName()] = [newLote]
       }
-      this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')]['idProduct'] = this.selectedProduct.id
-      
+      this.selectedsLotes[this.loteModalName()]['idProduct'] = this.selectedProduct.id
+      this.selectedsLotes[this.loteModalName()]['recipePosition'] = this.selectedProduct.position
       setTimeout(() => {
         this.createValidate()
 
@@ -367,12 +367,12 @@ export default {
 
     }, 
     selectedLotes(e, index){
-      this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')][index].indexLote = index
-      this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')][index].product_id = this.selectedProduct.id
-      this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')][index]['inOrder'] = this.flagTitle(this.selectedProduct).id
+      this.selectedsLotes[this.loteModalName()][index].indexLote = index
+      this.selectedsLotes[this.loteModalName()][index].product_id = this.selectedProduct.id
+      this.selectedsLotes[this.loteModalName()][index]['inOrder'] = this.flagTitle(this.selectedProduct).id
       setTimeout(() => {
         this.forms.validateField('product_in_order_lote_'+this.selectedProduct.title.replace(/ /g,'_')+'_'+index)
-          this.addValidate(this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')][index])
+          this.addValidate(this.selectedsLotes[this.loteModalName()][index])
         }, 200);
     },
     orderNumberFormat(id){
@@ -447,11 +447,14 @@ export default {
     },
     addLote(){
     
+      // console.log(this.selectedProduct)
       if(this.calculateUnitOrders()){
         this.hideModal()
         this.disabledButton('select_lote_for_order_button')
         // this.$emit('checkProductOrder',this.selectedProduct.title.replace(/ /g,'_'))
-        this.order.products.filter(product => product.id == this.selectedProduct.id)[0].in_order= true
+        // this.order.products.filter(product => product.id == this.selectedProduct.id)[0].in_order= true
+
+        this.order.recipes[this.selectedProduct.position].cooking_ingredients.find(product => product.id == this.selectedProduct.id).in_order = true
         return
       }
       
@@ -478,12 +481,17 @@ export default {
     },
     calculateUnitOrders(){
       let total = 0
-      this.selectedsLotes[this.selectedProduct.title.replace(/ /g,'_')].forEach( el =>  total = parseInt(total) + parseInt(el.quantity))
-      if(total <= this.selectedProduct.pivot.quantity){
+      this.selectedsLotes[this.loteModalName()].forEach( el =>  total = parseInt(total) + parseInt(el.quantity))
+      console.log(total)
+      console.log(this.totalQuantityOfProductInRecipe())
+      console.log(this.order)
+      console.log(this.selectedProduct)
+
+      if(total <= this.totalQuantityOfProductInRecipe()){
         
         this.enableButton('select_lote_for_order_button')
         this.closeAlert()
-        return total == this.selectedProduct.pivot.quantity
+        return total == this.totalQuantityOfProductInRecipe()
       }
       if ( isNaN(total) ) {
         this.enableButton('select_lote_for_order_button')
@@ -507,17 +515,17 @@ export default {
       sendButton.classList.add('v-btn--disabled')
     },
     verifyCheckLotes(){
-
+      let result = true
       Object.values(this.selectedsLotes).forEach( (lote) =>{
         if (lote.length == 0){
-          this.order.products.filter(product => product.id == lote.idProduct )[0].in_order= false
-          return false;
+          this.order.recipes[lote.recipePosition].cooking_ingredients.find( product => product.id == lote.idProduct).in_order= false
+          result =  false;
         } 
       })
-
-      if(Object.values(this.selectedsLotes).length != this.order.products.length) return false
+      
+      if(Object.values(this.selectedsLotes).length != this.totalProductsInOrder()) return false
       this.enableButton('create_order_'+this.order.id)
-      return true;
+      return result;
       
     },
     cleanForm(){
@@ -532,17 +540,32 @@ export default {
         :''
     },
     createOutOrder(){
-
-      // console.log(this.selectedsLotes)
       if(this.verifyCheckLotes()){
         this.disabledButton('create_order_'+this.order.id)
         this.$emit('createOutOrder', Object.values(this.selectedsLotes))
 
         this.cleanForm()
         return
+
       }
       this.showSnackbar('error', 'Faltan productos')
     },
+    loteModalName(){
+      return this.selectedProduct.title.replace(/ /g,'_')+'_'+this.selectedProduct.position;
+    },
+    totalProductsInOrder(){
+      let total = 0;
+      this.order.recipes.forEach((recipe)=>{
+        total = recipe.cooking_ingredients.length + total
+      })
+
+      return total;
+    },
+    totalQuantityOfProductInRecipe(){
+    
+      console.log(`${parseFloat(this.selectedProduct.pivot.quantity)} x ${parseFloat(this.order.recipes[this.selectedProduct.position].pivot.quantity)}: ${parseFloat(this.selectedProduct.pivot.quantity) * parseFloat(this.order.recipes[this.selectedProduct.position].pivot.quantity)}`)
+      return parseFloat(this.selectedProduct.pivot.quantity) * parseFloat(this.order.recipes[this.selectedProduct.position].pivot.quantity)
+    }
   }
 
 
