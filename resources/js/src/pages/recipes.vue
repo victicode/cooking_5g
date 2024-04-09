@@ -1635,7 +1635,7 @@
             this.selectedRecipe = Object.assign({}, response.data); 
             this.selectedRecipe.ingredients = JSON.parse(response.data.ingredients)
             this.selectedRecipe.preparation = JSON.parse(response.data.preparation)
-            
+            console.log(this.selectedRecipe)
             this.isRecipe = true
 
             setTimeout(() => {
