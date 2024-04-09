@@ -437,11 +437,15 @@
           .then((response) => {
             if (response.code == 200) {
               this.hideModal()
-              this.emitter.emit('updateRecipesInCart')
+              
               
               this.readyButton('create_order_of_cart_button')
               this.showSnackbar('success', 'Orden creada con exito')
               this.destroyCart()
+              setTimeout(() => {
+                console.log('palill')
+                this.emitter.emit('updateRecipesInCart')
+              }, 500);
             }
           })
           .catch((err) => {

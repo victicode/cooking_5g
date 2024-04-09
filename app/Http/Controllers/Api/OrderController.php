@@ -111,7 +111,7 @@ class OrderController extends Controller
 
         try{
 
-            $this->addProductforOrder($out_order->id,json_decode( $request->products, true), 'out_order');
+            $this->addProductforOrder($out_order->id,json_decode( $request->recipes, true), 'out_order');
             $this->decreaseStockInProduct(json_decode($request->products,true));
         }catch(Exception $e){
             return $this->returnFail(400, $e->getMessage());
@@ -176,15 +176,22 @@ class OrderController extends Controller
         }
 
         foreach ($products as $product) {
-            foreach ($product as $lotesh) {
-                DB::table('products_x_out_order')->insert([
-                    'out_order_id' => $order,
-                    'product_id' => null,
-                    'quantity'  => intval($lotesh['quantity']),
-                    'lote_id'   => null,
-                    'recipe_id' => $lotesh['inOrder'] ?? NULL,
-                ]);
-             }
+            // foreach ($product as $lotesh) {
+            //     DB::table('products_x_out_order')->insert([
+            //         'out_order_id' => $order,
+            //         'product_id' => null,
+            //         'quantity'  => intval($lotesh['quantity']),
+            //         'lote_id'   => null,
+            //         'recipe_id' => $lotesh['inOrder'] ?? NULL,
+            //     ]);
+            //  }
+            DB::table('products_x_out_order')->insert([
+                'out_order_id' => $order,
+                'product_id' => null,
+                'quantity'  => intval($product['pivot']['quantity']),
+                'lote_id'   => null,
+                'recipe_id' => $product['id'] ?? NULL,
+            ]);
         }
 
         

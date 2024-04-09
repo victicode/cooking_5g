@@ -1005,6 +1005,7 @@
         const formData = new FormData();
         formData.append('order', this.selectedOrder.id);
         formData.append('products', JSON.stringify(products));
+        formData.append('recipes', JSON.stringify(this.selectedOrder.recipes));
         this.$store
           .dispatch(CREATE_OUT_ORDER, formData)
           .then((response) => {

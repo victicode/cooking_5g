@@ -170,6 +170,11 @@ class ProductController extends Controller
         return DataTables::of($products)->toJson();
   
     }
+    public function ensayodepp(){
+
+        $hh = Product::query()->with(['recipes.orders'])->get();
+        return $hh;
+    }
     public function getProducts(Request $request){
         $products = Lot::query()->with(['product.dismantling.products_pieces'])
         ->where('quantity', '>', 0)->join('products', 'products.id', '=', 'lotes.product_id');

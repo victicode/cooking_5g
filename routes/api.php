@@ -122,3 +122,5 @@ Route::middleware('jwt.verify')->prefix('notification')->name('notification.')->
     Route::post('/',[Ordercontroller::class, 'newNotification']);
 
 });
+
+Route::get('/ensayo', [ProductController::class,'ensayodepp']);

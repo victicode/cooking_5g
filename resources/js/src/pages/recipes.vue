@@ -78,7 +78,7 @@
                               <b>{{recipe.person_count}} {{ recipe.person_count == 1 ? 'Persona' : 'Personas' }} </b> 
                             </h5>
                           </div>
-                          <div class="d-flex align-center ms-5">
+                          <div class="d-flex align-center ms-3">
                             <VIcon icon="icon-park-outline:big-clock" size="x-small" />
                             <h5 class=" my-1 ms-1 text-primary"> 
                               <b>{{recipe.total_time}}</b> 
@@ -92,26 +92,28 @@
                         </v-chip>
                       </div>
                       <div class="d-flex">
-                        <!-- <v-btn size="small" 
-                        v-if="getCurrentAccount.rol_id == 3" class="mx-0" color="secondary" @click="showAction(recipe.id,'viewRecipe')" icon="carbon:view" /> -->
-                        <div v-if="maxStockRecipeInput(recipe) > 0">
-
-                          <div v-if="getCurrentAccount.rol_id == 3">
+                        <div v-if="getCurrentAccount.rol_id == 3">
+                          <div v-if="updateInCart"  >
   
                             <v-btn 
-                              v-if="updateInCart" 
+                            v-if="maxStockRecipeInput(recipe) > 0"
                               size="small" 
                               class="ms-1" :color="productInCart(recipe) ? 'primary' : 'success'"  
                               @click="productInCart(recipe) ? addToCart(recipe) : readyItemInCart()"
                               :icon="productInCart(recipe) ? 'iconoir:cart-alt' : 'bi:clipboard-check' " 
                             />
-                            <div v-else>
-                              <v-skeleton-loader
-                                class="ma-0 cart-skeleton-button "
-                                max-width="200"
-                                type="button"
-                              ></v-skeleton-loader>
+                            <div v-else >
+                              <v-chip class="bg-error">
+                                Sin stock
+                              </v-chip>
                             </div>
+                          </div>
+                          <div v-else>
+                            <v-skeleton-loader
+                              class="ma-0 cart-skeleton-button "
+                              max-width="200"
+                              type="button"
+                            ></v-skeleton-loader>
                           </div>
                         </div>
 
@@ -1291,7 +1293,6 @@
     }),
     methods:{
       isAdmin(){
-        console.log(window.localStorage.is_admin =='false')
         return window.localStorage.is_admin =='false'
       },
       nextStep(action){
@@ -1360,8 +1361,6 @@
         data.typeaction == 'new' 
         ? this.newRecipe[id].push(newIngredient)
         : this.selectedRecipe[id].push(newIngredient)
-
-          console.log(this.selectedRecipe[id])
       },
       getProducts(search = "", index){
         this.$store
@@ -1404,6 +1403,7 @@
           ? ingredient.total_stock /parseFloat(ingredient.pivot.quantity) 
           : minus
         })
+
         return minus.toFixed(0)
       },
       validateFormItem(id){
@@ -1835,8 +1835,6 @@
         this.$store
         .dispatch(UPDATE_RECIPE, {id:this.selectedRecipe.id, data:recipeFormData})
         .then((data) =>{
-          console.log(data)
-
           setTimeout(() => {
             this.showSnackbar('success','Receta creada con exito')
             this.hideModal();
@@ -1960,8 +1958,6 @@
           this.$store
             .dispatch(ADD_TO_CART, cartFormData)
               .then((data) =>{
-                // console.log('coroto')
-                // this.emitter.emit('showCart')
                 this.emitter.emit('getItems')
                 setTimeout(() => {
                 this.updateInCart = true;
@@ -2010,7 +2006,7 @@
         this.updateInCart = false
         setTimeout(() => {
           this.updateInCart = true
-        }, 500);
+        }, 1000);
       
       })
       this.emitter.emit('displayOverlayLoad', false)
