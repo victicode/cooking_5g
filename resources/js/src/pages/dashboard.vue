@@ -57,10 +57,13 @@ import CriticalStockProduct from '@/views/dashboard/CriticalStockProduct.vue'
             progress="primary"
             interval="8000000"
           >
-            <v-carousel-item>
+            <v-carousel-item
+            v-if="getCurrentAccount.rol_id == 1 "
+            >
               <VCol
                 class="pa-0"
                 cols="12 h-100"
+                
               >
                 <CriticalStockProduct />
               </VCol>

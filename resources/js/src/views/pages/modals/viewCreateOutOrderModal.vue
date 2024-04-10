@@ -99,7 +99,7 @@ const props = defineProps({
                       color="white"
                       class="bg-secondary text-white w-75"
                       @click="createOutOrder()"
-                      :id="'create_order_'+this.order.id"
+                      :id="'create_order_'+order.id"
                     >
                       <span class="ms-2">Crear salida</span>
                     </VBtn>
@@ -480,12 +480,9 @@ export default {
       return
     },
     calculateUnitOrders(){
+
       let total = 0
-      this.selectedsLotes[this.loteModalName()].forEach( el =>  total = parseInt(total) + parseInt(el.quantity))
-      console.log(total)
-      console.log(this.totalQuantityOfProductInRecipe())
-      console.log(this.order)
-      console.log(this.selectedProduct)
+      this.selectedsLotes[this.loteModalName()].forEach( el =>  total = (parseFloat(total) + parseFloat(el.quantity).toFixed(2)))
 
       if(total <= this.totalQuantityOfProductInRecipe()){
         
@@ -562,8 +559,6 @@ export default {
       return total;
     },
     totalQuantityOfProductInRecipe(){
-    
-      console.log(`${parseFloat(this.selectedProduct.pivot.quantity)} x ${parseFloat(this.order.recipes[this.selectedProduct.position].pivot.quantity)}: ${parseFloat(this.selectedProduct.pivot.quantity) * parseFloat(this.order.recipes[this.selectedProduct.position].pivot.quantity)}`)
       return parseFloat(this.selectedProduct.pivot.quantity) * parseFloat(this.order.recipes[this.selectedProduct.position].pivot.quantity)
     }
   }

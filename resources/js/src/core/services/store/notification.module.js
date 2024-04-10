@@ -13,7 +13,7 @@ const actions = {
         ApiService.setHeader();
         ApiService.get("api/notification/"+userId)
         .then(( { data } ) => {
-            console.log(data)
+            // console.log(data)
             resolve(data);
             
         })
@@ -30,7 +30,7 @@ const actions = {
         ApiService.setHeader();
         ApiService.get("api/notification/see-all/"+data.id+"/"+data.type)
         .then(( { data } ) => {
-            console.log(data)
+            // console.log(data)
             resolve(data);
             
         })

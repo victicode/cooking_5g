@@ -37,14 +37,20 @@ class Product extends Model
             }
         }
         $quintityInOrders = 0;
-        foreach ($this->orders as $order) {
-            if($order->status == 1){
+        foreach ($this->recipes as $recipe) {
+            try {
+                foreach($recipe->orders as $order) {
+                    if($order->status == 1){
 
-                try {
-                    $quintityInOrders = $quintityInOrders +  floatval($order->pivot->quantity);
-                } catch ( Exception $r) {
-                    $quintityInOrders = $r->getMessage();
+                        try {
+                            $quintityInOrders = $quintityInOrders +  ( floatval($order->pivot->quantity) * floatval($recipe->pivot->quantity));
+                        } catch ( Exception $r) {
+                            $quintityInOrders = $r->getMessage();
+                        }
+                    }
                 }
+            }catch ( Exception $r) {
+                $stockInLotes = $r->getMessage();
             }
         }
 
@@ -70,7 +76,7 @@ class Product extends Model
     }
     public function recipes()
     {
-        return $this->belongsToMany(Recipe::class, 'products_x_recipes');
+        return $this->belongsToMany(Recipe::class, 'products_x_recipes')->withPivot(['quantity']);
     }
     public function out_orders()
     {

@@ -345,6 +345,8 @@
             this.getCart()
             this.emitter.emit('deleteItemOfCart')
             this.emitter.emit('updateRecipesInCart')
+            
+
           }).catch((err) => {
             console.log(err)
 
@@ -394,7 +396,7 @@
         let product = this.cart[index]
 
           product.quantity > 1
-          ? this.cart[index].quantity = (parseFloat(this.cart[index].quantity) - 1).toFixed(2)
+          ? this.cart[index].quantity = (parseFloat(this.cart[index].quantity) - 1).toFixed(0)
           : 1
            
 
@@ -443,8 +445,7 @@
               this.showSnackbar('success', 'Orden creada con exito')
               this.destroyCart()
               setTimeout(() => {
-                console.log('palill')
-                this.emitter.emit('updateRecipesInCart')
+                this.emitter.emit('updateRecipes')
               }, 500);
             }
           })

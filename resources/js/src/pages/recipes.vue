@@ -59,14 +59,14 @@
           <VCard class="mt-3" v-for="recipe in recipes" :key="recipe.id" >
             <VRow class="ma-0  justify-center align-center justify-md-start pa-0 px-md-5 px-0 mb-0 mb-md-0">
               <VCol cols="12"  class="d-flex align-center px-1">
-                <div @click="showAction(recipe.id,'viewRecipe')" >
+                <div  class=" cursor-pointer" @click="showAction(recipe.id,'viewRecipe')" >
                   <img :src="recipe.image_url" width="100" height="100" style="border-radius: 20%;">
                 </div>
                 <div class="px-2 w-100">
                   <div>
 
                     <div class="d-flex text-md-start " @click="showAction(recipe.id,'viewRecipe')" >
-                      <h3 class="w-100"> {{ recipe.title }} </h3>
+                      <h3 class="w-100 text-decoration-underline cursor-pointer"> {{ recipe.title }} </h3>
                       
                     </div>
                     <div class="ms-1  d-flex justify-space-between align-end">
@@ -1244,7 +1244,7 @@
         currentPage:1,
         totalPage:0,
       },
-      updateInCart:true,
+      updateInCart:false,
       isUser:false,
       modal: '',
       internalModal:'',
@@ -1341,8 +1341,6 @@
       },
       addIngredientInRecipe(event,id){
         const data = event.target.closest('button').dataset
-
-        
         let newIngredient = {
           id:null,
           name:'',
@@ -1671,7 +1669,6 @@
             this.selectedRecipe = Object.assign({}, response.data); 
             this.selectedRecipe.ingredients = JSON.parse(response.data.ingredients)
             this.selectedRecipe.preparation = JSON.parse(response.data.preparation)
-            console.log(this.selectedRecipe)
             this.isRecipe = true
 
             setTimeout(() => {
@@ -1925,7 +1922,7 @@
       validateIsgoodProduct(ingredient, messageGood, messageBad){
           if(!ingredient.lotes) return messageBad  ;
           if(ingredient.lotes.length == 0) return messageBad  
-
+          if(ingredient.total_stock < 1) return messageBad
           if(ingredient.lotes[0].quantity <=0 || Math.round(moment.duration(moment(ingredient.lotes[0].due_date).diff(new moment())).as('days') ) < 0 ){
             return messageBad 
           }
@@ -1973,42 +1970,43 @@
       
       },
       isAllIngredientsInStock(){
-
         let isOk= true
         this.selectedRecipe.cooking_ingredients.forEach((item)=>{
           
-          if(item.total_stock <=0) isOk = false ;
+          if(item.total_stock < 1) isOk = false ;
           
         })
         return isOk
       },
-      productInCart(selectedProduct){
-        if(this.$store.cart){
-          if(selectedProduct.total_stock){
-            const data = this.$store.cart.find((product) => product.id == selectedProduct.id  && product.cartType == 1);
-            return data ? false : true
-          }
-          if(selectedProduct.ingredients){
-
+      productInCart(selectedProduct){   
+          if(this.$store.cart){
             const data = this.$store.cart.find((product) => product.id == selectedProduct.id && product.cartType == 2);
             return data ? false : true
           }
-        }
-        return true
+  
+          return true
+    
       }
     },
     mounted(){
       this.getRecipes()
       this.validateFormItem('new_recipe_form')
+      setTimeout(() => {
+        this.updateInCart = true
+      }, 1700);
     },
     created(){
       this.emitter.on("updateRecipesInCart", () => {
         this.updateInCart = false
         setTimeout(() => {
           this.updateInCart = true
-        }, 1000);
+        }, 1200);
       
       })
+      this.emitter.on("updateRecipes", () => {
+        this.getRecipes()
+      })
+      
       this.emitter.emit('displayOverlayLoad', false)
     },
     computed: {
