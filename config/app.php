@@ -197,7 +197,7 @@ return [
 
         Barryvdh\DomPDF\ServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
-
+        SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
     ],
 
     /*
@@ -231,6 +231,7 @@ return [
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         'PDF' => Barryvdh\DomPDF\Facade\Pdf::class,
+        'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class
     ])->toArray(),
 
 ];

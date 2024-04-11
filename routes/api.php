@@ -123,4 +123,4 @@ Route::middleware('jwt.verify')->prefix('notification')->name('notification.')->
 
 });
 
-Route::get('/ensayo', [ProductController::class,'ensayodepp']);
+Route::get('recipes/client/print/{id}', [RecipeController::class, 'printRecipeTag']);

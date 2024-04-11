@@ -59,13 +59,13 @@
           <VCard class="mt-3" v-for="recipe in recipes" :key="recipe.id" >
             <VRow class="ma-0  justify-center align-center justify-md-start pa-0 px-md-5 px-0 mb-0 mb-md-0">
               <VCol cols="12"  class="d-flex align-center px-1">
-                <div  class=" cursor-pointer" @click="showAction(recipe.id,'viewRecipe')" >
+                <div  class=" cursor-pointer" @click="getCurrentAccount.rol_id !== 3 ? selectRecipe(recipe.id) : showAction(recipe.id,'viewRecipe')" >
                   <img :src="recipe.image_url" width="100" height="100" style="border-radius: 20%;">
                 </div>
                 <div class="px-2 w-100">
                   <div>
 
-                    <div class="d-flex text-md-start " @click="showAction(recipe.id,'viewRecipe')" >
+                    <div class="d-flex text-md-start " @click="getCurrentAccount.rol_id !== 3 ? selectRecipe(recipe.id) : showAction(recipe.id,'viewRecipe')" >
                       <h3 class="w-100 text-decoration-underline cursor-pointer"> {{ recipe.title }} </h3>
                       
                     </div>
@@ -197,12 +197,22 @@
                                 </VChip>
                                 
                               </VCardItem>
-                              <v-tooltip text="Ver pasos">
-                                <template v-slot:activator="{ props }">
-                                  <v-btn v-bind="props" icon="material-symbols:menu-book-outline"  @click="showInterModal('stepsRecipe')"   class="me-5" variant="tonal" />
-                                </template>
-                              </v-tooltip>
-                              
+                              <div class="d-flex">
+                                
+                                <v-tooltip text="Generar Qr">
+                                  <template v-slot:activator="{ props }">
+                                    <a :href="url+'api/recipes/client/print/' + selectedRecipe.id"  target="_blank" rel="noopener noreferrer">
+
+                                      <v-btn v-bind="props" icon="mingcute:print-line"    class="me-5" variant="tonal" />
+                                    </a>
+                                  </template>
+                                </v-tooltip>
+                                <v-tooltip text="Ver pasos">
+                                  <template v-slot:activator="{ props }">
+                                    <v-btn v-bind="props" icon="material-symbols:menu-book-outline"  @click="showInterModal('stepsRecipe')"   class="me-5" variant="tonal" />
+                                  </template>
+                                </v-tooltip>
+                              </div>
                             </div>
                            </div>
                           <VCardText class="px-1" style="line-height: 1.5;">
@@ -230,32 +240,6 @@
                               </div>
                             </VCardText>
                            <VCardText class="text-subtitle-1 pt-4 pb-2 px-1 my-5" v-if="getCurrentAccount.rol_id == 3">
-                               <!-- <div class="font-weight-medium">
-                                <h3>
-                                  <b class="text-success">En Stock</b> para esta receta:
-                                </h3>
-                              </div> 
-                              <div class="font-weight-bold mt-2"  v-for="(ingredient, index) in selectedRecipe.cooking_ingredients" :key="index">
-                                <div class="mt-3 d-flex align-center" v-if="validateIsgoodProduct(ingredient, '', '(Sin stock)*') == ''">
-                                  <h4 class="me-2">- {{ ingredient.title }}</h4>
-                                  <v-btn 
-                                    v-if="updateInCart"
-                                    size="small"
-                                    @click="productInCart(ingredient) ? addToCart(ingredient) : readyItemInCart()" 
-                                    variant="outlined" class=" elevation-24 d-flex justify-center"
-                                    :color="productInCart(ingredient) ? 'primary' : 'success'"  
-                                  >
-                                    <v-icon   :icon="productInCart(ingredient) ? 'iconoir:cart-alt' : 'bi:clipboard-check' "></v-icon>
-                                  </v-btn>
-                                  <div v-else>
-                                    <v-skeleton-loader
-                                      class="ma-0 cart-skeleton-button "
-                                      max-width="300"
-                                      type="button"
-                                    ></v-skeleton-loader>
-                                  </div>
-                                </div>
-                              </div>-->
                               <div class="" v-if="isAllIngredientsInStock(selectedRecipe)">
                                 <VRow class="ma-0 pa-0  mt-5 align-center">
                                   <VCol cols="12" md="8" class="mt-0 py-0 px-0">
@@ -269,7 +253,7 @@
                                       </VBtn>
                                       <div v-else>
                                       <v-skeleton-loader
-                                        class="ma-0 cart-skeleton-button w-100 recipe-cart-button"
+                                        class="ma-0 cart-skeleton-buttonx w-100 recipe-cart-button"
                                         max-width="100%"
                                         type="button"
                                       ></v-skeleton-loader>
@@ -427,63 +411,6 @@
                           </v-carousel>
                         </VCol>
                       </VRow>
-                    </div>
-                  </VCard>
-                </VCol>
-              </VCol>
-            </div>
-          </div>
-      </div>
-      <div class="modal animate__animated animate__fadeInDown" id="deleteRecipe" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-          
-          <div class="modal-dialog modal-lg mt-10">
-            <div class="modal-content">
-              <VCol
-                cols="12"
-                class="pa-0 d-flex justify-center"
-                style="position: relative;"
-              >
-                <VCol
-                  cols="12"
-                  class="px-2"  
-                >
-                  <VCard class="modal__content">
-                    <div class="modal__close-button" >
-                      <v-col class="pa-0 pe-4">
-                        <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
-                      </v-col>
-                    </div>
-                    <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
-                      <VRow  class="mb-2 ma-0">
-                        <VCol
-                          cols="12"
-                          class="py-0"
-                        >
-                          <div class="my-md-4 my-2 text-center">
-                            <h2>Eliminar Receta</h2>
-                          </div>
-                        </VCol>
-                        <VCol
-                          cols="12"
-                          class="px-md-10 px-0 text-center"
-                          style=""
-                        >
-                          <h2>¿Seguro que deseas eliminar <b class="text-primary">{{selectedRecipe.title}}</b>?</h2>
-                        </VCol>
-                      </VRow>
-                        
-                      <VDivider  />
-                      <div class="mt-5 w-100 d-md-flex  d-block justify-center">
-                        <VCardActions class=" justify-center w-100 d-md-flex  d-flex">
-                          <VBtn
-                            color="white"
-                            class="bg-error text-white w-50 mx-0 mx-md-5 my-2"
-                            @click="deleteRecipe()"
-                          >
-                            <span class="">Eliminar</span>
-                          </VBtn>
-                        </VCardActions>
-                      </div>
                     </div>
                   </VCard>
                 </VCol>
@@ -793,6 +720,63 @@
                           </v-stepper>
                         </VRow>
                       </VCardText>
+                    </div>
+                  </VCard>
+                </VCol>
+              </VCol>
+            </div>
+          </div>
+      </div>
+      <div class="modal animate__animated animate__fadeInDown pe-0" id="deleteRecipe" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+          
+          <div class="modal-dialog modal-lg mt-10">
+            <div class="modal-content">
+              <VCol
+                cols="12"
+                class="pa-0 d-flex justify-center"
+                style="position: relative;"
+              >
+                <VCol
+                  cols="12"
+                  class="px-2"  
+                >
+                  <VCard class="modal__content">
+                    <div class="modal__close-button" >
+                      <v-col class="pa-0 pe-4">
+                        <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                      </v-col>
+                    </div>
+                    <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
+                      <VRow  class="mb-2 ma-0">
+                        <VCol
+                          cols="12"
+                          class="py-0"
+                        >
+                          <div class="my-md-4 my-2 text-center">
+                            <h2>Eliminar Receta</h2>
+                          </div>
+                        </VCol>
+                        <VCol
+                          cols="12"
+                          class="px-md-10 px-0 text-center"
+                          style=""
+                        >
+                          <h2>¿Seguro que deseas eliminar <b class="text-primary">{{selectedRecipe.title}}</b>?</h2>
+                        </VCol>
+                      </VRow>
+                        
+                      <VDivider  />
+                      <div class="mt-5 w-100 d-md-flex  d-block justify-center">
+                        <VCardActions class=" justify-center w-100 d-md-flex  d-flex">
+                          <VBtn
+                            color="white"
+                            class="bg-error text-white w-50 mx-0 mx-md-5 my-2"
+                            @click="deleteRecipe()"
+                          >
+                            <span class="">Eliminar</span>
+                          </VBtn>
+                        </VCardActions>
+                      </div>
                     </div>
                   </VCard>
                 </VCol>
@@ -1166,6 +1150,16 @@
 
     }
   }
+  .cart-skeleton-buttonx{
+    width: 40px;
+    height: 40px;
+    border-radius: 10%!important;
+    & > .v-skeleton-loader__bone{
+      margin: 0px!important;
+      border-radius: 10%!important;
+
+    }
+  }
   .recipe-cart-button > .v-skeleton-loader__button{
     max-width:100%!important
   }
@@ -1290,6 +1284,7 @@
         video:'',
       },
       selectedProductInRecipe:{},
+      url:import.meta.env.VITE_VUE_APP_BACKEND_URL,
     }),
     methods:{
       isAdmin(){
@@ -2006,7 +2001,24 @@
   
           return true
     
-      }
+      },
+      racionFormat(id){
+        return '00'.slice( 0, 2 - id.toString().length ) + id 
+      },
+      allIngredients(){
+        let all= ''
+        console.log(this.selectedRecipe)
+        this.selectedRecipe.ingredients.forEach((item)=>{
+          all+= `${item.name.trim()}, `
+        })
+        this.selectedRecipe.cooking_ingredients.forEach((item, index)=>{
+          all+= `<b class="text-decoration-underline">
+            ${item.title.trim()}${(index+1) == this.selectedRecipe.cooking_ingredients.length? '.' : ','}
+            </b> `
+        })
+
+        return all
+      },
     },
     mounted(){
       this.getRecipes()
