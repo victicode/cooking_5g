@@ -78,7 +78,7 @@
                               <b>{{recipe.person_count}} {{ recipe.person_count == 1 ? 'Persona' : 'Personas' }} </b> 
                             </h5>
                           </div>
-                          <div class="d-flex align-center ms-3">
+                          <div class="d-flex align-center ms-2">
                             <VIcon icon="icon-park-outline:big-clock" size="x-small" />
                             <h5 class=" my-1 ms-1 text-primary"> 
                               <b>{{recipe.total_time}}</b> 
@@ -96,15 +96,15 @@
                           <div v-if="updateInCart"  >
   
                             <v-btn 
-                            v-if="maxStockRecipeInput(recipe) > 0"
+                            v-if="maxStockRecipeInput(recipe) > 0 && isAllIngredientsInStock(recipe)"
                               size="small" 
                               class="ms-1" :color="productInCart(recipe) ? 'primary' : 'success'"  
                               @click="productInCart(recipe) ? addToCart(recipe) : readyItemInCart()"
                               :icon="productInCart(recipe) ? 'iconoir:cart-alt' : 'bi:clipboard-check' " 
                             />
                             <div v-else >
-                              <v-chip class="bg-error">
-                                Sin stock
+                              <v-chip class="bg-error" >
+                                Agotado
                               </v-chip>
                             </div>
                           </div>
@@ -256,7 +256,7 @@
                                   </div>
                                 </div>
                               </div>-->
-                              <div class="" v-if="isAllIngredientsInStock()">
+                              <div class="" v-if="isAllIngredientsInStock(selectedRecipe)">
                                 <VRow class="ma-0 pa-0  mt-5 align-center">
                                   <VCol cols="12" md="8" class="mt-0 py-0 px-0">
                                       <VBtn 
@@ -1396,10 +1396,11 @@
         let minus = 0;
         product.cooking_ingredients.forEach((ingredient, index)=>{
           if(index==0) minus = ingredient.total_stock /parseFloat(ingredient.pivot.quantity)
-
+  
           minus = minus > (ingredient.total_stock /parseFloat(ingredient.pivot.quantity) )
           ? ingredient.total_stock /parseFloat(ingredient.pivot.quantity) 
           : minus
+          
         })
 
         return minus.toFixed(0)
@@ -1756,6 +1757,7 @@
       hideInternalModal(){
         this.internalModal.hide();
         this.sliderPosition = 1
+        this.selectedProductInRecipe = {}
         this.modal.show()
       },
       onFileChange(e, type) {
@@ -1866,7 +1868,7 @@
         const val = this.validateIsgoodProduct(this.selectedRecipe.cooking_ingredients[index], true, false)
         if(val){
           this.selectedProductInRecipe =  this.selectedRecipe.cooking_ingredients[index].lotes[0]
-          this.selectedProductInRecipe.product = Object.assign({}, this.selectedRecipe.cooking_ingredients[index]);
+          this.selectedProductInRecipe.product = this.selectedRecipe.cooking_ingredients[index];
           setTimeout(() => {
             this.showInterModal('viewProduct')
           }, 800);
@@ -1945,13 +1947,15 @@
         }
         return quantity
       },
-      addToCart(ingredient){
+      addToCart(recipe){
         this.updateInCart = false;
         setTimeout(() => {
-          ingredient.quantity = this.setQuantity(ingredient)
-          ingredient.cartType = ingredient.total_stock ? 1 : 2;
+          recipe.quantity = this.setQuantity(recipe)
+          recipe.cartType =  2;
+
+          let cache = [];
           const cartFormData = new FormData
-          cartFormData.append('products', JSON.stringify(ingredient))
+          cartFormData.append('products', this.stringify(recipe))
           this.$store
             .dispatch(ADD_TO_CART, cartFormData)
               .then((data) =>{
@@ -1964,16 +1968,32 @@
             });
         }, 200);    
       },
+      stringify(obj) {
+        let cache = [];
+        let str = JSON.stringify(obj, function(key, value) {
+          if (typeof value === "object" && value !== null) {
+            if (cache.indexOf(value) !== -1) {
+              // Circular reference found, discard key
+              return;
+            }
+            // Store value in our collection
+            cache.push(value);
+          }
+          return value;
+        });
+        cache = null; // reset the cache
+        return str;
+      },
       readyItemInCart(){
         // this.hideModal()
         this.showSnackbar('success','Producto ya agregado')
       
       },
-      isAllIngredientsInStock(){
+      isAllIngredientsInStock(recipe){
         let isOk= true
-        this.selectedRecipe.cooking_ingredients.forEach((item)=>{
+        recipe.cooking_ingredients.forEach((item)=>{
+          if(item.total_stock < 1 || this.validateIsgoodProduct(item, 'yes','no') == 'no') isOk = false ;
           
-          if(item.total_stock < 1) isOk = false ;
           
         })
         return isOk
