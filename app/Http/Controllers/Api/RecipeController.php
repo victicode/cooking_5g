@@ -152,16 +152,15 @@ class RecipeController extends Controller
 
         return $this->returnSuccess(200, ['id' => $recipeId, 'deleted_at' => $recipe->deleted_at]);
     }
-    public function printRecipeTag($id){
+    public function printRecipeTag(Request $request, $id){
         $recipe = Recipe::with(['cooking_ingredients.dismantling.products_pieces', 'cooking_ingredients.lotes' ])->find($id);
     
-            if(!$recipe) return $this->returnFail(400, 'algo ha salido mal');
-    
-            // $pdf = Pdf::loadView('tagRecipeFormat', [ 'recipe' => $recipe,'imp' => 1]);
-
-            // return $pdf->stream('Etiqueta');
-        
-        return view('tagRecipeFormat', [ 'recipe' => $recipe, 'imp' => 1]);
+        if(!$recipe) return $this->returnFail(400, 'algo ha salido mal');
+        return view('tagRecipeFormat', [ 'recipe' => $recipe, 'data' => [
+            'imp'    => $request->quantity,
+            'create' => $request->created,
+            'consumo'=> $request->consumo,
+        ] ]);
     }
     private function validateFieldsFromInput($inputs, $type = 'new'){
 

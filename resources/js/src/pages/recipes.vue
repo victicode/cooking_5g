@@ -15,6 +15,10 @@
   import moment from 'moment';
   import { ADD_TO_CART } from "@/core/services/store/cart.module";
   import buyCart from "@/layouts/components/BuyCart.vue";
+
+  import flatpickr from "flatpickr";
+  import 'flatpickr/dist/flatpickr.min.css'
+  import { Spanish } from "flatpickr/dist/l10n/es.js"
 </script>
 
 <template>
@@ -199,12 +203,9 @@
                               </VCardItem>
                               <div class="d-flex">
                                 
-                                <v-tooltip text="Generar Qr">
+                                <v-tooltip text="Imprimir etiquetas" v-if="getCurrentAccount.rol_id == 1">
                                   <template v-slot:activator="{ props }">
-                                    <a :href="url+'api/recipes/client/print/' + selectedRecipe.id"  target="_blank" rel="noopener noreferrer">
-
-                                      <v-btn v-bind="props" icon="mingcute:print-line"    class="me-5" variant="tonal" />
-                                    </a>
+                                    <v-btn v-bind="props" icon="mingcute:print-line" @click="showInterModal('printTag')"   class="me-5" variant="tonal" />
                                   </template>
                                 </v-tooltip>
                                 <v-tooltip text="Ver pasos">
@@ -784,6 +785,88 @@
             </div>
           </div>
       </div>
+      <div class="modal animate__animated animate__fadeInDown pe-0" id="printTag" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+          
+          <div class="modal-dialog modal-lg mt-10">
+            <div class="modal-content">
+              <VCol
+                cols="12"
+                class="pa-0 d-flex justify-center"
+                style="position: relative;"
+              >
+                <VCol
+                  cols="12"
+                  class="px-2"  
+                >
+                  <VCard class="modal__content">
+                    <div class="modal__close-button" >
+                      <v-col class="pa-0 pe-4">
+                        <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideInternalModal()" ></v-btn>
+                      </v-col>
+                    </div>
+                    <div class="d-flex justify-space-between  flex-column pa-5 pa-md-5 ">
+                      <VRow  class="mb-2 ma-0">
+                        <VCol
+                          cols="12"
+                          class="py-0"
+                        >
+                          <div class="my-md-4 my-2 text-center">
+                            <h2>Imprimir etiquetas</h2>
+                          </div>
+                        </VCol>
+                      </VRow>
+                      <VForm  id="tag_recipe_form" class="mt-5">
+                        <VRow>
+                          <VCol cols="12" md="4" class="form-group">
+                            <VTextField
+                              placeholder="Cantidad"
+                              label="Cantidad"
+                              type="number"
+                              name="print_tag_quantity"
+                              autocomplete="off"
+                              v-model="tag.quantity"
+                            />
+                          </VCol>
+                          <VCol cols="12" md="4" class="form-group">
+                            <VTextField
+                              placeholder="Fecha de elaboración"
+                              label="Fecha de elaboración"
+                              type="text"
+                              name="new_recipe_type"
+                              autocomplete="off"
+                              v-model="tag.created"
+                              id="tag_created"
+                            />
+                          </VCol>
+                          <VCol cols="12" md="4" class="form-group">
+                            <VTextField
+                              placeholder="Fecha de consumo preferente"
+                              label="Fecha de consumo preferente"
+                              type="number"
+                              name="new_recipe_person_count"
+                              autocomplete="off"
+                              v-model="tag.consumo"
+                              id="tag_consumo"
+                            />
+                          </VCol>
+                        </VRow>
+                        <VRow class="ma-0 pa-0  mt-8 align-center">
+                          <VCol cols="12" md="4" offset-md="4" class="mt-0 py-0 px-0">
+                            <v-col cols="auto" class="">
+                              <VBtn  color="primary" class="w-100"  id="print" @click="printTag()" >Imprimir</VBtn>
+                              <!-- @click="printTag(url+'api/recipes/client/print/' + selectedRecipe.id)" -->
+                            </v-col>
+                          </VCol>
+                        </VRow>
+                      </VForm>
+                      <VDivider  />
+                    </div>
+                  </VCard>
+                </VCol>
+              </VCol>
+            </div>
+          </div>
+      </div>
     </div>
     <div v-if="Object.keys(selectedProductInRecipe).length > 2" >
       <viewProductModal :product="selectedProductInRecipe" @hiddenModal="hideInternalModal" />
@@ -1232,6 +1315,11 @@
 
   export default {
     data: () => ({
+      tag:{
+        quantity:1,
+        created:'',
+        consumo:'',
+      },
       isRecipe:false,
       sliderPosition:1,
       pagination:{
@@ -1285,6 +1373,7 @@
       },
       selectedProductInRecipe:{},
       url:import.meta.env.VITE_VUE_APP_BACKEND_URL,
+      printDates:{},
     }),
     methods:{
       isAdmin(){
@@ -1728,6 +1817,7 @@
         } catch (error) {
           
         }
+        if(modal=='printTag')this.initPrintDate()
         this.internalModal = new bootstrap.Modal(document.getElementById(modal), {
           keyboard: false,              
           backdrop:'static'
@@ -2019,6 +2109,40 @@
 
         return all
       },
+      printTag(){
+        var ventana = window.open(this.printUrl(), 'PRINT', 'height=400,width=600');
+        setTimeout(() => {
+        // ventana.document.write('<html><head><title>' + document.title + '</title></head>');
+        ventana.document.close();
+        ventana.focus();
+        ventana.print();
+        ventana.close();
+        return true;
+        }, 3000);
+      },
+      initPrintDate(){
+        this.printDates.tag_created = flatpickr(document.getElementById('tag_created'), {
+          dateFormat: 'd/m/Y',
+          minDate: "today",
+          locale: Spanish,
+          disableMobile:true,
+          onClose: function (selectedDate) {
+            document.getElementById('tag_created').value = moment(selectedDate[0]).format('DD-MM-YYYY')
+          }
+        });
+        this.printDates.tag_consumo = flatpickr(document.getElementById('tag_consumo'), {
+          dateFormat: 'd/m/Y',
+          minDate: "today",
+          locale: Spanish,
+          disableMobile:true,
+          onClose: function (selectedDate) {
+            document.getElementById('tag_consumo').value = moment(selectedDate[0]).format('DD-MM-YYYY')
+          }
+        });
+      },
+      printUrl(){
+        return `${this.url}api/recipes/client/print/${this.selectedRecipe.id}?quantity=${this.tag.quantity}&created=${this.tag.created}&consumo=${this.tag.consumo}&`
+      }
     },
     mounted(){
       this.getRecipes()
