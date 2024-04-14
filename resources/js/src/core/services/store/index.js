@@ -8,6 +8,7 @@ import product from "./product.module"
 import recipe from "./recipe.module"
 import notification from "./notification.module"
 import cart from "./cart.module"
+import message from "./message.module"
 
 
 const store = createStore({
@@ -18,7 +19,8 @@ const store = createStore({
     recipe,
     user,
     notification,
-    cart
+    cart,
+    message
   }
 })
 

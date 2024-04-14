@@ -13,6 +13,8 @@ import Footer from '@/layouts/components/Footer.vue'
 import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
 import NotificationArea from '@/layouts/components/NotificationArea.vue'
+import MessageArea from '@/layouts/components/MessageArea.vue'
+
 
 const vuetifyTheme = useTheme()
 
@@ -38,6 +40,8 @@ const vuetifyTheme = useTheme()
 
         
         <NotificationArea />
+        <MessageArea v-if="getCurrentAccount.rol_id == 1"/>
+
         <NavbarThemeSwitcher class="me-2" />
 
         <UserProfile />

@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\RecipeController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\Auth\AuthController;
+use App\Models\Product;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +84,7 @@ Route::prefix('products')->name('product.')->group(function () {
     Route::get('/get-by-id/{id}',[ProductController::class, 'getProductById']);
     Route::get('/get-by-search',[ProductController::class, 'getProductBySearch']);
     Route::get('/get-last-lote/{id}',[ProductController::class, 'getLastLoteFromProduct']);
+    Route::get('/notify-out-stock/{id}',[ProductController::class, 'notifyOutStock']);
 
 });
 Route::middleware('jwt.verify')->prefix('lotes')->name('lotes.')->group(function () {
@@ -120,7 +122,15 @@ Route::middleware('jwt.verify')->prefix('notification')->name('notification.')->
         return seeAllNotifiaction($user, $type);
     });
     Route::post('/',[Ordercontroller::class, 'newNotification']);
+});
+Route::middleware('jwt.verify')->prefix('message')->name('message.')->group(function () {
+    Route::get('/{id}',function($id){
+        return getAllMessage($id);
+    });
+    Route::get('/see-all/{user}',function($user){
 
+        return seeAllMessage($user);
+    });
 });
 
 Route::get('recipes/client/print/{id}', [RecipeController::class, 'printRecipeTag']);

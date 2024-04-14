@@ -8,8 +8,12 @@ use App\Models\Lot;
 use App\Models\Product;
 use App\Models\Dismantling;
 use Illuminate\Http\Request;
+use App\Events\MessageCooking;
 use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\DB;
+use App\Events\NotificationCooking;
 use App\Http\Controllers\Controller;
+use App\Models\Message;
 
 class ProductController extends Controller
 {
@@ -206,6 +210,18 @@ class ProductController extends Controller
     }
     public function getLastLoteFromProduct($productId){
        return Lot::withTrashed()->where('product_id', $productId)->count();
+    }
+    public function notifyOutStock(Request $request, $id){
+        $t = Message::create([
+            'message' =>'no tiene stock suficiente para nuevas ordenes', 
+            'product_id' => $id,
+            'sender_id' => $request->user()->id,
+            'recept_id'  => 1,
+            'read'   => 0,
+        ]);
+        event(new MessageCooking);
+
+        return $t;
     }
     private function validateRequiredFields($inputRequest, $type = "create" )
     {

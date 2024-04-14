@@ -1,11 +1,12 @@
 <script setup >
   import * as bootstrap from 'bootstrap'
-  import { GET_NOTIFICATIONS, SEE_ALL_NOTIFICATIONS_BY_TYPE } from "@/core/services/store/notification.module";
+  import { GET_MESSAGE, SEE_ALL_MESSAGE } from "@/core/services/store/message.module";
   import { mapGetters } from "vuex";
-  import notificationTone4 from "@/assets/audio/notification4.mp3";
-  import moment from 'moment';
+  import notificationTone4 from "@/assets/audio/notification2.mp3";
+  import moment from 'moment-timezone';
   import 'moment/locale/es';
-  moment.defineLocale('es-mx', {
+
+  moment.updateLocale('es-mx', {
         relativeTime: {
             future: 'en %s',
             past: 'hace %s',
@@ -35,24 +36,24 @@
       <template v-slot:activator="{ props }">
         <div class="relative position-relative">
 
-          <IconBtn class="me-2" v-bind="props" @click="this.notifiactions_count=0">
-            <VIcon icon="bx-bell" />
+          <IconBtn class="me-2"  v-bind="props" @click="this.messages_count=0">
+            <VIcon  size="x-large" icon="mi:message-alt" />
           </IconBtn>
-          <div class="notification__count animate__animated" v-if="notifiactions_count > 0">
+          <div class="message__count animate__animated" v-if="messages_count > 0">
             <div class="w-100">
                 {{ 
-                  notifiactions_count > 10 
-                  ?'+10'
-                  : notifiactions_count
+                  messages_count > 10 
+                  ?'+100'
+                  : messages_count
                 }}
             </div>
           </div>
         </div>
       </template>
 
-      <v-list v-if="notifications.length > 0" class="notification-list pb-5" style="">
+      <v-list v-if="messages.length > 0" class="message-list pb-5" style="">
         <v-list-item
-          v-for="(item, i) in notifications"
+          v-for="(item, i) in messages"
           :key="i"
           
         >
@@ -61,18 +62,22 @@
             :class="item.read == 0 ?'bg-unread-notify' :''"  
             
             style="border-bottom: 1px solid #cf6123; "
-            @click="seeAllNotificationByType(item.type)"
+            @click="seeAllMessages(item.id)"
           >
             <Component
               :is="'RouterLink'"
-              :to="item.type == 1 ? '/orders': item.type == 2 ? '/products' : '/orders'"
-              :href="item.type == 1 ? '/orders': item.type == 2 ? '/products ' : '/orders'"
+              :to="'/products'"
+              :href="'/products'"
             >
-                <div class="w-100 text-right notification-time_text text-secondary">
-                  {{  moment(item.created_at).fromNow()   }}
+                <div class="w-100 text-right message-time_text text-secondary">
+                  {{ moment(item.created_at).fromNow() }}
                 </div>
-                <div class="py-2 px-1 font-weight-bold text-black" style="text-wrap: wrap; " v-html="item.message">
-
+                <div class="py-2 px-1 font-weight-bold text-black" style="text-wrap: wrap; " >
+                  <div>
+                    <a href="">{{ item.sender.name }} </a>
+                    te ha notificado que: 
+                    <a>{{ item.product.title }}</a> {{ item.message }}
+                  </div>
                 </div>
             </Component>
           </v-list-item-title>
@@ -80,7 +85,7 @@
       </v-list>
       <div v-else class="text-center card">
         <VCard class="pa-5">
-          <h3 >No hay notificaiones</h3>
+          <h3 >No hay mensajes</h3>
         </VCard>
       </div>
     </v-menu>
@@ -88,15 +93,15 @@
   </div>
 </template>
 <style lang="scss">
-.notification-time_text{
+.message-time_text{
   margin-bottom: -10px;
   font-size: small;
 }
-.v-overlay__content:has(.notification-list){
+.v-overlay__content:has(.message-list){
   max-width: 390px!important;
 
 }
-.notification-list{
+.message-list{
   max-height: 50vh;
   overflow-y: scroll!important;
   background:#efefef!important;
@@ -113,7 +118,7 @@
 .text-black{
   color: #505050!important
 }
-.notification__count{
+.message__count{
   position: absolute;
   height: 32px;
   border-radius: 10px;
@@ -134,30 +139,31 @@
     data(){
       return{
         sound: new Audio(notificationTone4),
-        notifications:[],
-        notifiactions_count:0
+        messages:[],
+        messages_count:0
       }
     },
     methods:{
   
-      getNotifications(){
+      getMessages(){
         setTimeout(() => {
           this.$store
-          .dispatch(GET_NOTIFICATIONS, this.getCurrentAccount.id)
+          .dispatch(GET_MESSAGE, this.getCurrentAccount.id)
           .then((data)=> {
-            this.notifications = data.all ; 
-            this.notifiactions_count = data.new_count ; 
+            console.log(data)
+            this.messages = data.all ; 
+            this.messages_count = data.new_count ; 
   
           })
-        }, 1500);
+        }, 1200);
       },
-      seeAllNotificationByType(type){
+      seeAllMessages(type){
 
         this.$store
-        .dispatch(SEE_ALL_NOTIFICATIONS_BY_TYPE,{type:type, id:this.getCurrentAccount.id} )
+        .dispatch(SEE_ALL_MESSAGE,this.getCurrentAccount.id )
         .then((data)=> {
           setTimeout(() => {
-            this.getNotifications()
+            this.getMessages()
           }, 500);
 
         })
@@ -165,19 +171,12 @@
       }
     },
     mounted(){
-      this.getNotifications()
-      // Notification.requestPermission().then(function (result) {
-      //   console.log(result);
-      // });
-      window.Echo.channel('notificationCooking')
-      .listen('NotificationCooking',(e)=>{
+      this.getMessages()
+      window.Echo.channel('messageCooking')
+      .listen('MessageCooking',(e)=>{
+        console.log('arepa')
+        this.getMessages()
         this.sound.play()
-        this.getNotifications()
-        document.querySelector('.notification__count').classList.toggle('animate__bounce')
-        setTimeout(() => {
-          document.querySelector('.notification__count').classList.toggle('animate__bounce')
-          
-        }, 1000);
       })
     },
     computed: {

@@ -84,8 +84,12 @@ class OrderController extends Controller
         ]);
         $this->addProductforOrder($order->id, json_decode($request->products,true), 'order');
 
-
-        $this->newNotification(['order'=>$order->id, 'type' => 1]);     
+        try {
+            //code...
+            $this->newNotification(['order'=>$order->id, 'type' => 1]);     
+        } catch (Exception $th) {
+            //throw $th;
+        }
 
         
         if($request->isManual == 'true'){
@@ -99,7 +103,7 @@ class OrderController extends Controller
             $this->createOutOrder($requestOutOrder);
         }
         
-        return $this->returnSuccess(200,  $order);
+        return $this->returnSuccess(200,  json_decode($request->products,true));
 
     }
     public function createOutOrder(Request $request)
@@ -171,20 +175,17 @@ class OrderController extends Controller
                     'recipe_id' => $key['id'],
                     'quantity'  =>  floatval($key['quantity'])  ,
                 ]);
+                try {
+                    //code...
+                    $this->notifyOutStock($key);
+                } catch (Exception $th) {
+                    //throw $th;
+                }
             }
             return ;
         }
 
         foreach ($products as $product) {
-            // foreach ($product as $lotesh) {
-            //     DB::table('products_x_out_order')->insert([
-            //         'out_order_id' => $order,
-            //         'product_id' => null,
-            //         'quantity'  => intval($lotesh['quantity']),
-            //         'lote_id'   => null,
-            //         'recipe_id' => $lotesh['inOrder'] ?? NULL,
-            //     ]);
-            //  }
             DB::table('products_x_out_order')->insert([
                 'out_order_id' => $order,
                 'product_id' => null,
@@ -198,15 +199,24 @@ class OrderController extends Controller
 
     }
     private function decreaseStockInProduct($products){
-
-
         foreach ($products as $product) {
             foreach ($product as $lotes) {
                 $lote = Lot::find($lotes['selected_lote']['id_lote']);
                 $lote->quantity = intval($lote->quantity) - intval($lotes['quantity']);
                 $lote->save();
-            
-               
+            }
+        }
+    }
+    private function notifyOutStock($product){
+        foreach ($product['cooking_ingredients'] as $key ) {
+            # code...
+            $currentProduct = Product::find($key['id']);
+            if($currentProduct->total_stock <= 0){
+                $notificationData=[
+                    'product' => $currentProduct->id,
+                    'type'  => 3 ,
+                ];
+                createNotification($notificationData);
             }
         }
 
@@ -241,17 +251,7 @@ class OrderController extends Controller
         
         return  $notification;
     }
-    private function isRecipeOrder($recipe, $order){
-        foreach ($recipe['cooking_ingredients'] as $key) {
 
-            DB::table('products_x_orders')->insert([
-                'order_id' => $order,
-                'product_id' => $key['id'],
-                'recipe_id' => $recipe['id'],
-                'quantity'  => floatval($key['pivot']['quantity'])  * floatval($recipe['quantity'])  ,
-            ]);
-        }
-    }
 
     /**
      * Show the form for editing the specified resource.

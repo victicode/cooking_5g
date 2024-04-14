@@ -1,11 +1,11 @@
 <?php
 
+use App\Models\Order;
+use App\Models\Product;
+use App\Models\Notification;
+use Illuminate\Http\Request;
 use App\Events\NotificationCooking;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Notification;
-use App\Models\Product;
-use App\Models\Order;
 
 function createNotification($data){
 
@@ -18,17 +18,13 @@ function createNotification($data){
       changeStatusOrderNotifiaction($data);
       break;
     case 3:
-    
-      break;
-    case 4:
-     
-      break;
-    case 5:
-     
+      productStockNotifiaction($data);
       break;
   }
   
-    event(new NotificationCooking);
+  
+  event(new NotificationCooking);
+
   return 'succes';
 }
 function seeAllNotifiaction($user,$type){
@@ -120,7 +116,7 @@ function createOrderNotifiaction($data){
 }
 function productStockNotifiaction($data){
   Notification::create([
-    'message'       =>  notificationMessage($data, 5),
+    'message'       =>  notificationMessage($data, 6),
     'order_id'      =>  null,
     'product_id'    =>  $data['product'],
     'user_id'       =>  1,

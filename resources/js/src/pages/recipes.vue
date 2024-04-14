@@ -1,7 +1,8 @@
 <script setup >
   import * as bootstrap from 'bootstrap'
-  import { mapGetters } from "vuex";
+  import { mapGetters } from "vuex";  
   import { GET_RECIPES, GET_RECIPE_BY_ID, STORE_RECIPE, DELETE_RECIPE, UPDATE_RECIPE} from "@/core/services/store/recipe.module";
+  import { CREATE_MESSAGE } from "@/core/services/store/message.module";
   import recipeVideo from '@/views/pages/player/recipePlayer.vue';
   import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
   import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
@@ -15,7 +16,6 @@
   import moment from 'moment';
   import { ADD_TO_CART } from "@/core/services/store/cart.module";
   import buyCart from "@/layouts/components/BuyCart.vue";
-
   import flatpickr from "flatpickr";
   import 'flatpickr/dist/flatpickr.min.css'
   import { Spanish } from "flatpickr/dist/l10n/es.js"
@@ -100,14 +100,14 @@
                           <div v-if="updateInCart"  >
   
                             <v-btn 
-                            v-if="maxStockRecipeInput(recipe) > 0 && isAllIngredientsInStock(recipe)"
+                              v-if="maxStockRecipeInput(recipe) > 0 && isAllIngredientsInStock(recipe)"
                               size="small" 
                               class="ms-1" :color="productInCart(recipe) ? 'primary' : 'success'"  
                               @click="productInCart(recipe) ? addToCart(recipe) : readyItemInCart()"
                               :icon="productInCart(recipe) ? 'iconoir:cart-alt' : 'bi:clipboard-check' " 
                             />
                             <div v-else >
-                              <v-chip class="bg-error" >
+                              <v-chip class="bg-error" style="font-size:10px" >
                                 Agotado
                               </v-chip>
                             </div>
@@ -223,7 +223,7 @@
                             <VCardText class="text-subtitle-1 pt-4 pb-2 px-1">
                               <div class="font-weight-medium"><h3>Ingredientes cooking 5G:</h3> </div> 
                               <div class="font-weight-bold mt-2" v-for="(ingredient, index) in selectedRecipe.cooking_ingredients" :key="index">
-                                <div>
+                                <div class="d-flex align-center">
 
                                   <a 
                                     :class="validateIsgoodProduct(ingredient, 'blank-modal', 'recipe-notproduct' ) " 
@@ -232,11 +232,19 @@
                                     - {{ `${ingredient.pivot.quantity} ${ingredient.type_of_unit} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }}
                                     
                                   </a>
-                                  <span class=" text-error ms-2" v-if="validateIsgoodProduct(ingredient, '', '(Sin stock)*') !== ''">
-                                    {{ 
-                                      validateIsgoodProduct(ingredient, '', '(Sin stock)*')
-                                    }}
-                                  </span>
+                                  <div v-if="validateIsgoodProduct(ingredient, '', '(Sin stock)*') !== ''">
+
+                                    <span class=" text-error mx-2" >
+                                      {{ 
+                                        validateIsgoodProduct(ingredient, '', '(Sin stock)*')
+                                      }}
+                                    </span>
+                                    <v-tooltip text="Notificar al admin">
+                                      <template v-slot:activator="{ props }">
+                                        <VIcon  v-bind="props" color="error" icon="gg:danger" @click.once="notifyOutStockProduct(ingredient.id)"/>
+                                      </template>
+                                    </v-tooltip>
+                                  </div>
                                 </div>
                               </div>
                             </VCardText>
@@ -1223,6 +1231,9 @@
   </VRow>
 </template>
 <style lang="scss" >
+  svg{
+    outline:none
+  }
   .cart-skeleton-button{
     width: 40px;
     height: 40px;
@@ -1486,7 +1497,7 @@
           : minus
           
         })
-
+        console.log(minus.toFixed(0))
         return minus.toFixed(0)
       },
       validateFormItem(id){
@@ -2081,6 +2092,7 @@
           
           
         })
+        console.log( isOk)
         return isOk
       },
       productInCart(selectedProduct){   
@@ -2142,6 +2154,14 @@
       },
       printUrl(){
         return `${this.url}api/recipes/client/print/${this.selectedRecipe.id}?quantity=${this.tag.quantity}&created=${this.tag.created}&consumo=${this.tag.consumo}&`
+      },
+      notifyOutStockProduct(id){
+
+        this.$store
+        .dispatch(CREATE_MESSAGE, id)
+        .then((data)=> {
+          this.showSnackbar('success','Notificación enviada con exito')
+        })
       }
     },
     mounted(){
