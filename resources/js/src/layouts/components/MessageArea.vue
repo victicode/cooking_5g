@@ -148,7 +148,7 @@
       getMessages(){
         setTimeout(() => {
           this.$store
-          .dispatch(GET_MESSAGE, this.getCurrentAccount.id)
+          .dispatch(GET_MESSAGE, 1)
           .then((data)=> {
             console.log(data)
             this.messages = data.all ; 
@@ -160,7 +160,7 @@
       seeAllMessages(type){
 
         this.$store
-        .dispatch(SEE_ALL_MESSAGE,this.getCurrentAccount.id )
+        .dispatch(SEE_ALL_MESSAGE, 1)
         .then((data)=> {
           setTimeout(() => {
             this.getMessages()

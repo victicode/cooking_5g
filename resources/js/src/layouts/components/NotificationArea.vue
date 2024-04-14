@@ -143,7 +143,7 @@
       getNotifications(){
         setTimeout(() => {
           this.$store
-          .dispatch(GET_NOTIFICATIONS, this.getCurrentAccount.id)
+          .dispatch(GET_NOTIFICATIONS, this.getCurrentAccount.rol_id !== 3 ? 1 : this.getCurrentAccount.id)
           .then((data)=> {
             this.notifications = data.all ; 
             this.notifiactions_count = data.new_count ; 
@@ -154,7 +154,7 @@
       seeAllNotificationByType(type){
 
         this.$store
-        .dispatch(SEE_ALL_NOTIFICATIONS_BY_TYPE,{type:type, id:this.getCurrentAccount.id} )
+        .dispatch(SEE_ALL_NOTIFICATIONS_BY_TYPE,{type:type, id: this.getCurrentAccount.rol_id !== 3 ? 1 : this.getCurrentAccount.id} )
         .then((data)=> {
           setTimeout(() => {
             this.getNotifications()

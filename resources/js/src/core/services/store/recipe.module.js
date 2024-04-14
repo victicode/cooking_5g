@@ -81,19 +81,19 @@ const actions = {
     },
     [GET_RECIPE_BY_ID](context,recipeId){
       return new Promise((resolve, reject) => {
-        if (JwtService.getToken()) {
-          ApiService.setHeader();
-          ApiService.get("api/recipes/get-by-id/"+recipeId)
-          .then(( { data } ) => {
-              // console.log(data)
-              resolve(data);
-              
-          })
-          .catch(( { response } ) => {
-              // console.log(response )
-              reject('Ocurrió un error desconocido al intentar obtener las recetas');
-          });
-        }
+
+        ApiService.setHeader();
+        ApiService.get("/api/recipes/get-by-id/"+recipeId)
+        .then(( { data } ) => {
+            console.log(data)
+            resolve(data);
+            
+        })
+        .catch(( { response } ) => {
+            console.log(response )
+            reject('Ocurrió un error desconocido al intentar obtener las recetas');
+        });
+        
       });
     },
     [GET_RECIPE_BY_SEARCH ](context,search){

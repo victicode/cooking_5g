@@ -40,7 +40,7 @@ const vuetifyTheme = useTheme()
 
         
         <NotificationArea />
-        <MessageArea v-if="getCurrentAccount.rol_id == 1"/>
+        <MessageArea v-if="getCurrentAccount.rol_id !== 3"/>
 
         <NavbarThemeSwitcher class="me-2" />
 
@@ -58,7 +58,7 @@ const vuetifyTheme = useTheme()
         }"
       />
       <VerticalNavLink
-        v-if="getCurrentAccount.rol_id == 1 "
+        v-if="getCurrentAccount.rol_id !== 3 "
         class="mt-3"
         :item="{
           title: 'Productos',

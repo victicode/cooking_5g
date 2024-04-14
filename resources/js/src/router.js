@@ -18,6 +18,7 @@ import recipesComponent from '@/pages/recipes.vue';
 import clientComponent from '@/pages/users/client.vue';
 import chefComponent from '@/pages/users/chef.vue';
 import accountSettings from  '@/pages/account-settings.vue'
+import recipeQrView from  '@/pages/recipe-qr-view.vue'
 
 
 const router = createRouter({
@@ -152,6 +153,14 @@ const router = createRouter({
       component: () => import('@/pages/logins.vue'),
       meta: {
         title: 'Bienvenido'
+      },
+    },
+    {
+      path: "/client/recipe/:id",
+      name: "Receta",
+      component: () => import('@/pages/recipe-qr-view.vue'),
+      meta: {
+        title: 'Receta - '
       },
     },
     {

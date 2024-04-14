@@ -103,10 +103,12 @@ Route::middleware('jwt.verify')->prefix('cart')->name('cart.')->group(function (
 
 
 });
+Route::prefix('recipes')->name('recipes.')->group(function () {
+    Route::get('/get-by-id/{id}',[RecipeController::class, 'getRecipeById']);
+});
 Route::middleware('jwt.verify')->prefix('recipes')->name('recipes.')->group(function () {
     Route::post('/',[RecipeController::class, 'storeRecipe']);
     Route::get('/',[RecipeController::class, 'index']);
-    Route::get('/get-by-id/{id}',[RecipeController::class, 'getRecipeById']);
     Route::post('/{id}',[RecipeController::class, 'updateRecipe']);
     Route::delete('/{id}',[RecipeController::class, 'deleteRecipe']);
     Route::get('/get-by-search',[RecipeController::class, 'getRecipeBySearch']);

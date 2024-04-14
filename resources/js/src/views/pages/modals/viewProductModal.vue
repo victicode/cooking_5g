@@ -39,7 +39,7 @@ const props = defineProps({
                           width="200"
                           height="200"
                           class="rounded"
-                          :src="product.product.img "
+                          :src="'/'+product.product.img "
                         />
                       </div>
                     </VCol>
@@ -54,12 +54,12 @@ const props = defineProps({
                       </VCardText>
                       <div   class="mt-0" style="border-top: 1px solid rgba(119, 119, 119, 0.356)">
 
-                        <VCardText class="text-subtitle-1 py-4 px-1" v-if="getCurrentAccount.rol_id !== 3">
+                        <VCardText class="text-subtitle-1 py-4 px-1" v-if=" getCurrentAccount ||getCurrentAccount.rol_id !== 3">
                           <span class="font-weight-medium">Fecha de entrada:</span> <span class="font-weight-bold">
                             {{ moment(product.created_at_lote).format('DD-MM-YYYY')  }}
                           </span>
                         </VCardText>
-                        <VCardText class="text-subtitle-1 py-4 px-1" v-if="getCurrentAccount.rol_id !== 3">
+                        <VCardText class="text-subtitle-1 py-4 px-1" v-if=" getCurrentAccount ||getCurrentAccount.rol_id !== 3">
                           <span class="font-weight-medium">Número Lote:</span> <span class="font-weight-bold">
                             {{ 
                                 product.lote_code
@@ -79,7 +79,7 @@ const props = defineProps({
                             SIN STOCK
                           </span>
                         </VCardText>
-                        <VCardText class="text-subtitle-1 pt-0 px-1 d-flex align-center" v-if="getCurrentAccount.rol_id !== 3">
+                        <VCardText class="text-subtitle-1 pt-0 px-1 d-flex align-center" v-if=" getCurrentAccount ||getCurrentAccount.rol_id !== 3">
                           <div class="font-weight-medium my-0">Fecha de vencimiento:</div>
                           <div class="font-weight-bold mx-2">
                             <v-chip :class=" Math.round(moment.duration(moment(product.due_date).diff(new moment())).as('days') ) < 0 ? 'bg-error' : Math.round(moment.duration(moment(product.due_date).diff(new moment())).as('days') ) > 30 ? 'bg-success' : 'bg-warning'">
@@ -95,7 +95,7 @@ const props = defineProps({
                       </div>
                     </VCol>
                   </VRow>
-                  <div v-if="getCurrentAccount.rol_id !== 3">
+                  <div v-if=" getCurrentAccount ||getCurrentAccount.rol_id !== 3">
 
                     <div style="border-top: 1px solid rgba(119, 119, 119, 0.356)" v-if="product.product.is_dismantling !=0 && this.countDismantlingActive(product.product.dismantling) > 0">
                       <VCardText class="text-subtitle-1 pb-4">
