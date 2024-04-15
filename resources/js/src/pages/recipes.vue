@@ -16,6 +16,7 @@
   import moment from 'moment';
   import { ADD_TO_CART } from "@/core/services/store/cart.module";
   import buyCart from "@/layouts/components/BuyCart.vue";
+  import printTags from "@/layouts/components/PrintTags.vue";
   import flatpickr from "flatpickr";
   import 'flatpickr/dist/flatpickr.min.css'
   import { Spanish } from "flatpickr/dist/l10n/es.js"
@@ -28,13 +29,22 @@
         <VRow class="ma-0  justify-center justify-md-end pa-2 px-0 mb-0 pb-0">
           <VCol
             cols="11"
-            md="3"
+            md="2"
             class="ma-0 px-0 justify-center justify-md-end d-flex"
           >
           <VBtn @click=" showModal('createRecipe')" color="primary" class="w-100 " v-if="getCurrentAccount.rol_id !== 3" >
             <VIcon icon="bx-plus"/> Agregar nueva receta
           </VBtn>
-
+          
+          </VCol>
+          <VCol
+            cols="11"
+            md="2"
+            class="ms-0 px-0 px-md-2 ms-md-4 justify-center justify-md-end d-flex"
+          >
+            <VBtn @click="showModal('printModule')" color="secondary" class="w-100 mx-2 " v-if="getCurrentAccount.rol_id !== 3" >
+              <VIcon icon="lets-icons:print" class="me-1"/> Imprimir etiquetas
+            </VBtn>
           </VCol>
         </VRow>
         <VRow class="ma-0  justify-start align-center justify-md-start pa-2 px-0 mb-0 mb-md-2">
@@ -1228,6 +1238,7 @@
         </div>
     </v-navigation-drawer>  
     <buyCart v-if="getCurrentAccount.rol_id == 3" />  
+    <printTags @hide="hideModal()" v-if="getCurrentAccount.rol_id !== 3" />
   </VRow>
 </template>
 <style lang="scss" >

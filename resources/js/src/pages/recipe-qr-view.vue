@@ -19,9 +19,11 @@
         :show-arrows="false"
         :touch="true"
         hide-delimiter-background
-        delimiter-icon="ic:outline-circle"
-        :height="'90%'"
+        
+        delimiter-icon="pepicons-pencil:square-filled"
+        :height="'93%'"
         v-model="sliderPosition"
+        
       >
         <v-carousel-item
           :value="1"

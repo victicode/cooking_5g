@@ -71,7 +71,7 @@
             @endif
               <div class="card">
                 <div class="card-body">
-                  <h3 class="card-title text-center text-decoration-underline mb-4">{{$recipe->title}}</h3>
+                  <h3 class="card-title text-center text-decoration-underline mb-4">{{$recipe->title}} {{env('APP_URL')}}</h3>
                   <div class="row m-0">
                     <div class="col-sm-8">
                       <div class="mb-1">
@@ -110,7 +110,7 @@
                       </div>
                     </div>
                     <div class="col-sm-4 d-flex justify-content-end">
-                      {!!QrCode::size(150)->generate('https://www.youtube.com/watch?v=k4c2mqRBxcw') !!}
+                      {!!QrCode::size(150)->generate('https://10.10.10.69:8085/client/recipe/'.$recipe->id) !!}
                     </div>
                   </div>
                 </div>

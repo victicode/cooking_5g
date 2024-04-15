@@ -279,20 +279,6 @@
       cartIsReady:false
     }),
     methods:{
-      nextStep(action){
-        action=='new' 
-         ? this.stepperNewProduct = this.stepperNewProduct + 1 
-         : this.stepperUpdateProduct = this.stepperUpdateProduct + 1 
-
-         action=='new' 
-          ? setTimeout(() => {
-            this.stepperNewProduct > 2 ? '' : this.validateFormItem('new_recipe_form_2')
-          }, 500)
-          : setTimeout(() => {
-            this.stepperUpdateProduct > 2 ? '' : this.validateFormItem('update_recipe_form_2')
-          }, 500)
-    
-      },
       showModal() {
         try {
           this.hideModal()
