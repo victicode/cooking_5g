@@ -24,3 +24,12 @@ function allIngredientsRecipe($recipe){
   return $all;
 
 }
+function totalPrint($data){
+  $all = 0;
+
+  foreach ($data as $key ) {
+    $all = $all + intval($key->quantity);
+  }
+  return $all +1;
+
+}

@@ -152,10 +152,17 @@ class RecipeController extends Controller
 
         return $this->returnSuccess(200, ['id' => $recipeId, 'deleted_at' => $recipe->deleted_at]);
     }
-    public function printRecipeTag(Request $request, $id){
+    public function printRecipeTag(Request $request, $id=''){
+
+        if($request->path() == 'api/recipes/client/print/multiple'){
+
+            // return json_decode($request->recipes);
+            return view('tagMultipleRecipeTemplate', [ 'recipes' => json_decode($request->recipes)]);
+        }
         $recipe = Recipe::with(['cooking_ingredients.dismantling.products_pieces', 'cooking_ingredients.lotes' ])->find($id);
     
         if(!$recipe) return $this->returnFail(400, 'algo ha salido mal');
+        
         return view('tagRecipeFormat', [ 'recipe' => $recipe, 'data' => [
             'imp'    => $request->quantity,
             'create' => $request->created,

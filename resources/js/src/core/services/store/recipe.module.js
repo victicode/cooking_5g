@@ -8,7 +8,6 @@ export const STORE_RECIPE     = "STORE_RECIPE";
 export const UPDATE_RECIPE    = "UPDATE_RECIPE";
 export const DELETE_RECIPE    = "DELETE_RECIPE";
 export const GET_RECIPE_BY_SEARCH  ="GET_RECIPE_BY_SEARCH "
-
 const actions = {
     [GET_RECIPES](context, query) {
 
@@ -96,7 +95,7 @@ const actions = {
         
       });
     },
-    [GET_RECIPE_BY_SEARCH ](context,search){
+    [GET_RECIPE_BY_SEARCH](context,search){
       return new Promise((resolve, reject) => {
         if (JwtService.getToken()) {
           ApiService.setHeader();

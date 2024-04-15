@@ -1,9 +1,11 @@
 <script setup >
   import * as bootstrap from 'bootstrap'
   import moment from 'moment';
-  import { GET_CART, DELETE_PRODUCT_CART, UPDATE_QUANTITY_ITEMS, DESTROY_CART } from "@/core/services/store/cart.module";
-  import { CREATE_ORDER, } from "@/core/services/store/order.module";
-
+  import {GET_RECIPE_BY_SEARCH} from "@/core/services/store/recipe.module";
+  import debounce from 'debounce';
+  import flatpickr from "flatpickr";
+  import 'flatpickr/dist/flatpickr.min.css'
+  import { Spanish } from "flatpickr/dist/l10n/es.js"
 </script>
 <template>
   <div>
@@ -15,7 +17,6 @@
             class="pa-0 d-flex justify-center"
             style="position: relative;"
           >
-          
             <VCol
               cols="12"
               class="pa-0"
@@ -38,13 +39,70 @@
                     </VCol>
                   </VRow>
                   <VDivider  />
+                  <VForm  id="tag_recipe_form" class="mt-5">
+                    <VRow v-for="(tag, index) in tagsToPrint"  v-bind:key="index" class="mb-1 pb-1 border-b-md border-dotted border-opacity-50 border-primary">
+                      <VCol cols="6" class="form-group ">
+                        <v-autocomplete
+                          :model-value="tag.recipe.id"
+                          :items="recipeToPrint[index] ?  recipeToPrint[index] : tag.recipe.id !== '' ? [ {id: tag.recipe.id, title: tag.recipe.title,}] : []"
+                          :label="`Receta ${(index+1)}`"
+                          :name="`recipe_to_print_${(index+1)}`"
+                          item-title="title"
+                          item-value="id"
+                          variant="outlined"
+                          persistent-hint
+                          no-filter
+                          return-object
+                          clearable
+                          no-data-text="No se encontraron resultados"
+                          @click="searchRecipeToPrint($event,index )"
+                          @keyup="searchRecipeToPrint($event,index )"
+                          @click:clear="clearProductSearch(index)"
+                          @update:modelValue="selectedRecipe($event, index)"
+                        ></v-autocomplete>
+                      </VCol>
+                      <VCol cols="6" md="6" class="form-group">
+                        <VTextField
+                          placeholder="Cantidad"
+                          label="Cantidad"
+                          type="number"
+                          name="print_tag_quantity"
+                          autocomplete="off"
+                          v-model="tag.quantity"
+                          
+                        />
+                      </VCol>
+                      <VCol cols="6" md="6" class="form-group">
+                        <VTextField
+                          placeholder="Fecha de elaboración"
+                          label="Fecha de elaboración"
+                          type="text"
+                          name="new_recipe_type"
+                          autocomplete="off"
+                          v-model="tag.created"
+                          :id="'tag_created_'+index"
+                        />
+                      </VCol>
+                      <VCol cols="6" md="6" class="form-group">
+                        <VTextField
+                          placeholder="Consumir antes de"
+                          label="Consumir antes de"
+                          type="number"
+                          name="new_recipe_person_count"
+                          autocomplete="off"
+                          v-model="tag.consumo"
+                          :id="'tag_consumo_'+index"
+                        />
+                      </VCol>
+                    </VRow>
+                  </VForm>
                   <div class="mt-5 w-100 d-md-flex  d-block justify-center">
                     <VCardActions class=" justify-center w-100 d-md-flex  pb-1 pb-md-3   d-block">
                       <VBtn
                         color="white"
                         class="bg-primary text-white w-30 mx-0 mx-md-5 my-2"
                         id="create_order_of_cart_button"
-                        @click="alertaa('nada todavia')"
+                        @click="printTags()"
                       >
                         <span class="">Imprimir</span>
                       </VBtn>
@@ -84,14 +142,71 @@
 
   export default {
     data: () => ({
-      cart:[],
-      cartID:'',
+      recipeToPrint:[],
+      printDates: [],
+      tagsToPrint:[
+        {
+          recipe:{
+            id:'',
+            title:'',
+          },
+          quantity:'',
+          created:'',
+          consumo:'',
+        }
+      ],
       snackShow:false,
       snackMessage:'',
       snackType:'',
       snacktimeOut:2000,
     }),
     methods:{
+      getRecipeToPrint(search = "", index){
+        this.$store
+          .dispatch(GET_RECIPE_BY_SEARCH, search)
+          .then((response) => {
+            this.recipeToPrint[index] = response.data
+          })
+          .catch((err) => {
+            return new Promise((resolve) => {
+              resolve(false);
+            });
+          })
+
+      },
+      searchRecipeToPrint(e, index){ 
+        debounce(this.getRecipeToPrint, 200)(e.target.value, index)
+      },
+      clearProductSearch(index){
+        this.tagsToPrint[index].recipe = {
+            id:'',
+            title:'',
+        }
+        this.getRecipeToPrint('',index)
+      },
+      addOtherRecipeToPrint(){
+        let otherRecipe = {
+          recipe:{
+            id:'',
+            title:'',
+          },
+          quantity:'',
+          created:'',
+          consumo:'',
+        }
+        if (this.tagsToPrint.filter((tag)=> tag.recipe.id !=='' ).length == this.tagsToPrint.length) {
+          this.tagsToPrint.push(otherRecipe)
+        }
+      },
+      selectedRecipe(e,index){
+
+        if(!e) return
+        this.tagsToPrint[index].recipe = e
+        this.addOtherRecipeToPrint()
+        setTimeout(() => {
+          this.initPrintDate(index+1)
+        }, 1000);
+      },
       showSnackbar(type, messagge){
         this.snackShow = true;
         this.snackType = type
@@ -100,8 +215,58 @@
       hideModal(){
         this.$emit('hide')
       },
+      initPrintDate(id){
+        let dates = {
+          tag_created: flatpickr(document.getElementById('tag_created_'+id), {
+            dateFormat: 'd/m/Y',
+            minDate: "today",
+            locale: Spanish,
+            disableMobile:true,
+            onClose: function (selectedDate) {
+              document.getElementById('tag_created_'+id).value = moment(selectedDate[0]).format('DD-MM-YYYY')
+            }
+          }),
+          tag_consumo: flatpickr(document.getElementById('tag_consumo_'+id), {
+            dateFormat: 'd/m/Y',
+            minDate: "today",
+            locale: Spanish,
+            disableMobile:true,
+            onClose: function (selectedDate) {
+              document.getElementById('tag_consumo_'+id).value = moment(selectedDate[0]).format('DD-MM-YYYY')
+            }
+          }),
+        }
+
+        this.printDates.push(dates)
+      },
+      printTags(){
+        let validTags = this.tagsToPrint.filter((tag)=> tag.recipe.id !=='' )
+        console.log(validTags.length)
+        if(validTags.length > 0){
+
+          console.log(this.printUrl(validTags))
+          var ventana = window.open(this.printUrl(validTags), 'PRINT', 'height=400,width=600');
+          setTimeout(() => {
+            ventana.document.close();
+            ventana.focus();
+            ventana.print();
+            // ventana.close();
+            return true;
+          }, 2500);
+          return
+        }
+       this.showSnackbar('error','Listado vacio')
+      },
+      printUrl(validTags){
+        return `/api/recipes/client/print/multiple?recipes=${JSON.stringify(validTags)}&`
+      },
+      
     },
     mounted(){
+      setTimeout(() => {
+        
+        this.initPrintDate(0)
+      }, 2000);
     },
     created(){
     }

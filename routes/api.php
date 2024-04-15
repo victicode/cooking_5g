@@ -98,10 +98,6 @@ Route::middleware('jwt.verify')->prefix('cart')->name('cart.')->group(function (
     Route::post('/item/{id}',[CartController::class, 'deleteItem']);
     Route::post('/item/quantity/{id}',[CartController::class, 'editItemQuantity']);
     Route::delete('/{id}',[CartController::class, 'destroy']);
-
-
-
-
 });
 Route::prefix('recipes')->name('recipes.')->group(function () {
     Route::get('/get-by-id/{id}',[RecipeController::class, 'getRecipeById']);
@@ -112,7 +108,6 @@ Route::middleware('jwt.verify')->prefix('recipes')->name('recipes.')->group(func
     Route::post('/{id}',[RecipeController::class, 'updateRecipe']);
     Route::delete('/{id}',[RecipeController::class, 'deleteRecipe']);
     Route::get('/get-by-search',[RecipeController::class, 'getRecipeBySearch']);
-
 });
 
 Route::middleware('jwt.verify')->prefix('notification')->name('notification.')->group(function () {
@@ -136,3 +131,5 @@ Route::middleware('jwt.verify')->prefix('message')->name('message.')->group(func
 });
 
 Route::get('recipes/client/print/{id}', [RecipeController::class, 'printRecipeTag']);
+Route::get('recipes/client/print/multiple', [RecipeController::class, 'printRecipeTag']);
+
