@@ -174,9 +174,11 @@
       this.getMessages()
       window.Echo.channel('messageCooking')
       .listen('MessageCooking',(e)=>{
-        console.log('arepa')
-        this.getMessages()
-        this.sound.play()
+        if(this.getCurrentAccount.rol_id !== 3){
+
+          this.getMessages()
+          this.sound.play()
+        }
       })
     },
     computed: {

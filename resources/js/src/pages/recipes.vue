@@ -242,16 +242,15 @@
                                     - {{ `${ingredient.pivot.quantity} ${ingredient.type_of_unit} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }}
                                     
                                   </a>
-                                  <div v-if="validateIsgoodProduct(ingredient, '', '(Sin stock)*') !== ''">
-
-                                    <span class=" text-error mx-2" >
+                                  <div class="w-50" v-if="validateIsgoodProduct(ingredient, '', '(Sin stock)*') !== ''">
+                                    <span class=" text-error  mx-2 " >
                                       {{ 
                                         validateIsgoodProduct(ingredient, '', '(Sin stock)*')
                                       }}
                                     </span>
-                                    <v-tooltip text="Notificar al admin">
+                                    <v-tooltip text="Notificar al admin" >
                                       <template v-slot:activator="{ props }">
-                                        <VIcon  v-bind="props" color="error" icon="gg:danger" @click.once="notifyOutStockProduct(ingredient.id)"/>
+                                        <VIcon v-if="getCurrentAccount.rol_id == 3" v-bind="props" color="error" icon="gg:danger" @click.once="notifyOutStockProduct(ingredient.id)"/>
                                       </template>
                                     </v-tooltip>
                                   </div>

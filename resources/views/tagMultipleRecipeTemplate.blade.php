@@ -78,7 +78,7 @@
               @endif
                 <div class="card">
                   <div class="card-body">
-                    <h3 class="card-title text-center text-decoration-underline mb-4">{{$key->recipe->title}} {{env('APP_URL')}}</h3>
+                    <h3 class="card-title text-center text-decoration-underline mb-4">{{$key->recipe->title}} </h3>
                     <div class="row m-0">
                       <div class="col-sm-8">
                         <div class="mb-1">
