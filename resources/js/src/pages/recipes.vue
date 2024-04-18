@@ -242,7 +242,7 @@
                                     - {{ `${ingredient.pivot.quantity} ${ingredient.type_of_unit} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }}
                                     
                                   </a>
-                                  <div class="w-50" v-if="validateIsgoodProduct(ingredient, '', '(Sin stock)*') !== ''">
+                                  <div class="w-50 d-flex align-center" v-if="validateIsgoodProduct(ingredient, '', '(Sin stock)*') !== ''">
                                     <span class=" text-error  mx-2 " >
                                       {{ 
                                         validateIsgoodProduct(ingredient, '', '(Sin stock)*')
@@ -250,14 +250,22 @@
                                     </span>
                                     <v-tooltip text="Notificar al admin" >
                                       <template v-slot:activator="{ props }">
-                                        <VIcon v-if="getCurrentAccount.rol_id == 3" v-bind="props" color="error" icon="gg:danger" @click.once="notifyOutStockProduct(ingredient.id)"/>
+                                        <v-btn 
+                                        v-if="getCurrentAccount.rol_id == 3" 
+                                        v-bind="props" 
+                                        color="error"
+                                         icon="gg:danger" 
+                                         @click.once="notifyOutStockProduct(ingredient.id)"
+                                         variant="tonal"
+                                         density="compact"
+                                        />
                                       </template>
                                     </v-tooltip>
                                   </div>
                                 </div>
                               </div>
                             </VCardText>
-                           <VCardText class="text-subtitle-1 pt-4 pb-2 px-1 my-5" v-if="getCurrentAccount.rol_id == 3">
+                           <VCardText class="text-subtitle-1 pt-4 pb-2 px-1 mt-5" v-if="getCurrentAccount.rol_id == 3">
                               <div class="" v-if="isAllIngredientsInStock(selectedRecipe)">
                                 <VRow class="ma-0 pa-0  mt-5 align-center">
                                   <VCol cols="12" md="8" class="mt-0 py-0 px-0">
@@ -280,12 +288,27 @@
                                 </VRow>
                               </div>
                             </VCardText> 
-                            <div class="mb-5 mt-2">
-                              <div class="stock-notify px-3 py-4" style="">
+                            <div class="mb-5 mt-4">
+                              <div class="stock-notify px-3 py-4">
                                 <p class="text-secondary pa-0 ma-0">
                                   <b class="text-error">(*) Nota:</b> 
                                   De forma ocasional, la entrega del pedido podría demorar algunos días si alguno de sus ingredientes 
                                   se encuentra sin stock en origen por parte de nuestros distribuidores.
+                                </p>
+                              </div>
+                            </div>
+                            <div class="mb-5 mt-2">
+                              <div class="no-stock-notify px-3 py-4">
+                                <p class="text-black pa-0 ma-0 font-weight-medium">
+                                  <b class="text-error">(*)</b> 
+                                  <span>
+                                    Si observa algún producto/s de esta receta sin stock, notifique al administrador pulsado el botón:
+                                  </span>
+                                 
+                                   <span class=" d-flex align-center ">
+                                    <svg class="me-1" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"><g fill="#ff3e1d"><path d="M12 6a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0V7a1 1 0 0 1 1-1m0 10a1 1 0 1 0 0 2a1 1 0 0 0 0-2"/><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10s10-4.477 10-10S17.523 2 12 2M4 12a8 8 0 1 0 16 0a8 8 0 0 0-16 0" clip-rule="evenodd"/></g></svg>
+                                    la lado de cada producto.
+                                  </span>
                                 </p>
                               </div>
                             </div>
@@ -853,13 +876,14 @@
                               autocomplete="off"
                               v-model="tag.created"
                               id="tag_created"
+                              @change="plusMonths()"
                             />
                           </VCol>
                           <VCol cols="12" md="4" class="form-group">
                             <VTextField
                               placeholder="Fecha de consumo preferente"
                               label="Fecha de consumo preferente"
-                              type="number"
+                              type="text"
                               name="new_recipe_person_count"
                               autocomplete="off"
                               v-model="tag.consumo"
@@ -1311,6 +1335,14 @@
       font-size: smaller;
     }
   }
+  .no-stock-notify{
+    background: #ffe0db;
+    border-radius: 15px;
+    & > p{
+      font-size: smaller;
+    }
+  }
+  
   @media screen and (max-width: 780px){
     .small-delete-product-button_recipe{
       position: absolute;
@@ -2145,7 +2177,6 @@
       initPrintDate(){
         this.printDates.tag_created = flatpickr(document.getElementById('tag_created'), {
           dateFormat: 'd/m/Y',
-          minDate: "today",
           locale: Spanish,
           disableMobile:true,
           onClose: function (selectedDate) {
@@ -2154,7 +2185,6 @@
         });
         this.printDates.tag_consumo = flatpickr(document.getElementById('tag_consumo'), {
           dateFormat: 'd/m/Y',
-          minDate: "today",
           locale: Spanish,
           disableMobile:true,
           onClose: function (selectedDate) {
@@ -2164,6 +2194,12 @@
       },
       printUrl(){
         return `${this.url}api/recipes/client/print/${this.selectedRecipe.id}?quantity=${this.tag.quantity}&created=${this.tag.created}&consumo=${this.tag.consumo}&`
+      },
+      plusMonths(){
+        let date = moment(this.printDates.tag_created.selectedDates[0]).add(3, 'months').format('DD-MM-YYYY')
+        this.printDates.tag_consumo.setDate(date)
+        this.printDates.tag_consumo.set('minDate', date)
+        this.tag.consumo = date
       },
       notifyOutStockProduct(id){
 

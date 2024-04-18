@@ -6,6 +6,7 @@
   import flatpickr from "flatpickr";
   import 'flatpickr/dist/flatpickr.min.css'
   import { Spanish } from "flatpickr/dist/l10n/es.js"
+import date from '../../assets/plugins/formvalidation/src/js/validators/date';
 </script>
 <template>
   <div>
@@ -66,7 +67,6 @@
                           placeholder="Cantidad"
                           label="Cantidad"
                           type="number"
-                          name="print_tag_quantity"
                           autocomplete="off"
                           v-model="tag.quantity"
                           
@@ -77,18 +77,17 @@
                           placeholder="Fecha de elaboración"
                           label="Fecha de elaboración"
                           type="text"
-                          name="new_recipe_type"
                           autocomplete="off"
                           v-model="tag.created"
                           :id="'tag_created_'+index"
+                          @change="plusMonths(index)"
                         />
                       </VCol>
                       <VCol cols="6" md="6" class="form-group">
                         <VTextField
                           placeholder="Consumir antes de"
                           label="Consumir antes de"
-                          type="number"
-                          name="new_recipe_person_count"
+                          type="text"                      
                           autocomplete="off"
                           v-model="tag.consumo"
                           :id="'tag_consumo_'+index"
@@ -219,7 +218,6 @@
         let dates = {
           tag_created: flatpickr(document.getElementById('tag_created_'+id), {
             dateFormat: 'd/m/Y',
-            minDate: "today",
             locale: Spanish,
             disableMobile:true,
             onClose: function (selectedDate) {
@@ -228,7 +226,6 @@
           }),
           tag_consumo: flatpickr(document.getElementById('tag_consumo_'+id), {
             dateFormat: 'd/m/Y',
-            minDate: "today",
             locale: Spanish,
             disableMobile:true,
             onClose: function (selectedDate) {
@@ -256,6 +253,13 @@
           return
         }
        this.showSnackbar('error','Listado vacio')
+      },
+      plusMonths(index){
+        let date = moment(this.printDates[index].tag_created.selectedDates[0]).add(3, 'months').format('DD-MM-YYYY')
+        this.printDates[index].tag_consumo.setDate(date)
+        this.printDates[index].tag_consumo.set('minDate', date)
+
+        this.tagsToPrint[index].consumo = date
       },
       printUrl(validTags){
         return `/api/recipes/client/print/multiple?recipes=${JSON.stringify(validTags)}&`

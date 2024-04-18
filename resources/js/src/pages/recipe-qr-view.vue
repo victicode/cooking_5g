@@ -19,7 +19,6 @@
         :show-arrows="false"
         :touch="true"
         hide-delimiter-background
-        
         delimiter-icon="pepicons-pencil:square-filled"
         :height="'93%'"
         v-model="sliderPosition"
@@ -320,15 +319,12 @@
 
       },
       selectProductView(index){
-
-
         this.selectedProductInRecipe =  this.selectedRecipe.cooking_ingredients[index].lotes[0]
+        this.selectedProductInRecipe.viewOnly = true
         this.selectedProductInRecipe.product = this.selectedRecipe.cooking_ingredients[index];
         setTimeout(() => {
           this.showModal('viewProduct')
         }, 800);
-        
-
       },
       hideModal(action=""){
         
