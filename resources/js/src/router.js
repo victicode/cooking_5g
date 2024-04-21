@@ -9,16 +9,13 @@ import middlewarePipeline from './middlewares/middlewarePipeline'
 // components
 import defaultComponent from '@/layouts/default.vue';
 import productsComponent from '@/pages/products.vue';
-import productsClientComponent from '@/pages/client/products.vue';
-
-
-
+// import productsClientComponent from '@/pages/client/products.vue';
 import ordersComponent from '@/pages/orders.vue';
 import recipesComponent from '@/pages/recipes.vue';
 import clientComponent from '@/pages/users/client.vue';
 import chefComponent from '@/pages/users/chef.vue';
 import accountSettings from  '@/pages/account-settings.vue'
-import recipeQrView from  '@/pages/recipe-qr-view.vue'
+// import recipeQrView from  '@/pages/recipe-qr-view.vue'
 
 
 const router = createRouter({
@@ -52,16 +49,16 @@ const router = createRouter({
             title : 'Productos'
           },
         },
-        {
-          path: "/products_client",
-          component: productsClientComponent,
-          meta: {
-            middleware: [
-              auth,
-            ],
-            title : 'Productos'
-          },
-        },
+        // {
+        //   path: "/products_client",
+        //   component: productsClientComponent,
+        //   meta: {
+        //     middleware: [
+        //       auth,
+        //     ],
+        //     title : 'Productos'
+        //   },
+        // },
         // {
         //   path: "/products_2",
         //   component: products_2Component,

@@ -10,8 +10,8 @@ import DefaultLayoutWithVerticalNav from './components/DefaultLayoutWithVertical
     <router-view v-slot="{Component}" >
       <transition 
          mode="out-in" 
-         enter-active-class="animate__animated animate__fadeInLeft" 
-         leave-active-class="animate__animated animate__fadeOutRight"
+         enter-active-class="animate__animated animate__fadeIn" 
+         leave-active-class="animate__animated animate__fadeOut"
        >
          <component  :is="Component"/>
       </transition>
