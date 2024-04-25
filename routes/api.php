@@ -1,16 +1,17 @@
 <?php
 
 
+use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\LoteController;
+
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\OrderController;
-
 use App\Http\Controllers\Api\RecipeController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\Auth\AuthController;
-use App\Models\Product;
 
 /*
 |--------------------------------------------------------------------------
@@ -102,6 +103,7 @@ Route::middleware('jwt.verify')->prefix('cart')->name('cart.')->group(function (
 Route::prefix('recipes')->name('recipes.')->group(function () {
     Route::get('/get-by-id/{id}',[RecipeController::class, 'getRecipeById']);
 });
+
 Route::middleware('jwt.verify')->prefix('recipes')->name('recipes.')->group(function () {
     Route::post('/',[RecipeController::class, 'storeRecipe']);
     Route::get('/',[RecipeController::class, 'index']);
@@ -110,12 +112,18 @@ Route::middleware('jwt.verify')->prefix('recipes')->name('recipes.')->group(func
     Route::get('/get-by-search',[RecipeController::class, 'getRecipeBySearch']);
 });
 
+Route::middleware('jwt.verify')->prefix('support')->name('supports.')->group(function () {
+    Route::post('/',[ChatController::class, 'storechat']);
+    Route::get('/',[ChatController::class, 'getChats']);
+    Route::get('/{id}',[ChatController::class, 'getChatById']);
+
+});
+
 Route::middleware('jwt.verify')->prefix('notification')->name('notification.')->group(function () {
     Route::get('/{id}',function($id){
         return getAllNotifiaction($id);
     });
     Route::get('/see-all/{user}/{type}',function($user,$type){
-
         return seeAllNotifiaction($user, $type);
     });
     Route::post('/',[Ordercontroller::class, 'newNotification']);
@@ -125,7 +133,6 @@ Route::middleware('jwt.verify')->prefix('message')->name('message.')->group(func
         return getAllMessage($id);
     });
     Route::get('/see-all/{user}',function($user){
-
         return seeAllMessage($user);
     });
 });

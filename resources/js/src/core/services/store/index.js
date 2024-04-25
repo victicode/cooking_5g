@@ -9,6 +9,7 @@ import recipe from "./recipe.module"
 import notification from "./notification.module"
 import cart from "./cart.module"
 import message from "./message.module"
+import chat from "./chat.module"
 
 
 const store = createStore({
@@ -20,7 +21,8 @@ const store = createStore({
     user,
     notification,
     cart,
-    message
+    message,
+    chat, 
   }
 })
 
