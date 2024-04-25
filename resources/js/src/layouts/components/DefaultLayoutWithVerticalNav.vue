@@ -103,6 +103,15 @@ const vuetifyTheme = useTheme()
           to: '/orders',
         }"
       />
+      <VerticalNavLink
+      
+        class="mt-16"
+        :item="{
+          title: 'Soporte',
+          icon: 'ic:sharp-support',
+          to: '/support',
+        }"
+      />
     </template>
 
     <!-- 👉 Pages -->
@@ -110,9 +119,9 @@ const vuetifyTheme = useTheme()
     <slot />
 
     <!-- 👉 Footer -->
-    <template #footer>
+    <!-- <template #footer>
       <Footer />
-    </template>
+    </template> -->
   </VerticalNavLayout>
 </template>
 

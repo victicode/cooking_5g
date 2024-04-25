@@ -15,7 +15,7 @@ import recipesComponent from '@/pages/recipes.vue';
 import clientComponent from '@/pages/users/client.vue';
 import chefComponent from '@/pages/users/chef.vue';
 import accountSettings from  '@/pages/account-settings.vue'
-// import recipeQrView from  '@/pages/recipe-qr-view.vue'
+import supportComponent from '@/pages/support.vue'
 
 
 const router = createRouter({
@@ -110,6 +110,16 @@ const router = createRouter({
               auth
             ],
             title : 'Recetas'
+          },
+        },
+        {
+          path: "/support",
+          component: supportComponent,
+          meta: {
+            middleware: [
+              auth
+            ],
+            title : 'Atención al cliente'
           },
         },
         {
