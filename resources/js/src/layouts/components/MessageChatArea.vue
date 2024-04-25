@@ -47,7 +47,7 @@ moment.updateLocale('es-mx', {
           </div>
         </div>
         <div class="text-center">
-          <h5>Estado:</h5>
+          <h5 class="text-white">Estado:</h5>
           <v-chip color="success" variant="elevated">
             ABIERTO
           </v-chip>
