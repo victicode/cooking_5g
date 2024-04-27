@@ -58,7 +58,7 @@ moment.updateLocale('es-mx', {
           </v-chip>
         </div>
       </div>
-      <div class="px-3 messagesArea ">
+      <div class="px-3 messagesArea d-flex flex-column justify-end ">
         <div class="d-flex message__text-content flex-column mb-1" v-for="(messages, index) in messagesChat" :key="index" :style="'order:'+(messagesChat.length - index)">
           <div class="lx mt-2" :class="{'visit': messages.sender_id == activeUser.user.id }">
             <div class=" local-message elevation-24" :class="{'visited-message': messages.sender_id == activeUser.user.id }">

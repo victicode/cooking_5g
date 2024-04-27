@@ -113,7 +113,7 @@ export default {
     window.Echo.channel('chatMessages')
     .listen('RealTimeChatMessage',(e)=>{
       this.getAllChat();
-      this.sound.play()
+      // this.sound.play()
     })
   },
   computed: {

@@ -34,7 +34,7 @@ const vuetifyTheme = useTheme()
             >
             <VIcon icon="bx-menu" />
           </IconBtn>
-          <div class="unReadMessage-acitve bg-error"  v-if="UnreadMessage > 0" />
+          <div class="unReadMessage-acitve bg-error d-md-none"  v-if="UnreadMessage > 0" />
         </div>
 
         <!-- 👉 Search -->
