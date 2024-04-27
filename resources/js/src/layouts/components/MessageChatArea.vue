@@ -53,10 +53,10 @@ moment.updateLocale('es-mx', {
           </v-chip>
         </div>
       </div>
-      <div class="pa-3 messagesArea">
-        <div class="d-flex message__text-content" v-for="(messages, index) in messagesChat" :key="index">
-          <div  :class="{'visit': messages.sender_id == 1 }">
-            <div class="mt-2 local-message elevation-24" :class="{'visited-message': messages.sender_id == 1 }">
+      <div class="pa-3 messagesArea d-flex flex-column justify-end">
+        <div class="d-flex message__text-content" v-for="(messages, index) in messagesChat" :key="index" :style="'order:'+(messagesChat.length - index)">
+          <div  :class="{'visit': messages.sender_id == 1 }" >
+            <div class="mt-2 local-message elevation-24" :class="{'visited-message': messages.sender_id == 1 }" >
               {{ messages.message }}
             </div>
             <div :class="{'text-end': messages.sender_id == 1 }">

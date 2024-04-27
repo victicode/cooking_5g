@@ -57,7 +57,7 @@ ul{
   font-size: 1.1rem;
 }
 .user-chat__type{
-  font-size: .7rem;
+  font-size: 1rem;
   font-weight: 600;
 }
 
