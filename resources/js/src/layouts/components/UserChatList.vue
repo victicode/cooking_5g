@@ -1,6 +1,6 @@
 <template>
   <div class="chat-list__content">
-    <div class="pt-8">
+    <div class="pt-8" v-if="chats.length > 0" >
       <ul>
         <li class="mt-3 pb-3" v-for="(chat, index) in chats" :key="index" @click="selectedChat(chat.id)">
           <div class="chat-description" :class="{'active': activeChat && chat.id === activeChat.id}">
@@ -18,6 +18,12 @@
           </div>
         </li>
       </ul>
+    </div>
+    <div v-else class="pt-8">
+      <v-skeleton-loader type="avatar, paragraph" class="w-100"></v-skeleton-loader>
+      <v-skeleton-loader type="avatar, paragraph" class="w-100"></v-skeleton-loader>
+      <v-skeleton-loader type="avatar, paragraph" class="w-100"></v-skeleton-loader>
+
     </div>
   </div>
 </template>
@@ -70,38 +76,48 @@ ul{
 </style>
 <script>
 import { GET_CHAT, GET_CHAT_BY_ID } from '@/core/services/store/chat.module';
-import { mapGetters } from "vuex";
+import notificationTone4 from "@/assets/audio/notification2.mp3";
 
 export default {
   name:'UserChatListComponent',
   data: ()=>{
     return{
-      chats:{}
+      chats:{},
+      sound: new Audio(notificationTone4),
     }
   },
   methods: {
-    setChat(id){
-
-    },
     getAllChat(){
       this.$store.dispatch(GET_CHAT).then((data)=>{
-        this.chats = data.data
+        this.chats = data.data;
+        this.updateChat()
+      }).catch((error) => {
+        console.log(error)
       })
     },
     selectedChat(id){
       this.$store.dispatch(GET_CHAT_BY_ID, id).then((data)=>{
         this.$store.state.activeChatID = data.data
         this.$store.state.chatMessages = data.data.messages
-
       })
+    },
+    updateChat(){
+      if(this.activeChat){
+        // console.log(this.chats.find((chat) => chat.id === this.activeChat.id))
+        this.$store.state.chatMessages = this.chats.find((chat) => chat.id === this.activeChat.id).messages
+      }
     }
   }, 
   mounted(){
     this.getAllChat();
+    window.Echo.channel('chatMessages')
+    .listen('RealTimeChatMessage',(e)=>{
+      this.getAllChat();
+      this.sound.play()
+    })
   },
   computed: {
     activeChat() {
-      console.log(this.$store.state.activeChatID)
       return this.$store.state.activeChatID
     }
   },

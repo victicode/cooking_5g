@@ -1,5 +1,6 @@
 <script setup>
 import { useTheme } from 'vuetify'
+import { GET_ALL_UNREAD_MESSAGES } from "@/core/services/store/chat.module"
 // import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTitle.vue'
 import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
 import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
@@ -26,12 +27,15 @@ const vuetifyTheme = useTheme()
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="d-flex h-100 align-center px-0 mx-0">
         <!-- 👉 Vertical nav toggle in overlay mode -->
-        <IconBtn
-          class="ms-n3 d-lg-none"
-          @click="toggleVerticalOverlayNavActive(true)"
-        >
-          <VIcon icon="bx-menu" />
-        </IconBtn>
+        <div  class="position-relative ps-1 menu-content" >
+          <IconBtn
+            class="ms-n3 d-lg-none"
+            @click="toggleVerticalOverlayNavActive(true)"
+            >
+            <VIcon icon="bx-menu" />
+          </IconBtn>
+          <div class="unReadMessage-acitve bg-error"  v-if="UnreadMessage > 0" />
+        </div>
 
         <!-- 👉 Search -->
         <VBreadcums class="d-none d-md-block" />
@@ -47,7 +51,7 @@ const vuetifyTheme = useTheme()
         <UserProfile />
       </div>
     </template>
-    <VBreadcums class="d-block d-md-none" />
+    <VBreadcums class="d-block d-md-none" v-if="$route.href !=='/support' "/>
     <template #vertical-nav-content>
       <VerticalNavLink
         class="mt-3"
@@ -126,6 +130,14 @@ const vuetifyTheme = useTheme()
 </template>
 
 <style lang="scss" scoped>
+.unReadMessage-acitve{
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  top:5px;
+  right: 40%;
+  border-radius: 50%;
+}
 .meta-key {
   border: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 6px;
@@ -136,13 +148,25 @@ const vuetifyTheme = useTheme()
 }
 </style>
 <script>
-  import { mapGetters } from "vuex";
   export default {
     data(){
       return{
+        UnreadMessage:0,
       }
     },
     methods:{
+      getUnReadMessages(){
+        this.$store
+        .dispatch(GET_ALL_UNREAD_MESSAGES)
+        .then((data) => {
+          this.UnreadMessage = data.data
+        }).catch((error)=>{
+          console.log(error)
+        })
+      }
+    },
+    mounted(){
+      this.getUnReadMessages()
     },
     computed: {
       ...mapGetters(["currentUser"]),

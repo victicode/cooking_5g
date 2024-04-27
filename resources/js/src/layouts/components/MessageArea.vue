@@ -144,13 +144,11 @@
       }
     },
     methods:{
-  
       getMessages(){
         setTimeout(() => {
           this.$store
           .dispatch(GET_MESSAGE, 1)
           .then((data)=> {
-            console.log(data)
             this.messages = data.all ; 
             this.messages_count = data.new_count ; 
   
@@ -168,7 +166,7 @@
 
         })
       
-      }
+      },
     },
     mounted(){
       this.getMessages()
