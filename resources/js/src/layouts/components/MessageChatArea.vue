@@ -1,7 +1,7 @@
 <script setup >
+import { SEND_NEW_MESSAGE } from '@/core/services/store/chat.module';
 import moment from 'moment-timezone';
 import 'moment/locale/es';
-
 moment.updateLocale('es-mx', {
   relativeTime: {
     future: 'en %s',
@@ -24,7 +24,7 @@ moment.updateLocale('es-mx', {
 });
 </script>
 <template>
-  <div class="chat-message__content " :class="{'nochat': !activeChat}">
+  <div class="chat-message__content  " :class="{'nochat': !activeChat}">
     <div class="h-100 w-100 d-flex justify-center align-center text-center no-chat-active position-relative" v-if="!activeChat">
       <h2>COOKING 5G <br> Soporte</h2>
       <div class="h-100 w-100 d-flex justify-center align-center sup-overlay">
@@ -34,8 +34,11 @@ moment.updateLocale('es-mx', {
     <div class="h-100 w-100  position-relative d-flex flex-column justify-space-between pb-4" v-if="messagesChat" >
       <div class="messageArea__header d-flex align-center justify-space-between pe-5">
         <div class=" d-flex align-center">
-          <div class="rounded-circle pa-3 d-flex justify-center align-center bg-white me-2 messageArea__header--icon">
+          <div class="rounded-circle pa-3  justify-center align-center bg-white me-2 messageArea__header--icon d-none d-md-flex">
             <VIcon icon="mingcute:user-2-fill" size="large" color="primary" />
+          </div>
+          <div class=" pa-0  justify-center align-center  me-4 messageArea__header--icon d-flex d-md-none" @click="backMessagesList()">
+            <VIcon icon="fluent-mdl2:skype-arrow"  color="white" />
           </div>
           <div>
             <div class="user-chat__name text-white ">
@@ -47,31 +50,51 @@ moment.updateLocale('es-mx', {
           </div>
         </div>
         <div class="text-center">
-          <h5 class="text-white">Estado:</h5>
+          <h5 class="text-white user-chat__type">Estado:</h5>
           <v-chip color="success" variant="elevated">
+           <span class="user-chat__type"> 
             ABIERTO
+           </span>
           </v-chip>
         </div>
       </div>
-      <div class="pa-3 messagesArea d-flex flex-column justify-end">
-        <div class="d-flex message__text-content" v-for="(messages, index) in messagesChat" :key="index" :style="'order:'+(messagesChat.length - index)">
-          <div  :class="{'visit': messages.sender_id == 1 }" >
-            <div class="mt-2 local-message elevation-24" :class="{'visited-message': messages.sender_id == 1 }" >
+      <div class="px-3 messagesArea ">
+        <div class="d-flex message__text-content flex-column mb-1" v-for="(messages, index) in messagesChat" :key="index" :style="'order:'+(messagesChat.length - index)">
+          <div class="lx mt-2" :class="{'visit': messages.sender_id == activeUser.user.id }">
+            <div class=" local-message elevation-24" :class="{'visited-message': messages.sender_id == activeUser.user.id }">
               {{ messages.message }}
             </div>
-            <div :class="{'text-end': messages.sender_id == 1 }">
-              <h6 class="ms-2" :class="{'me-2': messages.sender_id == 1 }">
-                {{ moment(messages.created_at).format('h:mm A')  }}
-              </h6>
-            </div>
+          </div>
+          <div :class="{'text-end': messages.sender_id == activeUser.user.id}">
+            <h6 class="ms-2" :class="{'me-2': messages.sender_id == activeUser.user.id}">
+              {{ moment(messages.created_at).format('h:mm A')  }}
+            </h6>
           </div>
         </div>
       </div>
-      <div class="d-flex align-center newMessage__area w-100 pa-5">
-        <textarea class="elevation-24" name="" id="" placeholder="Escribe un mensaje" cols="1" rows="1"></textarea>
-        <v-btn icon="iconoir:send" variant="tonal" color="primary" class="ms-2"/>
+      <div class="d-flex align-center newMessage__area w-100 py-0 px-md-5 px-2">
+        <textarea class="elevation-24" name="" id="" placeholder="Escribe un mensaje" v-model="newMessage" cols="1" rows="1"></textarea>
+        <v-btn icon="iconoir:send" variant="tonal" color="primary" class="ms-2" @click="sendNewMessage()"/>
       </div>
     </div>
+    <v-snackbar
+      v-model="snackShow"
+      :color="snackType"
+      rounded="pill"
+      :timeout="snacktimeOut"
+      width="max-content"
+      class="text-center"
+    >
+     <h4 class="text-white w-100 text-center">
+
+       {{snackMessage}}
+     </h4>
+        <template
+          v-slot:actions
+        >
+        <VBtn  color="white" class="text-white" @click="snackShow=false"> Cerrar</VBtn>
+        </template>
+    </v-snackbar>
   </div>
 </template>
 <style lang="scss"  scoped>
@@ -81,7 +104,6 @@ moment.updateLocale('es-mx', {
 }
 .messagesArea{
   height: 80%;
-
   overflow-x: hidden;
   overflow-y: scroll;
 }
@@ -119,6 +141,7 @@ textarea{
   border-bottom-right-radius: 10px;
   background: rgba(180, 149, 107, 0.199)!important;
   transition: all 0.2s ease-in;
+  border: 0.5px solid rgb(226, 101, 17);
 }
 .nochat{
   background: rgba(238, 168, 76, 0.363)!important;
@@ -128,23 +151,37 @@ textarea{
 }
 .message__text-content{
   justify-content: start;
+  width: 100%;
 }
 .message__text-content:has(> .visit){
-  justify-content: end;
+  align-items: end;
+  width: 100%;
+
 }
-.local-message{
+.lx{
+  max-width: fit-content;
   background: #696969;
   border-radius: 15px;
-  width: max-content;
+}
+.visit{
+  background: #cf6123;
+  
+}
+.local-message{
+  
+  border-radius: 15px;
+  width: fit-content;
   padding: 10px;
   color: white;
+  max-width: 100%;
 }
 .visited-message{
-  background: #cf6123;
   border-radius: 15px;
-  width: max-content;
+  width: fit-content;
   padding: 10px;
   color: white;
+  max-width: 100%;
+
 }
 .sup-overlay{
 
@@ -163,21 +200,95 @@ textarea{
   font-weight: 600;
 }
 @media screen and (max-width: 780px){
-  .chat-list__content{
+  
+  .messagesArea{
+    height: 75%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+  }
+  .user-chat__name{
+    font-size: 1rem;
+  }
+  .user-chat__type{
+    font-size: .7rem;
+    font-weight: 600;
+  }
+  .chat-message__content{
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
+  }
+  .newMessage__area{
+    height: max-content;
+  }
+  .messageArea__header{
+    height: max-content;
+    &--icon{
+      width: 40px;
+      height: 40px;
+    }
+  }
+  .local-message{
+    font-size: 0.8rem;
+  }
+  .visited-message{
+    font-size: 0.8rem;
   }
 }
 </style>
 <script>
 export default {
   name:'MessageChatAreaComponent',
+  data:() => {
+    return {
+      newMessage:'',
+      snackShow:false,
+      snackMessage:'',
+      snackType:'',
+      snacktimeOut:2000,
+    };
+  },
   methods:{
+    sendNewMessage(){
+      if (this.newMessage && this.newMessage.trim() !== '') {
+        
+        const data = {
+          id: this.activeChat.id,
+          data:{
+            message:this.newMessage
+          }
+        }
+        this.$store.dispatch(SEND_NEW_MESSAGE, data)
+        .then((data) => {
+          // console.log(data)
+          this.newMessage = ''
+        })
+        return
+      }
+      this.newMessage = ''
+      this.showSnackbar('error', 'No se permiten mensajes sin contenido')
+    },
+    showSnackbar(type, messagge){
+      this.snackShow = true;
+      this.snackType = type
+      this.snackMessage = messagge
+    },
+    backMessagesList(){
+      this.emitter.emit('displayUserChatList', false)
+    }
+  },
+  mounted(){
+    setTimeout(() => {
+      console.log(this.$store.state)
+      console.log(this.activeUser.user.id)
 
+    }, 4000);
   },
   computed: {
     messagesChat() {
       return this.$store.state.chatMessages
+    },
+    activeUser() {
+      return this.$store.state.user
     },
     activeChat() {
       return this.$store.state.activeChatID

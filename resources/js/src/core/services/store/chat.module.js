@@ -9,7 +9,7 @@ export const UPDATE_CHAT       = "UPDATE_CHAT";
 export const SEND_NEW_MESSAGE  = "SEND_NEW_MESSAGE";
 export const GET_CHAT_BY_ID    = "GET_CHAT_BY_ID";
 export const SET_ACTIVE_CHAT   = "SET_ACTIVE_CHAT";
-
+export const GET_ALL_UNREAD_MESSAGES = "GET_ALL_UNREAD_MESSAGES"
 const state = {
   activeChat: {
     id:'',
@@ -21,7 +21,7 @@ const actions = {
         return new Promise((resolve, reject) => {
           if (JwtService.getToken()) {
             ApiService.setHeader();
-            ApiService.get("api/support")
+            ApiService.get("api/support?id=0&")
             .then(( { data } ) => {
                 // console.log(data)
                 resolve(data);
@@ -85,15 +85,12 @@ const actions = {
         }
       });
     },
-    [SEND_NEW_MESSAGE](context,recipeId){
+    [SEND_NEW_MESSAGE](context,data){
       return new Promise((resolve, reject) => {
-
         ApiService.setHeader();
-        ApiService.get("/api/recipes/get-by-id/"+recipeId)
+        ApiService.post("/api/support/"+data.id+"/newMessage", data.data)
         .then(( { data } ) => {
-            console.log(data)
-            resolve(data);
-            
+          resolve(data);
         })
         .catch(( { response } ) => {
             console.log(response )
@@ -116,6 +113,20 @@ const actions = {
           });
         }
       });
+    },
+    [GET_ALL_UNREAD_MESSAGES](context){
+      return new Promise((resolve, reject) => {
+        if(JwtService.getToken()){
+          ApiService.setHeader();
+          ApiService.post("api/support/get-unread-messages", {id:'id'})
+          .then( ({data}) =>{
+            resolve(data)
+          }).catch(( { response } ) => {
+              // console.log(response )
+              reject('Ocurrió un error desconocido al intentar obtener el producto');
+          });
+        }
+      })
     },
 };
 

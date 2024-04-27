@@ -113,9 +113,11 @@ Route::middleware('jwt.verify')->prefix('recipes')->name('recipes.')->group(func
 });
 
 Route::middleware('jwt.verify')->prefix('support')->name('supports.')->group(function () {
-    Route::post('/',[ChatController::class, 'storechat']);
+    Route::post('/',[ChatController::class, 'storeChat']);
     Route::get('/',[ChatController::class, 'getChats']);
     Route::get('/{id}',[ChatController::class, 'getChatById']);
+    Route::post('/{id}/newMessage',[ChatController::class, 'newMessage']);
+    Route::post('/get-unread-messages', [ChatController::class, 'allUnReadMessages']);
 
 });
 
