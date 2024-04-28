@@ -141,4 +141,6 @@ Route::middleware('jwt.verify')->prefix('message')->name('message.')->group(func
 
 Route::get('recipes/client/print/{id}', [RecipeController::class, 'printRecipeTag']);
 Route::get('recipes/client/print/multiple', [RecipeController::class, 'printRecipeTag']);
+Route::get('/typing/{id}', [ChatController::class, 'typingFuction']);
+
 

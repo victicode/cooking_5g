@@ -58,8 +58,8 @@ moment.updateLocale('es-mx', {
           </v-chip>
         </div>
       </div>
-      <div class="px-3 messagesArea d-flex flex-column justify-end ">
-        <div class="d-flex message__text-content flex-column mb-1" v-for="(messages, index) in messagesChat" :key="index" :style="'order:'+(messagesChat.length - index)">
+      <div class="px-3 messagesArea" id="messagesArea" >
+        <div class="d-flex message__text-content flex-column mb-1 " v-for="(messages, index) in messagesChat" :id="'message_index_'+index" :key="index" :style="'order:'+(messagesChat.length - index)">
           <div class="lx mt-2" :class="{'visit': messages.sender_id == activeUser.user.id }">
             <div class=" local-message elevation-24" :class="{'visited-message': messages.sender_id == activeUser.user.id }">
               {{ messages.message }}
@@ -73,7 +73,7 @@ moment.updateLocale('es-mx', {
         </div>
       </div>
       <div class="d-flex align-center newMessage__area w-100 py-0 px-md-5 px-2">
-        <textarea class="elevation-24" name="" id="" placeholder="Escribe un mensaje" v-model="newMessage" cols="1" rows="1"></textarea>
+        <textarea @keyup="typingShow()" class="elevation-24" name="" id="" placeholder="Escribe un mensaje" v-model="newMessage" cols="1" rows="1"></textarea>
         <v-btn icon="iconoir:send" variant="tonal" color="primary" class="ms-2" @click="sendNewMessage()"/>
       </div>
     </div>
@@ -106,6 +106,8 @@ moment.updateLocale('es-mx', {
   height: 80%;
   overflow-x: hidden;
   overflow-y: scroll;
+  display: inline-flex;
+  flex-direction: column;
 }
 textarea{
   width: 100%;
@@ -203,8 +205,6 @@ textarea{
   
   .messagesArea{
     height: 75%;
-    overflow-x: hidden;
-    overflow-y: scroll;
   }
   .user-chat__name{
     font-size: 1rem;
@@ -259,7 +259,6 @@ export default {
         }
         this.$store.dispatch(SEND_NEW_MESSAGE, data)
         .then((data) => {
-          // console.log(data)
           this.newMessage = ''
         })
         return
@@ -274,14 +273,33 @@ export default {
     },
     backMessagesList(){
       this.emitter.emit('displayUserChatList', false)
-    }
+    },
+    async typingShow(){
+      this.axios.get('/api/typing/'+this.activeChat.id).then( async  (data) => {
+        const datax = await data;
+        // console.log(datax)
+      })
+    },
   },
   mounted(){
-    setTimeout(() => {
-      console.log(this.$store.state)
-      console.log(this.activeUser.user.id)
-
-    }, 4000);
+    // if(this.activeChat){
+      setTimeout(() => {
+        
+        window.Echo.channel('chatMessages'+this.activeChat.id)
+        .listen('RealTimeChatMessage',(e)=>{
+          console.log(e)
+          console.log('ESCRIBIENDO.....')
+        })
+      }, 10000);
+    // }
+  },
+  created(){
+    this.emitter.on("displayLastMessagge", () => {
+      setTimeout(()=>{
+        var objDiv = document.getElementById("messagesArea");
+        objDiv.scrollTop = objDiv.scrollHeight;
+      },100)
+    })
   },
   computed: {
     messagesChat() {

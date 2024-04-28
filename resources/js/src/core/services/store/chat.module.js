@@ -15,6 +15,7 @@ const state = {
     id:'',
   },
   chatMessages:[],
+  unReadMessages:0,
 };
 const actions = {
     [GET_CHAT](context, query) {

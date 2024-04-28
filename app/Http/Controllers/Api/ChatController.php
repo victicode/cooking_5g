@@ -10,16 +10,16 @@ use App\Http\Controllers\Controller;
 
 class ChatController extends Controller
 {
-    //
+    //withCount('messagesUnread')
     public function getChats(Request $request){
 
         return $request->user()->id == 1
-        ? $this->returnSuccess(200, Chat::with(['receipet', 'sender','messages'])->get())
-        : $this->returnSuccess(200, Chat::with(['receipet', 'sender','messages'])->where('sender_id', $request->user()->id)->get());
+        ? $this->returnSuccess(200, Chat::withCount('messagesUnread')->with(['receipet', 'sender','messages'])->get())
+        : $this->returnSuccess(200, Chat::withCount('messagesUnread')->with(['receipet', 'sender','messages'])->where('sender_id', $request->user()->id)->get());
     }
     public function getChatById($id){
 
-        return  $this->returnSuccess(200, Chat::with(['receipet', 'sender', 'messages'])->find($id));
+        return  $this->returnSuccess(200, Chat::withCount('messagesUnread')->with(['receipet', 'sender', 'messages'])->find($id));
     }
     public function newMessage($chatId, Request $request){
 
@@ -45,6 +45,13 @@ class ChatController extends Controller
             $all = $all + $key->messages_unread_count;
         }
         return  $this->returnSuccess(200,  $all);
+    }
+    public function typingFuction($id){
+
+        // RealTimeChatMessage::dispatch(
+        //     Chat::withCount('messagesUnread')->with(['receipet', 'sender','messages'])->find($id)
+        // );
+        return  $this->returnSuccess(200, Chat::withCount('messagesUnread')->with(['receipet', 'sender','messages'])->find($id));
     }
 
 }

@@ -97,15 +97,19 @@ export default {
     },
     selectedChat(id){
       this.$store.dispatch(GET_CHAT_BY_ID, id).then((data)=>{
+        this.emitter.emit('displayLastMessagge')
+        this.emitter.emit('mobileFunction')
+
         this.$store.state.activeChatID = data.data
         this.$store.state.chatMessages = data.data.messages
       })
     },
     updateChat(){
       if(this.activeChat){
-        // console.log(this.chats.find((chat) => chat.id === this.activeChat.id))
         this.$store.state.chatMessages = this.chats.find((chat) => chat.id === this.activeChat.id).messages
-      }
+        this.emitter.emit('displayLastMessagge')
+        return
+      };
     }
   }, 
   mounted(){

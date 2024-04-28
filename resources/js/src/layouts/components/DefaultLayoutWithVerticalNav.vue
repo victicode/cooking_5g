@@ -160,6 +160,7 @@ const vuetifyTheme = useTheme()
         .dispatch(GET_ALL_UNREAD_MESSAGES)
         .then((data) => {
           this.UnreadMessage = data.data
+          this.$store.state.unReadMessages = data.data
         }).catch((error)=>{
           console.log(error)
         })

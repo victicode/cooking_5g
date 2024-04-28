@@ -9,7 +9,7 @@ const props = defineProps({
 
 <template>
   <li
-    class="nav-link link-father"
+    class="nav-link link-father position-relative"
     :class="{ disabled: item.disable }"
   >
     <Component
@@ -26,15 +26,33 @@ const props = defineProps({
         {{ item.title }}
       </span>
     </Component>
+    <div v-if="item.title == 'Soporte'" class="unReadMessage-acitve bg-error animate__pulse " >
+      {{$store.state.unReadMessages}}
+    </div>
+
   </li>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .layout-vertical-nav {
   .nav-link a {
     display: flex;
     align-items: center;
     cursor: pointer;
   }
+}
+.unReadMessage-acitve{
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  top: 5px;
+  right: 40%;
+  border-radius: 3px;
+  padding: 5px;
+  top: calc(50% - 11px);
+  font-size: 0.7rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

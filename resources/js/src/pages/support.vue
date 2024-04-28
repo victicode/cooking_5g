@@ -1,14 +1,13 @@
 <template>
 
   <VCard class="pa-0 ma-0">
-    {{ activeChat ? '' : ''}}
-    <VRow class="chat-areacomponent ma-0 pa-0 d-none d-md-flex">
+    <VRow class="chat-areacomponent ma-0 pa-0 d-none d-md-flex" v-if="displayWidth > 780">
       <transition 
           mode="out-in" 
           enter-active-class="animate__animated animate__fadeInRight" 
           leave-active-class="animate__animated animate__fadeOutLeft"
         >
-        <VCol id="chat-list" cols="12"  md="4" class="pa-0 d-md-flex " >
+        <VCol cols="12"  md="4" class="pa-0 d-md-flex chat-list " >
           <userList />
         </VCol>
       </transition>
@@ -17,18 +16,18 @@
           enter-active-class="animate__animated animate__fadeInRight" 
           leave-active-class="animate__animated animate__fadeOutLeft"
         >
-        <VCol id="message-area" class="d-md-flex pa-0"  cols="12" md="8">
+        <VCol class="d-md-flex pa-0 message-area"  cols="12" md="8">
           <messageChat />
         </VCol>
       </transition>
     </VRow>
-    <VRow class="chat-areacomponent ma-0 pa-0 d-flex d-md-none">
+    <VRow class="chat-areacomponent ma-0 pa-0 d-flex d-md-none" v-else>
       <transition 
           mode="out-in" 
           enter-active-class="animate__animated animate__fadeInRight" 
           leave-active-class="animate__animated animate__fadeOutLeft"
         >
-        <VCol id="chat-list" cols="12"  md="4" class="pa-0 d-md-flex " v-if="!deplay">
+        <VCol cols="12"  md="4" class="pa-0 d-md-flex chat-list" v-if="!deplay">
           <userList />
         </VCol>
       </transition>
@@ -37,7 +36,7 @@
           enter-active-class="animate__animated animate__fadeInRight" 
           leave-active-class="animate__animated animate__fadeOutLeft"
         >
-        <VCol id="message-area" class="d-md-flex pa-0" v-if="!deplay == false" cols="12" md="8">
+        <VCol class="d-md-flex pa-0 message-area"  cols="12" md="8">
           <messageChat />
         </VCol>
       </transition>
@@ -55,21 +54,19 @@ export default {
   },
   data(){
     return{
+      displayWidth: window.screen.width,
       deplay: false
     }
   },
   created(){
     this.emitter.emit('displayOverlayLoad', false)
-    this.activeChat;
+
     this.emitter.on("displayUserChatList", (status) => {
       this.deplay  = status
     })
-  },
-  computed: {
-    activeChat() {
-      this.deplay = this.$store.state.activeChatID ? true : false
-      return this.$store.state.activeChatID
-    }
+    this.emitter.on("mobileFunction", (status) => {
+      this.deplay  = true
+    })
   },
 }
 </script>
@@ -84,10 +81,10 @@ export default {
   display: flex;
   border-radius: 10px;
 }
-#chat-list{
+.chat-list{
   height:100%;
 }
-#message-area {
+.message-area {
   height:100%;
 }
 @media screen and (max-width: 780px){
