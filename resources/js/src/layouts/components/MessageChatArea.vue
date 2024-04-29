@@ -31,7 +31,7 @@ moment.updateLocale('es-mx', {
 
       </div>
     </div>
-    <div class="h-100 w-100  position-relative d-flex flex-column justify-space-between pb-4" v-if="messagesChat" >
+    <div class="h-100 w-100  position-relative d-flex flex-column justify-space-between pb-4" v-if="messages.length > 0" >
       <div class="messageArea__header d-flex align-center justify-space-between pe-5">
         <div class=" d-flex align-center">
           <div class="rounded-circle pa-3  justify-center align-center bg-white me-2 messageArea__header--icon d-none d-md-flex">
@@ -59,15 +59,14 @@ moment.updateLocale('es-mx', {
         </div>
       </div>
       <div class="px-3 messagesArea" id="messagesArea" >
-        <div class="d-flex message__text-content flex-column mb-1 " v-for="(messages, index) in messagesChat" :id="'message_index_'+index" :key="index" :style="'order:'+(messagesChat.length - index)">
-          <div class="lx mt-2" :class="{'visit': messages.sender_id == activeUser.user.id }">
-            <div class=" local-message elevation-24" :class="{'visited-message': messages.sender_id == activeUser.user.id }">
-              {{ messages.message }}
+        <div class="d-flex message__text-content flex-column mb-1 " v-for="(message, index) in messages" :id="'message_index_'+index" :key="index" :style="'order:'+(messages.length - index)">
+          <div class="normalMessage mt-2" :class="{'visit': message.sender_id == activeUser.user.id, 'visit': message.sender_id == activeUser.user.id }">
+            <div class=" elevation-24" :class="{'visited-message': message.sender_id == activeUser.user.id, 'local-message': message.sender_id !== activeUser.user.id, }" v-html="message.message">
             </div>
           </div>
-          <div :class="{'text-end': messages.sender_id == activeUser.user.id}">
-            <h6 class="ms-2" :class="{'me-2': messages.sender_id == activeUser.user.id}">
-              {{ moment(messages.created_at).format('h:mm A')  }}
+          <div :class="{'text-end': message.sender_id == activeUser.user.id}">
+            <h6 class="ms-2" :class="{'me-2': message.sender_id == activeUser.user.id}">
+              {{ moment(message.created_at).format('h:mm A')  }}
             </h6>
           </div>
         </div>
@@ -160,22 +159,34 @@ textarea{
   width: 100%;
 
 }
-.lx{
+.normalMessage{
   max-width: fit-content;
   background: #696969;
   border-radius: 15px;
+  position: relative;
+
 }
 .visit{
   background: #cf6123;
-  
+  position: relative;
 }
 .local-message{
-  
   border-radius: 15px;
   width: fit-content;
   padding: 10px;
   color: white;
   max-width: 100%;
+  &::before{
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    top: calc(50% - 0.7rem);
+    left: -9px;
+    border-bottom: solid 0.8rem transparent;
+    border-right: solid 0.8rem #696969;
+    border-top: solid 0.8rem transparent;
+  }
 }
 .visited-message{
   border-radius: 15px;
@@ -183,6 +194,17 @@ textarea{
   padding: 10px;
   color: white;
   max-width: 100%;
+  &::after{
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    top: calc(50% - 0.7rem);
+    right: -8px;
+    border-bottom: solid 0.8rem transparent;
+    border-left: solid 0.8rem #cf6123;
+    border-top: solid 0.8rem transparent;
+  }
 
 }
 .sup-overlay{
@@ -245,6 +267,7 @@ export default {
       snackMessage:'',
       snackType:'',
       snacktimeOut:2000,
+      messages:[]
     };
   },
   methods:{
@@ -254,7 +277,8 @@ export default {
         const data = {
           id: this.activeChat.id,
           data:{
-            message:this.newMessage
+            message:this.newMessage,
+            idUnique: window.localStorage.user_unique_id,
           }
         }
         this.$store.dispatch(SEND_NEW_MESSAGE, data)
@@ -283,14 +307,14 @@ export default {
   },
   mounted(){
     // if(this.activeChat){
-      setTimeout(() => {
+      // setTimeout(() => {
         
-        window.Echo.channel('chatMessages'+this.activeChat.id)
-        .listen('RealTimeChatMessage',(e)=>{
-          console.log(e)
-          console.log('ESCRIBIENDO.....')
-        })
-      }, 10000);
+      //   window.Echo.channel('chatMessages'+this.activeChat.id)
+      //   .listen('RealTimeChatMessage',(e)=>{
+      //     console.log(e)
+      //     console.log('ESCRIBIENDO.....')
+      //   })
+      // }, 10000);
     // }
   },
   created(){
@@ -300,11 +324,11 @@ export default {
         objDiv.scrollTop = objDiv.scrollHeight;
       },100)
     })
+    this.emitter.on("getMessages", (messages) => {
+      this.messages = messages;
+    })
   },
   computed: {
-    messagesChat() {
-      return this.$store.state.chatMessages
-    },
     activeUser() {
       return this.$store.state.user
     },

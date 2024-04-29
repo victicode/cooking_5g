@@ -66,8 +66,8 @@
           >
             <Component
               :is="'RouterLink'"
-              :to="'/products'"
-              :href="'/products'"
+              :to="'/support'"
+              :href="'/support'"
             >
                 <div class="w-100 text-right message-time_text text-secondary">
                   {{ moment(item.created_at).fromNow() }}

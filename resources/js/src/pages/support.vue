@@ -22,24 +22,13 @@
       </transition>
     </VRow>
     <VRow class="chat-areacomponent ma-0 pa-0 d-flex d-md-none" v-else>
-      <transition 
-          mode="out-in" 
-          enter-active-class="animate__animated animate__fadeInRight" 
-          leave-active-class="animate__animated animate__fadeOutLeft"
-        >
-        <VCol cols="12"  md="4" class="pa-0 d-md-flex chat-list" v-if="!deplay">
-          <userList />
-        </VCol>
-      </transition>
-      <transition 
-          mode="out-in" 
-          enter-active-class="animate__animated animate__fadeInRight" 
-          leave-active-class="animate__animated animate__fadeOutLeft"
-        >
-        <VCol class="d-md-flex pa-0 message-area"  cols="12" md="8">
-          <messageChat />
-        </VCol>
-      </transition>
+      <VCol cols="12"  md="4" class="pa-0 d-md-flex chat-list " :class="{'borrao': deplay }">
+        <userList />
+      </VCol>
+
+      <VCol class="d-md-flex pa-0 message-area d-flex"  cols="12" md="8" :class="{'activao': !deplay == false }">
+        <messageChat />
+      </VCol>
     </VRow>
   </VCard>
 </template>
@@ -83,6 +72,14 @@ export default {
 }
 .chat-list{
   height:100%;
+  right: 0px;
+  position: relative;
+  transition: opacity ease-in 0.4s;
+  opacity: 1;
+  &.borrao{
+    position: absolute;
+    opacity: 0;
+  }
 }
 .message-area {
   height:100%;
@@ -92,5 +89,18 @@ export default {
     height: 76vh;
     overflow: hidden;
   }
+  .message-area {
+  height:100%;
+  position: absolute;
+  left: 500px;
+  transform: scale(0.8);
+  transition: all ease-in 0.4s;
+
+  &.activao{
+    position: relative;
+    left: 0px;
+    transform: scale(1);
+  }
+}
 }
 </style>

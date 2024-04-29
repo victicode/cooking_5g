@@ -14,7 +14,6 @@ const state = {
   activeChat: {
     id:'',
   },
-  chatMessages:[],
   unReadMessages:0,
 };
 const actions = {

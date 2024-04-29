@@ -20,9 +20,10 @@ class RealTimeChatMessage implements ShouldBroadcast
      * @return void
      */
     public $chat;
-    public function __construct()
+    public function __construct($chat)
     {
         //
+        $this->chat = $chat;
     }
 
     /**
@@ -33,6 +34,6 @@ class RealTimeChatMessage implements ShouldBroadcast
     public function broadcastOn()
     {
 
-        return new Channel('chatMessages.'.$this->chat->id);
+        return new Channel('chatMessages.'.$this->chat);
     }
 }

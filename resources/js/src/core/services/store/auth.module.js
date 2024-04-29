@@ -1,6 +1,7 @@
 import ApiService from "@/core/services/api.service";
 import JwtService from "@/core/services/jwt.service";
 
+
 // action types
 export const LOGIN = "login";
 export const LOGOUT = "logout";
@@ -153,6 +154,8 @@ const mutations = {
   },
   [SET_IS_ADMIN](state, user) {
     window.localStorage.setItem("is_admin", user.rol_id !== 3 ? true : false);
+    window.localStorage.setItem("user_unique_id",user.id);
+
   },
   [SET_AUTH](state, user) {
     state.isAuthenticated = true;
@@ -168,6 +171,8 @@ const mutations = {
     state.errors = {};
     window.localStorage.removeItem("id_token");
     window.localStorage.removeItem("is_admin");
+    window.localStorage.removeItem("user_unique_id");
+
     JwtService.destroyToken();
   }
 };

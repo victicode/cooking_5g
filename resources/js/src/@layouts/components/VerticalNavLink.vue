@@ -26,7 +26,7 @@ const props = defineProps({
         {{ item.title }}
       </span>
     </Component>
-    <div v-if="item.title == 'Soporte'" class="unReadMessage-acitve bg-error animate__pulse " >
+    <div v-if="item.title == 'Soporte' && $store.state.unReadMessages > 0" class="unReadMessage-acitve bg-error animate__pulse " >
       {{$store.state.unReadMessages}}
     </div>
 

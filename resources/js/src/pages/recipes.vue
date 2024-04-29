@@ -1539,7 +1539,7 @@
           : minus
           
         })
-        console.log(minus.toFixed(0))
+        // console.log(minus.toFixed(0))
         return minus.toFixed(0)
       },
       validateFormItem(id){
@@ -2131,10 +2131,8 @@
         let isOk= true
         recipe.cooking_ingredients.forEach((item)=>{
           if(item.total_stock < 1 || this.validateIsgoodProduct(item, 'yes','no') == 'no') isOk = false ;
-          
-          
         })
-        console.log( isOk)
+        // console.log( isOk)
         return isOk
       },
       productInCart(selectedProduct){   

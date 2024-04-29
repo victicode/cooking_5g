@@ -5,15 +5,18 @@ namespace App\Http\Controllers\Api;
 use stdClass;
 use Exception;
 use App\Models\Lot;
+use App\Models\Chat;
+use App\Models\Message;
 use App\Models\Product;
+use App\Models\ChatMessage;
 use App\Models\Dismantling;
 use Illuminate\Http\Request;
 use App\Events\MessageCooking;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\Events\NotificationCooking;
+use App\Events\RealTimeChatMessage;
 use App\Http\Controllers\Controller;
-use App\Models\Message;
 
 class ProductController extends Controller
 {
@@ -154,11 +157,8 @@ class ProductController extends Controller
     public function getlotesOfProductsTable(Request $request){
         $products = Lot::query()->with(['product.dismantling.products_pieces'])
         ->whereHas('product')->join('products', 'products.id', '=', 'lotes.product_id');
- 
-        
-        
+
         if(!empty(request('order_title')))  $products->orderBy('products.title', request('order_title'));
-        
         
         if(!empty(request('order_due_date')))  $products->orderBy('due_date', request('order_due_date'));
 
@@ -221,6 +221,26 @@ class ProductController extends Controller
         ]);
         event(new MessageCooking);
 
+        $product_title = Product::find($id)->title;
+        
+        $newChat = Chat::create([
+            'title' =>'Reporte de producto sin stock', 
+            'reference_id' => $id,
+            'sender_id' => $request->user()->id,
+            'recept_id'  => 1,
+            'type'   => 2,
+        ]);
+        
+         ChatMessage::create([
+            'message' => 'Hola quiero reportar este producto no tiene stock: <a class="text-decoration-underline text-white"> <b>'.$product_title.'</b> </a>',
+            'chat_id' => $newChat->id,
+            'type_messages' => 'text',
+            'sender_id' => $newChat->sender_id,
+            'read' => 0,
+        ]);
+
+        RealTimeChatMessage::dispatch($newChat->sender_id);
+        RealTimeChatMessage::dispatch($newChat->recept_id);
         return $t;
     }
     private function validateRequiredFields($inputRequest, $type = "create" )
