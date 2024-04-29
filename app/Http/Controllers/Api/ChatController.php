@@ -12,7 +12,7 @@ class ChatController extends Controller
 {
     //withCount('messagesUnread')
     public function getChats(Request $request){
-        $chats = Chat::query()->withCount('messagesUnread')->with(['receipet', 'sender','messages']);
+        $chats = Chat::query()->withCount('messagesUnread')->with(['receipet', 'sender','messages','messagesUnread']);
 
         if ($request->user()->id !== 1) {
             $chats = $chats->where('sender_id', $request->user()->id);
@@ -20,7 +20,7 @@ class ChatController extends Controller
         return  $this->returnSuccess(200, $chats->get());
     }
     public function getChatById(Request $request, $id){
-        $chat = Chat::withCount('messagesUnread')->with(['receipet', 'sender', 'messages']);
+        $chat = Chat::withCount('messagesUnread')->with(['receipet', 'sender', 'messages','messagesUnread']);
         
         $this->readMessages($chat->find($id), $request->user()->id);
         return  $this->returnSuccess(200, $chat->find($id));

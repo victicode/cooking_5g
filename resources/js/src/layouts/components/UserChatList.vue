@@ -4,11 +4,11 @@
       <div class="pt-8" v-if="chats.length > 0" >
         <ul>
           <li class="mt-3 pb-3" v-for="(chat, index) in chats" :key="index" @click="selectedChat(chat.id)">
-            <div class="chat-description pa-2" :class="{'active': activeChat && chat.id === activeChat.id , 'justify-start': chat.messages_unread_count == 0}">
-              <div class="rounded-circle pa-3 d-flex justify-center align-center bg-primary " :class="{'me-2': chat.messages_unread_count == 0}">
+            <div class="chat-description pa-2" :class="{'active': activeChat && chat.id === activeChat.id }">
+              <div class="rounded-circle pa-3 d-flex justify-center align-center bg-primary me-2" >
                 <VIcon icon="mingcute:user-2-fill" size="large" />
               </div>
-              <div>
+              <div class="w-100">
                 <div class="text-secondary user-chat__name text-capitalize">
                   {{ is_admin == "true" ? chat.sender.name : chat.receipet.name }}
                 </div> 
@@ -16,8 +16,8 @@
                   {{chat.title}}
                 </div>
               </div>
-              <div class="unReadMessage-acitve bg-error " v-if="chat.messages_unread_count > 0">
-                {{ chat.messages_unread_count }}
+              <div class="unReadMessage-acitve bg-error ms-2" v-if="getUnreadMessage(chat) > 0">
+                {{ getUnreadMessage(chat) }}
               </div>
             </div>
           </li>
@@ -38,11 +38,9 @@
 </template>
 <style lang="scss"  scoped>
 .unReadMessage-acitve{
-  width: 22px;
-  height: 22px;
-  top: 5px;
-  right: 40%;
-  border-radius: 3px;
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
   padding: 5px;
   font-size: 0.7rem;
   display: flex;
@@ -68,7 +66,6 @@ ul{
   transition: all 0.3s ease-in-out;
   border-radius: 10px;
   padding: 5px 0px;
-  justify-content: space-between;
   
   &:hover{
     background: #cf622350;
@@ -140,6 +137,10 @@ export default {
                 this.chats[i] = chat;
             }
         }
+    },
+    getUnreadMessage($chat){
+      return $chat.messages_unread.filter((unReadMessage) => unReadMessage.sender_id != parseInt(window.localStorage.user_unique_id)).length
+
     },
     updateChat(){
       if(this.activeChat){
