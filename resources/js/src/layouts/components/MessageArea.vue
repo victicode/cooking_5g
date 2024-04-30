@@ -156,16 +156,13 @@
         }, 1200);
       },
       seeAllMessages(type){
-
         this.$store
         .dispatch(SEE_ALL_MESSAGE, 1)
         .then((data)=> {
           setTimeout(() => {
             this.getMessages()
           }, 500);
-
         })
-      
       },
     },
     mounted(){

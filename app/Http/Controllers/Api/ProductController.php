@@ -229,6 +229,7 @@ class ProductController extends Controller
             'sender_id' => $request->user()->id,
             'recept_id'  => 1,
             'type'   => 2,
+            'status' => 0
         ]);
         
          ChatMessage::create([

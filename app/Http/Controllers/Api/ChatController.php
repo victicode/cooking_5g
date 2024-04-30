@@ -12,7 +12,7 @@ class ChatController extends Controller
 {
     //withCount('messagesUnread')
     public function getChats(Request $request){
-        $chats = Chat::query()->withCount('messagesUnread')->with(['receipet', 'sender','messages','messagesUnread']);
+        $chats = Chat::query()->withCount('messagesUnread')->with(['receipet', 'sender','messages.sender','messagesUnread']);
 
         if ($request->user()->id !== 1) {
             $chats = $chats->where('sender_id', $request->user()->id);
@@ -20,13 +20,34 @@ class ChatController extends Controller
         return  $this->returnSuccess(200, $chats->get());
     }
     public function getChatById(Request $request, $id){
-        $chat = Chat::withCount('messagesUnread')->with(['receipet', 'sender', 'messages','messagesUnread']);
+        $chat = Chat::withCount('messagesUnread')->with(['receipet', 'sender', 'messages.sender','messagesUnread']);
         
         $this->readMessages($chat->find($id), $request->user()->id);
         return  $this->returnSuccess(200, $chat->find($id));
     }
-    public function newMessage($chatId, Request $request){
+    public function storeChat(Request $request){
+        $newChat = Chat::create([
+            'title' => $request->title, 
+            'reference_id' => null,
+            'sender_id' => $request->user()->id,
+            'recept_id'  => 1,
+            'type'   => $request->type,
+            // 'status' => 0
+        ]);
+        
+         ChatMessage::create([
+            'message' => $request->message,
+            'chat_id' => $newChat->id,
+            'type_messages' => 'text',
+            'sender_id' => $newChat->sender_id,
+            'read' => 0,
+        ]);
 
+        RealTimeChatMessage::dispatch($newChat->sender_id);
+        RealTimeChatMessage::dispatch($newChat->recept_id);
+    }
+    public function newMessage($chatId, Request $request){
+        
         $chat =Chat::find($chatId);
         $newMessage = ChatMessage::create([
             'message' => $request->message,

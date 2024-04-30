@@ -38,11 +38,9 @@ const actions = {
       return new Promise((resolve, reject) => {
         if (JwtService.getToken()) {
           ApiService.setHeader();
-          ApiService.post("api/recipes", body)
+          ApiService.post("api/support", body)
           .then(( { data } ) => {
-              // console.log(data)
               resolve(data);
-              
           })
           .catch(( { response } ) => {
               console.log(response )

@@ -1,6 +1,6 @@
 <script setup>
 import { useTheme } from 'vuetify'
-import { GET_ALL_UNREAD_MESSAGES } from "@/core/services/store/chat.module"
+import { GET_CHAT } from "@/core/services/store/chat.module"
 // import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTitle.vue'
 import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
 import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
@@ -34,7 +34,7 @@ const vuetifyTheme = useTheme()
             >
             <VIcon icon="bx-menu" />
           </IconBtn>
-          <div class="unReadMessage-acitve bg-error d-md-none"  v-if="UnreadMessage > 0" />
+          <div class="unReadMessage-acitve bg-error d-md-none"  v-if="unReadMessages  > 0" />
         </div>
 
         <!-- 👉 Search -->
@@ -149,25 +149,30 @@ const vuetifyTheme = useTheme()
 </style>
 <script>
   export default {
-    data(){
-      return{
-        UnreadMessage:0,
-      }
-    },
     methods:{
       getUnReadMessages(){
-        this.$store
-        .dispatch(GET_ALL_UNREAD_MESSAGES)
-        .then((data) => {
-          this.UnreadMessage = data.data
-          this.$store.state.unReadMessages = data.data
-        }).catch((error)=>{
+        this.$store.dispatch(GET_CHAT).then((data)=>{
+          this.$store.state.unReadMessages = this.getUnreadMessage(data.data);
+        }).catch((error) => {
           console.log(error)
         })
-      }
+      },
+      getUnreadMessage($chats){
+        let unRead = 0
+        $chats.forEach(chat => {
+          unRead += chat.messages_unread.filter((unReadMessage) => unReadMessage.sender_id != parseInt(window.localStorage.user_unique_id)).length;
+        });
+        return unRead
+      },
     },
     mounted(){
       this.getUnReadMessages()
+    },
+    created(){
+      window.Echo.channel('chatMessages.'+ window.localStorage.user_unique_id)
+      .listen('RealTimeChatMessage',(e)=>{
+        this.getUnReadMessages()
+      })
     },
     computed: {
       ...mapGetters(["currentUser"]),
@@ -175,6 +180,10 @@ const vuetifyTheme = useTheme()
       getCurrentAccount() {
         return this.currentUser;
       },
+      unReadMessages() {
+        return this.$store.state.unReadMessages
+      }
+
     },
   };
 </script>

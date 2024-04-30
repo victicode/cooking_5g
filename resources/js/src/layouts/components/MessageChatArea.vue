@@ -2,26 +2,6 @@
 import { SEND_NEW_MESSAGE } from '@/core/services/store/chat.module';
 import moment from 'moment-timezone';
 import 'moment/locale/es';
-moment.updateLocale('es-mx', {
-  relativeTime: {
-    future: 'en %s',
-    past: 'hace %s',
-    s: 'unos segundos',
-    ss: '%d segundos',
-    m: 'un minuto',
-    mm: '%d minutos',
-    h: 'una hora',
-    hh: '%d horas',
-    d: 'un día',
-    dd: '%d días',
-    w: 'una semana',
-    ww: '%d semanas',
-    M: 'un mes',
-    MM: '%d meses',
-    y: 'un año',
-    yy: '%d años',
-  }
-});
 </script>
 <template>
   <div class="chat-message__content  " :class="{'nochat': !activeChat}">
@@ -31,7 +11,7 @@ moment.updateLocale('es-mx', {
 
       </div>
     </div>
-    <div class="h-100 w-100  position-relative d-flex flex-column justify-space-between pb-4" v-if="messages.length > 0" >
+    <div class="h-100 w-100  position-relative d-flex flex-column justify-space-between pb-4"  >
       <div class="messageArea__header d-flex align-center justify-space-between pe-5">
         <div class=" d-flex align-center">
           <div class="rounded-circle pa-3  justify-center align-center bg-white me-2 messageArea__header--icon d-none d-md-flex">
@@ -40,7 +20,7 @@ moment.updateLocale('es-mx', {
           <div class=" pa-0  justify-center align-center  me-4 messageArea__header--icon d-flex d-md-none" @click="backMessagesList()">
             <VIcon icon="fluent-mdl2:skype-arrow"  color="white" />
           </div>
-          <div>
+          <div v-if="activeChat">
             <div class="user-chat__name text-white ">
               {{ activeChat.sender.name }}
             </div> 
@@ -58,18 +38,21 @@ moment.updateLocale('es-mx', {
           </v-chip>
         </div>
       </div>
-      <div class="px-3 messagesArea" id="messagesArea" >
-        <div class="d-flex message__text-content flex-column mb-1 " v-for="(message, index) in messages" :id="'message_index_'+index" :key="index" :style="'order:'+(messages.length - index)">
-          <div class="normalMessage mt-2" :class="{'visit': message.sender_id == activeUser.user.id, 'visit': message.sender_id == activeUser.user.id }">
-            <div class=" elevation-24" :class="{'visited-message': message.sender_id == activeUser.user.id, 'local-message': message.sender_id !== activeUser.user.id, }" v-html="message.message">
+      <div class="px-3 messagesArea" id="messagesArea"  >
+        <template v-if="messages.length > 0"> 
+
+          <div class="d-flex message__text-content flex-column mb-1 " v-for="(message, index) in messages" :id="'message_index_'+index" :key="index" :style="'order:'+(messages.length - index)">
+            <div class="normalMessage mt-2" :class="{'visit': message.sender_id == activeUser.user.id, 'visit': message.sender_id == activeUser.user.id }">
+              <div class=" elevation-24" :class="{'visited-message': message.sender_id == activeUser.user.id, 'local-message': message.sender_id !== activeUser.user.id, }" v-html="message.message">
+              </div>
+            </div>
+            <div :class="{'text-end': message.sender_id == activeUser.user.id}">
+              <h6 class="ms-2" :class="{'me-2': message.sender_id == activeUser.user.id}">
+                {{ moment(message.created_at).format('h:mm A')  }}
+              </h6>
             </div>
           </div>
-          <div :class="{'text-end': message.sender_id == activeUser.user.id}">
-            <h6 class="ms-2" :class="{'me-2': message.sender_id == activeUser.user.id}">
-              {{ moment(message.created_at).format('h:mm A')  }}
-            </h6>
-          </div>
-        </div>
+        </template>
       </div>
       <div class="d-flex align-center newMessage__area w-100 py-0 px-md-5 px-2">
         <textarea @keyup="typingShow()" class="elevation-24" name="" id="" placeholder="Escribe un mensaje" v-model="newMessage" cols="1" rows="1"></textarea>
@@ -85,7 +68,6 @@ moment.updateLocale('es-mx', {
       class="text-center"
     >
      <h4 class="text-white w-100 text-center">
-
        {{snackMessage}}
      </h4>
         <template
@@ -104,7 +86,7 @@ moment.updateLocale('es-mx', {
 .messagesArea{
   height: 80%;
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: auto;
   display: inline-flex;
   flex-direction: column;
 }
@@ -273,7 +255,6 @@ export default {
   methods:{
     sendNewMessage(){
       if (this.newMessage && this.newMessage.trim() !== '') {
-        
         const data = {
           id: this.activeChat.id,
           data:{
