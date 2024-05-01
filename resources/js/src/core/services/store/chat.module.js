@@ -21,7 +21,7 @@ const actions = {
         return new Promise((resolve, reject) => {
           if (JwtService.getToken()) {
             ApiService.setHeader();
-            ApiService.get("api/support?id=0&")
+            ApiService.get("api/support?chat_id="+query.query+"&show="+query.show+"&")
             .then(( { data } ) => {
                 // console.log(data)
                 resolve(data);

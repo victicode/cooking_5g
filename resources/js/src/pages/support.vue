@@ -5,7 +5,7 @@
 
         <VCol cols="12"  md="4" class="pa-0 d-md-flex chat-list flex-column " >
           <userList />
-          <VRow class="justify-center my-8 ">
+          <VRow class="justify-center my-2 "  v-if="id_unique != 1">
             <VCol cols="10" >
               <VBtn @click="showModal('createNewTicket')" color="primary" class="w-100 ">
                 <VIcon icon="bx-plus"/> Crear nuevo ticket
@@ -119,7 +119,11 @@ export default {
       deplay: false,
       modal: '',
       newTicket:{
-        type: 0,
+        type: 
+        {
+          value: 0,
+          title:'Duda/Inquietud'
+        },
         message:'',
       },
       typeTicket:[
@@ -165,6 +169,7 @@ export default {
     },
     storeChat(){
       const newMessage = new FormData()
+      console.log(this.newTicket)
       newMessage.append('type', this.newTicket.type.value)
       newMessage.append('title', this.newTicket.type.title)
       newMessage.append('message', this.newTicket.message)
@@ -173,6 +178,7 @@ export default {
       .then((data) => {
         setTimeout(() => {
           this.hideModal()
+          this.clearForm()
         }, 1000);
       }).catch((err) =>  {
         
@@ -180,7 +186,10 @@ export default {
     },
     clearForm(){
       this.newTicket = {
-        type: 0,
+        type: {
+          value: 0,
+          title:'Duda/Inquietud'
+        },
         message:'',
       };
     }

@@ -12,11 +12,15 @@ class ChatController extends Controller
 {
     //withCount('messagesUnread')
     public function getChats(Request $request){
-        $chats = Chat::query()->withCount('messagesUnread')->with(['receipet', 'sender','messages.sender','messagesUnread']);
+        $chats = Chat::query()->withCount('messagesUnread')->with(['receipet', 'sender','messages.sender','messagesUnread'])->orderBy('updated_at', 'DESC');
 
         if ($request->user()->id !== 1) {
             $chats = $chats->where('sender_id', $request->user()->id);
         }
+        $chats->where('ticket_number', 'like', '%'.$request->chat_id.'%');
+
+        if($request->show == 'false') $chats->where('status', '0');
+
         return  $this->returnSuccess(200, $chats->get());
     }
     public function getChatById(Request $request, $id){
@@ -32,7 +36,8 @@ class ChatController extends Controller
             'sender_id' => $request->user()->id,
             'recept_id'  => 1,
             'type'   => $request->type,
-            // 'status' => 0
+            'status' => 0,
+            'ticket_number'=> '00'.rand(10000, 99999),
         ]);
         
          ChatMessage::create([
@@ -45,6 +50,8 @@ class ChatController extends Controller
 
         RealTimeChatMessage::dispatch($newChat->sender_id);
         RealTimeChatMessage::dispatch($newChat->recept_id);
+
+        return  $this->returnSuccess(200, $newChat);
     }
     public function newMessage($chatId, Request $request){
         
@@ -59,6 +66,9 @@ class ChatController extends Controller
         // event(new RealTimeChatMessage);
         RealTimeChatMessage::dispatch($chat->sender_id);
         RealTimeChatMessage::dispatch($chat->recept_id);
+
+        $chat->update_chat = $chat->update_chat + 1;
+        $chat->save();
 
         return  $this->returnSuccess(200, $newMessage);
     }
