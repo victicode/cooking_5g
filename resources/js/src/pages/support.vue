@@ -103,13 +103,64 @@
         </div>
       </div>
     </div>
+    <template v-if="activeChat" >
+      <div class="modal animate__animated animate__fadeInDown pe-0" id="optionsModal" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">   
+        <div class="modal-dialog modal-lg mt-10">
+          <div class="modal-content">
+            <VCol
+              cols="12"
+              class="pa-0 d-flex justify-center"
+              style="position: relative;"
+            >
+              <VCol
+                cols="12"
+                class="px-2"  
+              >
+                <VCard class="modal__content">
+                  <div class="modal__close-button" >
+                    <v-col class="pa-0 pe-4">
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                    </v-col>
+                  </div>
+                  <div class="d-flex justify-space-between  flex-column pa-5 pa-md-5 ">
+                    <VRow  class="mb-2 ma-0">
+                      <VCol cols="12" class="py-2">
+                        <div class="text-center d-flex flex-column  h-100" style="position: relative;">
+                          <h3 class="mt-4 mb-0">{{ activeChat.title }}</h3>
+                          <h4 class="mt-1">Por: {{ activeChat.sender.name }}</h4>
+                          <div class="d-flex  justify-center mx-5  align-center h-50 mt-4 " style="box-sizing:content-box;">
+                            <div class="d-flex flex-column justify-center align-center" >
+                              <v-btn size="large" class="d-block mx-8 shadow-button" color="primary" @click="chageStatus()" icon="solar:inbox-archive-linear" />
+                              <h5 class="mt-1" >Cerrar Ticket</h5>
+                            </div>
+                            <div class="d-flex flex-column justify-center align-center"  v-if="activeChat.reference_id">
+                              <v-btn size="large" class="d-block mx-8 shadow-button" color="primary" @click="showModal('viewRecipe')" icon="solar:box-outline" />
+                              <h5 class="mt-1" >Ver Producto</h5>
+                            </div>
+                            <div class="d-flex flex-column justify-center align-center" >
+                              <v-btn size="large" class="d-block mx-8 shadow-button" color="error" @click="showModal('deleteRecipe')" icon="mi:delete" />
+                              <h5 class="mt-1" >Eliminar</h5>
+                            </div>
+                          </div>
+                        </div>
+                      </VCol>
+                    </VRow>
+                    <VDivider  />
+                  </div>
+                </VCard>
+              </VCol>
+            </VCol>
+          </div>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 <script>
   import userList from '@/layouts/components/UserChatList.vue'
   import messageChat from '@/layouts/components/MessageChatArea.vue'
   import * as bootstrap from 'bootstrap'
-  import { STORE_CHAT } from  '@/core/services/store/chat.module'
+  import { STORE_CHAT, CHANGE_STATUS } from  '@/core/services/store/chat.module'
 
 export default {
   data(){
@@ -169,7 +220,6 @@ export default {
     },
     storeChat(){
       const newMessage = new FormData()
-      console.log(this.newTicket)
       newMessage.append('type', this.newTicket.type.value)
       newMessage.append('title', this.newTicket.type.title)
       newMessage.append('message', this.newTicket.message)
@@ -179,6 +229,22 @@ export default {
         setTimeout(() => {
           this.hideModal()
           this.clearForm()
+        }, 1000);
+      }).catch((err) =>  {
+        
+      })
+    },
+    chageStatus(){
+      const data = {
+        data:{
+          status: this.activeChat.status == 0 ? 1 :0,
+        },
+        id:this.activeChat.id
+      }
+      this.$store.dispatch(CHANGE_STATUS, data)
+      .then((data) => {
+        setTimeout(() => {
+          this.hideModal()
         }, 1000);
       }).catch((err) =>  {
         
@@ -203,6 +269,19 @@ export default {
     this.emitter.on("mobileFunction", (status) => {
       this.deplay  = true
     })
+    this.emitter.on("shoModal", (modal) => {
+      this.showModal(modal)
+    })
+    this.emitter.on("chatActions", (action, value) => {
+      if(action == 'change-status'){
+        this.chageStatus(value)
+      }
+    })
+  },
+  computed: {
+    activeChat() {
+      return this.$store.state.activeChatID
+    }
   },
 }
 </script>

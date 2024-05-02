@@ -10,6 +10,7 @@ export const SEND_NEW_MESSAGE  = "SEND_NEW_MESSAGE";
 export const GET_CHAT_BY_ID    = "GET_CHAT_BY_ID";
 export const SET_ACTIVE_CHAT   = "SET_ACTIVE_CHAT";
 export const GET_ALL_UNREAD_MESSAGES = "GET_ALL_UNREAD_MESSAGES"
+export const CHANGE_STATUS = "CHANGE_STATUS"
 const state = {
   activeChat: {
     id:'',
@@ -48,6 +49,23 @@ const actions = {
           });
         }
       });
+    },
+    [CHANGE_STATUS](context, body){
+      return new Promise ((resolve, reject) => {
+        if(JwtService.getToken()){
+          ApiService.setHeader();
+          ApiService.post("api/support/"+body.id, body.data)
+          .then(( { data } ) => {
+            console.log(data)
+            resolve(data);
+            
+        })
+        .catch(( { response } ) => {
+            console.log(response)
+            reject('Ocurrió un error desconocido al intentar actualizar el RECIPEo');
+        });
+        }
+      })
     },
     [UPDATE_CHAT](context, body) {
       return new Promise((resolve, reject) => {

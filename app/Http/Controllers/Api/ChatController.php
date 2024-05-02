@@ -36,7 +36,7 @@ class ChatController extends Controller
             'sender_id' => $request->user()->id,
             'recept_id'  => 1,
             'type'   => $request->type,
-            'status' => 0,
+            'status' => 1,
             'ticket_number'=> '00'.rand(10000, 99999),
         ]);
         
@@ -52,6 +52,13 @@ class ChatController extends Controller
         RealTimeChatMessage::dispatch($newChat->recept_id);
 
         return  $this->returnSuccess(200, $newChat);
+    }
+    public function changeStatus(Request $request, $id){
+        $chat =Chat::find($id);
+        $chat->status = $request->status;
+        $chat->save();
+        
+        return  $this->returnSuccess(200, $chat);
     }
     public function newMessage($chatId, Request $request){
         

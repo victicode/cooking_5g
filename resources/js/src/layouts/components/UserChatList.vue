@@ -1,4 +1,5 @@
 <script setup >
+import * as bootstrap from 'bootstrap'
 import moment from 'moment-timezone';
 import 'moment/locale/es';
 import debounce from 'debounce';
@@ -53,7 +54,7 @@ moment.defineLocale('es-mx', {
             </div>
             <div class="chat-description pa-2" :class="{'active': activeChat && chat.id === activeChat.id }">
               <!-- <div class=" d-flex justify-center align-center flex-column" > -->
-                <div class="rounded-circle pa-3 d-flex justify-center align-center bg-primary me-2  ticket-img" @click="selectedChat(chat.id)"  v-if="chat.status != -1">
+                <div class="rounded-circle pa-3 d-flex justify-center align-center bg-primary me-2  ticket-img" @click="selectedChat(chat.id)"  v-if="chat.status != 0">
                   {{ is_admin == "true" ? chat.sender.name.charAt(0).toUpperCase() : chat.receipet.name.charAt(0).toUpperCase() }}
                 </div>
                 <div v-else class="rounded-circle pa-3 d-flex justify-center align-center bg-secondary  me-2 ticket-img" @click="selectedChat(chat.id)" >
@@ -76,7 +77,7 @@ moment.defineLocale('es-mx', {
                   {{ getUnreadMessage(chat) }}
                 </div>
                 <div class="mt-3" v-if="is_admin=='true'" >
-                  <v-btn size="small" icon="carbon:overflow-menu-vertical" variant="text" @click="selectedChat(chat.id, true)" />
+                  <v-btn size="small" icon="carbon:overflow-menu-vertical" variant="text" @click=" selectedChat(chat.id, true)" />
                 </div>
               </div>
             </div>
@@ -128,6 +129,7 @@ moment.defineLocale('es-mx', {
         </div>
     </v-navigation-drawer>  
   </div>
+  
 </template>
 <style lang="scss"  scoped>
 .ticket-img{
@@ -226,6 +228,7 @@ export default {
   data: ()=>{
     return{
       chats: {},
+      displayWidth: window.screen.width,
       sound: new Audio(notificationTone4),
       loadChats: false,
       is_admin: window.localStorage.is_admin ,
@@ -233,6 +236,8 @@ export default {
       drawer: false,
       query: '',
       showClosedChat: true,
+      modal: '',
+      internalModal:'',
     }
   },
   methods: {
@@ -260,8 +265,9 @@ export default {
         this.$store.state.activeChatID = data.data;
         if (isDrawer){
           setTimeout(()=>{
-
-            this.drawer = true
+            this.displayWidth > 780 
+            ? this.showModal('optionsModal')
+            : this.drawer = true
           },200)
           return
         }
@@ -314,6 +320,32 @@ export default {
       }
       if((diff*-1) > 0) return chatCreateAt.fromNow()
       return chatCreateAt.format('h:mm A')
+    },
+    showModal(modal) {
+      setTimeout(()=>{
+        this.emitter.emit('shoModal', modal)
+      },520)
+
+    },
+    showInterModal(modal){
+      this.hideModal()
+
+      try {
+        this.internalModal.hide()
+      } catch (error) {
+      }
+
+      this.internalModal = new bootstrap.Modal(document.getElementById(modal), {
+        keyboard: false,              
+        backdrop:'static'
+      })
+      this.internalModal.show()
+    },
+    hideModal(action=""){
+      this.modal.hide();
+    },
+    hideInternalModal(){
+      this.internalModal.hide();
     },
   }, 
   mounted(){

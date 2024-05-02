@@ -29,7 +29,7 @@
         <VRow class="ma-0  justify-center justify-md-end pa-2 px-0 mb-0 pb-0">
           <VCol
             cols="11"
-            md="2"
+            md="3"
             class="ma-0 px-0 justify-center justify-md-end d-flex"
           >
           <VBtn @click=" showModal('createRecipe')" color="primary" class="w-100 " v-if="getCurrentAccount.rol_id !== 3" >
@@ -39,7 +39,7 @@
           </VCol>
           <VCol
             cols="11"
-            md="2"
+            md="3"
             class="ms-0 px-0 px-md-2 ms-md-4 justify-center justify-md-end d-flex"
           >
             <VBtn @click="showModal('printModule')" color="secondary" class="w-100 mx-2 " v-if="getCurrentAccount.rol_id !== 3" >

@@ -229,7 +229,7 @@ class ProductController extends Controller
             'sender_id' => $request->user()->id,
             'recept_id'  => 1,
             'type'   => 2,
-            'status' => 0,
+            'status' => 1,
             'ticket_number'=> '00'.rand(10000, 99999),
         ]);
         
