@@ -55,7 +55,7 @@ import 'moment/locale/es';
         </template>
       </div>
       <div class="d-flex align-center newMessage__area w-100 py-0 px-md-5 px-2">
-        <textarea @keyup="typingShow()" class="elevation-24" name="" id="" placeholder="Escribe un mensaje" v-model="newMessage" cols="1" rows="1"></textarea>
+        <textarea class="elevation-24" name="" id="" placeholder="Escribe un mensaje" v-model="newMessage" cols="1" rows="1"></textarea>
         <v-btn icon="iconoir:send" variant="tonal" color="primary" class="ms-2" @click="sendNewMessage()"/>
       </div>
     </div>

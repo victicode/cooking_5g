@@ -235,7 +235,7 @@
                               <div class="font-weight-bold mt-2" v-for="(ingredient, index) in selectedRecipe.cooking_ingredients" :key="index">
                                 <div class="d-flex align-center">
 
-                                  <a 
+                                  <a  class="word-break w-80"
                                     :class="validateIsgoodProduct(ingredient, 'blank-modal', 'recipe-notproduct' ) " 
                                     @click="selectProductView(index)" 
                                   > 
@@ -243,7 +243,7 @@
                                     
                                   </a>
                                   <div class="w-50 d-flex align-center" v-if="validateIsgoodProduct(ingredient, '', '(Sin stock)*') !== ''">
-                                    <span class=" text-error  mx-2 " >
+                                    <span class=" text-error  mx-2 fz-10 " >
                                       {{ 
                                         validateIsgoodProduct(ingredient, '', '(Sin stock)*')
                                       }}
@@ -299,7 +299,7 @@
                             </div>
                             <div class="mb-5 mt-2">
                               <div class="no-stock-notify px-3 py-4">
-                                <p class="text-black pa-0 ma-0 font-weight-medium">
+                                <p class="text-black pa-0 ma-0 font-weight-medium ">
                                   <b class="text-error">(*)</b> 
                                   <span>
                                     Si observa algún producto/s de esta receta sin stock, notifique al administrador pulsado el botón:
@@ -1360,6 +1360,12 @@
     thead > tr > th:last-child{
       width: 10%!important;
     }
+  }
+  .fz-10{
+    font-size: 0.85rem;
+  }
+  .w-80{
+    width: 80%;
   }
 
   .recipe-notproduct{

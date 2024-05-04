@@ -32,7 +32,7 @@ class ChatController extends Controller
             'sender_id' => $request->user()->id,
             'recept_id'  => 1,
             'type'   => $request->type,
-            // 'status' => 0
+            'status' => 0
         ]);
         
          ChatMessage::create([
