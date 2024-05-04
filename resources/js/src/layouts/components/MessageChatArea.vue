@@ -21,19 +21,22 @@ import 'moment/locale/es';
             <VIcon icon="fluent-mdl2:skype-arrow"  color="white" />
           </div>
           <div v-if="activeChat">
-            <div class="user-chat__name text-white ">
-              {{ activeChat.sender.name }}
-            </div> 
+            <div class="user-chat__name text-white text-capitalize">
+              #{{ activeChat.ticket_number }}
+            </div>
             <div class="user-chat__type text-white">
               {{activeChat.title}}
             </div>
+            <div class="user-chat__user text-white text-capitalize">
+              {{ is_admin == "true" ? activeChat.sender.name : activeChat.receipet.name }}
+            </div> 
           </div>
         </div>
         <div class="text-center">
           <h5 class="text-white user-chat__type">Estado:</h5>
-          <v-chip color="success" variant="elevated">
+          <v-chip :color="activeChat.status != -1 ? 'success' : 'secondary'" variant="elevated" v-if="activeChat">
            <span class="user-chat__type"> 
-            ABIERTO
+            {{ activeChat.status != -1 ? 'ABIERTO' : 'CERRADO' }} 
            </span>
           </v-chip>
         </div>
@@ -54,8 +57,8 @@ import 'moment/locale/es';
           </div>
         </template>
       </div>
-      <div class="d-flex align-center newMessage__area w-100 py-0 px-md-5 px-2">
-        <textarea class="elevation-24" name="" id="" placeholder="Escribe un mensaje" v-model="newMessage" cols="1" rows="1"></textarea>
+      <div class="d-flex align-center newMessage__area w-100 py-0 px-md-5 px-2" v-if="activeChat && activeChat.status != -1 ">
+        <textarea @keyup="typingShow()" class="elevation-24" name="" id="" placeholder="Escribe un mensaje" v-model="newMessage" cols="1" rows="1"></textarea>
         <v-btn icon="iconoir:send" variant="tonal" color="primary" class="ms-2" @click="sendNewMessage()"/>
       </div>
     </div>
@@ -205,6 +208,11 @@ textarea{
   font-size: .8rem;
   font-weight: 600;
 }
+.user-chat__user {
+  font-size: 0.7rem;
+  font-weight: 600;
+
+}
 @media screen and (max-width: 780px){
   
   .messagesArea{
@@ -249,7 +257,8 @@ export default {
       snackMessage:'',
       snackType:'',
       snacktimeOut:2000,
-      messages:[]
+      messages:[],
+      is_admin: window.localStorage.is_admin ,
     };
   },
   methods:{
@@ -282,7 +291,6 @@ export default {
     async typingShow(){
       this.axios.get('/api/typing/'+this.activeChat.id).then( async  (data) => {
         const datax = await data;
-        // console.log(datax)
       })
     },
   },

@@ -11,7 +11,7 @@ class Chat extends Model
 {
     use HasFactory;
     protected $table = 'chats';
-    protected $fillable = ['title', 'type', 'status', 'reference_id', 'sender_id', 'recept_id'];
+    protected $fillable = ['title', 'type', 'status', 'ticket_number', 'reference_id', 'sender_id', 'recept_id'];
 
     public function sender(): BelongsTo
     {

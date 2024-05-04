@@ -116,6 +116,7 @@ Route::middleware('jwt.verify')->prefix('support')->name('supports.')->group(fun
     Route::post('/',[ChatController::class, 'storeChat']);
     Route::get('/',[ChatController::class, 'getChats']);
     Route::get('/{id}',[ChatController::class, 'getChatById']);
+    Route::post('/change-status/{id}',[ChatController::class, 'changeStatus']);
     Route::post('/{id}/newMessage',[ChatController::class, 'newMessage']);
     Route::post('/get-unread-messages', [ChatController::class, 'allUnReadMessages']);
 

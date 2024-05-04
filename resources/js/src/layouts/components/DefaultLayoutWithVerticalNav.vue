@@ -151,7 +151,11 @@ const vuetifyTheme = useTheme()
   export default {
     methods:{
       getUnReadMessages(){
-        this.$store.dispatch(GET_CHAT).then((data)=>{
+        const query = {
+          query: '',
+          show: true
+        }
+        this.$store.dispatch(GET_CHAT, query).then((data)=>{
           this.$store.state.unReadMessages = this.getUnreadMessage(data.data);
         }).catch((error) => {
           console.log(error)

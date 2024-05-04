@@ -1,6 +1,8 @@
 <script setup >
+import * as bootstrap from 'bootstrap'
 import moment from 'moment-timezone';
 import 'moment/locale/es';
+import debounce from 'debounce';
 moment.defineLocale('es-mx', {
   relativeTime: {
     future: 'en %s',
@@ -25,19 +27,42 @@ moment.defineLocale('es-mx', {
 <template>
   <div class="chat-list__content">
     <div v-if="loadChats">
-      <div class="pt-8" v-if="chats.length > 0" >
+      <div>
+        <VRow class="ma-0  justify-start align-center justify-md-start py-2 px-0 mb-0 mb-md-0">
+          <VCol cols="12"  class="form-group py">
+            <VTextField
+              placeholder="Buscar ticket"
+              label="Buscar ticket"
+              type="text"
+              v-model="query"
+              @keyup="searchChat()"
+            />
+          </VCol>
+          <VCol cols="12"  class="form-group py-0">
+            <div class="d-flex align-center">
+              <input type="checkbox"  id="isUserAddress" @change="searchChat()" v-model="showClosedChat" style="height: 15px; width: 15px;">
+              <label for="isUserAddress" class="mx-2 user-chat__name">Ver tickets cerrados</label>
+            </div>
+          </VCol>
+        </VRow>
+      </div>
+      <div class="pt-0" v-if="chats.length > 0" >
         <ul>
           <li class="mt-3 pb-3 position-relative" v-for="(chat, index) in chats" :key="index" >
             <div class="timeLeter">
               {{ caculateTime(chat) }}
             </div>
             <div class="chat-description pa-2" :class="{'active': activeChat && chat.id === activeChat.id }">
-              <div class="rounded-circle pa-3 d-flex justify-center align-center bg-primary me-2" @click="selectedChat(chat.id)" >
-                <VIcon icon="mingcute:user-2-fill" size="large" />
-              </div>
+              <!-- <div class=" d-flex justify-center align-center flex-column" > -->
+                <div class="rounded-circle pa-3 d-flex justify-center align-center bg-primary me-2  ticket-img" @click="selectedChat(chat.id)"  v-if="chat.status != 0">
+                  {{ is_admin == "true" ? chat.sender.name.charAt(0).toUpperCase() : chat.receipet.name.charAt(0).toUpperCase() }}
+                </div>
+                <div v-else class="rounded-circle pa-3 d-flex justify-center align-center bg-secondary  me-2 ticket-img" @click="selectedChat(chat.id)" >
+                  <VIcon icon="solar:inbox-archive-linear" size="small" />
+                </div>
               <div class="w-60" @click="selectedChat(chat.id)">
                 <div class="text-secondary user-chat__name text-capitalize">
-                  {{ is_admin == "true" ? chat.sender.name : chat.receipet.name }}
+                 ticket: #{{ chat.ticket_number }}
                 </div> 
                 <div class="user-chat__type mt-0 hide-text mt-1">
                   {{chat.title}}
@@ -52,7 +77,7 @@ moment.defineLocale('es-mx', {
                   {{ getUnreadMessage(chat) }}
                 </div>
                 <div class="mt-3" v-if="is_admin=='true'" >
-                  <v-btn size="small" icon="carbon:overflow-menu-vertical" variant="text" @click="selectedChat(chat.id, true)" />
+                  <v-btn size="small" icon="carbon:overflow-menu-vertical" variant="text" @click=" selectedChat(chat.id, true)" />
                 </div>
               </div>
             </div>
@@ -104,8 +129,13 @@ moment.defineLocale('es-mx', {
         </div>
     </v-navigation-drawer>  
   </div>
+  
 </template>
 <style lang="scss"  scoped>
+.ticket-img{
+  height: 50px;
+  width: 50px;
+}
 .timeLeter{
   font-size: 0.9rem;
   text-align: end;
@@ -115,6 +145,10 @@ moment.defineLocale('es-mx', {
 }
 .w-60{
   width: 60%!important;
+}
+.user-chat__user{
+  font-size: 0.68rem;
+  font-weight: 600;
 }
 .unReadMessage-acitve{
   width: 25px;
@@ -164,14 +198,15 @@ ul{
   background: #cf622350!important;
 }
 .user-chat__name{
-  font-size: 1.1rem;
+  font-size: 1rem;
+  font-weight: 400;
 }
 .user-chat__type{
-  font-size: 0.9rem;
+  font-size: 0.89rem;
   font-weight: 600;
 }
 .user-chat_last_message{
-  font-size: 0.9rem;
+  font-size: 0.89rem;
 }
 
 @media screen and (max-width: 780px){
@@ -192,32 +227,47 @@ export default {
   name:'UserChatListComponent',
   data: ()=>{
     return{
-      chats:{},
+      chats: {},
+      displayWidth: window.screen.width,
       sound: new Audio(notificationTone4),
       loadChats: false,
       is_admin: window.localStorage.is_admin ,
       currentUserId: window.localStorage.user_unique_id,
-      drawer:false,
+      drawer: false,
+      query: '',
+      showClosedChat: true,
+      modal: '',
+      internalModal:'',
     }
   },
   methods: {
+    ll(){
+      console.log(this.showClosedChat)
+    },
     getAllChat(){
-      this.$store.dispatch(GET_CHAT).then((data)=>{
+      const query = {
+        query: this.query,
+        show: this.showClosedChat
+      }
+      this.$store.dispatch(GET_CHAT, query).then((data)=>{
         this.chats = data.data;
-        // console.log(this.chats)
         this.loadChats = true;
         this.updateChat()
       }).catch((error) => {
         console.log(error)
       })
     },
+    searchChat(){
+      debounce(this.getAllChat, 200)()
+    },
     selectedChat(id, isDrawer = false){
       this.$store.dispatch(GET_CHAT_BY_ID, id).then((data)=>{
         this.$store.state.activeChatID = data.data;
         if (isDrawer){
           setTimeout(()=>{
-
-            this.drawer = true
+            this.displayWidth > 780 
+            ? this.showModal('optionsModal')
+            : this.drawer = true
           },200)
           return
         }
@@ -270,7 +320,33 @@ export default {
       }
       if((diff*-1) > 0) return chatCreateAt.fromNow()
       return chatCreateAt.format('h:mm A')
-    }
+    },
+    showModal(modal) {
+      setTimeout(()=>{
+        this.emitter.emit('shoModal', modal)
+      },520)
+
+    },
+    showInterModal(modal){
+      this.hideModal()
+
+      try {
+        this.internalModal.hide()
+      } catch (error) {
+      }
+
+      this.internalModal = new bootstrap.Modal(document.getElementById(modal), {
+        keyboard: false,              
+        backdrop:'static'
+      })
+      this.internalModal.show()
+    },
+    hideModal(action=""){
+      this.modal.hide();
+    },
+    hideInternalModal(){
+      this.internalModal.hide();
+    },
   }, 
   mounted(){
     this.getAllChat();
