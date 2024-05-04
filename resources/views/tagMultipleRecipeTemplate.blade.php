@@ -57,7 +57,7 @@
               @if($count <= 10)
                 @if($count == 9 || $count == 10)
                   @if($count%9 == 0 || ($count-1)%9 == 0 )
-                  <div class="col-sm-6 mb-4 mt-3 px-3  mtx-{{$count}}5"" data-id="1">
+                  <div class="col-sm-6 mb-4 mt-3 px-3  mtx-{{$count}}5" data-id="1">
                   @else
                   <div class="col-sm-6 mb-4 mt-3 px-3   data-id="2">
                   @endif
@@ -68,7 +68,7 @@
               
               @if($count >= 11)
                 @if($count%9 == 0 || ($count+1)%9 == 0 )
-                <div class="col-sm-6 mb-4 mt-3 px-3  mtx-{{$count}}5"" data-id="1">
+                <div class="col-sm-6 mb-4 mt-3 px-3  mtx-{{$count}}5" data-id="1">
                 @else
                 <div class="col-sm-6 mb-4 mt-3 px-3   data-id="2">
                 @endif
@@ -114,7 +114,7 @@
                         </div>
                       </div>
                       <div class="col-sm-3 d-flex justify-content-end">
-                        {!!QrCode::size(100)->generate('https://10.10.10.69:8085/client/recipe/'.$key->recipe->id) !!}
+                        {!!QrCode::size(120)->generate('https://10.10.10.69:8085/client/recipe/'.$key->recipe->id) !!}
                       </div>
                     </div>
                   </div>

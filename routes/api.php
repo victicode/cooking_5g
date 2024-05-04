@@ -1,7 +1,6 @@
 <?php
 
 
-use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\ChatController;
@@ -143,5 +142,8 @@ Route::middleware('jwt.verify')->prefix('message')->name('message.')->group(func
 Route::get('recipes/client/print/{id}', [RecipeController::class, 'printRecipeTag']);
 Route::get('recipes/client/print/multiple', [RecipeController::class, 'printRecipeTag']);
 Route::get('/typing/{id}', [ChatController::class, 'typingFuction']);
+
+
+Route::get('/pruebas-sistema', [ProductController::class, 'viewEtiqueta']);
 
 

@@ -40,8 +40,22 @@ moment.defineLocale('es-mx', {
           </VCol>
           <VCol cols="12"  class="form-group py-0">
             <div class="d-flex align-center">
-              <input type="checkbox"  id="isUserAddress" @change="searchChat()" v-model="showClosedChat" style="height: 15px; width: 15px;">
+              <input 
+                type="checkbox"  
+                id="isUserAddress" 
+                @change="searchChat(); this.showOnlyClosedChat = false" 
+                v-model="showClosedChat" style="height: 15px; width: 15px;">
               <label for="isUserAddress" class="mx-2 user-chat__name">Ver tickets cerrados</label>
+            </div>
+          </VCol>
+          <VCol cols="12"  class="form-group py-0">
+            <div class="d-flex align-center">
+              <input 
+                type="checkbox"  
+                id="isUserAddress" 
+                @change="searchChat(); this.showClosedChat = false " 
+                v-model="showOnlyClosedChat" style="height: 15px; width: 15px;">
+              <label for="isUserAddress" class="mx-2 user-chat__name">Ver solo cerrados</label>
             </div>
           </VCol>
         </VRow>
@@ -236,18 +250,17 @@ export default {
       drawer: false,
       query: '',
       showClosedChat: true,
+      showOnlyClosedChat: false,
       modal: '',
       internalModal:'',
     }
   },
   methods: {
-    ll(){
-      console.log(this.showClosedChat)
-    },
     getAllChat(){
       const query = {
         query: this.query,
-        show: this.showClosedChat
+        show: this.showClosedChat,
+        onlyClosed: this.showOnlyClosedChat
       }
       this.$store.dispatch(GET_CHAT, query).then((data)=>{
         this.chats = data.data;

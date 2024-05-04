@@ -6,6 +6,7 @@ use stdClass;
 use Exception;
 use App\Models\Lot;
 use App\Models\Chat;
+use App\Models\Recipe;
 use App\Models\Message;
 use App\Models\Product;
 use App\Models\ChatMessage;
@@ -244,6 +245,17 @@ class ProductController extends Controller
         RealTimeChatMessage::dispatch($newChat->sender_id);
         RealTimeChatMessage::dispatch($newChat->recept_id);
         return $t;
+    }
+    public function viewEtiqueta(){
+        $recipe = Recipe::with(['cooking_ingredients.dismantling.products_pieces', 'cooking_ingredients.lotes' ])->find(7);
+    
+        if(!$recipe) return $this->returnFail(400, 'algo ha salido mal');
+
+        return view('tagRecipeFormat', [ 'recipe' => $recipe, 'data' => [
+            'imp'    => 60,
+            'create' => '04-05-2024',
+            'consumo'=> '04-08-2024',
+        ] ]);
     }
     private function validateRequiredFields($inputRequest, $type = "create" )
     {

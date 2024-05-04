@@ -22,7 +22,7 @@ const actions = {
         return new Promise((resolve, reject) => {
           if (JwtService.getToken()) {
             ApiService.setHeader();
-            ApiService.get("api/support?chat_id="+query.query+"&show="+query.show+"&")
+            ApiService.get("api/support?chat_id="+query.query+"&show="+query.show+"&onlyClosed="+query.onlyClosed+"&")
             .then(( { data } ) => {
                 // console.log(data)
                 resolve(data);

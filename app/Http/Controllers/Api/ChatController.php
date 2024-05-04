@@ -19,9 +19,14 @@ class ChatController extends Controller
         }
         $chats->where('ticket_number', 'like', '%'.$request->chat_id.'%');
 
-        if($request->show == 'false') $chats->where('status', '0');
-
+        if($request->onlyClosed == 'true')
+        {
+            $chats->where('status', '0');
+            return  $this->returnSuccess(200, $chats->get());
+        }
+        if($request->show == 'false') $chats->where('status', '1');
         return  $this->returnSuccess(200, $chats->get());
+
     }
     public function getChatById(Request $request, $id){
         $chat = Chat::withCount('messagesUnread')->with(['receipet', 'sender', 'messages.sender','messagesUnread']);
