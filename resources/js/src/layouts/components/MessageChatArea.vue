@@ -34,9 +34,9 @@ import 'moment/locale/es';
         </div>
         <div class="text-center">
           <h5 class="text-white user-chat__type">Estado:</h5>
-          <v-chip :color="activeChat.status != -1 ? 'success' : 'secondary'" variant="elevated" v-if="activeChat">
+          <v-chip :color="activeChat.status != 0 ? 'success' : 'secondary'" variant="elevated" v-if="activeChat">
            <span class="user-chat__type"> 
-            {{ activeChat.status != -1 ? 'ABIERTO' : 'CERRADO' }} 
+            {{ activeChat.status != 0 ? 'ABIERTO' : 'CERRADO' }} 
            </span>
           </v-chip>
         </div>
@@ -57,7 +57,7 @@ import 'moment/locale/es';
           </div>
         </template>
       </div>
-      <div class="d-flex align-center newMessage__area w-100 py-0 px-md-5 px-2" v-if="activeChat && activeChat.status != -1 ">
+      <div class="d-flex align-center newMessage__area w-100 py-0 px-md-5 px-2" v-if="activeChat && activeChat.status != 0 ">
         <textarea @keyup="typingShow()" class="elevation-24" name="" id="" placeholder="Escribe un mensaje" v-model="newMessage" cols="1" rows="1"></textarea>
         <v-btn icon="iconoir:send" variant="tonal" color="primary" class="ms-2" @click="sendNewMessage()"/>
       </div>
@@ -322,6 +322,7 @@ export default {
       return this.$store.state.user
     },
     activeChat() {
+      console.log(this.$store.state.activeChatID)
       return this.$store.state.activeChatID
     },
   },

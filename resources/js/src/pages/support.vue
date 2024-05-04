@@ -160,7 +160,7 @@
   import userList from '@/layouts/components/UserChatList.vue'
   import messageChat from '@/layouts/components/MessageChatArea.vue'
   import * as bootstrap from 'bootstrap'
-  import { STORE_CHAT, CHANGE_STATUS } from  '@/core/services/store/chat.module'
+  import { STORE_CHAT, CHANGE_STATUS_CHAT } from  '@/core/services/store/chat.module'
 
 export default {
   data(){
@@ -241,9 +241,10 @@ export default {
         },
         id:this.activeChat.id
       }
-      this.$store.dispatch(CHANGE_STATUS, data)
+      this.$store.dispatch(CHANGE_STATUS_CHAT, data)
       .then((data) => {
         setTimeout(() => {
+          this.emitter.emit('updateChat')
           this.hideModal()
         }, 1000);
       }).catch((err) =>  {

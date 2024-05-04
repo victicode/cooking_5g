@@ -265,7 +265,10 @@ export default {
       this.$store.dispatch(GET_CHAT, query).then((data)=>{
         this.chats = data.data;
         this.loadChats = true;
-        this.updateChat()
+        setTimeout(() => {
+          
+          this.updateChat()
+        }, 500);
       }).catch((error) => {
         console.log(error)
       })
@@ -313,7 +316,7 @@ export default {
     updateChat(){
       this.getUnreadMessages(this.chats)
       if(this.activeChat){
-        // this.$store.state.chatMessages = this.chats.find((chat) => chat.id === this.activeChat.id).messages
+        this.$store.state.activeChatID = this.chats.find((chat) => chat.id === this.activeChat.id)
         this.emitter.emit('displayLastMessagge')
         this.emitter.emit('getMessages', this.chats.find((chat) => chat.id === this.activeChat.id).messages)  
         return
@@ -369,7 +372,12 @@ export default {
       this.sound.play()
     })
   },
+  created(){
+    this.emitter.on("updateChat", () => {
+      this.getAllChat();
+    })
 
+  },
   computed: {
     activeChat() {
       return this.$store.state.activeChatID
