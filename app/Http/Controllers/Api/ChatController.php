@@ -65,6 +65,22 @@ class ChatController extends Controller
         
         return  $this->returnSuccess(200, $chat);
     }
+    public function deleteChat($id){
+        if (!$id) {
+            return $this->returnFail(400, "No se consigue el ID.");
+        }
+
+        $chat = Chat::find($id);
+
+
+        if (!$chat) {
+            return $this->returnFail(404, "Chat no encontrado.");
+        }
+
+        $chat->delete();
+
+        return $this->returnSuccess(200, ['id' => $id, 'deleted_at' => $chat->deleted_at]);
+    }
     public function newMessage($chatId, Request $request){
         
         $chat =Chat::find($chatId);

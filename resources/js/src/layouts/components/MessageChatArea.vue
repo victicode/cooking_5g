@@ -58,7 +58,7 @@ import 'moment/locale/es';
         </template>
       </div>
       <div class="d-flex align-center newMessage__area w-100 py-0 px-md-5 px-2" v-if="activeChat && activeChat.status != 0 ">
-        <textarea @keyup="typingShow()" class="elevation-24" name="" id="" placeholder="Escribe un mensaje" v-model="newMessage" cols="1" rows="1"></textarea>
+        <textarea  class="elevation-24" name="" id="" placeholder="Escribe un mensaje" v-model="newMessage" cols="1" rows="1"></textarea>
         <v-btn icon="iconoir:send" variant="tonal" color="primary" class="ms-2" @click="sendNewMessage()"/>
       </div>
     </div>
@@ -102,6 +102,7 @@ textarea{
   outline: none;
   resize: none;
   padding: 13px;
+  color: black;
   &::placeholder{
     color:#8592A3!important
   }
@@ -288,11 +289,6 @@ export default {
     backMessagesList(){
       this.emitter.emit('displayUserChatList', false)
     },
-    async typingShow(){
-      this.axios.get('/api/typing/'+this.activeChat.id).then( async  (data) => {
-        const datax = await data;
-      })
-    },
   },
   mounted(){
     // if(this.activeChat){
@@ -322,7 +318,6 @@ export default {
       return this.$store.state.user
     },
     activeChat() {
-      console.log(this.$store.state.activeChatID)
       return this.$store.state.activeChatID
     },
   },

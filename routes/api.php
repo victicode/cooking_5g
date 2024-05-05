@@ -114,6 +114,7 @@ Route::middleware('jwt.verify')->prefix('recipes')->name('recipes.')->group(func
 Route::middleware('jwt.verify')->prefix('support')->name('supports.')->group(function () {
     Route::post('/',[ChatController::class, 'storeChat']);
     Route::get('/',[ChatController::class, 'getChats']);
+    Route::delete('/{id}',[ChatController::class, 'deleteChat']);
     Route::get('/{id}',[ChatController::class, 'getChatById']);
     Route::post('/change-status/{id}',[ChatController::class, 'changeStatus']);
     Route::post('/{id}/newMessage',[ChatController::class, 'newMessage']);

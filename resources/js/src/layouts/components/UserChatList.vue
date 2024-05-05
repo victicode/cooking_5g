@@ -68,13 +68,13 @@ moment.defineLocale('es-mx', {
             </div>
             <div class="chat-description pa-2" :class="{'active': activeChat && chat.id === activeChat.id }">
               <!-- <div class=" d-flex justify-center align-center flex-column" > -->
-                <div class="rounded-circle pa-3 d-flex justify-center align-center bg-primary me-2  ticket-img" @click="selectedChat(chat.id)"  v-if="chat.status != 0">
+                <div class="rounded-circle pa-3 d-flex justify-center align-center bg-primary me-2  ticket-img" @click="selectChat(chat.id)"  v-if="chat.status != 0">
                   {{ is_admin == "true" ? chat.sender.name.charAt(0).toUpperCase() : chat.receipet.name.charAt(0).toUpperCase() }}
                 </div>
-                <div v-else class="rounded-circle pa-3 d-flex justify-center align-center bg-secondary  me-2 ticket-img" @click="selectedChat(chat.id)" >
+                <div v-else class="rounded-circle pa-3 d-flex justify-center align-center bg-secondary  me-2 ticket-img" @click="selectChat(chat.id)" >
                   <VIcon icon="solar:inbox-archive-linear" size="small" />
                 </div>
-              <div class="w-60" @click="selectedChat(chat.id)">
+              <div class="w-60" @click="selectChat(chat.id)">
                 <div class="text-secondary user-chat__name text-capitalize">
                  ticket: #{{ chat.ticket_number }}
                 </div> 
@@ -91,7 +91,7 @@ moment.defineLocale('es-mx', {
                   {{ getUnreadMessage(chat) }}
                 </div>
                 <div class="mt-3" v-if="is_admin=='true'" >
-                  <v-btn size="small" icon="carbon:overflow-menu-vertical" variant="text" @click=" selectedChat(chat.id, true)" />
+                  <v-btn size="small" icon="carbon:overflow-menu-vertical" variant="text" @click=" selectChat(chat.id, true)" />
                 </div>
               </div>
             </div>
@@ -116,7 +116,7 @@ moment.defineLocale('es-mx', {
           class="drawer-bottom"
           :class="`${drawer ? 'd-block' : 'd-none'}` "
           style=""
-          v-if="activeChat"
+          v-if="selectedChat"
         >
         <div class="text-center d-flex flex-column  h-100" style="position: relative;">
           <div :class="`drawer__close-button ${drawer ? 'active' : ''}`" >
@@ -124,19 +124,19 @@ moment.defineLocale('es-mx', {
               <v-btn icon="mingcute:close-fill" class="bg-secondary shadow-button"   @click="drawer = false" ></v-btn>
             </v-col>
           </div>
-          <h3 class="mt-4 mb-0">{{ activeChat.title }}</h3>
-          <h4 class="mt-1">Por: {{ activeChat.sender.name }}</h4>
+          <h3 class="mt-4 mb-0">{{ selectedChat.title }}</h3>
+          <h4 class="mt-1">Por: {{ selectedChat.sender.name }}</h4>
           <div class="d-flex  justify-center mx-5  align-center h-50 mt-4 " style="box-sizing:content-box;">
             <div class="d-flex flex-column justify-center align-center" >
-              <v-btn size="large" class="d-block mx-8 shadow-button" color="primary" @click="showModal('viewRecipe')" icon="solar:inbox-archive-linear" />
-              <h5 class="mt-1" >Cerrar Ticket</h5>
+              <v-btn size="large" class="d-block mx-8 shadow-button" color="primary" @click="dispatchAction('change-status', selectedChat)" icon="solar:inbox-archive-linear" />
+              <h5 class="mt-1" >{{ selectedChat.status == 1 ? 'Cerrar Ticket' : 'Abrir ticket' }}</h5>
             </div>
-            <div class="d-flex flex-column justify-center align-center"  v-if="activeChat.reference_id">
-              <v-btn size="large" class="d-block mx-8 shadow-button" color="primary" @click="showModal('viewRecipe')" icon="solar:box-outline" />
+            <div class="d-flex flex-column justify-center align-center"  v-if="selectedChat.reference_id">
+              <v-btn size="large" class="d-block mx-8 shadow-button" color="primary" @click="dispatchAction('go-products', '')" icon="solar:box-outline" />
               <h5 class="mt-1" >Ver Producto</h5>
             </div>
             <div class="d-flex flex-column justify-center align-center" >
-              <v-btn size="large" class="d-block mx-8 shadow-button" color="error" @click="showModal('deleteRecipe')" icon="mi:delete" />
+              <v-btn size="large" class="d-block mx-8 shadow-button" color="error" @click="dispatchAction('delete', selectedChat.id)" icon="mi:delete" />
               <h5 class="mt-1" >Eliminar</h5>
             </div>
           </div>
@@ -242,6 +242,7 @@ export default {
   data: ()=>{
     return{
       chats: {},
+      selectedChat:null,
       displayWidth: window.screen.width,
       sound: new Audio(notificationTone4),
       loadChats: false,
@@ -276,9 +277,11 @@ export default {
     searchChat(){
       debounce(this.getAllChat, 200)()
     },
-    selectedChat(id, isDrawer = false){
+    selectChat(id, isDrawer = false){
       this.$store.dispatch(GET_CHAT_BY_ID, id).then((data)=>{
         this.$store.state.activeChatID = data.data;
+        this.selectedChat = data.data
+        console.log(this.$store.state.activeChatID)
         if (isDrawer){
           setTimeout(()=>{
             this.displayWidth > 780 
@@ -315,10 +318,12 @@ export default {
     },
     updateChat(){
       this.getUnreadMessages(this.chats)
-      if(this.activeChat){
-        this.$store.state.activeChatID = this.chats.find((chat) => chat.id === this.activeChat.id)
+      if(this.selectedChat){
+        this.selectedChat = this.chats.find((chat) => chat.id === this.selectedChat.id)
+        this.$store.state.activeChatID = this.chats.find((chat) => chat.id === this.selectedChat.id)
+
         this.emitter.emit('displayLastMessagge')
-        this.emitter.emit('getMessages', this.chats.find((chat) => chat.id === this.activeChat.id).messages)  
+        this.emitter.emit('getMessages', this.chats.find((chat) => chat.id === this.selectedChat.id).messages)  
         return
       };
     },
@@ -342,6 +347,16 @@ export default {
         this.emitter.emit('shoModal', modal)
       },520)
 
+    },
+    dispatchAction(action, value){
+      const data = {
+        action : action,
+        value  : value
+      }
+      this.emitter.emit('chatActions', data)
+      setTimeout(() => {
+        this.drawer = false
+      }, 700);
     },
     showInterModal(modal){
       this.hideModal()

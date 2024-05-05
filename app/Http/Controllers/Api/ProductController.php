@@ -152,7 +152,6 @@ class ProductController extends Controller
 
         $product->delete();
 
-
         return $this->returnSuccess(200, ['id' => $productId, 'deleted_at' => $product->deleted_at]);
     }
     public function getlotesOfProductsTable(Request $request){
@@ -213,15 +212,7 @@ class ProductController extends Controller
        return Lot::withTrashed()->where('product_id', $productId)->count();
     }
     public function notifyOutStock(Request $request, $id){
-        $t = Message::create([
-            'message' =>'no tiene stock suficiente para nuevas ordenes', 
-            'product_id' => $id,
-            'sender_id' => $request->user()->id,
-            'recept_id'  => 1,
-            'read'   => 0,
-        ]);
-        event(new MessageCooking);
-
+        
         $product_title = Product::find($id)->title;
         
         $newChat = Chat::create([
@@ -234,17 +225,26 @@ class ProductController extends Controller
             'ticket_number'=> '00'.rand(10000, 99999),
         ]);
         
-         ChatMessage::create([
-            'message' => 'Hola quiero reportar este producto no tiene stock: <a class="text-decoration-underline text-white"> <b>'.$product_title.'</b> </a>',
+        ChatMessage::create([
+            'message' => 'Hola quiero reportar este producto no tiene stock: <a class="text-decoration-underline text-white"> <b>'.$product_title.'</b>  </a>',
             'chat_id' => $newChat->id,
             'type_messages' => 'text',
             'sender_id' => $newChat->sender_id,
             'read' => 0,
         ]);
+        
+        Message::create([
+            'message' =>'no tiene stock suficiente para nuevas ordenes. Ticket: <a>#'. $newChat->ticket_number.'</a>' , 
+            'product_id' => $id,
+            'sender_id' => $request->user()->id,
+            'recept_id'  => 1,
+            'read'   => 0,
+        ]);
 
+        event(new MessageCooking);
         RealTimeChatMessage::dispatch($newChat->sender_id);
         RealTimeChatMessage::dispatch($newChat->recept_id);
-        return $t;
+        return $newChat;
     }
     public function viewEtiqueta(){
         $recipe = Recipe::with(['cooking_ingredients.dismantling.products_pieces', 'cooking_ingredients.lotes' ])->find(7);

@@ -130,15 +130,15 @@
                           <h4 class="mt-1">Por: {{ activeChat.sender.name }}</h4>
                           <div class="d-flex  justify-center mx-5  align-center h-50 mt-4 " style="box-sizing:content-box;">
                             <div class="d-flex flex-column justify-center align-center" >
-                              <v-btn size="large" class="d-block mx-8 shadow-button" color="primary" @click="chageStatus()" icon="solar:inbox-archive-linear" />
-                              <h5 class="mt-1" >Cerrar Ticket</h5>
+                              <v-btn size="large" class="d-block mx-8 shadow-button" color="primary" @click="chageStatus(activeChat)" icon="solar:inbox-archive-linear" />
+                              <h5 class="mt-1" >{{ activeChat.status == 1 ? 'Cerrar Ticket' : 'Abrir ticket' }}</h5>
                             </div>
                             <div class="d-flex flex-column justify-center align-center"  v-if="activeChat.reference_id">
-                              <v-btn size="large" class="d-block mx-8 shadow-button" color="primary" @click="showModal('viewRecipe')" icon="solar:box-outline" />
+                              <v-btn size="large" class="d-block mx-8 shadow-button" color="primary" @click="$router.push('/products')" icon="solar:box-outline" />
                               <h5 class="mt-1" >Ver Producto</h5>
                             </div>
                             <div class="d-flex flex-column justify-center align-center" >
-                              <v-btn size="large" class="d-block mx-8 shadow-button" color="error" @click="showModal('deleteRecipe')" icon="mi:delete" />
+                              <v-btn size="large" class="d-block mx-8 shadow-button" color="error" @click="deleteChat(activeChat.id)" icon="mi:delete" />
                               <h5 class="mt-1" >Eliminar</h5>
                             </div>
                           </div>
@@ -160,7 +160,7 @@
   import userList from '@/layouts/components/UserChatList.vue'
   import messageChat from '@/layouts/components/MessageChatArea.vue'
   import * as bootstrap from 'bootstrap'
-  import { STORE_CHAT, CHANGE_STATUS_CHAT } from  '@/core/services/store/chat.module'
+  import { STORE_CHAT, CHANGE_STATUS_CHAT, DELETE_CHAT } from  '@/core/services/store/chat.module'
 
 export default {
   data(){
@@ -234,21 +234,36 @@ export default {
         
       })
     },
-    chageStatus(){
+    chageStatus(chat){
       const data = {
         data:{
-          status: this.activeChat.status == 0 ? 1 :0,
+          status: chat.status == 0 ? 1 :0,
         },
-        id:this.activeChat.id
+        id:chat.id
       }
       this.$store.dispatch(CHANGE_STATUS_CHAT, data)
       .then((data) => {
         setTimeout(() => {
           this.emitter.emit('updateChat')
-          this.hideModal()
+          try{
+            this.hideModal()
+          }catch{
+
+          }
         }, 1000);
       }).catch((err) =>  {
         
+      })
+    },
+    deleteChat(id){
+      console.log(id)
+      this.$store.dispatch(DELETE_CHAT, id)
+      .then((data) => {
+        this.$store.state.activeChatID = null
+        setTimeout(() => {
+          this.emitter.emit('updateChat')
+          this.hideModal()
+        }, 200);
       })
     },
     clearForm(){
@@ -273,10 +288,16 @@ export default {
     this.emitter.on("shoModal", (modal) => {
       this.showModal(modal)
     })
-    this.emitter.on("chatActions", (action, value) => {
-      if(action == 'change-status'){
-        this.chageStatus(value)
+    this.emitter.on("chatActions", (data) => {
+      if(data.action == 'change-status'){
+        this.chageStatus(data.value)
+        return
       }
+      if(data.action == 'delete'){
+        this.deleteChat(data.value)
+        return
+      }
+      this.$router.push('/products')
     })
   },
   computed: {

@@ -109,7 +109,7 @@
                             MICROONDAS:  Colocar el producto con el envase en un plato
                             apto para microondas, perforar el envase y calentar 8 minutos a
                             máxima potencia Asegurarse que el producto está caliente en el
-                            interior, si no, alargar los tiempos
+                            interior, si no, alargar los tiempos.
                           </span>
                         </div>
                       </div>

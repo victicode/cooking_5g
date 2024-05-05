@@ -24,13 +24,12 @@ const actions = {
             ApiService.setHeader();
             ApiService.get("api/support?chat_id="+query.query+"&show="+query.show+"&onlyClosed="+query.onlyClosed+"&")
             .then(( { data } ) => {
-                // console.log(data)
-                resolve(data);
-                
+              // console.log(data)
+              resolve(data); 
             })
             .catch(( { response } ) => {
-                console.log(response )
-                reject('Ocurrió un error desconocido al intentar obtener las ordenes');
+              console.log(response )
+              reject('Ocurrió un error desconocido al intentar obtener las ordenes');
             });
           }
         });
@@ -41,11 +40,11 @@ const actions = {
           ApiService.setHeader();
           ApiService.post("api/support", body)
           .then(( { data } ) => {
-              resolve(data);
+            resolve(data);
           })
           .catch(( { response } ) => {
-              console.log(response )
-              reject('Ocurrió un error desconocido al intentar crear el RECIPEo');
+            console.log(response )
+            reject('Ocurrió un error desconocido al intentar crear el RECIPEo');
           });
         }
       });
@@ -58,12 +57,12 @@ const actions = {
           .then(( { data } ) => {
             console.log(data)
             resolve(data);
-            
-        })
-        .catch(( { response } ) => {
+              
+          })
+          .catch(( { response } ) => {
             console.log(response)
             reject('Ocurrió un error desconocido al intentar actualizar el RECIPEo');
-        });
+          });
         }
       })
     },
@@ -73,13 +72,12 @@ const actions = {
           ApiService.setHeader();
           ApiService.post("api/recipes/"+body.id, body.data)
           .then(( { data } ) => {
-              // console.log(data)
-              resolve(data);
+            resolve(data);
               
           })
           .catch(( { response } ) => {
-              console.log(response)
-              reject('Ocurrió un error desconocido al intentar actualizar el RECIPEo');
+            console.log(response)
+            reject('Ocurrió un error desconocido al intentar actualizar el RECIPEo');
           });
         }
       });
@@ -88,15 +86,14 @@ const actions = {
       return new Promise((resolve, reject) => {
         if (JwtService.getToken()) {
           ApiService.setHeader();
-          ApiService.delete("api/recipes/"+ id)
+          ApiService.delete("api/support/"+ id)
           .then(( { data } ) => {
-              // console.log(data)
-              resolve(data);
-              
+            console.log(data)
+            resolve(data);
           })
           .catch(( { response } ) => {
-              console.log(response)
-              reject('Ocurrió un error desconocido al intentar borrar el RECIPEo');
+            console.log(response)
+            reject('Ocurrió un error desconocido al intentar borrar el RECIPEo');
           });
         }
       });
@@ -109,8 +106,8 @@ const actions = {
           resolve(data);
         })
         .catch(( { response } ) => {
-            console.log(response )
-            reject('Ocurrió un error desconocido al intentar obtener las recetas');
+          console.log(response )
+          reject('Ocurrió un error desconocido al intentar obtener las recetas');
         });
         
       });
@@ -124,8 +121,8 @@ const actions = {
             resolve(data);
           })
           .catch(( { response } ) => {
-              // console.log(response )
-              reject('Ocurrió un error desconocido al intentar obtener el producto');
+            // console.log(response )
+            reject('Ocurrió un error desconocido al intentar obtener el producto');
           });
         }
       });
@@ -138,8 +135,8 @@ const actions = {
           .then( ({data}) =>{
             resolve(data)
           }).catch(( { response } ) => {
-              // console.log(response )
-              reject('Ocurrió un error desconocido al intentar obtener el producto');
+            // console.log(response )
+            reject('Ocurrió un error desconocido al intentar obtener el producto');
           });
         }
       })

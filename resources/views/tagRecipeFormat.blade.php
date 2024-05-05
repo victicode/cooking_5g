@@ -57,10 +57,10 @@
                   @if($i%9 == 0 || ($i-1)%9 == 0 )
                   <div class="col-sm-6 mb-4 mt-3 px-3  mtx-{{$i}}5" data-id="1">
                   @else
-                  <div class="col-sm-6 mb-4 mt-3 px-3   data-id="2">
+                  <div class="col-sm-6 mb-4 mt-3 px-3" data-id="2">
                   @endif
                 @else
-                <div class="col-sm-6 mb-4 mt-3 px-3   data-id="2">
+                <div class="col-sm-6 mb-4 mt-3 px-3" data-id="2">
                 @endif
               @endif
               
@@ -68,7 +68,7 @@
                 @if($i%9 == 0 || ($i+1)%9 == 0 )
                 <div class="col-sm-6 mb-4 mt-3 px-3  mtx-{{$i}}5" data-id="1">
                 @else
-                <div class="col-sm-6 mb-4 mt-3 px-3   data-id="2">
+                <div class="col-sm-6 mb-4 mt-3 px-3"   data-id="2">
                 @endif
               @endif
               <div class="card">
@@ -106,7 +106,7 @@
                           MICROONDAS:  Colocar el producto con el envase en un plato
                           apto para microondas, perforar el envase y calentar 8 minutos a
                           máxima potencia Asegurarse que el producto está caliente en el
-                          interior, si no, alargar los tiempos
+                          interior, si no, alargar los tiempos.
                         </span>
                       </div>
                     </div>
