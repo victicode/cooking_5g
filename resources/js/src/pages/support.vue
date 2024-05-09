@@ -131,7 +131,7 @@
                           <div class="d-flex  justify-center mx-5  align-center h-50 mt-4 " style="box-sizing:content-box;">
                             <div class="d-flex flex-column justify-center align-center" >
                               <v-btn size="large" class="d-block mx-8 shadow-button" color="primary" @click="chageStatus(activeChat)" icon="solar:inbox-archive-linear" />
-                              <h5 class="mt-1" >{{ activeChat.status == 1 ? 'Cerrar Ticket' : 'Abrir ticket' }}</h5>
+                              <h5 class="mt-1" >{{ activeChat.status == 1 ? 'Cerrar Ticket' : 'Reactivar ticket' }}</h5>
                             </div>
                             <div class="d-flex flex-column justify-center align-center"  v-if="activeChat.reference_id">
                               <v-btn size="large" class="d-block mx-8 shadow-button" color="primary" @click="$router.push('/products')" icon="solar:box-outline" />
@@ -354,4 +354,11 @@ export default {
     }
   }
 }
+@media screen and (min-height: 844px){
+  .chat-areacomponent{
+    height: 85vh;
+    overflow: hidden;
+  }
+}
+
 </style>

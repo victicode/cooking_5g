@@ -45,7 +45,7 @@ moment.defineLocale('es-mx', {
                 id="isUserAddress" 
                 @change="searchChat(); this.showOnlyClosedChat = false" 
                 v-model="showClosedChat" style="height: 15px; width: 15px;">
-              <label for="isUserAddress" class="mx-2 user-chat__name">Ver tickets cerrados</label>
+              <label for="isUserAddress" class="mx-2 user-chat__name">Ver todos los tickets</label>
             </div>
           </VCol>
           <VCol cols="12"  class="form-group py-0">
@@ -129,7 +129,7 @@ moment.defineLocale('es-mx', {
           <div class="d-flex  justify-center mx-5  align-center h-50 mt-4 " style="box-sizing:content-box;">
             <div class="d-flex flex-column justify-center align-center" >
               <v-btn size="large" class="d-block mx-8 shadow-button" color="primary" @click="dispatchAction('change-status', selectedChat)" icon="solar:inbox-archive-linear" />
-              <h5 class="mt-1" >{{ selectedChat.status == 1 ? 'Cerrar Ticket' : 'Abrir ticket' }}</h5>
+              <h5 class="mt-1" >{{ selectedChat.status == 1 ? 'Cerrar Ticket' : 'Reactivar ticket' }}</h5>
             </div>
             <div class="d-flex flex-column justify-center align-center"  v-if="selectedChat.reference_id">
               <v-btn size="large" class="d-block mx-8 shadow-button" color="primary" @click="dispatchAction('go-products', '')" icon="solar:box-outline" />
