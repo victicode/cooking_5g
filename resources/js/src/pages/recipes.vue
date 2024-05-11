@@ -892,7 +892,17 @@
                           </VCol>
                         </VRow>
                         <VRow class="ma-0 pa-0  mt-8 align-center">
-                          <VCol cols="12" md="4" offset-md="4" class="mt-0 py-0 px-0">
+                          <VCol cols="12" md="4" class="form-group ms-0 ps-0">
+                            <VTextField
+                              placeholder="Iniciar en posicion"
+                              label="Iniciar en posicion"
+                              type="number"
+                              name="pintinit"
+                              autocomplete="off"
+                              v-model="initPrint"
+                            />
+                          </VCol>
+                          <VCol cols="12" md="6" offset-md="3" class="mt-0 py-0 px-0">
                             <v-col cols="auto" class="">
                               <VBtn  color="primary" class="w-100"  id="print" @click="printTag()" >Imprimir</VBtn>
                               <!-- @click="printTag(url+'api/recipes/client/print/' + selectedRecipe.id)" -->
@@ -1387,6 +1397,7 @@
         created:'',
         consumo:'',
       },
+      initPrint:'',
       isRecipe:false,
       sliderPosition:1,
       pagination:{
@@ -2205,7 +2216,7 @@
         });
       },
       printUrl(){
-        return `${this.url}api/recipes/client/print/${this.selectedRecipe.id}?quantity=${this.tag.quantity}&created=${this.tag.created}&consumo=${this.tag.consumo}&`
+        return `${this.url}api/recipes/client/print/${this.selectedRecipe.id}?quantity=${this.tag.quantity}&created=${this.tag.created}&consumo=${this.tag.consumo}&init=${this.initPrint}&`
       },
       plusMonths(){
         let date = moment(this.printDates.tag_created.selectedDates[0]).add(3, 'months').format('DD-MM-YYYY')

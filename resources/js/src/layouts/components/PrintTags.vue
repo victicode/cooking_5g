@@ -95,7 +95,20 @@ import date from '../../assets/plugins/formvalidation/src/js/validators/date';
                       </VCol>
                     </VRow>
                   </VForm>
-                  <div class="mt-5 w-100 d-md-flex  d-block justify-center">
+                  
+                  <div class="mt-5 w-100  d-block justify-center">
+                    <VRow class="mb-2">
+                      <VCol cols="12" md="6"  class="form-group">
+                        <VTextField
+                          placeholder="Iniciar en posicion"
+                          label="Iniciar en posicion"
+                          type="number"
+                          autocomplete="off"
+                          v-model="init"
+                          
+                        />
+                      </VCol>
+                    </VRow>
                     <VCardActions class=" justify-center w-100 d-md-flex  pb-1 pb-md-3   d-block">
                       <VBtn
                         color="white"
@@ -153,7 +166,8 @@ import date from '../../assets/plugins/formvalidation/src/js/validators/date';
           created:'',
           consumo:'',
         }
-      ],
+      ], 
+      init: 0,
       snackShow:false,
       snackMessage:'',
       snackType:'',
@@ -238,10 +252,7 @@ import date from '../../assets/plugins/formvalidation/src/js/validators/date';
       },
       printTags(){
         let validTags = this.tagsToPrint.filter((tag)=> tag.recipe.id !=='' )
-        console.log(validTags.length)
         if(validTags.length > 0){
-
-          console.log(this.printUrl(validTags))
           var ventana = window.open(this.printUrl(validTags), 'PRINT', 'height=400,width=600');
           setTimeout(() => {
             ventana.document.close();
@@ -262,7 +273,7 @@ import date from '../../assets/plugins/formvalidation/src/js/validators/date';
         this.tagsToPrint[index].consumo = date
       },
       printUrl(validTags){
-        return `/api/recipes/client/print/multiple?recipes=${JSON.stringify(validTags)}&`
+        return `/api/recipes/client/print/multiple?recipes=${JSON.stringify(validTags)}&init=${this.init}`
       },
       
     },

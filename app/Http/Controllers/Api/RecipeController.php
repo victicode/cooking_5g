@@ -157,7 +157,7 @@ class RecipeController extends Controller
         if($request->path() == 'api/recipes/client/print/multiple'){
 
             // return json_decode($request->recipes);
-            return view('tagMultipleRecipeTemplate', [ 'recipes' => json_decode($request->recipes)]);
+            return view('tagMultipleRecipeTemplate', [ 'recipes' => json_decode($request->recipes), 'spaces' => $request->init] );
         }
         $recipe = Recipe::with(['cooking_ingredients.dismantling.products_pieces', 'cooking_ingredients.lotes' ])->find($id);
     
@@ -167,7 +167,7 @@ class RecipeController extends Controller
             'imp'    => $request->quantity,
             'create' => $request->created,
             'consumo'=> $request->consumo,
-        ] ]);
+        ] , 'spaces' => $request->init ]);
     }
     private function validateFieldsFromInput($inputs, $type = 'new'){
 
