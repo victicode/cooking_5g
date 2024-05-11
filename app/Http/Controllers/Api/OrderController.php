@@ -40,6 +40,9 @@ class OrderController extends Controller
         if(!empty(request('filter_tracker_id'))){
             $order->where('trancker', 'like', '%'.request('filter_tracker_id').'%');
         }
+        if($request->user()->rol_id > 2){
+         $order->where('client_id', $request->user()->id); 
+        }
 
         if(!empty(request('order_sort_date')))   $order->orderBy('created_at', request('order_sort_date'));
         if(!empty(request('order_sort_status')))  $order->orderBy('status', request('order_sort_status'));

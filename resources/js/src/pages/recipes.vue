@@ -2148,16 +2148,13 @@
         return str;
       },
       readyItemInCart(){
-        // this.hideModal()
         this.showSnackbar('success','Producto ya agregado')
-      
       },
       isAllIngredientsInStock(recipe){
         let isOk= true
         recipe.cooking_ingredients.forEach((item)=>{
           if(item.total_stock < 1 || this.validateIsgoodProduct(item, 'yes','no') == 'no') isOk = false ;
         })
-        // console.log( isOk)
         return isOk
       },
       productInCart(selectedProduct){   

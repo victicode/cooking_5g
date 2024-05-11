@@ -85,9 +85,9 @@ moment.defineLocale('es-mx', {
                  {{  !ifReadForMe(chat.messages[0]) ? 'Tu:' : `${chat.messages[0].sender.name}:`}} {{chat.messages[0].message}}
                 </div>
               </div>
-              <div class="d-flex align-center justify-center ms-2">
+              <div class="d-flex align-center justify-center ms-1 w-sm-20">
 
-                <div class="unReadMessage-acitve bg-error ms-2 " v-if="getUnreadMessage(chat) > 0" >
+                <div class="unReadMessage-acitve bg-error ms-0 ms-md-2 " v-if="getUnreadMessage(chat) > 0" >
                   {{ getUnreadMessage(chat) }}
                 </div>
                 <div class="mt-3" v-if="is_admin=='true'" >
@@ -230,6 +230,14 @@ ul{
   .chat-list__content{
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
+  }
+  .w-sm-20{
+    width: 19%;
+  }
+  .unReadMessage-acitve{
+    width: 23px;
+    height: 23px;
+    margin-top: 10px;
   }
 }
 </style>
