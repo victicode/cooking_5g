@@ -11,21 +11,21 @@ export const CHANGE_STATUS    = "CHANGE_STATUS";
 
 const actions = {
   [GET_ORDERS](context) {
-      return new Promise((resolve, reject) => {
-          if (JwtService.getToken()) {
-              ApiService.setHeader();
-              ApiService.get("api/order")
-                  .then(( { data } ) => {
-                      // console.log(data)
-                      resolve(data);
-                      
-                  })
-                  .catch(( { response } ) => {
-                      console.log(response )
-                      reject('Ocurrió un error desconocido al intentar obtener las ordenes');
-                  });
-          }
-      });
+    return new Promise((resolve, reject) => {
+      if (JwtService.getToken()) {
+        ApiService.setHeader();
+        ApiService.get("api/order")
+        .then(( { data } ) => {
+            // console.log(data)
+            resolve(data);
+            
+        })
+        .catch(( { response } ) => {
+            console.log(response )
+            reject('Ocurrió un error desconocido al intentar obtener las ordenes');
+        });
+      }
+    });
   },
   [GET_LAST_ORDERS](context,type) {
     return new Promise((resolve, reject) => {

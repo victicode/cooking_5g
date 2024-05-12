@@ -3,8 +3,8 @@ import GreetingsComponent from '@/views/dashboard/GreetingsComponent.vue'
 import LastSendingOrders from '@/views/dashboard/LastSendingOrders.vue'
 import LastPendingOrders from '@/views/dashboard/LastPendingOrders.vue'
 import CriticalStockProduct from '@/views/dashboard/CriticalStockProduct.vue'
-
-
+import finance from '@/views/dashboard/AnalyticsOrderStatistics.vue'
+import searchOrder from '@/views/dashboard/searchTrackOrder.vue'
 </script>
 
 <template>
@@ -25,13 +25,25 @@ import CriticalStockProduct from '@/views/dashboard/CriticalStockProduct.vue'
         <VCol
           cols="12"
           md="12"
-          
+          v-if="getCurrentAccount.rol_id == 3 "
+        >
+          <searchOrder />
+        </VCol>
+        <VCol
+          cols="12"
+          md="12"
         >
           <LastPendingOrders />
         </VCol>
+        <VCol
+          cols="12"
+          md="12"
+          v-if="getCurrentAccount.rol_id !== 3 "
+        >
+          <finance />
+        </VCol>
       </VRow>
     </VCol>
-
 
     <VCol
         cols="12"
@@ -58,7 +70,7 @@ import CriticalStockProduct from '@/views/dashboard/CriticalStockProduct.vue'
             interval="8000000"
           >
             <v-carousel-item
-            v-if="getCurrentAccount.rol_id == 1 "
+              v-if="getCurrentAccount.rol_id == 1 "
             >
               <VCol
                 class="pa-0"

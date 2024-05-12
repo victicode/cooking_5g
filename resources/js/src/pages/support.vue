@@ -2,10 +2,9 @@
   <div>
     <VCard class="pa-0 ma-0">
       <VRow class="chat-areacomponent ma-0 pa-0 d-none d-md-flex" v-if="displayWidth > 780">
-
         <VCol cols="12"  md="4" class="pa-0 d-md-flex chat-list flex-column " >
           <userList />
-          <VRow class="justify-center my-2 "  v-if="id_unique != 1">
+          <VRow class="justify-center my-2 "  v-if="currentUser.user.rol_id == 3 ">
             <VCol cols="10" >
               <VBtn @click="showModal('createNewTicket')" color="primary" class="w-100 ">
                 <VIcon icon="bx-plus"/> Crear nuevo ticket
@@ -20,7 +19,7 @@
       <VRow class="chat-areacomponent ma-0 pa-0 d-flex d-md-none" v-else>
         <VCol cols="12"  md="4" class="pa-0 d-md-flex chat-list  flex-column" :class="{'borrao': deplay }">
           <userList />
-          <VRow class="justify-center my-2 " v-if="id_unique != 1">
+          <VRow class="justify-center my-2 " v-if="currentUser.user.rol_id == 3 ">
             <VCol cols="10" >
               <VBtn @click=" showModal('createNewTicket')" color="primary" class="w-100 ">
                 <VIcon icon="bx-plus"/> Crear nuevo Ticket
@@ -303,6 +302,9 @@ export default {
   computed: {
     activeChat() {
       return this.$store.state.activeChatID
+    },
+    currentUser() {
+      return this.$store.state.user
     }
   },
 }

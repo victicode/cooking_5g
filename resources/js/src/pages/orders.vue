@@ -40,7 +40,7 @@
             md="3"
             class="ma-0 px-0 justify-center justify-md-end d-flex"
           >
-          <VBtn v-if="!isUser" @click=" showModal('createOrder')" color="primary" class="w-100 "><VIcon icon="bx-plus"/>
+          <VBtn v-if="isUser" @click=" showModal('createOrder')" color="primary" class="w-100 "><VIcon icon="bx-plus"/>
             {{ isUser ? 'Crear orden manual': 'Crear nueva orden'}}
           </VBtn>
 
@@ -270,7 +270,7 @@
                       <VRow class="align-center">
                         <VCol cols="12" md="7" class="form-group">
                           <v-combobox  
-                            v-if="isUser"
+                            v-if="!isUser"
                             :items="userForOrder"
                             item-title="name"
                             item-value="id"
@@ -318,7 +318,7 @@
                             </VCol>
                             <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
                               <VRow  v-for="(item,index) in newOrder.products"  v-bind:key="item.id" class=" position-relative relative pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'new_order_product_'+index">
-                                <VCol cols="12"  :md="isUser ? 4 : 6" class="form-group pb-md-0  mb-md-1">
+                                <VCol cols="12"  :md="!isUser ? 4 : 6" class="form-group pb-md-0  mb-md-1">
                                   <v-autocomplete
                                     :model-value="item.id"
                                     :items="productsForOrder[index] ?  productsForOrder[index] : item.id !== null ? [ {id: item.id, title: item.title, stock: item.quantity}] : []"
@@ -327,7 +327,7 @@
                                     item-value="id"
                                     placeholder="Nombre de la receta"
                                     variant="outlined"
-                                    :persistent-hint="isUser ? true : false "
+                                    :persistent-hint="!isUser ? true : false "
                                     clearable
                                     no-filter
                                     :name="'product_in_order_'+index"
@@ -338,7 +338,7 @@
                                     @update:modelValue="selectedProduct($event, index)"
                                   ></v-autocomplete>
                                 </VCol>
-                                <VCol cols="12"  md="5" class="form-group pb-md-0  mb-md-1" v-if="isUser">
+                                <VCol cols="12"  md="5" class="form-group pb-md-0  mb-md-1" v-if="!isUser">
                                   <v-combobox  
                                     :items="item.lotes"
                                     item-title="lote_code"
@@ -355,7 +355,7 @@
                                     @update:modelValue="selectedLotes($event,index)"
                                   ></v-combobox >
                                 </VCol>
-                                <VCol cols="12"  :md="isUser ? 3 : 6 " :class=" isUser ? 'form-group pb-md-0  mb-md-6' : 'form-group pb-md-0  mb-md-1' " >
+                                <VCol cols="12"  :md="!isUser ? 3 : 6 " :class=" !isUser ? 'form-group pb-md-0  mb-md-6' : 'form-group pb-md-0  mb-md-1' " >
                                   <VTextField
                                     placeholder="Unidades solicitadas"
                                     label="Unidades solicitadas"
@@ -734,7 +734,7 @@
             console.log('alert!!!')
           }
           this.user = data.user;
-          if(data.user.rol_id !== 3) this.isUser = true
+          if(data.user.rol_id == 3) this.isUser = true
         })
         .catch((e) => {
           this.logout()
@@ -889,7 +889,7 @@
       useClientAddress(e){
         this.newOrder.userAddress = this.user.user_address
 
-        if(this.isUser){
+        if(!this.isUser){
           this.newOrder.userAddress = e.target.checked 
             ? this.newOrder.user.user_address
             : this.newOrder.userAddress = ''
@@ -977,13 +977,13 @@
 
         this.sendingButton('new_order_form_button')
         const formData = new FormData();
-        const user = this.isUser 
+        const user = !this.isUser 
         ? this.newOrder.user.id
         : this.user.id
         formData.append('client', user);
         formData.append('address', this.newOrder.userAddress);
         formData.append('products', JSON.stringify(this.newOrder.products));
-        formData.append('isManual', this.isUser ? true : false);
+        formData.append('isManual', !this.isUser ? true : false);
         console.log(this.newOrder)
         this.$store
           .dispatch(CREATE_ORDER, formData)
@@ -1060,11 +1060,9 @@
 
         }
         this.newOrder.products.push(newProducInOrder)
-        console.log(this.newOrder.products)
         setTimeout(() => {
-          if(this.isUser){
-
-            this.addValidate()
+          if(!this.isUser){
+            // this.addValidate()
           }
 
         }, 200);
@@ -1127,13 +1125,6 @@
       validateFormItem(){
         this.forms = formValidation(document.getElementById('new_order_form'), {
           fields: {
-            new_order_client:{
-                validators: {
-                  notEmpty: {
-                    message: "El cliente es requerido"
-                  },
-                }
-              },
               new_order_address: {
                 validators: {
                   notEmpty: {
