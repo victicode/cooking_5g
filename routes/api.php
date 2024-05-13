@@ -68,6 +68,7 @@ Route::middleware('jwt.verify')->prefix('order')->name('order.')->group(function
     Route::get('/get-by-id/{id}',[OrderController::class, 'getOrderById']);
     Route::post('/change-status/{id}',[OrderController::class, 'changeStatus']);
     Route::get('/by_tracker/{id}', [OrderController::class, 'getOrderByTracker']);
+    Route::get('/all_stadistics', [OrderController::class, 'allStadistics']);
 });
 Route::middleware('jwt.verify')->prefix('out_order')->name('out_order.')->group(function () {
     Route::post('/', [OrderController::class, 'createOutOrder']);

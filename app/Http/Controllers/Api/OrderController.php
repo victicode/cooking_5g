@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Recipe;
 
 class OrderController extends Controller
 {
@@ -49,12 +50,6 @@ class OrderController extends Controller
 
         return DataTables::of($order)->toJson();
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function getLastByType(Request $request) {
         
 
@@ -70,6 +65,17 @@ class OrderController extends Controller
         try {
             //code...
             $order = Order::withCount('products')->with(['user', 'products', 'client', 'outOrder', 'recipes.cooking_ingredients'])->find($id);
+            // $order->getStatusLabelAttribute();
+        } catch (Exception $th) {
+            return $this->returnFail(400, $th->getMessage());
+        }
+        return $this->returnSuccess(200, $order );
+    }
+    public function getOrderByTracker($id) {
+        
+        try {
+            //code...
+            $order = Order::withCount('recipes')->with(['user', 'products', 'client', 'outOrder', 'recipes.cooking_ingredients'])->where('trancker', $id)->first();
             // $order->getStatusLabelAttribute();
         } catch (Exception $th) {
             return $this->returnFail(400, $th->getMessage());
@@ -168,6 +174,30 @@ class OrderController extends Controller
         $this->newNotification(['order'=>$order->id, 'type' => 2]);   
         return [$order,$request->newStatus] ;
     }
+    public function newNotification($data){
+
+        $notificationData=[
+            'order' => $data['order'],
+            'type'  => $data['type'] ,
+        ];
+        $notification = createNotification($notificationData);
+        
+        return  $notification;
+    }
+
+    public function allStadistics(){
+        // $orders= Order::with(['user', 'products', 'client', 'outOrder', 'recipes.cooking_ingredients'])->get();
+        $stadistics = [
+            'allFinish'         => count($this->allOrderByStatus('3')),
+            'allInTransit'      => count($this->allOrderByStatus('2')),
+            'allPend'           => count($this->allOrderByStatus('1')),
+            'allCancel'         => count($this->allOrderByStatus('0')),
+            'countAllOrder'     => count($this->allOrderByStatus('0')) + count($this->allOrderByStatus('1')) + count($this->allOrderByStatus('2')) + count($this->allOrderByStatus('3')),
+            'mostOrderProducts' => $this->MostOrderRecipe(),
+        ];
+        return $this->returnSuccess(200, $stadistics);
+        
+    }
     private function addProductforOrder($order, $products, $type){
 
         if ($type == 'order') {
@@ -244,49 +274,11 @@ class OrderController extends Controller
 
         return json_encode($newProducts) ;
     }
-    public function newNotification($data){
-
-        $notificationData=[
-            'order' => $data['order'],
-            'type'  => $data['type'] ,
-        ];
-        $notification = createNotification($notificationData);
-        
-        return  $notification;
+    private function allOrderByStatus($status){
+        return Order::with(['user', 'products', 'client', 'outOrder', 'recipes.cooking_ingredients'])->where('status', $status)->get();
+    }
+    private function MostOrderRecipe(){
+        return Recipe::whereHas('orders')->withCount('orders')->take(5)->get();
     }
 
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }

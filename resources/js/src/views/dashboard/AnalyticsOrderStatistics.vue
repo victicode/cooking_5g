@@ -2,15 +2,9 @@
 import VueApexCharts from 'vue3-apexcharts'
 import { useTheme } from 'vuetify'
 import { hexToRgb } from '@layouts/utils'
-
+import { GET_ALL_ORDER_STADISTICS } from '@/core/services/store/order.module';
+import { func } from '../../core/services/utils/utils';
 const vuetifyTheme = useTheme()
-
-const series = [
-  45,
-  80,
-  20,
-  40,
-]
 
 const chartOptions = computed(() => {
   const currentTheme = vuetifyTheme.current.value.colors
@@ -24,23 +18,17 @@ const chartOptions = computed(() => {
       animations: { enabled: false },
     },
     stroke: {
-      width: 6,
+      width: 5,
       colors: [currentTheme.surface],
     },
     legend: { show: false },
     tooltip: { enabled: false },
     dataLabels: { enabled: false },
-    labels: [
-      'Fashion',
-      'Electronic',
-      'Sports',
-      'Decor',
-    ],
     colors: [
       currentTheme.success,
-      currentTheme.primary,
       currentTheme.secondary,
-      currentTheme.info,
+      currentTheme.warning,
+      currentTheme.error,
     ],
     grid: {
       padding: {
@@ -73,9 +61,9 @@ const chartOptions = computed(() => {
             },
             total: {
               show: true,
-              label: 'Weekly',
+              label: 'Total',
               fontSize: '14px',
-              formatter: () => '38%',
+              formatter: () => '6',
               color: disabledTextColor,
               fontFamily: 'Public Sans',
             },
@@ -88,7 +76,7 @@ const chartOptions = computed(() => {
 
 const orders = [
   {
-    amount: '82.5k',
+    amount: '0.5k',
     title: 'Electronic',
     avatarColor: 'primary',
     subtitle: 'Mobile, Earbuds, TV',
@@ -117,90 +105,119 @@ const orders = [
   },
 ]
 
-const moreList = [
-  {
-    title: 'Share',
-    value: 'Share',
-  },
-  {
-    title: 'Refresh',
-    value: 'Refresh',
-  },
-  {
-    title: 'Update',
-    value: 'Update',
-  },
-]
 </script>
-
-<template>
-  <VCard>
-    <VCardItem class="pb-3">
-      <VCardTitle class="mb-1">
-        Or
-      </VCardTitle>
-      <VCardSubtitle>42.82k Total Sales</VCardSubtitle>
-
-      <template #append>
-        <div class="me-n3 mt-n8">
-          <MoreBtn :menu-list="moreList" />
-        </div>
-      </template>
-    </VCardItem>
-
-    <VCardText>
-      <div class="d-flex align-center justify-space-between mb-3">
-        <div class="flex-grow-1">
-          <h4 class="text-h4 mb-1">
-            8,258
-          </h4>
-          <span>Total Orders</span>
-        </div>
-
-        <div>
-          <VueApexCharts
-            type="donut"
-            :height="125"
-            width="105"
-            :options="chartOptions"
-            :series="series"
-          />
-        </div>
-      </div>
-
-      <VList class="card-list mt-7">
-        <VListItem
-          v-for="order in orders"
-          :key="order.title"
-        >
-          <template #prepend>
-            <VAvatar
-              rounded
-              variant="tonal"
-              :color="order.avatarColor"
-            >
-              <VIcon :icon="order.avatarIcon" />
-            </VAvatar>
-          </template>
-
-          <VListItemTitle class="mb-1">
-            {{ order.title }}
-          </VListItemTitle>
-          <VListItemSubtitle class="text-disabled">
-            {{ order.subtitle }}
-          </VListItemSubtitle>
-
-          <template #append>
-            <span>{{ order.amount }}</span>
-          </template>
-        </VListItem>
-      </VList>
-    </VCardText>
-  </VCard>
-</template>
-
 <style lang="scss" scoped>
-.card-list {
-  --v-card-list-gap: 21px;
-}
+  .square{
+    width: 10px;
+    height: 10px;
+    margin-right: 4px;
+  }
+  h6{
+    font-size: 9px;
+  }
 </style>
+<template>
+  <div v-if="Object.keys(stadistics).length > 0">
+
+    <VCard >
+      <VCardText class="px-6 px-md-6 py-1">
+        <div class="d-flex align-center justify-space-between">
+          <div class="">
+            <h4 class="text-h4">
+              {{ func.numberFormat( stadistics.countAllOrder ) }}
+            </h4>
+            <h4>Ordenes totales</h4>
+          </div>
+  
+          <div>
+            <VueApexCharts
+              type="donut"
+              :height="125"
+              width="105"
+              :options="chartOptions"
+              :series="series"
+            />
+          </div>
+        </div>
+      </VCardText>
+      <div class="d-flex w-100 justify-space-between px-2 py-2">
+          <div class="d-flex justify-center align-center">
+            <div class="square bg-success" />
+            <h6>Completadas: {{ stadistics.allFinish }}</h6> 
+          </div>
+          <div class="d-flex justify-center align-center">
+            <div class="square bg-secondary" />
+            <h6>En transito: {{ stadistics.allInTransit }}</h6>
+          </div>
+          <div class="d-flex justify-center align-center">
+            <div class="square bg-warning" />
+            <h6>Pendientes: {{ stadistics.allPend }}</h6>
+          </div>
+          <div class="d-flex justify-center align-center">
+            <div class="square bg-error" />
+            <h6>Canceladas: {{ stadistics.allCancel }} </h6>
+          </div>
+        </div>
+    </VCard>
+    <VCard class="mt-2">
+      <VCardText class="pa-1">
+        <VList class="card-list mt-0">
+          <VListItem
+            v-for="order in orders"
+            :key="order.title"
+          >
+            <template #prepend>
+              <VAvatar
+                rounded
+                variant="tonal"
+                :color="order.avatarColor"
+              >
+                <VIcon :icon="order.avatarIcon" />
+              </VAvatar>
+            </template>
+  
+            <VListItemTitle class="mb-1">
+              {{ order.title }}
+            </VListItemTitle>
+            <VListItemSubtitle class="text-disabled">
+              {{ order.subtitle }}
+            </VListItemSubtitle>
+  
+            <template #append>
+              <span>{{ order.amount }}</span>
+            </template>
+          </VListItem>
+        </VList>
+      </VCardText>
+    </VCard>
+  </div>
+</template>
+<script>
+  export default {
+    data () {
+      return {
+        stadistics:[],
+        series: [],
+      }
+    },
+    methods:{
+      getAll(){
+      this.$store.dispatch(GET_ALL_ORDER_STADISTICS)
+        .then((data) => {
+          if(data.code !== 200){
+            console.log('alert!!!')
+          }
+          console.log(data)
+          this.stadistics = data.data
+          this.series = [this.stadistics.allFinish, this.stadistics.allInTransit, this.stadistics.allPend, this.stadistics.allCancel]
+
+        })
+        .catch((e) => {
+        });
+     },
+    },
+    mounted(){
+      this.getAll()
+    }
+  };
+</script>

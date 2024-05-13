@@ -32,15 +32,15 @@ import searchOrder from '@/views/dashboard/searchTrackOrder.vue'
         <VCol
           cols="12"
           md="12"
+          v-if="getCurrentAccount.rol_id == 2 || getCurrentAccount.rol_id == 1 "
         >
-          <LastPendingOrders />
+          <finance />
         </VCol>
         <VCol
           cols="12"
           md="12"
-          v-if="getCurrentAccount.rol_id !== 3 "
         >
-          <finance />
+          <LastPendingOrders />
         </VCol>
       </VRow>
     </VCol>

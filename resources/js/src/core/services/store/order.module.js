@@ -2,13 +2,14 @@ import ApiService from "@/core/services/api.service";
 import JwtService from "@/core/services/jwt.service";
 
 // action types
-export const GET_ORDERS       = "GET_ORDERS";
-export const GET_LAST_ORDERS  = "GET_LAST_SEND_ORDERS";
-export const GET_ORDER_BY_ID  = "GET_ORDER_BY_ID";
-export const CREATE_ORDER     = "CREATE_ORDER";
-export const CREATE_OUT_ORDER = "CREATE_OUT_ORDER";
-export const CHANGE_STATUS    = "CHANGE_STATUS";
-
+export const GET_ORDERS         = "GET_ORDERS";
+export const GET_LAST_ORDERS    = "GET_LAST_SEND_ORDERS";
+export const GET_ORDER_BY_ID    = "GET_ORDER_BY_ID";
+export const CREATE_ORDER       = "CREATE_ORDER";
+export const CREATE_OUT_ORDER   = "CREATE_OUT_ORDER";
+export const CHANGE_STATUS      = "CHANGE_STATUS";
+export const SEARCH_BY_TRACKER  = "SEARCH_BY_TRACKER";
+export const GET_ALL_ORDER_STADISTICS = "GET_ALL_ORDER_STADISTICS";
 const actions = {
   [GET_ORDERS](context) {
     return new Promise((resolve, reject) => {
@@ -111,6 +112,36 @@ const actions = {
         });
       }
     });
+  },
+  [SEARCH_BY_TRACKER](context, tracker){
+    return new Promise((resolve, reject) => {
+      if (JwtService.getToken()) {
+        ApiService.setHeader();
+        ApiService.get("api/order/by_tracker/"+tracker)
+        .then(( { data } ) => {
+            resolve(data);
+        })
+        .catch(( { response } ) => {
+            console.log(response )
+            reject('Ocurrió un error desconocido al intentar obtener las ordenes');
+        });
+      }
+    })
+  },
+  [GET_ALL_ORDER_STADISTICS](context){
+    return new Promise((resolve, reject) => {
+      if (JwtService.getToken()) {
+        ApiService.setHeader();
+        ApiService.get("api/order/all_stadistics/")
+        .then(( { data } ) => {
+            resolve(data);
+        })
+        .catch(( { response } ) => {
+            console.log(response )
+            reject('Ocurrió un error desconocido al intentar obtener las ordenes');
+        });
+      }
+    })
   }
 };
 export default {
