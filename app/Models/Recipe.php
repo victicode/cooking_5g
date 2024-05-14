@@ -33,7 +33,7 @@ class Recipe extends Model
     }
     public function orders()
     {
-        return $this->belongsToMany(Order::class, 'products_x_orders')->withPivot(['quantity']);
+        return $this->belongsToMany(Order::class, 'products_x_orders')->withPivot(['quantity'])->where('status', '<>', '0');
     }
     public function outOrders()
     {

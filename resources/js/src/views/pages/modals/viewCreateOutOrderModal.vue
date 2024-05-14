@@ -482,9 +482,11 @@ export default {
     calculateUnitOrders(){
 
       let total = 0
-      this.selectedsLotes[this.loteModalName()].forEach( el =>  total = (parseFloat(total) + parseFloat(el.quantity).toFixed(2)))
+      this.selectedsLotes[this.loteModalName()].forEach( el =>  total = (parseFloat(total) + parseFloat(el.quantity)))
 
-      if(total <= this.totalQuantityOfProductInRecipe()){
+      console.log(this.totalQuantityOfProductInRecipe())
+      console.log(total)
+      if(total <= parseFloat(this.totalQuantityOfProductInRecipe())){
         
         this.enableButton('select_lote_for_order_button')
         this.closeAlert()
@@ -559,7 +561,7 @@ export default {
       return total;
     },
     totalQuantityOfProductInRecipe(){
-      return parseFloat(this.selectedProduct.pivot.quantity) * parseFloat(this.order.recipes[this.selectedProduct.position].pivot.quantity)
+      return (parseFloat(this.selectedProduct.pivot.quantity) * parseFloat(this.order.recipes[this.selectedProduct.position].pivot.quantity)).toFixed(2)
     }
   }
 

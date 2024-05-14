@@ -10,7 +10,7 @@ class Message extends Model
     use HasFactory;
     protected $fillable = ['message', 'product_id', 'sender_id', 'recept_id', 'read'];
 
-    public function product()
+    public function products()
     {
         return $this->belongsTo(Product::class, 'product_id');
     }

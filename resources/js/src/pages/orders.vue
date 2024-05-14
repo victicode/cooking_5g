@@ -518,7 +518,7 @@
             render: ( data, type, row, meta ) =>{ 
               return `
               
-              <span class="justify-center">
+              <span class="justify-center text-decoration-underline copyText">
                 #${row.trancker}
               </span>
               `
@@ -744,6 +744,11 @@
         document.getElementById('data-table').addEventListener('OptionsActionTable', () => this.activeOptionsTable() )	
       },
       activeOptionsTable() {
+        document.querySelectorAll('.copyText').forEach(item => {
+          item.addEventListener('click', event => {
+            this.copyOderNumber(event.target)
+          })	
+        })
         document.querySelectorAll('.view').forEach(item => {
           item.addEventListener('click', event => {
             this.selectOrder(event.target.dataset.id).finally((data)=>{
@@ -1218,7 +1223,33 @@
         } 
         return true
         
-      }  
+      }, 
+      copyOderNumber(element){
+        let texto = element.innerHTML.trim().substring(1);
+        // console.log(navigator)
+        // texto.select()
+        // document.execCommand('copy');
+        // try {
+        //   navigator.clipboard.writeText(texto)
+        //   console.log('Contenido copiado al portapapeles');
+        // } catch (err) {
+        //   console.error('Error al copiar: ', err);
+        // }
+          const textArea = document.createElement('textarea');
+          textArea.value = texto;
+          textArea.style.opacity = 0;
+          document.body.appendChild(textArea);
+          textArea.focus();
+          textArea.select();
+          try {
+            const success = document.execCommand('copy');
+            this.showSnackbar('success', 'Tracker ID copiado exitosamente')
+          } catch (err) {
+            console.error(err.name, err.message);
+          }
+          document.body.removeChild(textArea);
+        
+      }
     },
     mounted(){
       this.getUsers();

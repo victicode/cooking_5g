@@ -11,10 +11,10 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
           class="py-3 border-bottom-4 px-1 px-md-2"
         >
           <VRow class="pa-0 m-0 align-center">
-            <VCol cols="4" md="2" class="text-center hide-text px-2">
+            <VCol cols="6" md="2" class="text-center hide-text px-2">
               Fecha
             </VCol>
-            <VCol cols="5" md="3" class="text-center hide-text">
+            <VCol cols="6" md="3" class="text-center hide-text">
               Tracker ID
             </VCol>
             <VCol cols="2" class="text-center hide-text d-none d-sm-block">
@@ -23,9 +23,9 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
             <VCol cols="3" class="text-center hide-text d-none d-sm-block">
               Estado
             </VCol>
-            <VCol cols="3" md="2" class="text-center hide-text">
+            <!-- <VCol cols="3" md="2" class="text-center hide-text">
               Opciones
-            </VCol>
+            </VCol> -->
           </VRow>
          
         </VListItem>
@@ -37,12 +37,12 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
             class="py-3 border-bottom-4 px-1 px-md-2"
           >
             <VRow class="pa-0 m-0 align-center">
-              <VCol cols="4" md="2" class="text-center px-2">
+              <VCol cols="6" md="2" class="text-center px-2">
                 
                   {{moment(order.created_at ).format('DD/MM/YYYY') }}
                 
               </VCol>
-              <VCol cols="5" md="3" class="text-center">
+              <VCol cols="6" md="3" class="text-center text-decoration-underline" @click="copyOderNumber($event)">
                 
                   #{{ order.trancker }}
                 
@@ -57,9 +57,9 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
                 <v-chip class="bg-warning">{{ order.status_label.status }}</v-chip>
                 <!-- <v-chip class="bg-warning">{{ order.status_info }}</v-chip> -->
               </VCol>
-              <VCol cols="3" md="2" class="text-center">
+              <!-- <VCol cols="3" md="2" class="text-center">
                 <VIcon icon="bx-show" />
-              </VCol>
+              </VCol> -->
             </VRow>
            
           </VListItem>
@@ -77,6 +77,24 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
         </template>
       </VList>
     </VCardText>
+    <v-snackbar
+      v-model="snackShow"
+      :color="snackType"
+      rounded="pill"
+      :timeout="snacktimeOut"
+      width="max-content"
+      class="text-center"
+    >
+     <h4 class="text-white w-100 text-center">
+
+       {{snackMessage}}
+     </h4>
+        <template
+          v-slot:actions
+        >
+        <VBtn  color="white" class="text-white" @click="snackShow=false"> Cerrar</VBtn>
+        </template>
+    </v-snackbar>
   </VCard>
 </template>
 
@@ -94,7 +112,11 @@ import { mapGetters } from 'vuex';
   export default {
     data(){
       return{
-        orders:[]
+        orders:[],
+        snackShow:false,
+        snackMessage:'',
+        snackType:'',
+        snacktimeOut:5000,
       }
     },
     methods:{
@@ -113,7 +135,39 @@ import { mapGetters } from 'vuex';
 
           console.log(e)
         });
-      }
+      },
+      copyOderNumber(element){
+        
+        let texto = element.target.innerHTML.trim().substring(1);
+        // console.log(navigator)
+        // texto.select()
+        // document.execCommand('copy');
+        // try {
+        //   navigator.clipboard.writeText(texto)
+        //   console.log('Contenido copiado al portapapeles');
+        // } catch (err) {
+        //   console.error('Error al copiar: ', err);
+        // }
+          const textArea = document.createElement('textarea');
+          textArea.value = texto;
+          textArea.style.opacity = 0;
+          document.body.appendChild(textArea);
+          // textArea.focus();
+          textArea.select();
+          try {
+            const success = document.execCommand('copy');
+            this.showSnackbar('success', 'Tracker ID copiado exitosamente')
+          } catch (err) {
+            console.error(err.name, err.message);
+          }
+          document.body.removeChild(textArea);
+        
+      },
+      showSnackbar(type, messagge){
+        this.snackShow = true;
+        this.snackType = type
+        this.snackMessage = messagge
+      },
     },
     mounted(){
       this.getOrders()

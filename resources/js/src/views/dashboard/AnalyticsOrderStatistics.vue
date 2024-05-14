@@ -7,106 +7,84 @@ import { func } from '../../core/services/utils/utils';
 const vuetifyTheme = useTheme()
 
 const chartOptions = computed(() => {
-  const currentTheme = vuetifyTheme.current.value.colors
-  const variableTheme = vuetifyTheme.current.value.variables
-  const disabledTextColor = `rgba(${ hexToRgb(String(currentTheme['on-surface'])) },${ variableTheme['disabled-opacity'] })`
-  const primaryTextColor = `rgba(${ hexToRgb(String(currentTheme['on-surface'])) },${ variableTheme['high-emphasis-opacity'] })`
-  
-  return {
-    chart: {
-      sparkline: { enabled: true },
-      animations: { enabled: false },
+const currentTheme = vuetifyTheme.current.value.colors
+const variableTheme = vuetifyTheme.current.value.variables
+const disabledTextColor = `rgba(${ hexToRgb(String(currentTheme['on-surface'])) },${ variableTheme['disabled-opacity'] })`
+const primaryTextColor = `rgba(${ hexToRgb(String(currentTheme['on-surface'])) },${ variableTheme['high-emphasis-opacity'] })`
+
+return {
+  chart: {
+    sparkline: { enabled: true },
+    animations: { enabled: false },
+  },
+  stroke: {
+    width: 5,
+    colors: [currentTheme.surface],
+  },
+  legend: { show: false },
+  tooltip: { enabled: false },
+  dataLabels: { enabled: false },
+  colors: [
+    currentTheme.success,
+    currentTheme.secondary,
+    currentTheme.warning,
+    currentTheme.error,
+  ],
+  grid: {
+    padding: {
+      top: -7,
+      bottom: 5,
     },
-    stroke: {
-      width: 5,
-      colors: [currentTheme.surface],
-    },
-    legend: { show: false },
-    tooltip: { enabled: false },
-    dataLabels: { enabled: false },
-    colors: [
-      currentTheme.success,
-      currentTheme.secondary,
-      currentTheme.warning,
-      currentTheme.error,
-    ],
-    grid: {
-      padding: {
-        top: -7,
-        bottom: 5,
-      },
-    },
-    states: {
-      hover: { filter: { type: 'none' } },
-      active: { filter: { type: 'none' } },
-    },
-    plotOptions: {
-      pie: {
-        expandOnClick: false,
-        donut: {
-          size: '75%',
-          labels: {
+  },
+  states: {
+    hover: { filter: { type: 'none' } },
+    active: { filter: { type: 'none' } },
+  },
+  plotOptions: {
+    pie: {
+      expandOnClick: false,
+      donut: {
+        size: '75%',
+        labels: {
+          show: true,
+          name: {
+            offsetY: 17,
+            fontSize: '14px',
+            color: disabledTextColor,
+            fontFamily: 'Public Sans',
+            show:false
+          },
+          value: {
+            offsetY: 10,
+            fontSize: '24px',
+            color: primaryTextColor,
+            fontFamily: 'Public Sans',
+          },
+          total: {
             show: true,
-            name: {
-              offsetY: 17,
-              fontSize: '14px',
-              color: disabledTextColor,
-              fontFamily: 'Public Sans',
-            },
-            value: {
-              offsetY: -17,
-              fontSize: '24px',
-              color: primaryTextColor,
-              fontFamily: 'Public Sans',
-            },
-            total: {
-              show: true,
-              label: 'Total',
-              fontSize: '14px',
-              formatter: () => '6',
-              color: disabledTextColor,
-              fontFamily: 'Public Sans',
-            },
+            label: 'Total',
+            fontSize: '14px',
+            color: disabledTextColor,
+            fontFamily: 'Public Sans',
           },
         },
       },
     },
-  }
+  },
+}
 })
 
-const orders = [
-  {
-    amount: '0.5k',
-    title: 'Electronic',
-    avatarColor: 'primary',
-    subtitle: 'Mobile, Earbuds, TV',
-    avatarIcon: 'bx-mobile-alt',
-  },
-  {
-    amount: '23.8k',
-    title: 'Fashion',
-    avatarColor: 'success',
-    subtitle: 'Tshirt, Jeans, Shoes',
-    avatarIcon: 'bx-closet',
-  },
-  {
-    amount: 849,
-    title: 'Decor',
-    avatarColor: 'info',
-    subtitle: 'Fine Art, Dining',
-    avatarIcon: 'bx-home',
-  },
-  {
-    amount: 99,
-    title: 'Sports',
-    avatarColor: 'secondary',
-    subtitle: 'Football, Cricket Kit',
-    avatarIcon: 'bx-football',
-  },
-]
 
 </script>
+<style lang="scss" >
+.mostProductsInRecipe{
+  & > .v-card-item{
+    padding-bottom: 0px;
+  }
+}
+</style>
 <style lang="scss" scoped>
+  
   .square{
     width: 10px;
     height: 10px;
@@ -159,32 +137,34 @@ const orders = [
           </div>
         </div>
     </VCard>
-    <VCard class="mt-2">
+    <VCard class="mt-2 mostProductsInRecipe" title="Receta mas pedidas">
       <VCardText class="pa-1">
         <VList class="card-list mt-0">
           <VListItem
-            v-for="order in orders"
-            :key="order.title"
+            v-for="(recipe, index) in stadistics.mostOrderProducts"
+            :key="recipe.id"
           >
             <template #prepend>
               <VAvatar
                 rounded
                 variant="tonal"
-                :color="order.avatarColor"
+                :color="'primary'"
               >
-                <VIcon :icon="order.avatarIcon" />
+              {{ index+1 }}
               </VAvatar>
             </template>
   
             <VListItemTitle class="mb-1">
-              {{ order.title }}
+              {{ recipe.title }}
             </VListItemTitle>
-            <VListItemSubtitle class="text-disabled">
-              {{ order.subtitle }}
+            <VListItemSubtitle class="">
+              {{ recipe.orders_count }} {{ recipe.orders_count > 1 ? 'Ordenes' : 'Orden' }} 
+              -
+              {{ recipeQuantityCount(recipe.orders) }} unidades solicitadas
             </VListItemSubtitle>
   
             <template #append>
-              <span>{{ order.amount }}</span>
+              <!-- <span>{{ recipe.amount }}</span> -->
             </template>
           </VListItem>
         </VList>
@@ -214,7 +194,14 @@ const orders = [
         })
         .catch((e) => {
         });
-     },
+      },
+      recipeQuantityCount(recipe){
+        let total = 0 
+        recipe.forEach((order) =>{
+          total += order.pivot.quantity
+        });
+        return total
+      }
     },
     mounted(){
       this.getAll()

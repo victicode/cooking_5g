@@ -72,7 +72,6 @@ class OrderController extends Controller
         return $this->returnSuccess(200, $order );
     }
     public function getOrderByTracker($id) {
-        
         try {
             //code...
             $order = Order::withCount('recipes')->with(['user', 'products', 'client', 'outOrder', 'recipes.cooking_ingredients'])->where('trancker', $id)->first();
@@ -278,7 +277,7 @@ class OrderController extends Controller
         return Order::with(['user', 'products', 'client', 'outOrder', 'recipes.cooking_ingredients'])->where('status', $status)->get();
     }
     private function MostOrderRecipe(){
-        return Recipe::whereHas('orders')->withCount('orders')->take(5)->get();
+        return Recipe::whereHas('orders')->withCount('orders')->with('orders')->orderBy('orders_count', 'desc')->take(5)->get();
     }
 
 }

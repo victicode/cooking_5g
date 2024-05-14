@@ -199,13 +199,15 @@ const props = defineProps({
 <script>
 
 export default {
-
+  data: () => ({
+    token: localStorage.getItem('id_token'),
+    url:import.meta.env.VITE_VUE_APP_BACKEND_URL,
+  }),
   methods:{
     orderNumberFormat(id){
         return '0000000'.slice( 0, 6 - id.toString().length ) + id 
     },
     hideModal(){
-      console.log('lll')
       this.$emit('actionModal','hiddenModal')
     },
     showModal(){

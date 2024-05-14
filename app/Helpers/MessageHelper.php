@@ -19,7 +19,7 @@ function seeAllMessage($user){
 function getAllMessage($id){
 
   return [
-   'all' => Message::take(10)->orderBy('created_at', 'DESC')->where('recept_id', $id)->with(['product', 'sender'])->get(),
+   'all' => Message::take(10)->orderBy('created_at', 'DESC')->where('recept_id', $id)->with(['products', 'sender'])->get(),
    'new_count' => Message::where('read', 0)->orderBy('created_at', 'DESC')->where('recept_id', $id)->take(10)->count(),
   ];
 

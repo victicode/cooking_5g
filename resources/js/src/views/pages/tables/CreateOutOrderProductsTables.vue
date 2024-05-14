@@ -45,7 +45,7 @@ const as = window
              </div>
            </td>
            <td class="text-center px-2"> 
-             {{  parseFloat(recipe.pivot.quantity) * parseFloat(product.pivot.quantity) }}
+             {{  (parseFloat(recipe.pivot.quantity) * parseFloat(product.pivot.quantity)).toFixed(2) }}
            </td>
            <td class="text-center px-2"> 
              <v-chip  :append-icon="!product.in_order ? 'fa-solid:truck-loading' : 'fluent:box-checkmark-20-regular'" :color="!product.in_order ? 'warning' : 'success'" @click="selectProduct(product.id, index)">

@@ -76,7 +76,7 @@
                   <div>
                     <a href="">{{ item.sender.name }} </a>
                     te ha notificado que: 
-                    <a>{{ item.product.title }}</a> <span v-html="item.message"> </span>
+                    <a>{{ item.products.title }}</a> <span v-html="item.message"> </span>
                   </div>
                 </div>
             </Component>
