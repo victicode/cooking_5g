@@ -728,18 +728,18 @@
     }),
     methods:{
       getUser(){
-      this.$store.dispatch(GET_USER)
-        .then((data) => {
-          if(data.code !== 200){
-            console.log('alert!!!')
-          }
-          this.user = data.user;
-          if(data.user.rol_id == 3) this.isUser = true
-        })
-        .catch((e) => {
-          this.logout()
-        });
-    },
+        this.$store.dispatch(GET_USER)
+          .then((data) => {
+            if(data.code !== 200){
+              console.log('alert!!!')
+            }
+            this.user = data.user;
+            if(data.user.rol_id == 3) this.isUser = true
+          })
+          .catch((e) => {
+            this.logout()
+          });
+      },
       initOptionsTable(){
         document.getElementById('data-table').addEventListener('OptionsActionTable', () => this.activeOptionsTable() )	
       },
