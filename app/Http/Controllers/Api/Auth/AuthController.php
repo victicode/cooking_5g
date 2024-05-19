@@ -12,25 +12,26 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    //
 	public function login(Request $request){
-		// echo 'nada que ver';
 		try {
 			$validator = Validator::make($request->all(), [
 				'email'=> 'required',
 				'password'=>'required'
 		]);
 		} catch (Exception $e) {
-			return response()->json([ 'data'=>['code'=>200,'access_token' => $e]], 200);
+			// return response()->json([ 'data'=>['code'=>200,'access_token' => $e]], 200);
+			return 'nopasa';
 		}
 		
 		if($validator->fails()){
-				return response()->json($validator->errors(),442);
+			// return response()->json($validator->errors(),442);
+			return 'nopasax1';
 		}
 
 		$token = JWTAuth::attempt($validator->validate());
 		if(!$token){
-				return response()->json(['data' => ['ll' => [$validator->validate()] ,'code' => 500, 'messagge'=> 'Estas credenciales no coinciden con nuestros registros.']],403);
+			// return response()->json(['data' => ['ll' => [$validator->validate()] ,'code' => 500, 'messagge'=> 'Estas credenciales no coinciden con nuestros registros.']],403);
+			return 'nopasax2';
 		}
 		return response()->json([ 'data'=>['code'=>200,'access_token' => $token]], 200);
 	}

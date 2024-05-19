@@ -16,7 +16,7 @@ import clientComponent from '@/pages/users/client.vue';
 import chefComponent from '@/pages/users/chef.vue';
 import accountSettings from  '@/pages/account-settings.vue'
 import supportComponent from '@/pages/support.vue'
-
+import loginPage from '@/pages/logins.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -132,32 +132,12 @@ const router = createRouter({
             title : 'Ajustes de perfil',
           },
         },
-        {
-          path: 'typography',
-          component: () => import('@/pages/typography.vue'),
-        },
-        {
-          path: 'icons',
-          component: () => import('@/pages/icons.vue'),
-        },
-        {
-          path: 'cards',
-          component: () => import('@/pages/cards.vue'),
-        },
-        {
-          path: 'tables',
-          component: () => import('@/pages/tables.vue'),
-        },
-        {
-          path: 'form-layouts',
-          component: () => import('@/pages/form-layouts.vue'),
-        },
       ]
     },
     {
       path: "/login",
       name: "Login",
-      component: () => import('@/pages/logins.vue'),
+      component: loginPage,
       meta: {
         title: 'Bienvenido'
       },
