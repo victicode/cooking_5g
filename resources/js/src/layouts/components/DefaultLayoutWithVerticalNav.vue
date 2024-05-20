@@ -22,111 +22,113 @@ const vuetifyTheme = useTheme()
 </script>
 
 <template>
-  <VerticalNavLayout>
-    <!-- 👉 navbar -->
-    <template #navbar="{ toggleVerticalOverlayNavActive }">
-      <div class="d-flex h-100 align-center px-0 mx-0">
-        <!-- 👉 Vertical nav toggle in overlay mode -->
-        <div  class="position-relative ps-1 menu-content" >
-          <IconBtn
-            class="ms-n3 d-lg-none"
-            @click="toggleVerticalOverlayNavActive(true)"
-            >
-            <VIcon icon="bx-menu" />
-          </IconBtn>
-          <div class="unReadMessage-acitve bg-error d-md-none"  v-if="unReadMessages  > 0" />
-        </div>
-
-        <!-- 👉 Search -->
-        <VBreadcums class="d-none d-md-block" />
-      
-        <VSpacer />
-
+  <div>
+    <VerticalNavLayout>
+      <!-- 👉 navbar -->
+      <template #navbar="{ toggleVerticalOverlayNavActive }">
+        <div class="d-flex h-100 align-center px-0 mx-0">
+          <!-- 👉 Vertical nav toggle in overlay mode -->
+          <div  class="position-relative ps-1 menu-content" >
+            <IconBtn
+              class="ms-n3 d-lg-none"
+              @click="toggleVerticalOverlayNavActive(true)"
+              >
+              <VIcon icon="bx-menu" />
+            </IconBtn>
+            <div class="unReadMessage-acitve bg-error d-md-none"  v-if="unReadMessages  > 0" />
+          </div>
+  
+          <!-- 👉 Search -->
+          <VBreadcums class="d-none d-md-block" />
         
-        <NotificationArea />
-        <MessageArea v-if="getCurrentAccount.rol_id !== 3"/>
-
-        <NavbarThemeSwitcher class="me-2" />
-
-        <UserProfile />
-      </div>
-    </template>
-    <VBreadcums class="d-block d-md-none" v-if="$route.href !=='/support' "/>
-    <template #vertical-nav-content>
-      <VerticalNavLink
-        class="mt-3"
-        :item="{
-          title: 'Dashboard',
-          icon: 'bx-home',
-          to: '/dashboard',
-        }"
-      />
-      <VerticalNavLink
-        v-if="getCurrentAccount.rol_id !== 3 "
-        class="mt-3"
-        :item="{
-          title: 'Productos',
-          icon: 'bx-package',
-          to: currentUser.rol_id !== 3  ? '/products' : '/products_client', 
-        }"
-      />
-      <VerticalDropdownNavLink 
-        class="mt-3"
-        v-if="getCurrentAccount.rol_id == 1 "
-        :item="{
-          title: 'Chefs',
-          items:[
-            {
-              title: 'Chefs usuario',
-              icon: 'mdi-users-group-outline',
-              to: '/user-list',
-            },
-            {
-              title: 'Chef Master',
-              icon: 'icon-park-twotone:chef-hat',
-              to: '/chef-list',
-            }
-          ],
-        }"
-      />
-      <VerticalNavLink
-
-        class="mt-3"
-        :item="{
-          title:  'Recetas',
-          icon: 'bx-receipt',
-          to: currentUser.rol_id !== 3 ? '/recipes' : '/recipes',
-        }"
-      />
-      <VerticalNavLink
+          <VSpacer />
+  
+          
+          <NotificationArea />
+          <MessageArea v-if="getCurrentAccount.rol_id !== 3"/>
+  
+          <NavbarThemeSwitcher class="me-2" />
+  
+          <UserProfile />
+        </div>
+      </template>
+      <VBreadcums class="d-block d-md-none" v-if="$route.href !=='/support' "/>
+      <template #vertical-nav-content>
+        <VerticalNavLink
+          class="mt-3"
+          :item="{
+            title: 'Dashboard',
+            icon: 'bx-home',
+            to: '/dashboard',
+          }"
+        />
+        <VerticalNavLink
+          v-if="getCurrentAccount.rol_id !== 3 "
+          class="mt-3"
+          :item="{
+            title: 'Productos',
+            icon: 'bx-package',
+            to: currentUser.rol_id !== 3  ? '/products' : '/products_client', 
+          }"
+        />
+        <VerticalDropdownNavLink 
+          class="mt-3"
+          v-if="getCurrentAccount.rol_id == 1 "
+          :item="{
+            title: 'Chefs',
+            items:[
+              {
+                title: 'Chefs usuario',
+                icon: 'mdi-users-group-outline',
+                to: '/user-list',
+              },
+              {
+                title: 'Chef Master',
+                icon: 'icon-park-twotone:chef-hat',
+                to: '/chef-list',
+              }
+            ],
+          }"
+        />
+        <VerticalNavLink
+  
+          class="mt-3"
+          :item="{
+            title:  'Recetas',
+            icon: 'bx-receipt',
+            to: currentUser.rol_id !== 3 ? '/recipes' : '/recipes',
+          }"
+        />
+        <VerticalNavLink
+        
+          class="mt-3"
+          :item="{
+            title: currentUser.rol_id !== 3 ?'Ordenes' : 'Mis Ordenes',
+            icon: 'bx-task',
+            to: '/orders',
+          }"
+        />
+        <VerticalNavLink
+        
+          class="mt-16"
+          :item="{
+            title: 'Soporte',
+            icon: 'ic:sharp-support',
+            to: '/support',
+          }"
+        />
+      </template>
+  
+      <!-- 👉 Pages -->
       
-        class="mt-3"
-        :item="{
-          title: currentUser.rol_id !== 3 ?'Ordenes' : 'Mis Ordenes',
-          icon: 'bx-task',
-          to: '/orders',
-        }"
-      />
-      <VerticalNavLink
-      
-        class="mt-16"
-        :item="{
-          title: 'Soporte',
-          icon: 'ic:sharp-support',
-          to: '/support',
-        }"
-      />
-    </template>
-
-    <!-- 👉 Pages -->
-    
-    <slot />
-
-    <!-- 👉 Footer -->
-    <!-- <template #footer>
-      <Footer />
-    </template> -->
-  </VerticalNavLayout>
+      <slot />
+  
+      <!-- 👉 Footer -->
+      <!-- <template #footer>
+        <Footer />
+      </template> -->
+    </VerticalNavLayout>
+  </div>
 </template>
 
 <style lang="scss" scoped>

@@ -90,12 +90,14 @@ return {
     height: 10px;
     margin-right: 4px;
   }
-  h6{
-    font-size: 9px;
+  @media screen and (max-width: 780px){
+    h5{
+      font-size: 9px;
+    }
   }
 </style>
 <template>
-  <div v-if="Object.keys(stadistics).length > 0">
+  <div v-if="Object.keys(stadistics).length > 0 ">
 
     <VCard >
       <VCardText class="px-6 px-md-6 py-1">
@@ -118,27 +120,27 @@ return {
           </div>
         </div>
       </VCardText>
-      <div class="d-flex w-100 justify-space-between px-2 py-2">
-          <div class="d-flex justify-center align-center">
+      <div class="d-flex w-100 justify-space-between justify-md-center px-2 py-2">
+          <div class="d-flex justify-center align-center mx-md-4">
             <div class="square bg-success" />
-            <h6>Completadas: {{ stadistics.allFinish }}</h6> 
+            <h5>Completadas: {{ stadistics.allFinish }}</h5> 
           </div>
-          <div class="d-flex justify-center align-center">
+          <div class="d-flex justify-center align-center mx-md-4">
             <div class="square bg-secondary" />
-            <h6>En transito: {{ stadistics.allInTransit }}</h6>
+            <h5>En transito: {{ stadistics.allInTransit }}</h5>
           </div>
-          <div class="d-flex justify-center align-center">
+          <div class="d-flex justify-center align-center mx-md-4">
             <div class="square bg-warning" />
-            <h6>Pendientes: {{ stadistics.allPend }}</h6>
+            <h5>Pendientes: {{ stadistics.allPend }}</h5>
           </div>
-          <div class="d-flex justify-center align-center">
+          <div class="d-flex justify-center align-center mx-md-4">
             <div class="square bg-error" />
-            <h6>Canceladas: {{ stadistics.allCancel }} </h6>
+            <h5>Canceladas: {{ stadistics.allCancel }} </h5>
           </div>
         </div>
     </VCard>
     <VCard class="mt-2 mostProductsInRecipe" title="Receta mas pedidas">
-      <VCardText class="pa-1">
+      <VCardText class="pa-1" v-if="stadistics.mostOrderProducts.length > 0">
         <VList class="card-list mt-0">
           <VListItem
             v-for="(recipe, index) in stadistics.mostOrderProducts"
@@ -168,6 +170,9 @@ return {
             </template>
           </VListItem>
         </VList>
+      </VCardText>
+      <VCardText class="mt-3 w-100 d-flex justify-center align-center py-3">
+        <h3>No hay resultados</h3>
       </VCardText>
     </VCard>
   </div>

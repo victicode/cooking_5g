@@ -145,6 +145,10 @@ import date from '../../assets/plugins/formvalidation/src/js/validators/date';
         <VBtn  color="white" class="text-white" @click="snackShow=false"> Cerrar</VBtn>
         </template>
     </v-snackbar>
+    <form id="TheForm" method="post" action="/api/recipes/client/print/multiple" target="PRINT">
+      <input type="hidden" name="recipes" id="validateTags" />
+      <input type="hidden" name="init" id="initPosition" />
+    </form>
   </div>
 </template>
 <style lang="scss">
@@ -253,7 +257,9 @@ import date from '../../assets/plugins/formvalidation/src/js/validators/date';
       printTags(){
         let validTags = this.tagsToPrint.filter((tag)=> tag.recipe.id !=='' )
         if(validTags.length > 0){
-          var ventana = window.open(this.printUrl(validTags), 'PRINT', 'height=400,width=600');
+          var ventana = window.open(this.printUrl(), 'PRINT', 'height=400,width=600');
+          this.sendUrlData(validTags)
+
           setTimeout(() => {
             ventana.document.close();
             ventana.focus();
@@ -272,9 +278,14 @@ import date from '../../assets/plugins/formvalidation/src/js/validators/date';
 
         this.tagsToPrint[index].consumo = date
       },
-      printUrl(validTags){
-        return `/api/recipes/client/print/multiple?recipes=${JSON.stringify(validTags)}&init=${this.init}`
+      printUrl(){
+        return `/api/recipes/client/print/multiple`
       },
+      sendUrlData(validTags){
+        document.getElementById('validateTags').value = JSON.stringify(validTags);
+        document.getElementById('initPosition').value = this.init;
+        document.getElementById('TheForm').submit()
+      }
       
     },
     mounted(){

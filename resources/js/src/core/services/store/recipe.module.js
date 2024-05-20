@@ -65,7 +65,7 @@ const actions = {
       return new Promise((resolve, reject) => {
         if (JwtService.getToken()) {
           ApiService.setHeader();
-          ApiService.delete("api/recipes/"+ id)
+          ApiService.post("api/recipes/delete/"+ id)
           .then(( { data } ) => {
               // console.log(data)
               resolve(data);

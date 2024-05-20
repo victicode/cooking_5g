@@ -149,7 +149,7 @@ const props = defineProps({
                             <h4 class="my-2">
                               Cantidad solicitada: 
                             </h4>
-                            <v-chip class="bg-success ms-2">{{ this.totalQuantityOfProductInRecipe() }} {{ selectedProduct.type_of_unit}}</v-chip>
+                            <v-chip class="bg-success ms-2">{{ totalQuantityOfProductInRecipe() }} {{ selectedProduct.type_of_unit}}</v-chip>
                           </div>
                           
                         </div>

@@ -123,7 +123,7 @@ const actions = {
       return new Promise((resolve, reject) => {
         if (JwtService.getToken()) {
           ApiService.setHeader();
-          ApiService.delete("api/products/"+ id)
+          ApiService.post("api/products/delete/"+ id)
           .then(( { data } ) => {
               // console.log(data)
               resolve(data);
@@ -174,7 +174,7 @@ const actions = {
       return new Promise((resolve, reject) => {
         if (JwtService.getToken()) {
           ApiService.setHeader();
-          ApiService.delete("api/lotes/"+loteID)
+          ApiService.post("api/lotes/delete/"+loteID)
           .then(( { data } ) => {
               console.log(data)
               resolve(data);

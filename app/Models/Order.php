@@ -18,19 +18,19 @@ class Order extends Model
     protected $statuses = array(
         0   =>  [
             'status' => 'Cancelado',
-            'svg'    => 'http://192.168.31.20:8085/images/status/cancel.svg',
+            'svg'    => 'http://victorriverodev.infinityfreeapp.com/images/status/cancel.svg',
         ],
         1   =>  [
             'status' => 'Pendiente',
-            'svg'    => 'http://192.168.31.20:8085/images/status/pending.svg',
+            'svg'    => 'http://victorriverodev.infinityfreeapp.com/images/status/pending.svg',
         ],
         2   =>  [
             'status' => 'En transito',
-            'svg'    => 'http://192.168.31.20:8085/images/status/in_transit.svg',
+            'svg'    => 'http://victorriverodev.infinityfreeapp.com/images/status/in_transit.svg',
         ],
         3   =>  [
             'status' => 'Entregado', 
-            'svg'    => 'http://192.168.31.20:8085/images/status/confirm.svg',
+            'svg'    => 'http://victorriverodev.infinityfreeapp.com/images/status/confirm.svg',
         ],
     );
     // protected $appends = ['status_label', 'lote'];
@@ -43,11 +43,11 @@ class Order extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'created_by')->withTrashed();
     }
     public function client()
     {
-        return $this->belongsTo(User::class, 'client_id');
+        return $this->belongsTo(User::class, 'client_id')->withTrashed();
     }
     public function outOrder(){
         return $this->hasOne(OutOrder::class, 'order_id', 'id');

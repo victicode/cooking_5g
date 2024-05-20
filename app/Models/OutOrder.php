@@ -18,12 +18,10 @@ class OutOrder extends Model
 
     public function getLotedAttribute()
     {
-        // return  ;  
         foreach ($this->products as $key) {
             $key->lotes = Lot::find($key->pivot->lote_id);
         }
         return true;
-        
     }
     public function products()
     {

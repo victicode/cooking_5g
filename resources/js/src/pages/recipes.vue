@@ -159,6 +159,11 @@
             </VCol>
           </VRow>
       </template>
+      <template v-else>
+        <VCard class="mt-3 w-100 d-flex justify-center align-center py-5" >
+          <h2>No tienes recetas creadas</h2>
+        </VCard>
+      </template>
 
     </VCol>
     <div v-if="isRecipe" >
@@ -1006,7 +1011,6 @@
                                             </div>
                                           </label>
                                           <VCol cols="12" md="12"  class="form-group text-center ma-0 mt-0 pa-0">
-              
                                             <input type="file"  id="newRecipe-img" ref="newRecipeImg" name="new_recipe_img" class="d-none" @change="onFileChange($event, 'new')" >
                                           </VCol>
                                         </div>
@@ -1822,31 +1826,28 @@
         debounce(this.getRecipes, 200)()
 
       },
-      async selectRecipe(idAccount){
+      selectRecipe(idAccount){
         this.isRecipe = false
-        this.$store
-          .dispatch(GET_RECIPE_BY_ID, idAccount)
-          .then((response) => {
-
-           
-            this.selectedRecipe = Object.assign({}, response.data); 
-            this.selectedRecipe.ingredients = JSON.parse(response.data.ingredients)
-            this.selectedRecipe.preparation = JSON.parse(response.data.preparation)
-            this.isRecipe = true
-
-            setTimeout(() => {
-              if(window.screen.width < 480 && this.getCurrentAccount.rol_id !== 3) this.drawer = true;
-              return new Promise((resolve) => {
-                  resolve(response.data);
-              });
-            }, 1000);
-          })
-          .catch((err) => {
-            console.log(err)
-            return new Promise((resolve) => {
-              resolve(false);
-            });
-          })
+        this.emitter.emit('displayOverlayLoad', true)
+        return new Promise((resolve) => {
+          this.$store
+            .dispatch(GET_RECIPE_BY_ID, idAccount)
+            .then((response) => {
+              this.selectedRecipe = Object.assign({}, response.data); 
+              this.selectedRecipe.ingredients = JSON.parse(response.data.ingredients)
+              this.selectedRecipe.preparation = JSON.parse(response.data.preparation)
+              this.isRecipe = true
+              setTimeout(() => {
+                this.emitter.emit('displayOverlayLoad', false)
+                if(window.screen.width < 480 && this.getCurrentAccount.rol_id !== 3) this.drawer = true;
+                resolve(response.data);
+              }, 300);
+            })
+        })
+        .catch((err) => {
+          console.log(err)
+          resolve(false);
+        })
       },
       bootstrapOptions(){
         setTimeout(() => {
@@ -1862,12 +1863,9 @@
         this.table.clear();
         this.table.columns().search('').draw('full-hold')
       },
-      showAction(id, modal){
-        this.selectRecipe(id).finally((data)=>{
-          
-          setTimeout(() => {
-            this.showModal(modal)
-          }, 1000);
+      async showAction(id, modal){
+       await this.selectRecipe(id).finally((data)=>{
+          this.showModal(modal)
         })
       },
       showModal(modal) {
@@ -1925,8 +1923,6 @@
       },
       onFileChange(e, type) {
         const file = e.target.files[0];
-
-
        return  type=='new'
         ? this.newRecipe.img = URL.createObjectURL(file)
         : this.selectedRecipe.image_url = URL.createObjectURL(file)
@@ -2165,9 +2161,6 @@
   
           return true
     
-      },
-      racionFormat(id){
-        return '00'.slice( 0, 2 - id.toString().length ) + id 
       },
       allIngredients(){
         let all= ''

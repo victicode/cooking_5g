@@ -41,7 +41,7 @@ class ProductController extends Controller
     {
         $imgPath = '';
         if ($request->img) {
-            $imgPath = 'images/product/' . trim(str_replace(' ', '_', $request->title ));
+            $imgPath = 'public/images/product/' . trim(str_replace(' ', '_', $request->title )) .'.'. $request->File('img')->extension();
             $request->file('img')->move(public_path() . '/images/product/', $imgPath);
         }
 

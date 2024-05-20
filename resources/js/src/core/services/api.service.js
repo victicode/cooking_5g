@@ -16,12 +16,6 @@ const ApiService = {
       "Authorization"
     ] = `Bearer ${JwtService.getToken()}`;
     axios.defaults.headers.common[
-      "Content-Type"
-    ] = `application/json;charset=UTF-8`;
-    axios.defaults.headers.common[
-      "Access-Control-Allow-Origin"
-    ] = `*`
-    axios.defaults.headers.common[
       "Accept"
     ] = `application/json`;
   },

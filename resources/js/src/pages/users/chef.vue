@@ -89,12 +89,6 @@
                       </div>
                     </VCardTitle>
                   </VCardItem>
-                  <VCardText class="mb-5  w-100 pa-0" v-if="alertShow">
-                    <v-alert
-                      :color="alertType"
-                      :text="alertMessage"
-                    ></v-alert>
-                  </VCardText>
                   <VCardText class="w-100 pb-5 px-3 px-md-6">
                     <VForm  id="edit_user_form">
                       <VRow class="align-center">
@@ -265,7 +259,7 @@
         </div>
       </div>
       <viewOrderModal :order="selectedUser.selectedOrder" v-if="selectedUser.selectedOrder" @actionModal="hideInternalModal()"  />
-      <viewTimelineOrderModal :order="selectedUser.selectedOrder" v-if="selectedUser.selectedOrder" @actionModal="hideInternalModal()"/>
+      <!-- <viewTimelineOrderModal :order="selectedUser.selectedOrder" v-if="selectedUser.selectedOrder" @actionModal="hideInternalModal()"/> -->
 
     </div>
     <div class="modal animate__animated animate__fadeInDown"  id="createNewUser" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
@@ -294,12 +288,6 @@
                       </div>
                     </VCardTitle>
                   </VCardItem>
-                  <VCardText class="mb-5  w-100 pa-0" v-if="alertShow">
-                    <v-alert
-                      :color="alertType"
-                      :text="alertMessage"
-                    ></v-alert>
-                  </VCardText>
                   <VCardText class="w-100 pb-5 px-3 px-md-6">
                     <VForm  id="new_user_form">
                       <VRow class="align-center">
@@ -612,52 +600,47 @@ table.dataTable tbody th, table.dataTable tbody td{
       },
       activeOptionsTable() {
         document.querySelectorAll('.edit').forEach(item => {
-          item.addEventListener('click', event => {
-            this.selectUser(event.target.dataset.id).finally((data)=>{
-              setTimeout(() => {
+          item.addEventListener('click', async event => {
+            await this.selectUser(event.target.dataset.id).finally((data)=>{
                 this.showModal('editUser')
-              }, 500);
             })
           })	
         })
         document.querySelectorAll('.orders').forEach(item => {
-          item.addEventListener('click', event => {
-            this.selectUser(event.target.dataset.id).finally((data)=>{
-              setTimeout(() => {
+          item.addEventListener('click', async event => {
+            await this.selectUser(event.target.dataset.id).finally((data)=>{
                 this.showModal('ordersUser')
-              }, 500);
             })
           })	
         })
         document.querySelectorAll('.delete').forEach(item => {
-          item.addEventListener('click', event => {
-            this.selectUser(event.target.dataset.id).finally((data)=>{
-              setTimeout(() => {
-                
+          item.addEventListener('click', async event => {
+            await this.selectUser(event.target.dataset.id).finally((data)=>{
                 this.showModal('deleteUser')
-              }, 500);
             })
           })	
         })
       },
-      async selectUser(idAccount){
-        this.$store
-          .dispatch(GET_USER_BY_ID, idAccount)
-          .then((response) => {
-            this.selectedUser = Object.assign({}, response.data);
-            setTimeout(() => {
-              this.validateFormItem('edit_user_form')
-              return new Promise((resolve) => {
-                  resolve(response.data);
-              });
-            }, 500);
-          })
-          .catch((err) => {
-            console.log(err)
-            return new Promise((resolve) => {
-              resolve(false);
-            });
+      selectUser(idAccount){
+        this.emitter.emit('displayOverlayLoad', true)
+        return new Promise((resolve) => {
+          this.$store
+            .dispatch(GET_USER_BY_ID, idAccount)
+            .then((response) => {
+              this.selectedUser = Object.assign({}, response.data);
+              setTimeout(() => {
+                this.validateFormItem('edit_user_form')
+                resolve(response.data);
+                this.emitter.emit('displayOverlayLoad', false)
+              }, 500);
+            })
+        })
+        .catch((err) => {
+          console.log(err)
+          return new Promise((resolve) => {
+            resolve(false);
           });
+        });
       },
       bootstrapOptions(){
         setTimeout(() => {

@@ -13,12 +13,12 @@
   import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
   import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
   import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
-
+  import viewTimelineOrderModal from '@/views/pages/modals/viewTimelineOrderModal.vue';
   import debounce from 'debounce';
   import * as bootstrap from 'bootstrap'
   import { GET_USER_BY_ID, CREATE_USER, DELETE_USER, UPDATE_USER } from "@/core/services/store/user.module";
   import viewOrderModal from '@/views/pages/modals/viewOrderModal.vue';
-
+ 
 </script>
 
 <template>
@@ -89,12 +89,6 @@
                       </div>
                     </VCardTitle>
                   </VCardItem>
-                  <VCardText class="mb-5  w-100 pa-0" v-if="alertShow">
-                    <v-alert
-                      :color="alertType"
-                      :text="alertMessage"
-                    ></v-alert>
-                  </VCardText>
                   <VCardText class="w-100 pb-5 px-3 px-md-6">
                     <VForm  id="edit_user_form">
                       <VRow class="align-center">
@@ -294,12 +288,6 @@
                       </div>
                     </VCardTitle>
                   </VCardItem>
-                  <VCardText class="mb-5  w-100 pa-0" v-if="alertShow">
-                    <v-alert
-                      :color="alertType"
-                      :text="alertMessage"
-                    ></v-alert>
-                  </VCardText>
                   <VCardText class="w-100 pb-5 px-3 px-md-6">
                     <VForm  id="new_user_form">
                       <VRow class="align-center">
@@ -626,51 +614,44 @@ table.dataTable tbody th, table.dataTable tbody td{
       },
       activeOptionsTable() {
         document.querySelectorAll('.edit').forEach(item => {
-          item.addEventListener('click', event => {
-            this.selectUser(event.target.dataset.id).finally((data)=>{
-              setTimeout(() => {
+          item.addEventListener('click', async event => {
+            await this.selectUser(event.target.dataset.id).finally((data)=>{
                 this.showModal('editUser')
-              }, 500);
             })
           })	
         })
         document.querySelectorAll('.orders').forEach(item => {
-          item.addEventListener('click', event => {
-            this.selectUser(event.target.dataset.id).finally((data)=>{
-              setTimeout(() => {
+          item.addEventListener('click', async event => {
+            await this.selectUser(event.target.dataset.id).finally((data)=>{
                 this.showModal('ordersUser')
-              }, 500);
             })
           })	
         })
         document.querySelectorAll('.delete').forEach(item => {
-          item.addEventListener('click', event => {
-            this.selectUser(event.target.dataset.id).finally((data)=>{
-              setTimeout(() => {
-                
+          item.addEventListener('click', async event => {
+            await this.selectUser(event.target.dataset.id).finally((data)=>{
                 this.showModal('deleteUser')
-              }, 500);
             })
           })	
         })
       },
-      async selectUser(idAccount){
-        this.$store
-          .dispatch(GET_USER_BY_ID, idAccount)
-          .then((response) => {
-            this.selectedUser = Object.assign({}, response.data);
-            setTimeout(() => {
-              this.validateFormItem('edit_user_form')
-              return new Promise((resolve) => {
-                  resolve(response.data);
-              });
-            }, 500);
+      selectUser(idAccount){
+        this.emitter.emit('displayOverlayLoad', true)
+        return new Promise((resolve) => {
+          this.$store
+            .dispatch(GET_USER_BY_ID, idAccount)
+            .then((response) => {
+              this.selectedUser = Object.assign({}, response.data);
+              setTimeout(() => {
+                this.validateFormItem('edit_user_form')
+                this.emitter.emit('displayOverlayLoad', false)
+                resolve(response.data);
+              }, 500);
+            })
           })
           .catch((err) => {
             console.log(err)
-            return new Promise((resolve) => {
-              resolve(false);
-            });
+            resolve(false);
           });
       },
       bootstrapOptions(){

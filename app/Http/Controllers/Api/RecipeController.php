@@ -57,13 +57,13 @@ class RecipeController extends Controller
 
         $imgPath = '';
         if ($request->image_url) {
-            $imgPath = 'images/recipe/' . trim(str_replace(' ', '_', $request->title )).'.'.$request->File('image_url')->extension();
+            $imgPath = 'public/images/recipe/' . trim(str_replace(' ', '_', $request->title )) .'.'. $request->File('image_url')->extension();
             $request->file('image_url')->move(public_path() . '/images/recipe/', $imgPath);
         }
         $videoUrl = '';
         if ($request->File('video_url')) {
             if ($request->video_url) {
-                $videoUrl = 'images/recipe/video/' . trim(str_replace(' ', '_', $request->title )).'.'.$request->File('video_url')->extension();
+                $videoUrl = 'public/images/recipe/video/' . trim(str_replace(' ', '_', $request->title )).'.'.$request->File('video_url')->extension();
                 $request->file('video_url')->move(public_path() . '/images/recipe/video/', $videoUrl);
             }
         }

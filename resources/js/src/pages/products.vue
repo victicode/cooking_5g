@@ -283,12 +283,6 @@
                           <div class="form-title__part1 mx-4 my-2 " style="text-wrap:wrap">
                               {{ selectedProduct.product.title }}
                           </div>
-                          <!-- <div class="form-title__part1 mx-4 mb-2" v-show="stockOperation.type==1" style="text-wrap:wrap; opacity:0.7">
-                            <h5>
-
-                              {{ selectedProduct.lote_code }}
-                            </h5>
-                          </div> -->
                           <div class="d-flex mt-4 justify-center w-100 flex-wrap mt-md-0">
                             <div class="form-title__part1 mx-4 d-flex align-center justify-center ">
                               Stock actual:
@@ -1082,63 +1076,63 @@
       },
       activeOptionsTable() {
         document.querySelectorAll('.view').forEach(item => {
-          item.addEventListener('click', event => {
-            this.selectProduct(event.target.dataset.lote).finally((data)=>{
-              setTimeout(() => {
+          item.addEventListener('click', async event => {
+            await this.selectProduct(event.target.dataset.lote).finally((data)=>{
+              
                 this.showModal('viewProduct')
-              }, 800);
+              
             })
           })	
         })
         document.querySelectorAll('.edit').forEach(item => {
-          item.addEventListener('click', event => {
-            this.selectProduct(event.target.dataset.lote).finally((data)=>{
-              setTimeout(() => {
+          item.addEventListener('click', async event => {
+            await this.selectProduct(event.target.dataset.lote).finally((data)=>{
+              
                 this.showModal('editProduct')
-              }, 800);
+              
             })
           })	
         })
         document.querySelectorAll('.stock').forEach(item => {
-          item.addEventListener('click', event => {
-            this.selectProduct(event.target.dataset.lote).finally((data)=>{
-              setTimeout(() => {
+          item.addEventListener('click', async event => {
+            await this.selectProduct(event.target.dataset.lote).finally((data)=>{
+              
                 this.showModal('addStockProduct')
                 this.getLastLoteNumber();
                 this.initDueDate('dueDateAddStock')
-              }, 800);
+              
             })
           })	
         })
         document.querySelectorAll('.delete').forEach(item => {
-          item.addEventListener('click', event => {
-            this.selectProduct(event.target.dataset.lote).finally((data)=>{
-              setTimeout(() => {
+          item.addEventListener('click', async event => {
+            await this.selectProduct(event.target.dataset.lote).finally((data)=>{
+              
                 this.showModal('deleteProduct')
-              }, 800);
+              
             })
           })	
         })
       },
-      async selectProduct(idAccount){
-        this.$store
-          .dispatch(GET_LOTE_OF_PRODUCT, idAccount)
-          .then((response) => {
-            this.selectedProduct = Object.assign({}, response.data);
-            setTimeout(() => {
-              this.validateFormItem('add_stock_form')
-              this.validateFormItem('edit_product_form')
-              this.addValidate('edit_product_form', 'update')
-              return new Promise((resolve) => {
-                  resolve(response.data);
-              });
-            }, 700);
+      selectProduct(idAccount){
+        this.emitter.emit('displayOverlayLoad', true)
+        return new Promise((resolve) => {
+          this.$store
+            .dispatch(GET_LOTE_OF_PRODUCT, idAccount)
+            .then((response) => {
+              this.selectedProduct = Object.assign({}, response.data);
+              setTimeout(() => {
+                this.emitter.emit('displayOverlayLoad', false)
+                this.validateFormItem('add_stock_form')
+                this.validateFormItem('edit_product_form')
+                this.addValidate('edit_product_form', 'update')
+                resolve(response.data);
+              }, 300);
+            });
           })
           .catch((err) => {
             console.log(err)
-            return new Promise((resolve) => {
               resolve(false);
-            });
           });
       }, 
       getProducts(search = "", index){
@@ -1358,9 +1352,6 @@
         formData.append('is_dismantling', this.newProduct.isDismantling ? 1 : 0);
         formData.append('due_date', this.$refs.due_date_dueDateNewProduct.value);
         formData.append('initial_lote', this.newProduct.init_lote);
-
-        
-
         if (this.newProduct.isDismantling) {
           formData.append('dismantling', JSON.stringify(this.newProduct.dismantling) );
         }

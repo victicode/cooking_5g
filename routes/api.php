@@ -56,7 +56,7 @@ Route::middleware('jwt.verify')->prefix('user')->name('user.')->group(function (
     Route::post('/',[UserController::class, 'createUser']);
     Route::post('/{id}',[UserController::class, 'updateUser']);
     Route::post('/chef',[UserController::class, 'createUser']);
-    Route::delete('/{id}',[UserController::class, 'deleteUser']);
+    Route::post('/delete/{id}',[UserController::class, 'deleteUser']);
     Route::get('/all-client', [UserController::class, 'getAllclient']);
     Route::get('/get-by-id/{id}',[UserController::class, 'getUserById']);
 
@@ -81,7 +81,7 @@ Route::prefix('products')->name('product.')->group(function () {
     Route::get('/lotes', [ProductController::class, 'index']);
     Route::post('/',[ProductController::class, 'storeProduct']);
     Route::post('/{id}',[ProductController::class, 'updateProduct']);
-    Route::delete('/{id}',[ProductController::class, 'deleteProduct']);
+    Route::post('/delete/{id}',[ProductController::class, 'deleteProduct']);
     Route::post('/add-stock/{id}',[ProductController::class, 'addStock']);
     Route::get('/get-critical-stock', [ProductController::class, 'getProductsCriticalStock']);
     Route::get('/get-by-id/{id}',[ProductController::class, 'getProductById']);
@@ -92,7 +92,7 @@ Route::prefix('products')->name('product.')->group(function () {
 });
 Route::middleware('jwt.verify')->prefix('lotes')->name('lotes.')->group(function () {
     Route::get('/get-by-id/{id}',[LoteController::class, 'getLoteById']);
-    Route::delete('/{id}',[LoteController::class, 'deleteLote']);
+    Route::post('/delete/{id}',[LoteController::class, 'deleteLote']);
 
 });
 Route::middleware('jwt.verify')->prefix('cart')->name('cart.')->group(function () {
@@ -100,7 +100,7 @@ Route::middleware('jwt.verify')->prefix('cart')->name('cart.')->group(function (
     Route::post('/',[CartController::class, 'store']);
     Route::post('/item/{id}',[CartController::class, 'deleteItem']);
     Route::post('/item/quantity/{id}',[CartController::class, 'editItemQuantity']);
-    Route::delete('/{id}',[CartController::class, 'destroy']);
+    Route::post('/delete/{id}',[CartController::class, 'destroy']);
 });
 Route::prefix('recipes')->name('recipes.')->group(function () {
     Route::get('/get-by-id/{id}',[RecipeController::class, 'getRecipeById']);
@@ -110,14 +110,14 @@ Route::middleware('jwt.verify')->prefix('recipes')->name('recipes.')->group(func
     Route::post('/',[RecipeController::class, 'storeRecipe']);
     Route::get('/',[RecipeController::class, 'index']);
     Route::post('/{id}',[RecipeController::class, 'updateRecipe']);
-    Route::delete('/{id}',[RecipeController::class, 'deleteRecipe']);
+    Route::post('/delete/{id}',[RecipeController::class, 'deleteRecipe']);
     Route::get('/get-by-search',[RecipeController::class, 'getRecipeBySearch']);
 });
 
 Route::middleware('jwt.verify')->prefix('support')->name('supports.')->group(function () {
     Route::post('/',[ChatController::class, 'storeChat']);
     Route::get('/',[ChatController::class, 'getChats']);
-    Route::delete('/{id}',[ChatController::class, 'deleteChat']);
+    Route::post('/delete/{id}',[ChatController::class, 'deleteChat']);
     Route::get('/{id}',[ChatController::class, 'getChatById']);
     Route::post('/change-status/{id}',[ChatController::class, 'changeStatus']);
     Route::post('/{id}/newMessage',[ChatController::class, 'newMessage']);
@@ -144,7 +144,7 @@ Route::middleware('jwt.verify')->prefix('message')->name('message.')->group(func
 });
 
 Route::get('recipes/client/print/{id}', [RecipeController::class, 'printRecipeTag']);
-Route::get('recipes/client/print/multiple', [RecipeController::class, 'printRecipeTag']);
+Route::post('recipes/client/print/multiple', [RecipeController::class, 'printRecipeTag']);
 Route::get('/typing/{id}', [ChatController::class, 'typingFuction']);
 
 

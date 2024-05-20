@@ -745,44 +745,35 @@
       },
       activeOptionsTable() {
         document.querySelectorAll('.copyText').forEach(item => {
-          item.addEventListener('click', event => {
+          item.addEventListener('click', async event => {
             this.copyOderNumber(event.target)
           })	
         })
         document.querySelectorAll('.view').forEach(item => {
-          item.addEventListener('click', event => {
-            this.selectOrder(event.target.dataset.id).finally((data)=>{
-              setTimeout(() => {
-                this.showModal('viewOrder')
-              }, 800);
+          item.addEventListener('click', async event => {
+            await this.selectOrder(event.target.dataset.id).finally((data)=>{
+              this.showModal('viewOrder')
             })
           })	
         })
         document.querySelectorAll('.process').forEach(item => {
-          item.addEventListener('click', event => {
-            this.selectOrder(event.target.dataset.id).finally((data)=>{
-              setTimeout(() => {
-
-                this.showModal('createOutOrder')
-              }, 800);
+          item.addEventListener('click', async event => {
+            await this.selectOrder(event.target.dataset.id).finally((data)=>{
+              this.showModal('createOutOrder')
             })
           })	
         })
         document.querySelectorAll('.confirm').forEach(item => {
-          item.addEventListener('click', event => {
-            this.selectOrder(event.target.dataset.id).finally((data)=>{
-              setTimeout(() => {
-                this.showModal('confirmOrder')
-              }, 800);
+          item.addEventListener('click', async event => {
+            await this.selectOrder(event.target.dataset.id).finally((data)=>{
+              this.showModal('confirmOrder')
             })
           })	
         })
         document.querySelectorAll('.cancel').forEach(item => {
-          item.addEventListener('click', event => {
-            this.selectOrder(event.target.dataset.id).finally((data)=>{
-              setTimeout(() => {
-                this.showModal('cancelOrder')
-              }, 800);
+          item.addEventListener('click', async event => {
+            await this.selectOrder(event.target.dataset.id).finally((data)=>{
+              this.showModal('cancelOrder')
             })
           })	
         })
@@ -817,24 +808,22 @@
           this.filterColumn()
         });
       },
-      async selectOrder(idAccount){
-        this.$store
-          .dispatch(GET_ORDER_BY_ID, idAccount)
-          .then((response) => {
-            this.selectedOrder = Object.assign({}, response.data);
-            setTimeout(() => {
-              console.log(this.selectedOrder)
-              
-              return new Promise((resolve) => {
-                  resolve(response.data);
-              });
-            }, 700);
+      selectOrder(idAccount){
+        this.emitter.emit('displayOverlayLoad', true)
+        return new Promise((resolve) => {
+          this.$store
+            .dispatch(GET_ORDER_BY_ID, idAccount)
+            .then((response) => {
+              this.selectedOrder = Object.assign({}, response.data);
+              setTimeout(() => { 
+                this.emitter.emit('displayOverlayLoad', false)
+                resolve(response.data);
+              }, 300);
+            })
           })
           .catch((err) => {
             console.log(err)
-            return new Promise((resolve) => {
               resolve(false);
-            });
           });
       },
       getUsers(){
@@ -1261,7 +1250,6 @@
       this.validateFormItem();
     },
     created(){
-      
       this.emitter.emit('displayOverlayLoad', false)
     }
     
