@@ -17,7 +17,7 @@
   import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
 
   import viewProductModal from '@/views/pages/modals/viewProductModal.vue';
-  
+  import viewCreateNewLoteModal from '@/views/pages/modals/viewCreateNewLoteModal.vue';
 
   import moment from 'moment';
   import flatpickr from "flatpickr";
@@ -37,6 +37,14 @@
             class="ma-0 px-0 justify-center justify-md-end d-flex"
           >
           <VBtn @click=" showModal('createProduct')" color="primary" class="w-100 "><VIcon icon="bx-plus"/> Agregar nuevo producto</VBtn>
+
+          </VCol>
+          <VCol
+            cols="11"
+            md="2"
+            class="ma-0 mx-2 px-0 justify-center justify-md-end d-flex"
+          >
+          <VBtn @click=" showModal('addStockInProduct')" color="secondary" class="w-100 "><VIcon icon="bx-plus"/> Agregar Lote</VBtn>
 
           </VCol>
         </VRow>
@@ -724,8 +732,6 @@
                                               <VIcon icon="ion:arrow-back-outline" color="white"></VIcon>  
                                             </span>
                                             <span class="d-md-block d-none ">Volver</span>
-  
-                                            
                                           </VBtn>
                                         </v-col>
                                       </VCol>
@@ -739,11 +745,8 @@
                                 </template>
                               </v-stepper-window-item>
                             </v-stepper-window>
-
-                            
                           </template>
                         </v-stepper>
-                        
                     </VRow>
                   </VCardText>
                 </div>
@@ -753,6 +756,7 @@
         </div>
       </div>
     </div>
+    <viewCreateNewLoteModal @hiddenModal="updateAndHidde" />
     <v-snackbar
       v-model="snackShow"
       :color="snackType"
@@ -1096,10 +1100,9 @@
         document.querySelectorAll('.stock').forEach(item => {
           item.addEventListener('click', async event => {
             await this.selectProduct(event.target.dataset.lote).finally((data)=>{
-              
-                this.showModal('addStockProduct')
-                this.getLastLoteNumber();
-                this.initDueDate('dueDateAddStock')
+              this.showModal('addStockProduct')
+              this.getLastLoteNumber();
+              this.initDueDate('dueDateAddStock')
               
             })
           })	
@@ -1107,9 +1110,7 @@
         document.querySelectorAll('.delete').forEach(item => {
           item.addEventListener('click', async event => {
             await this.selectProduct(event.target.dataset.lote).finally((data)=>{
-              
-                this.showModal('deleteProduct')
-              
+              this.showModal('deleteProduct')
             })
           })	
         })
@@ -1239,9 +1240,6 @@
           ? this.newProduct.dismantling.splice(index, 1)
           : this.selectedProduct.product.dismantling.splice(index, 1);
         }, 300);
-
-        
-        
       },
       addDismantlingInput(type){
         let newItem = {
@@ -1251,8 +1249,6 @@
           products_pieces: { title: '', id:'' },
           quantity: '',
         }
-
-
         const idButton = type == 2 
           ? 'new_product_form_button'
           : 'edit_product_form_button'
@@ -1294,8 +1290,7 @@
         ? this.newProduct.dismantling[index].piece_product_id = e
         : this.selectedProduct.product.dismantling[index].piece_product_id = e
       },
-      resetStockForm(){
-        
+      resetStockForm(){    
         try {
           this.inputDate['dueDateAddStock'].clear();
         } catch (error) {
@@ -1310,8 +1305,7 @@
           
         }
       },
-      resetNewProductForm(){
-        
+      resetNewProductForm(){     
         this.newProduct = {
           img:'images/product/default.png',
           title:'',
@@ -1373,7 +1367,6 @@
         
       },
       updatedProduct(){
-
         this.sendingButton('edit_product_form_button')
         let formData = new FormData();
         formData.append('title', this.selectedProduct.product.title);
@@ -1436,6 +1429,7 @@
             this.filterColumn()
             this.hideModal()
             this.showSnackbar('error', 'Producto Eliminado con exito')
+            this.emitter.emit('updateList', false)
           })
           .catch((err) => {
             console.log(err)
@@ -1790,18 +1784,12 @@
           : isLongWord[0].substring(0,2).toUpperCase() + isLongWord[1].substring(0,2).toUpperCase();
 
         let loteNumber = '000000'.slice( 0, 6 - index.toString().length ) + index;
-
-        
         if(!e){
           this.stockOperation.lot = loteTitle +'-'+ loteNumber;
-          // console.log(this.stockOperation.lot)
           return
-
         }
         this.newProduct.init_lote =  loteTitle +'-'+ loteNumber;
-        // console.log(this.newProduct.init_lote)
         return
-        
       },
       getLastLoteNumber(){
         this.$store
@@ -1821,8 +1809,6 @@
         return total
       },
       addValidateMax(max){
-        // this.forms[id] 
-        
         let form = document.getElementById('add_stock_form'),
         quantityInput = form.querySelector('input[name="stock_form_quatity"]'),
         fieldOptions={
@@ -1851,6 +1837,10 @@
         })
         
         return count
+      },
+      updateAndHidde(){
+        this.filterColumn()
+        this.modal.hide()
       }
     },
     computed: {
@@ -1862,9 +1852,7 @@
       this.initOptionsTable()
       this.table = new DataTablesCore('#data-table', this.tableData)
       setTimeout(()=> this.bootstrapOptions(),2000)
-      
       this.validateFormItem('new_product_form')
-
     },
     created(){
       this.emitter.emit('displayOverlayLoad', false)

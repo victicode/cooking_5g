@@ -78,8 +78,8 @@
     </v-row>
     <v-overlay
     :model-value="overlay"
-    persistent="true"
-    close-on-back="true"
+    :persistent="true"
+    :close-on-back="true"
     class="align-center justify-center"
   >
     <v-progress-circular

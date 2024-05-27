@@ -74,7 +74,7 @@
                 </div>
                 <div class="py-2 px-1 font-weight-bold text-black" style="text-wrap: wrap; " >
                   <div>
-                    <a href="">{{ item.sender.name }} </a>
+                    <a href="" >{{ item.sender ? item.sender.name : 'Un usuario'}} </a>
                     te ha notificado que: 
                     <a>{{ item.products.title }}</a> <span v-html="item.message"> </span>
                   </div>

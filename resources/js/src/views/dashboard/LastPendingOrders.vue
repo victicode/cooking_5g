@@ -11,16 +11,16 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
           class="py-3 border-bottom-4 px-1 px-md-2"
         >
           <VRow class="pa-0 m-0 align-center">
-            <VCol cols="6" md="2" class="text-center hide-text px-2">
+            <VCol cols="4" md="3" class="text-center hide-text px-2">
               Fecha
             </VCol>
-            <VCol cols="6" md="3" class="text-center hide-text">
+            <VCol cols="4" md="3" class="text-center hide-text">
               Tracker ID
             </VCol>
-            <VCol cols="2" class="text-center hide-text d-none d-sm-block">
+            <VCol cols="2" md="3" class="text-center hide-text d-none d-sm-block">
               Creado por
             </VCol>
-            <VCol cols="3" class="text-center hide-text d-none d-sm-block">
+            <VCol cols="4" md="3" class="text-center">
               Estado
             </VCol>
             <!-- <VCol cols="3" md="2" class="text-center hide-text">
@@ -37,23 +37,23 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
             class="py-3 border-bottom-4 px-1 px-md-2"
           >
             <VRow class="pa-0 m-0 align-center">
-              <VCol cols="6" md="2" class="text-center px-2">
+              <VCol cols="4" md="3" class="text-center px-2">
                 
                   {{moment(order.created_at ).format('DD/MM/YYYY') }}
                 
               </VCol>
-              <VCol cols="6" md="3" class="text-center text-decoration-underline" @click="copyOderNumber($event)">
+              <VCol cols="4" md="3" class="text-center text-decoration-underline" @click="copyOderNumber($event)">
                 
                   #{{ order.trancker }}
                 
               
               </VCol>
-              <VCol cols="2" class="text-center d-none d-sm-block">
+              <VCol cols="3" class="text-center d-none d-sm-block">
                 
                   {{ order.user.name }}
                 
               </VCol>
-              <VCol cols="3"  class="text-center d-none d-sm-block">
+              <VCol cols="4" md="3" class="text-center ">
                 <v-chip class="bg-warning">{{ order.status_label.status }}</v-chip>
                 <!-- <v-chip class="bg-warning">{{ order.status_info }}</v-chip> -->
               </VCol>
@@ -128,31 +128,18 @@ import { mapGetters } from 'vuex';
             console.log('ha ocurrido un error al intentar obtener las ordenes')  
             return
           }
-          console.log(data)
           this.orders = data.data
         })
         .catch((e) => {
-
           console.log(e)
         });
       },
       copyOderNumber(element){
-        
         let texto = element.target.innerHTML.trim().substring(1);
-        // console.log(navigator)
-        // texto.select()
-        // document.execCommand('copy');
-        // try {
-        //   navigator.clipboard.writeText(texto)
-        //   console.log('Contenido copiado al portapapeles');
-        // } catch (err) {
-        //   console.error('Error al copiar: ', err);
-        // }
           const textArea = document.createElement('textarea');
           textArea.value = texto;
           textArea.style.opacity = 0;
           document.body.appendChild(textArea);
-          // textArea.focus();
           textArea.select();
           try {
             const success = document.execCommand('copy');

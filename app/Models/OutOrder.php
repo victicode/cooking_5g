@@ -25,7 +25,7 @@ class OutOrder extends Model
     }
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'products_x_out_order')->withPivot(['quantity', 'lote_id', 'recipe_id']);
+        return $this->belongsToMany(Product::class, 'products_x_out_order')->withPivot(['quantity', 'lote_id', 'recipe_id'])->withTrashed();
     }
     public function order()
     {
@@ -33,6 +33,6 @@ class OutOrder extends Model
     }
     public function recipes()
     {
-        return $this->belongsToMany(Recipe::class, 'products_x_out_order')->withPivot(['quantity']);
+        return $this->belongsToMany(Recipe::class, 'products_x_out_order')->withPivot(['quantity'])->withTrashed();
     }
 }

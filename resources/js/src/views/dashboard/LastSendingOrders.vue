@@ -83,11 +83,9 @@ import { mapGetters } from "vuex";
             console.log('ha ocurrido un error al intentar obtener las ordenes')  
             return
           }
-          console.log(data)
           this.orders = data.data
         })
         .catch((e) => {
-
           console.log(e)
         });
       }

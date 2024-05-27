@@ -241,7 +241,7 @@
                                 <div class="d-flex align-center">
 
                                   <a  class="word-break w-80"
-                                    :class="validateIsgoodProduct(ingredient, 'blank-modal', 'recipe-notproduct' ) " 
+                                    :class="validateIsgoodProduct(ingredient, 'blank-modal', '' ) " 
                                     @click="selectProductView(index)" 
                                   > 
                                     - {{ `${ingredient.pivot.quantity} ${ingredient.type_of_unit} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }}
@@ -2081,14 +2081,12 @@
 
       },
       validateIsgoodProduct(ingredient, messageGood, messageBad){
-          if(!ingredient.lotes) return messageBad  ;
-          if(ingredient.lotes.length == 0) return messageBad  
-          if(ingredient.total_stock < 1) return messageBad
-          if(ingredient.lotes[0].quantity <=0 || Math.round(moment.duration(moment(ingredient.lotes[0].due_date).diff(new moment())).as('days') ) < 0 ){
-            return messageBad 
-          }
-
-        
+        if(!ingredient.lotes) return messageBad  ;
+        if(ingredient.lotes.length == 0) return messageBad == '(Sin stock)*' ? 'Eliminado' : 'recipe-notproduct text-decoration-line-through'
+        if(ingredient.total_stock < 1) return messageBad
+        if(ingredient.lotes[0].quantity <=0 || Math.round(moment.duration(moment(ingredient.lotes[0].due_date).diff(new moment())).as('days') ) < 0 ){
+          return messageBad 
+        }
        return ingredient.deleted_at==null 
         ? messageGood 
         : messageBad 

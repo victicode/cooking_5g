@@ -139,7 +139,7 @@ return {
           </div>
         </div>
     </VCard>
-    <VCard class="mt-2 mostProductsInRecipe" title="Receta mas pedidas">
+    <VCard class="mt-2 mostProductsInRecipe" title="Recetas mas pedidas">
       <VCardText class="pa-1" v-if="stadistics.mostOrderProducts.length > 0">
         <VList class="card-list mt-0">
           <VListItem
@@ -171,7 +171,7 @@ return {
           </VListItem>
         </VList>
       </VCardText>
-      <VCardText class="mt-3 w-100 d-flex justify-center align-center py-3">
+      <VCardText v-else class="mt-3 w-100 d-flex justify-center align-center py-3">
         <h3>No hay resultados</h3>
       </VCardText>
     </VCard>
