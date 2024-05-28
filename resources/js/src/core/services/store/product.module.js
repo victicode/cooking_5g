@@ -13,7 +13,7 @@ export const GET_PRODUCT_BY_SEARCH = "GET_PRODUCT_BY_SEARCH";
 export const GET_LAST_LOTE = "GET_LAST_LOTE";
 export const GET_LOTE_OF_PRODUCT = "GET_LOTE_OF_PRODUCT";
 export const DELETE_LOTE_OF_PRODUCT = "DELETE_LOTE_OF_PRODUCT";
-
+export const UPDATE_LOTE = 'UPDATE_LOTE';
 const actions = {
     [GET_PRODUCTS](context, query) {
         return new Promise((resolve, reject) => {
@@ -159,9 +159,7 @@ const actions = {
           ApiService.setHeader();
           ApiService.get("api/lotes/get-by-id/"+loteID)
           .then(( { data } ) => {
-              console.log(data)
-              resolve(data);
-              
+            resolve(data);
           })
           .catch(( { response } ) => {
               console.log(response )
@@ -202,6 +200,21 @@ const actions = {
           });
         }
       });
+    },
+    [UPDATE_LOTE](context, data){
+      return new Promise((resolve, reject) => {
+        if(JwtService.getToken()) {
+          ApiService.setHeader();
+          ApiService.post("api/lotes/update/"+ data.id, data.data )
+          .then(( { data } ) => {
+            resolve(data);
+          })
+          .catch(( { response } ) => {
+              console.log(response )
+              reject('Ocurrió un error desconocido al intentar obtener el producto');
+          });
+        }
+      })
     }
 };
 export default {

@@ -56,8 +56,8 @@
             </VBtn>
           </VCol>
         </VRow>
-        <div class="card-datatable table-responsive">
-          <table class="datatable table display" id="data-table">
+        <div class="card-datatable table-responsive ">
+          <table class="datatable table display client_table" id="data-table">
           </table>
         </div>
       </VCard>
@@ -374,7 +374,7 @@
   </VRow>
 </template>
 <style lang="scss" >
-table.dataTable tbody th, table.dataTable tbody td{
+table.client_table tbody th, table.client_table tbody td{
   padding: 15px 10px!important;
 }
 .card-datatable > thead > tr > th.client_name{

@@ -21,19 +21,19 @@ class OrderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        $order = Order::withCount('products')->with('user')->get();
-        foreach ($order as $key ) {
-            # code...
-            $key->getStatusLabelAttribute();
-        }
+    // public function index()
+    // {
+    //     $order = Order::withCount('products')->with('user')->get();
+    //     foreach ($order as $key ) {
+    //         # code...
+    //         $key->getStatusLabelAttribute();
+    //     }
 
-        return $this->returnSuccess(200, $order );
-    }
+    //     return $this->returnSuccess(200, $order );
+    // }
     public function getOrdersTable(Request $request)
     {
-        $order = Order::query()->with('user', 'client');
+        $order = Order::query()->with('user', 'client')->take(1);
 
         if(!empty(request('filter_start_date'))){
             $order->whereBetween('created_at', [request('filter_start_date'), request('filter_end_date')]);

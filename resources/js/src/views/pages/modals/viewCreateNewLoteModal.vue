@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="modal animate__animated animate__fadeInDown"  id="addStockInProduct" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg mt-10" >
-        <div class="modal-content">
+    <div class="modal animate__animated animate__slideInLeft" id="addStockInProduct" tabindex="-1" aria-labelledby="showCartLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg mt-0 ma-0" style="width: 100%; height: 100vh;">
+        <div class="modal-content h-100">
           <VCol
             cols="12"
             class="pa-0 d-flex justify-center"
@@ -10,19 +10,19 @@
           >
             <VCol
               cols="12"
-              class="px-2"  
+              class="pa-0"
             >
-              <VCard class="modal__content">
-                <div class="modal__close-button" >
-                  <v-col class="pa-0 pe-4">
+              <VCard class="modal__content h-100 rounded-0">
+                <div class="modal__close-button__cart" >
+                  <v-col  class="pa-0 pe-4">
                     <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
                   </v-col>
                 </div>
-                <div>
+                <div class="d-flex justify-space-between  flex-column pa-2 px-4 pa-md-5 ">
                   <VCardItem class="justify-center w-100  py-md-6  py-4 pb-0   ">
                     <VCardTitle class="text-2xl font-weight-bold">
                       <div class="card-title d-flex ">
-                        <div class="form-title__part1">Agregar stock de producto</div>
+                        <div class="form-title__part1 mt-5">Agregar stock de producto</div>
               
                       </div>
                     </VCardTitle>

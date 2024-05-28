@@ -29,7 +29,7 @@ class LoteController extends Controller
     public function deleteLote($loteId)
     {
         if (!$loteId) {
-            return $this->returnFail(400, "El identificador del usuario.");
+            return $this->returnFail(400, "ID no enviado.");
         }
 
         $lote = Lot::where('id_lote', $loteId)->first();
@@ -38,7 +38,7 @@ class LoteController extends Controller
 
 
         if (!$lote) {
-            return $this->returnFail(404, "Usuario no encontrado.");
+            return $this->returnFail(404, "Lote no encontrado.");
         }
  
         $lote->delete();
@@ -47,59 +47,27 @@ class LoteController extends Controller
         return $this->returnSuccess(200, ['id' => $loteId, 'deleted_at' => $lote->deleted_at_lote]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function updateLote(Request $request, $loteId)
     {
         //
-    }
+        if (!$loteId) {
+            return $this->returnFail(400, "ID no enviado.");
+        }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        $lote = Lot::where('id_lote', $loteId)->first();
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
+        // $dismantlingsOfProducts= Dismantling::where('piece_product_id', $lot)->delete();
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
+        if (!$lote) {
+            return $this->returnFail(404, "Lote no encontrado.");
+        }
+ 
+        $lote->due_date = $request->due_date;
+        $lote->quantity = floatval($request->quantity);
+        $lote->save();
+
+        return $this->returnSuccess(200, [$lote]);
     }
 
     /**

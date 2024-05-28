@@ -92,6 +92,7 @@ Route::prefix('products')->name('product.')->group(function () {
 });
 Route::middleware('jwt.verify')->prefix('lotes')->name('lotes.')->group(function () {
     Route::get('/get-by-id/{id}',[LoteController::class, 'getLoteById']);
+    Route::post('/update/{id}',[LoteController::class, 'updateLote']);
     Route::post('/delete/{id}',[LoteController::class, 'deleteLote']);
 
 });

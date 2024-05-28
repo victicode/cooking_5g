@@ -424,6 +424,9 @@
   </VRow>
 </template>
 <style lang="scss" >
+  .copyText{
+    cursor: pointer;
+  }
   thead > tr > th.date{
     width: 15%!important;
   }
@@ -440,6 +443,9 @@
       position: absolute;
       top: -10px;
       right: -10px;
+    }
+    .copyText{
+      font-size:15.5px
     }
     thead > tr > th:last-child{
       width: 10%!important;
@@ -513,7 +519,7 @@
       
           { 
             title: 'Track ID',
-            class:'text-md-center text-start',
+            class:'text-md-center text-start ',
             orderable: false, 
             render: ( data, type, row, meta ) =>{ 
               return `
@@ -550,7 +556,7 @@
           },
           { 
             title: 'Estado ',
-            class:'text-center px-3',
+            class:'text-center px-0',
             responsivePriority: 3,
 
             render: ( data, type, row, meta ) =>{ 
@@ -578,7 +584,7 @@
             orderable: false, 
             searchable: false, 
             responsivePriority: 2,
-            class:'text-center  px-1 px-md-3',
+            class:'text-center  px-0 px-md-3',
             render: ( data, type, row, meta ) =>{ 
               let html = `
                 <div class="d-md-flex d-none justify-center ">
@@ -745,7 +751,7 @@
       },
       activeOptionsTable() {
         document.querySelectorAll('.copyText').forEach(item => {
-          item.addEventListener('click', async event => {
+          item.addEventListener('click', event => {
             this.copyOderNumber(event.target)
           })	
         })
@@ -1214,7 +1220,10 @@
         
       }, 
       copyOderNumber(element){
+        console.log(element)
+
         let texto = element.innerHTML.trim().substring(1);
+        console.log(texto)
         // console.log(navigator)
         // texto.select()
         // document.execCommand('copy');
@@ -1228,7 +1237,7 @@
           textArea.value = texto;
           textArea.style.opacity = 0;
           document.body.appendChild(textArea);
-          textArea.focus();
+          // textArea.focus();
           textArea.select();
           try {
             const success = document.execCommand('copy');
