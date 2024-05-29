@@ -73,7 +73,7 @@
                             disabled
                           />
                         </VCol>
-                        <VCol cols="12" md="4" class="form-group">
+                        <VCol cols="12" md="6" class="form-group">
                           <VTextField
                             id="dueDateNewDismantling"
                             placeholder="Fecha de vencimiento"
@@ -83,7 +83,7 @@
                           />
                           <input type="hidden" id="date-input-val-dueDateNewDismantling" ref="due_date_dueDateNewDismantling" >
                         </VCol>
-                        <VCol cols="6" md="4" class="form-group">
+                        <VCol cols="6" class="form-group">
                           <VTextField
                             placeholder="Stock"
                             label="Stock"
@@ -93,7 +93,7 @@
                             v-model="newDesmantling.stock"
                           />
                         </VCol>
-                        <VCol cols="6" md="4" class="form-group">
+                        <VCol cols="6" class="form-group">
                           <v-select
                               label="Tipo de unidad"
                               :items="['KG', 'UNI', 'PZAS']"

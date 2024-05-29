@@ -63,24 +63,25 @@
       </VCard>
     </VCol>
     <div v-if="Object.keys(selectedUser).length > 2">
-      <div class="modal animate__animated animate__fadeInDown"  id="editUser" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg mt-10" >
-        <div class="modal-content">
-          <VCol
-            cols="12"
-            class="pa-0 d-flex justify-center"
-            style="position: relative;"
-          >
+      <div class="modal animate__animated animate__slideInLeft" id="editUser" tabindex="-1" aria-labelledby="showCartLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg mt-0 ma-0" style="width: 100%; height: 100vh;">
+          <div class="modal-content h-100">
             <VCol
               cols="12"
+              class="pa-0 d-flex justify-center"
+              style="position: relative;"
             >
-              <VCard class="modal__content">
-                <div class="modal__close-button" >
-                  <v-col class="pa-0 pe-4">
-                    <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
-                  </v-col>
-                </div>
-                <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
+              <VCol
+                cols="12"
+                class="pa-0"
+              >
+                <VCard class="modal__content h-100 rounded-0">
+                  <div class="modal__close-button__cart" >
+                    <v-col  class="pa-0 pe-4">
+                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                    </v-col>
+                  </div>
+                  <div class="d-flex justify-space-between  flex-column pa-2 px-3 pa-md-5 ">
                   <VCardItem class="justify-center w-100  py-md-6  py-4  my-5  ">
                     <VCardTitle class="text-2xl font-weight-bold">
                       <div class="card-title d-flex ">
@@ -258,13 +259,13 @@
           </div>
         </div>
       </div>
-      <viewOrderModal :order="selectedUser.selectedOrder" v-if="selectedUser.selectedOrder" @actionModal="hideInternalModal()"  />
+      <!-- <viewOrderModal :order="selectedUser.selectedOrder" v-if="selectedUser.selectedOrder" @actionModal="hideInternalModal()"  /> -->
       <!-- <viewTimelineOrderModal :order="selectedUser.selectedOrder" v-if="selectedUser.selectedOrder" @actionModal="hideInternalModal()"/> -->
 
     </div>
-    <div class="modal animate__animated animate__fadeInDown"  id="createNewUser" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg mt-10" >
-        <div class="modal-content">
+    <div class="modal animate__animated animate__slideInLeft" id="createNewUser" tabindex="-1" aria-labelledby="showCartLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg mt-0 ma-0" style="width: 100%; height: 100vh;">
+        <div class="modal-content h-100">
           <VCol
             cols="12"
             class="pa-0 d-flex justify-center"
@@ -272,18 +273,19 @@
           >
             <VCol
               cols="12"
+              class="pa-0"
             >
-              <VCard class="modal__content">
-                <div class="modal__close-button" >
-                  <v-col class="pa-0 pe-4">
+              <VCard class="modal__content h-100 rounded-0">
+                <div class="modal__close-button__cart" >
+                  <v-col  class="pa-0 pe-4">
                     <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
                   </v-col>
                 </div>
-                <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
+                <div class="d-flex justify-space-between  flex-column pa-2 px-3 pa-md-5 ">
                   <VCardItem class="justify-center w-100  py-md-6  py-4  my-5  ">
                     <VCardTitle class="text-2xl font-weight-bold">
                       <div class="card-title d-flex ">
-                        <div class="form-title__part1">Crear nuevo usuario</div>
+                        <div class="form-title__part1">Crear nuevo Chef master</div>
                         
                       </div>
                     </VCardTitle>
@@ -493,12 +495,19 @@ table.chef_table tbody th, table.chef_table tbody td{
               let html = `
                 <div class="d-md-flex d-none justify-center ">
                   <span data-id="${row.id}" class="edit mx-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editar chef">
-                    <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                      <path data-id="${row.id}" fill="currentColor" d="M21 12a1 1 0 0 0-1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h6a1 1 0 0 0 0-2H5a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-6a1 1 0 0 0-1-1m-15 .76V17a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .71-.29l6.92-6.93L21.71 8a1 1 0 0 0 0-1.42l-4.24-4.29a1 1 0 0 0-1.42 0l-2.82 2.83l-6.94 6.93a1 1 0 0 0-.29.71m10.76-8.35l2.83 2.83l-1.42 1.42l-2.83-2.83ZM8 13.17l5.93-5.93l2.83 2.83L10.83 16H8Z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" data-id="${row.id}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--heroicons-outline" aria-describedby="v-tooltip-20" width="1em" height="1em" viewBox="0 0 24 24">
+                      <g data-id="${row.id}"  fill="none" stroke="#808080" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                        <path data-id="${row.id}"  d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path data-id="${row.id}"  d="M18.375 2.625a2.121 2.121 0 1 1 3 3L12 15l-4 1l1-4Z"/>
+                      </g>
+                    </svg>
                   </span>
                   <span data-id="${row.id}" class="delete mx-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Eliminar chef">
-                    <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                      <path  data-id="${row.id}" fill="currentColor" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4zm2 2h6V4H9zM6.074 8l.857 12H17.07l.857-12zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1"/></svg>
+                    <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--bx" aria-describedby="v-tooltip-22" " viewBox="0 0 24 24">
+                      <g data-id="${row.id}" fill="none" stroke="#808080" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M5.47 6.015v12.514a2.72 2.72 0 0 0 2.721 2.721h7.618a2.72 2.72 0 0 0 2.72-2.72V6.014m-15.235.001h17.412"/>
+                        <path data-id="${row.id}" d="M8.735 6.015V4.382a1.632 1.632 0 0 1 1.633-1.632h3.264a1.632 1.632 0 0 1 1.633 1.632v1.633M9.824 16.992v-5.439m4.353 5.439v-5.439"/>
+                      </g>
+                    </svg>
                   </span>
               `
               html +=`</div>`
@@ -511,12 +520,19 @@ table.chef_table tbody th, table.chef_table tbody td{
                     </button>
                     <div class="d-flex justify-center dropdown-menu animate__animated animate__rubberBand">
                       <span  data-id="${row.id}" class="edit mx-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Editar chef">
-                        <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                          <path data-id="${row.id}" fill="currentColor" d="M21 12a1 1 0 0 0-1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h6a1 1 0 0 0 0-2H5a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-6a1 1 0 0 0-1-1m-15 .76V17a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .71-.29l6.92-6.93L21.71 8a1 1 0 0 0 0-1.42l-4.24-4.29a1 1 0 0 0-1.42 0l-2.82 2.83l-6.94 6.93a1 1 0 0 0-.29.71m10.76-8.35l2.83 2.83l-1.42 1.42l-2.83-2.83ZM8 13.17l5.93-5.93l2.83 2.83L10.83 16H8Z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" data-id="${row.id}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--heroicons-outline" aria-describedby="v-tooltip-20" width="1em" height="1em" viewBox="0 0 24 24">
+                          <g data-id="${row.id}"  fill="none" stroke="#808080" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                            <path data-id="${row.id}"  d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path data-id="${row.id}"  d="M18.375 2.625a2.121 2.121 0 1 1 3 3L12 15l-4 1l1-4Z"/>
+                          </g>
+                        </svg>
                       </span>
                       <span  data-id="${row.id}" class="delete mx-3" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Eliminar chef">
-                        <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                          <path data-id="${row.id}" fill="currentColor" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4zm2 2h6V4H9zM6.074 8l.857 12H17.07l.857-12zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1"/></svg>
+                        <svg data-id="${row.id}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--bx" aria-describedby="v-tooltip-22" " viewBox="0 0 24 24">
+                          <g data-id="${row.id}" fill="none" stroke="#808080" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M5.47 6.015v12.514a2.72 2.72 0 0 0 2.721 2.721h7.618a2.72 2.72 0 0 0 2.72-2.72V6.014m-15.235.001h17.412"/>
+                            <path data-id="${row.id}" d="M8.735 6.015V4.382a1.632 1.632 0 0 1 1.633-1.632h3.264a1.632 1.632 0 0 1 1.633 1.632v1.633M9.824 16.992v-5.439m4.353 5.439v-5.439"/>
+                          </g>
+                        </svg>
                       </span>
               `
               html +=`

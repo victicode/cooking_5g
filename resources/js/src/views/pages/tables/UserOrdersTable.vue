@@ -21,10 +21,10 @@ const as = window
             Fecha
           </th>
           <th style="text-align: center;">
-            Track ID
+           Estado
           </th>
           <th style="text-align: center;">
-           Estado
+            Track ID
           </th>
           <th style="width:115px; text-align: center;">
             Cantidad de productos
@@ -47,9 +47,6 @@ const as = window
           <td class="text-center">
             {{ moment(order.created_at).format('DD/MM/YYYY') }}
           </td>
-          <td class="text-center">
-            {{  order.trancker }}
-          </td>
           <td class="text-start  "> 
             <div class="w-100 d-flex justify-center">
 
@@ -59,7 +56,10 @@ const as = window
             </div>
           </td>
           <td class="text-center">
-            {{ order.products.length }}
+            #{{ order.trancker }}
+          </td>
+          <td class="text-center">
+            {{ order.recipes.length }}
           </td>
         </tr>
       </tbody>
@@ -111,7 +111,7 @@ const as = window
       }
     },
     mounted(){
-      console.log(this.orders)
+      // console.log(this.orders)
     }
 
     

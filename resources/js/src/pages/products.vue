@@ -216,6 +216,8 @@
                                       autocomplete="off"
                                       no-data-text="No se encontraron resultados"
                                       :name="'product_desmantling_id_'+index"
+                                      class="dismantling_select"
+                                      :menu-props="{'content-class':'dismantling_select'}"
                                       @keyup="searchDismantling($event, index+'_'+selectedProduct.product.id)"
                                       @click:clear="clearSearchDismantling(index+'_'+selectedProduct.product.id)"
                                       @update:modelValue="selectDismantling($event, index, 1)"
@@ -463,7 +465,7 @@
                         </div>
                       </VCol>
                     </VRow>
-                    <VDivider  />
+                   
                     <div class="mt-5 w-100 d-md-flex  d-block justify-center">
                       <VCardActions class=" justify-center w-100 d-md-flex  d-flex">
                         <VBtn
@@ -653,9 +655,11 @@
                                                 no-filter
                                                 :name="'product_desmantling_id_'+index"
                                                 no-data-text="No se encontraron resultados"
+                                                :menu-props="{'content-class':'dismantling_select'}"
                                                 @keyup="searchDismantling($event,index)"
                                                 @click:clear="clearSearchDismantling(index)"
                                                 @update:modelValue="selectDismantling($event, index,2)"
+                                                @update:menu="true"
                                               ></v-autocomplete>
                                             </VCol>
                                             <VCol cols="8"  md="4" class="form-group">
@@ -786,6 +790,12 @@
   </VRow>
 </template>
 <style lang="scss">
+  .dismantling_select .v-list-item {
+      color:#cf6123   
+  }
+ .dismantling_select .v-list-item:nth-last-child(n+3) {
+      color:#616161
+  }
   .productStepper > .v-stepper.v-sheet {
     box-shadow: none!important;
   }
@@ -969,13 +979,21 @@
               return `
                 <div class="d-md-flex d-none justify-center">
                   <span data-bs-toggle="tooltip" data-lote="${row.id_lote}" class="edit" data-bs-placement="top" data-bs-title="Editar producto">
-                    <svg  xmlns="http://www.w3.org/2000/svg" data-lote="${row.id_lote}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--heroicons-outline" aria-describedby="v-tooltip-20" width="1em" height="1em" viewBox="0 0 24 24">
-                      <path data-lote="${row.id_lote}"  fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5m-1.414-9.414a2 2 0 1 1 2.828 2.828L11.828 15H9v-2.828l8.586-8.586Z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" data-lote="${row.id_lote}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--heroicons-outline" aria-describedby="v-tooltip-20" width="1em" height="1em" viewBox="0 0 24 24">
+                      <g data-lote="${row.id_lote}"  fill="none" stroke="#808080" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                        <path data-lote="${row.id_lote}"  d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path data-lote="${row.id_lote}"  d="M18.375 2.625a2.121 2.121 0 1 1 3 3L12 15l-4 1l1-4Z"/>
+                      </g>
+                    </svg>
                   </span>
                   <span data-bs-toggle="tooltip" data-lote="${row.id_lote}" class="stock" data-bs-placement="top" data-bs-title="Agregar stock">
-                    <svg  xmlns="http://www.w3.org/2000/svg" data-lote="${row.id_lote}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--mdi" aria-describedby="v-tooltip-21" width="1em" height="1em" viewBox="0 0 24 24">
-                      <path data-lote="${row.id_lote}"  fill="currentColor" d="M13 19.3v-6.7l6-3.4V13c.7 0 1.4.1 2 .4V7.5c0-.4-.2-.7-.5-.9l-7.9-4.4c-.2-.1-.4-.2-.6-.2s-.4.1-.6.2L3.5 6.6c-.3.2-.5.5-.5.9v9c0 .4.2.7.5.9l7.9 4.4c.2.1.4.2.6.2s.4-.1.6-.2l.9-.5c-.3-.6-.4-1.3-.5-2M12 4.2l6 3.3l-2 1.1l-5.9-3.4l1.9-1m-1 15.1l-6-3.4V9.2l6 3.4v6.7m1-8.5L6 7.5l2-1.2l6 3.5l-2 1m8 4.2v3h3v2h-3v3h-2v-3h-3v-2h3v-3h2Z"></path></svg>
-                  
+                    <svg xmlns="http://www.w3.org/2000/svg" data-lote="${row.id_lote}"  width="24" height="24" viewBox="0 0 24 24" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--mdi" aria-describedby="v-tooltip-21" width="1em" height="1em" viewBox="0 0 24 24">
+                      <g fill="none" stroke="#808080" data-lote="${row.id_lote}"  stroke-linecap="round" stroke-width="1.5">
+                        <path stroke-linejoin="round" data-lote="${row.id_lote}"  d="M20.935 11.009V8.793a2.978 2.978 0 0 0-1.529-2.61l-5.957-3.307a2.978 2.978 0 0 0-2.898 0L4.594 6.182a2.978 2.978 0 0 0-1.529 2.611v6.414a2.978 2.978 0 0 0 1.529 2.61l5.957 3.307a2.978 2.978 0 0 0 2.898 0l2.522-1.4"/>
+                        <path stroke-linejoin="round" data-lote="${row.id_lote}"  d="M20.33 6.996L12 12L3.67 6.996M12 21.49V12"/>
+                        <path stroke-miterlimit="10" data-lote="${row.id_lote}"  d="M19.903 13.965v5m-2.494-2.495h5"/>
+                      </g>
+                    </svg>
                   </span>
                   <span data-bs-toggle="tooltip" data-lote="${row.id_lote}" class="update_stock" data-bs-placement="top" data-bs-title="Editar lote">
                     <svg data-lote="${row.id_lote}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--mdi" aria-describedby="v-tooltip-21" width="1em" height="1em" viewBox="0 0 24 24">
@@ -983,9 +1001,11 @@
                     </svg>
                   </span>
                   <span data-bs-toggle="tooltip" data-lote="${row.id_lote}" class="delete" data-bs-placement="top" data-bs-title="Eliminar producto">
-                    <svg  xmlns="http://www.w3.org/2000/svg" data-lote="${row.id_lote}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--bx" aria-describedby="v-tooltip-22" width="1em" height="1em" viewBox="0 0 24 24">
-                      <path data-lote="${row.id_lote}"  fill="currentColor" d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path>
-                      <path data-lote="${row.id_lote}" fill="currentColor" d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg>
+                    <svg data-lote="${row.id_lote}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--bx" aria-describedby="v-tooltip-22" " viewBox="0 0 24 24">
+                      <g data-lote="${row.id_lote}" fill="none" stroke="#808080" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M5.47 6.015v12.514a2.72 2.72 0 0 0 2.721 2.721h7.618a2.72 2.72 0 0 0 2.72-2.72V6.014m-15.235.001h17.412"/>
+                        <path data-lote="${row.id_lote}" d="M8.735 6.015V4.382a1.632 1.632 0 0 1 1.633-1.632h3.264a1.632 1.632 0 0 1 1.633 1.632v1.633M9.824 16.992v-5.439m4.353 5.439v-5.439"/>
+                      </g>
+                    </svg>
                   </span>
                 </div>
                 <div class="d-md-none d-flex justify-center position-relative relative ">
@@ -994,13 +1014,22 @@
                       <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="button" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default v-icon--clickable iconify iconify--mdi" aria-haspopup="menu" aria-expanded="false" aria-owns="v-menu-46" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z"></path></svg>
                     </button>
                     <div class="dropdown-menu animate__animated animate__rubberBand large">
-                      <span data-bs-toggle="tooltip" data-lote="${row.id_lote}" class="edit me-5" data-bs-placement="top" data-bs-title="Editar producto">
-                        <svg  xmlns="http://www.w3.org/2000/svg" data-lote="${row.id_lote}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--heroicons-outline" aria-describedby="v-tooltip-20" width="1em" height="1em" viewBox="0 0 24 24">
-                          <path data-lote="${row.id_lote}"  fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5m-1.414-9.414a2 2 0 1 1 2.828 2.828L11.828 15H9v-2.828l8.586-8.586Z"></path></svg>
+                      <span data-bs-toggle="tooltip" data-lote="${row.id_lote}" class="edit " data-bs-placement="top" data-bs-title="Editar producto">
+                        <svg  data-lote="${row.id_lote}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--heroicons-outline" aria-describedby="v-tooltip-20" width="1em" height="1em" viewBox="0 0 24 24">
+                          <g  data-lote="${row.id_lote}" fill="none" stroke="#808080" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">
+                            <path  data-lote="${row.id_lote}" d="M19.09 14.441v4.44a2.37 2.37 0 0 1-2.369 2.369H5.12a2.37 2.37 0 0 1-2.369-2.383V7.279a2.356 2.356 0 0 1 2.37-2.37H9.56"/>
+                            <path  data-lote="${row.id_lote}" d="M6.835 15.803v-2.165c.002-.357.144-.7.395-.953l9.532-9.532a1.362 1.362 0 0 1 1.934 0l2.151 2.151a1.36 1.36 0 0 1 0 1.934l-9.532 9.532a1.361 1.361 0 0 1-.953.395H8.197a1.362 1.362 0 0 1-1.362-1.362M19.09 8.995l-4.085-4.086"/>
+                          </g>
+                        </svg>
                       </span>
                       <span data-bs-toggle="tooltip" data-lote="${row.id_lote}" class="stock" data-bs-placement="top" data-bs-title="Agregar stock">
-                        <svg  xmlns="http://www.w3.org/2000/svg" data-lote="${row.id_lote}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--mdi" aria-describedby="v-tooltip-21" width="1em" height="1em" viewBox="0 0 24 24">
-                          <path data-lote="${row.id_lote}"  fill="currentColor" d="M13 19.3v-6.7l6-3.4V13c.7 0 1.4.1 2 .4V7.5c0-.4-.2-.7-.5-.9l-7.9-4.4c-.2-.1-.4-.2-.6-.2s-.4.1-.6.2L3.5 6.6c-.3.2-.5.5-.5.9v9c0 .4.2.7.5.9l7.9 4.4c.2.1.4.2.6.2s.4-.1.6-.2l.9-.5c-.3-.6-.4-1.3-.5-2M12 4.2l6 3.3l-2 1.1l-5.9-3.4l1.9-1m-1 15.1l-6-3.4V9.2l6 3.4v6.7m1-8.5L6 7.5l2-1.2l6 3.5l-2 1m8 4.2v3h3v2h-3v3h-2v-3h-3v-2h3v-3h2Z"></path></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" data-lote="${row.id_lote}"  width="24" height="24" viewBox="0 0 24 24" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--mdi" aria-describedby="v-tooltip-21" width="1em" height="1em" viewBox="0 0 24 24">
+                          <g fill="none" stroke="#808080" data-lote="${row.id_lote}"  stroke-linecap="round" stroke-width="1.5">
+                            <path stroke-linejoin="round" data-lote="${row.id_lote}"  d="M20.935 11.009V8.793a2.978 2.978 0 0 0-1.529-2.61l-5.957-3.307a2.978 2.978 0 0 0-2.898 0L4.594 6.182a2.978 2.978 0 0 0-1.529 2.611v6.414a2.978 2.978 0 0 0 1.529 2.61l5.957 3.307a2.978 2.978 0 0 0 2.898 0l2.522-1.4"/>
+                            <path stroke-linejoin="round" data-lote="${row.id_lote}"  d="M20.33 6.996L12 12L3.67 6.996M12 21.49V12"/>
+                            <path stroke-miterlimit="10" data-lote="${row.id_lote}"  d="M19.903 13.965v5m-2.494-2.495h5"/>
+                          </g>
+                        </svg>
                       </span>
                       <span data-bs-toggle="tooltip" data-lote="${row.id_lote}" class="update_stock" data-bs-placement="top" data-bs-title="Editar lote">
                         <svg data-lote="${row.id_lote}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default me-4 iconify iconify--mdi" aria-describedby="v-tooltip-21" width="1em" height="1em" viewBox="0 0 24 24">
@@ -1008,9 +1037,11 @@
                         </svg>
                       </span>
                       <span data-bs-toggle="tooltip" data-lote="${row.id_lote}" class="delete" data-bs-placement="top" data-bs-title="Eliminar producto">
-                        <svg  xmlns="http://www.w3.org/2000/svg" data-lote="${row.id_lote}"  xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--bx" aria-describedby="v-tooltip-22" width="1em" height="1em" viewBox="0 0 24 24">
-                          <path data-lote="${row.id_lote}"  fill="currentColor" d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path>
-                          <path data-lote="${row.id_lote}" fill="currentColor" d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg>
+                        <svg data-lote="${row.id_lote}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--bx" aria-describedby="v-tooltip-22" " viewBox="0 0 24 24">
+                          <g data-lote="${row.id_lote}" fill="none" stroke="#808080" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M5.47 6.015v12.514a2.72 2.72 0 0 0 2.721 2.721h7.618a2.72 2.72 0 0 0 2.72-2.72V6.014m-15.235.001h17.412"/>
+                            <path data-lote="${row.id_lote}" d="M8.735 6.015V4.382a1.632 1.632 0 0 1 1.633-1.632h3.264a1.632 1.632 0 0 1 1.633 1.632v1.633M9.824 16.992v-5.439m4.353 5.439v-5.439"/>
+                          </g>
+                        </svg>
                       </span>
                     </div>
                   </div>
@@ -1161,7 +1192,7 @@
             this.productOption[index] = response.data
             this.productOption[index].push({
               id:-1,
-              title: 'Añadir nuevo'
+              title: 'Añadir nuevo +'
             })
 
           })
@@ -1220,6 +1251,7 @@
       },
       hideNewDismantlingForm(id){
         this.internalModal.hide();
+        this.newDismantling = false;
         this.modal.show()
         if(id){
           if(this.selectedIndex.type == 2){
