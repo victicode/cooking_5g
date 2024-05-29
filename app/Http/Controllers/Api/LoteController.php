@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Lot;
+use App\Models\Product;
 
 class LoteController extends Controller
 {
@@ -26,7 +27,7 @@ class LoteController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function deleteLote($loteId)
+    public function deleteLote($loteId, Request $request)
     {
         if (!$loteId) {
             return $this->returnFail(400, "ID no enviado.");
@@ -36,13 +37,15 @@ class LoteController extends Controller
 
         // $dismantlingsOfProducts= Dismantling::where('piece_product_id', $lot)->delete();
 
-
         if (!$lote) {
             return $this->returnFail(404, "Lote no encontrado.");
         }
- 
-        $lote->delete();
 
+        if($request->deleteProduct == true){
+            $product =  Product::find($lote->product_id);
+            $product->delete();
+        }
+        $lote->delete();
 
         return $this->returnSuccess(200, ['id' => $loteId, 'deleted_at' => $lote->deleted_at_lote]);
     }

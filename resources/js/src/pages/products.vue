@@ -206,13 +206,14 @@
                                       :model-value="item.piece_product_id"
                                       :loading="loading"
                                       :items="productOption[index+'_'+selectedProduct.product.id] != undefined ?  productOption[index+'_'+selectedProduct.product.id] : item.piece_product_id !== null ?[ {id: item.piece_product_id, title: item.products_pieces.title}] : []"
-                                      label="Nombre del producto"
+                                      label="Nombre del despiece"
                                       item-title="title"
                                       item-value="id"
-                                      placeholder="Nombre del producto"
+                                      placeholder="Nombre del despiece"
                                       variant="outlined"
                                       clearable
                                       no-filter
+                                      autocomplete="off"
                                       no-data-text="No se encontraron resultados"
                                       :name="'product_desmantling_id_'+index"
                                       @keyup="searchDismantling($event, index+'_'+selectedProduct.product.id)"
@@ -457,8 +458,8 @@
                           <input 
                             type="checkbox"  
                             id="deleteProductToo" 
-                            v-model="deleteProduct" style="height: 15px; width: 15px;">
-                          <label for="deleteProductToo" class="mx-2 user-chat__name">Eliminar prodcuto también</label>
+                            v-model="deleteProductToo" style="height: 15px; width: 15px;">
+                          <label for="deleteProductToo" class="mx-2 user-chat__name">Eliminar producto también</label>
                         </div>
                       </VCol>
                     </VRow>
@@ -641,13 +642,14 @@
                                               <v-autocomplete
                                                 :model-value="item.piece_product_id"
                                                 :items="productOption[index] ?  productOption[index] :item.piece_product_id !== null ? [ {id: item.piece_product_id, title: item.products_pieces.title}] : []"
-                                                label="Nombre del producto"
+                                                label="Nombre del despiece"
                                                 item-props="stock"
                                                 item-title="title"
                                                 item-value="id"
-                                                placeholder="Nombre del producto"
+                                                placeholder="Nombre del despiece"
                                                 variant="outlined"
                                                 clearable
+                                                autocomplete="off"
                                                 no-filter
                                                 :name="'product_desmantling_id_'+index"
                                                 no-data-text="No se encontraron resultados"
@@ -845,7 +847,7 @@
       alertShow:false,
       alertMessage:'',
       alertType:'',
-      deleteProduct:false,
+      deleteProductToo:false,
       forms:[],
       inputDate:[],
       internalModal:'',
@@ -1472,7 +1474,7 @@
       },
       deleteProduct(){
         this.$store
-          .dispatch(DELETE_LOTE_OF_PRODUCT, this.selectedProduct.id_lote )
+          .dispatch(DELETE_LOTE_OF_PRODUCT, {id: this.selectedProduct.id_lote, deleteProduct: this.deleteProductToo} )
           .then((response) => {
             this.filterColumn()
             this.hideModal()

@@ -119,11 +119,12 @@ const actions = {
         }
       });
     },
-    [DELETE_PRODUCT](context, id) {
+    [DELETE_PRODUCT](context, data) {
+      console.log(data)
       return new Promise((resolve, reject) => {
         if (JwtService.getToken()) {
           ApiService.setHeader();
-          ApiService.post("api/products/delete/"+ id)
+          ApiService.post("api/products/delete/"+ data.id, data)
           .then(( { data } ) => {
               // console.log(data)
               resolve(data);
@@ -168,11 +169,11 @@ const actions = {
         }
       });
     },
-    [DELETE_LOTE_OF_PRODUCT](context,loteID){
+    [DELETE_LOTE_OF_PRODUCT](context,data){
       return new Promise((resolve, reject) => {
         if (JwtService.getToken()) {
           ApiService.setHeader();
-          ApiService.post("api/lotes/delete/"+loteID)
+          ApiService.post("api/lotes/delete/"+data.id, data)
           .then(( { data } ) => {
               console.log(data)
               resolve(data);
