@@ -1345,6 +1345,10 @@
     overflow: visible!important;
     overflow-x: hidden;
   }
+  .v-navigation-drawer{
+    height: 190px!important;
+    
+  }
   .small-delete-product-button_recipe{
       position: absolute;
       top: -10px;

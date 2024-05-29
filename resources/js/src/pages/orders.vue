@@ -103,26 +103,26 @@
       <viewOrderModal :order="selectedOrder"  @actionModal="modalAction" />
       <viewCreateOutOrderModal :order="selectedOrder"  @actionModal="modalAction"  @createOutOrder="createOutOrder"  />
       <viewTimelineOrderModal :order="selectedOrder"  @actionModal="hideInternalModal" />
-      <div class="modal animate__animated animate__fadeInDown" id="confirmOrder" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg mt-10" >
-          <div class="modal-content">
+      <div class="modal animate__animated animate__slideInLeft" id="confirmOrder" tabindex="-1" aria-labelledby="showCartLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg mt-0 ma-0" style="width: 100%; height: 100vh;">
+          <div class="modal-content h-100">
             <VCol
               cols="12"
               class="pa-0 d-flex justify-center"
               style="position: relative;"
             >
-            
               <VCol
                 cols="12"
+                class="pa-0"
               >
-                <VCard class="modal__content">
-                  <div class="modal__close-button" >
+                <VCard class="modal__content h-100 rounded-0">
+                  <div class="modal__close-button__cart" >
                     <v-col  class="pa-0 pe-4">
                       <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
                     </v-col>
                   </div>
-                  <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
-                    <VRow  class="mb-2 ma-0">
+                  <div class="d-flex justify-space-between  flex-column pa-2 px-3 pa-md-5 ">
+                    <VRow  class="mb-2 ma-0 mt-15">
                       <VCol
                         cols="12"
                         class="py-0"

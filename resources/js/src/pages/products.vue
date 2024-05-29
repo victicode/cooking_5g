@@ -15,7 +15,6 @@
   import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
   import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
   import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
-
   import viewProductModal from '@/views/pages/modals/viewProductModal.vue';
   import viewCreateNewLoteModal from '@/views/pages/modals/viewCreateNewLoteModal.vue';
   import viewUpdateLoteModal from '@/views/pages/modals/viewUpdateLoteModal.vue';
@@ -24,6 +23,7 @@
   import 'flatpickr/dist/flatpickr.min.css'
   import { Spanish } from "flatpickr/dist/l10n/es.js"
   import { GET_LOTE_OF_PRODUCT, GET_PRODUCT_BY_SEARCH, STORE_PRODUCT, UPDATE_PRODUCT, ADD_STOCK, DELETE_LOTE_OF_PRODUCT, GET_LAST_LOTE, } from "@/core/services/store/product.module";
+  import viewNewDismantlingModal from '@/views/pages/modals/viewNewDismantlingModal.vue';
 
 </script>
 <template>
@@ -82,7 +82,7 @@
     <div v-if="Object.keys(selectedProduct).length > 2" >
       <viewProductModal :product="selectedProduct" @hiddenModal="hideModal" />
       <div class="modal animate__animated animate__slideInLeft" id="editProduct" tabindex="-1" aria-labelledby="showCartLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg mt-0 ma-0" style="width: 100%; height: 100vh;">
+        <div class="modal-dialog modal-lg mt-0 ma-0" style="width: 100%; height: 100vh;">
         <div class="modal-content h-100">
           <VCol
             cols="12"
@@ -448,10 +448,20 @@
                         class="px-md-10 px-0 text-center"
                         style=""
                       >
-                        <h2>¿Seguro que deseas eliminar <b class="text-primary">{{selectedProduct.product.title}}</b>?</h2>
+                        <h2>¿Seguro que deseas eliminar este lote de <b class="text-primary">{{selectedProduct.product.title}}</b>?</h2>
+                      </VCol>
+                    </VRow>                      
+                    <VRow>
+                      <VCol cols="12"  class="form-group py-0">
+                        <div class="d-flex align-center justify-center">
+                          <input 
+                            type="checkbox"  
+                            id="deleteProductToo" 
+                            v-model="deleteProduct" style="height: 15px; width: 15px;">
+                          <label for="deleteProductToo" class="mx-2 user-chat__name">Eliminar prodcuto también</label>
+                        </div>
                       </VCol>
                     </VRow>
-                      
                     <VDivider  />
                     <div class="mt-5 w-100 d-md-flex  d-block justify-center">
                       <VCardActions class=" justify-center w-100 d-md-flex  d-flex">
@@ -471,9 +481,7 @@
           </div>
         </div>
       </div>
-      <viewUpdateLoteModal @hiddenModal="updateAndHidde" :lote="selectedProduct" />
-    </div>
-    <div v-if="Object.keys(selectedLote).length > 1" >
+      <viewUpdateLoteModal @hiddenModal="updateAndHidden" :lote="selectedProduct" />
     </div>
     <div class="modal animate__animated animate__slideInLeft" id="createProduct" tabindex="-1" aria-labelledby="showCartLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg mt-0 ma-0" style="width: 100%; height: 100vh;">
@@ -753,7 +761,8 @@
         </div>
       </div>
     </div>
-    <viewCreateNewLoteModal @hiddenModal="updateAndHidde" />
+    <viewCreateNewLoteModal @hiddenModal="updateAndHidden"/>
+    <viewNewDismantlingModal @hiddenModal="hideNewDismantlingForm"  v-if="newDismantling"  />
     <v-snackbar
       v-model="snackShow"
       :color="snackType"
@@ -830,29 +839,19 @@
     }
   }
 </style>
-
-
 <script>
   export default {
     data: () => ({
-      modal: '',
-      product:'',
-      productOption:[],
-      search:'',
-      loading: false,
       alertShow:false,
       alertMessage:'',
       alertType:'',
-      snackShow:false,
-      snackMessage:'',
-      snackType:'',
-      snacktimeOut:5000,
-      selectedProduct:{},
-      selectedLote:{},
+      deleteProduct:false,
       forms:[],
-      table:'',
-      stepperNewProduct: 1,
-      steps: 2,
+      inputDate:[],
+      internalModal:'',
+      loading: false,
+      modal: '',
+      newDismantling: false,
       newProduct:{
         img:'images/product/default.png',
         title:'',
@@ -865,7 +864,18 @@
         init_due_date:'',
         init_lote:''
       },
-      inputDate:[],
+      product:'',
+      productOption:[],
+      search:'',
+      selectedIndex:'',
+      selectedLote:{},
+      selectedProduct:{},
+      snackShow:false,
+      snackMessage:'',
+      snacktimeOut:5000,
+      snackType:'',
+      stepperNewProduct: 1,
+      steps: 2,
       stockOperation:{
         type:1,
         quantity:'',
@@ -873,6 +883,7 @@
         lot_quantity: '',
         due_date:''
       },
+      table:'',
       tableData:{
         ajax:{
           "url": import.meta.env.VITE_VUE_APP_BACKEND_URL+"api/get-lotes",
@@ -1069,7 +1080,6 @@
           TableElement.dispatchEvent(event);
         },
       },
-      items:[],
     }),
     methods:{
       stockCalculate(){
@@ -1147,6 +1157,11 @@
           .dispatch(GET_PRODUCT_BY_SEARCH, search)
           .then((response) => {
             this.productOption[index] = response.data
+            this.productOption[index].push({
+              id:-1,
+              title: 'Añadir nuevo'
+            })
+
           })
           .catch((err) => {
             return new Promise((resolve) => {
@@ -1186,6 +1201,38 @@
         this.destroyFormVal();
         this.resetNewProductForm()
         this.resetStockForm();
+      },
+      showInterModal(modal){
+        this.modal.hide()
+
+        try {
+          this.internalModal.hide()
+        } catch (error) {
+          
+        }
+        this.internalModal = new bootstrap.Modal(document.getElementById(modal), {
+          keyboard: false,              
+          backdrop:'static'
+        })
+        this.internalModal.show()
+      },
+      hideNewDismantlingForm(id){
+        this.internalModal.hide();
+        this.modal.show()
+        if(id){
+          if(this.selectedIndex.type == 2){
+
+            this.newProduct.dismantling[this.selectedIndex.index].piece_product_id = id.id
+            this.newProduct.dismantling[this.selectedIndex.index].products_pieces = id
+            this.productOption[this.selectedIndex.index] = null;
+          }
+          if(this.selectedIndex.type == 1){
+            this.selectedProduct.product.dismantling[this.selectedIndex.index].piece_product_id = id.id
+            this.selectedProduct.product.dismantling[this.selectedIndex.index].products_pieces = id
+            this.productOption[this.selectedIndex.index+'_'+this.selectedProduct.product.id] = null;
+          }
+          this.filterColumn()
+        }
       },
       filterColumn(){
         debounce(()=>{
@@ -1244,19 +1291,21 @@
 
         this.disabledButton( button, 'remove')
 
-        setTimeout(() => {
-          
-          this.addValidate(type == 2 
-            ? 'new_product_form'
-            : 'edit_product_form', 'new')
-
-        }, 500);
-
-
-        // console.log(this.selectedProduct.product.dismantling)
-        return type == 2 
+        type == 2 
         ? this.newProduct.dismantling.push(newItem)
         : this.selectedProduct.product.dismantling.push(newItem);
+
+        type == 2 
+        ? this.getProducts('',(this.newProduct.dismantling.length -1))
+        : this.getProducts('',(this.selectedProduct.product.dismantling.length-1)+'_'+this.selectedProduct.product.id)
+        
+        setTimeout(() => {
+          this.addValidate(
+            type == 2 
+            ? 'new_product_form'
+            : 'edit_product_form', 'new'
+          )
+        }, 500);
       },
       searchDismantling(e, index){ 
         debounce(this.getProducts, 200)(e.target.value, index)
@@ -1265,6 +1314,17 @@
         this.getProducts('',index)
       },
       selectDismantling(e,index,type){
+        if(e==-1){
+          this.selectedIndex = {
+            index:index, 
+            type:type
+          };
+          this.newDismantling = true;
+          setTimeout(() => {
+            this.showInterModal('createDismantlingProduct')
+          }, 500);
+          return
+        }
         const idButton = type == 2 
           ? 'new_product_form_button'
           : 'edit_product_form_button'
@@ -1690,7 +1750,6 @@
         this.disabledButton( document.getElementById(e.target.closest('form').id+'_button'), 'toggle')
       },
       addValidate(id,type){
-        // this.forms[id] 
         let form = document.getElementById(id),
         quantityInput = type == 'new'
         ? form.querySelectorAll('input[name*="product_desmantling_quantity_"]')[ form.querySelectorAll('input[name*="product_desmantling_quantity_"]').length - 1]
@@ -1717,8 +1776,6 @@
           this.forms[id].addField(element.name, fieldOptions.quantity)
 
         });
-        
-        // console.log(newfield)
       },
       removeValidate(id){
         let form = document.getElementById(id),
@@ -1726,7 +1783,6 @@
         try {
           this.forms[id].removeField(quantityInput.name)
         } catch (error) {
-          // console.log('no hay validación activa')
         }
         
       },
@@ -1826,7 +1882,7 @@
         
         return count
       },
-      updateAndHidde(){
+      updateAndHidden(){
         this.filterColumn()
         this.modal.hide()
         this.destroyFormVal();

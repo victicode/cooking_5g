@@ -134,7 +134,7 @@ class ProductController extends Controller
             $products->where('title', 'like', '%'.$request->title.'%');
         }
 
-        return $this->returnSuccess(200, $products->take(10)->get());
+        return $this->returnSuccess(200, $products->take(7)->get());
     }   
     public function deleteProduct($productId)
     {

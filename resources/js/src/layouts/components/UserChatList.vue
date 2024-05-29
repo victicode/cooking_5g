@@ -42,20 +42,20 @@ moment.defineLocale('es-mx', {
             <div class="d-flex align-center">
               <input 
                 type="checkbox"  
-                id="isUserAddress" 
+                id="see_all" 
                 @change="searchChat(); this.showOnlyClosedChat = false" 
                 v-model="showClosedChat" style="height: 15px; width: 15px;">
-              <label for="isUserAddress" class="mx-2 user-chat__name">Ver todos los tickets</label>
+              <label for="see_all" class="mx-2 user-chat__name">Ver todos los tickets</label>
             </div>
           </VCol>
           <VCol cols="12"  class="form-group py-0">
             <div class="d-flex align-center">
               <input 
                 type="checkbox"  
-                id="isUserAddress" 
+                id="see_only_close" 
                 @change="searchChat(); this.showClosedChat = false " 
                 v-model="showOnlyClosedChat" style="height: 15px; width: 15px;">
-              <label for="isUserAddress" class="mx-2 user-chat__name">Ver solo cerrados</label>
+              <label for="see_only_close" class="mx-2 user-chat__name">Ver solo cerrados</label>
             </div>
           </VCol>
         </VRow>

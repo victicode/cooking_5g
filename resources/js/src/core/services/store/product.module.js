@@ -21,7 +21,7 @@ const actions = {
             ApiService.setHeader();
             ApiService.get("api/products?page="+query.page+"&product_title="+query.search+"&")
             .then(( { data } ) => {
-                console.log(data)
+                // console.log(data)
                 resolve(data);
                 
             })

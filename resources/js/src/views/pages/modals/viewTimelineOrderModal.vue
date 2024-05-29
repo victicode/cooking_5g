@@ -6,24 +6,25 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="modal animate__animated animate__fadeInDown" id="timeLineOrder" tabindex="-1" aria-labelledby="timeLineOrderLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl mt-10" >
-      <div class="modal-content">
-        <VCol
-          cols="12"
-          class="pa-0 d-flex justify-center"
-          style="position: relative;"
-        >
+  <div class="modal animate__animated animate__slideInLeft" id="timeLineOrder" tabindex="-1" aria-labelledby="showCartLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg mt-0 ma-0" style="width: 100%; height: 100vh;">
+        <div class="modal-content h-100">
           <VCol
             cols="12"
+            class="pa-0 d-flex justify-center"
+            style="position: relative;"
           >
-            <VCard class="modal__content">
-              <div class="modal__close-button" >
-                <v-col  class="pa-0 pe-4">
-                  <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
-                </v-col>
-              </div>
-              <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
+            <VCol
+              cols="12"
+              class="pa-0"
+            >
+              <VCard class="modal__content h-100 rounded-0">
+                <div class="modal__close-button__cart" >
+                  <v-col  class="pa-0 pe-4">
+                    <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                  </v-col>
+                </div>
+                <div class="d-flex justify-space-between  flex-column pa-2 px-3 pa-md-5 ">
                 <VRow  class="mb-2 ma-0">
                   <VCol
                     cols="12"
@@ -41,9 +42,11 @@ const props = defineProps({
                   </VCol>
                   <VCol
                     cols="12"
-                    class="px-md-10 px-0 overflow-scroll relative position-relative py-10 "
+                    class="px-md-10 px-0 overflow-scroll relative position-relative py-10 my-10"
                     style=""
                   >
+                  <div class="py-10 ">
+
                     <div class="my-8">
                       <div class="">
                         <div class="timeline__content">
@@ -133,6 +136,7 @@ const props = defineProps({
                         </div>
                       </div>
                     </div>
+                  </div>
                   </VCol>
                 </VRow>
                 <VDivider  />
