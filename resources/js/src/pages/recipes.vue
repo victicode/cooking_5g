@@ -1828,7 +1828,6 @@
       },
       searchRecipe(){
         debounce(this.getRecipes, 200)()
-
       },
       selectRecipe(idAccount){
         this.isRecipe = false
