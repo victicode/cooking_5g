@@ -123,7 +123,6 @@ export default {
   computed: {
   },
   mounted() {
-    // document.querySelector("body").style.background ="url('http://192.168.42.226:8005/images/background/login/01.jpg')"
     document.querySelector("body").style.background ="url('"+import.meta.env.VITE_VUE_APP_BACKEND_URL+"images/background/login/01.jpg')"
     
     this.fv = formValidation(document.getElementById('kt_login_signin_form'), {
@@ -170,39 +169,31 @@ export default {
       const email = this.form.email
       const password = this.form.password
       const remember = 'true'
-
-
-      // console.log(email)
-      // clear existing errors
       this.$store.dispatch(LOGOUT);
-      
-      // set spinner to submit button
       const submitButton = document.getElementById('kt_login_signin_submit')
       submitButton.textContent = 'Cargando...'
-      
-      // dummy delay
-        this.$store
-        .dispatch(LOGIN, { email, password, remember })
-        .then((data) => {
-          if(data.code === 500 ){
-            submitButton.textContent = 'Ingresar';
-            submitButton.blur();
-            this.showAlert('error',data.messagge)
-            return
-          }
-          this.overlay = true
-          this.showAlert('success','Acceso Exitoso')
-          submitButton.textContent = 'Acceso Exitoso'
-          setTimeout(() => {
-            
-            this.$router.push('/dashboard') 
-          }, 500);
-        })
-        .catch((e) => {
+      this.$store
+      .dispatch(LOGIN, { email, password, remember })
+      .then((data) => {
+        if(data.code === 500 ){
           submitButton.textContent = 'Ingresar';
           submitButton.blur();
-          this.showAlert('error','Error desconocido')
-        });
+          this.showAlert('error',data.messagge)
+          return
+        }
+        this.overlay = true
+        this.showAlert('success','Acceso Exitoso')
+        submitButton.textContent = 'Acceso Exitoso'
+        setTimeout(() => {
+          
+          this.$router.push('/dashboard') 
+        }, 500);
+      })
+      .catch((e) => {
+        submitButton.textContent = 'Ingresar';
+        submitButton.blur();
+        this.showAlert('error','Error desconocido')
+      });
     
     }).on("core.form.invalid", () => {
       document.getElementById('kt_login_signin_submit').disabled = true
