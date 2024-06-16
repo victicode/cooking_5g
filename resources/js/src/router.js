@@ -16,7 +16,7 @@ import clientComponent from '@/pages/users/client.vue';
 import chefComponent from '@/pages/users/chef.vue';
 import accountSettings from  '@/pages/account-settings.vue'
 import supportComponent from '@/pages/support.vue'
-import loginPage from '@/pages/logins.vue'
+import loginPage from '@/pages/login.vue'
 
 const router = createRouter({
   history: createWebHistory(),

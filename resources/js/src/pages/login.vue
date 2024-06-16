@@ -1,81 +1,130 @@
 <template>
-  <div class="container">
-    <div class="row vh-100" >
-      <div class="col-12 col-md-7 col-lg-5  offset-lg-7 offset-0 ">
-        <div class="card border-0 shadow rounded-3 my-5">
-          <div class="card-body py-5 px-4 p-sm-5 row align-items-center">
-            <div class="text-center d-flex justify-content-center">
+  <div class="auth-wrapper d-flex align-center justify-center pa-4 row">
+    <v-row
+      align="start"
+    >
+      <v-col cols="12" md="4" offset-md="7"
+      >
+        <VCard
+          class="auth-card pa-4 pt-7 vh-70 d-flex flex-column"
+        >
+          <VCardItem class="justify-center w-100  py-2 py-md-6">
+
+            <VCardTitle class="text-2xl font-weight-bold">
               <div class="card-title d-flex ">
                 <div class="form-title__part1">Cooking</div> <div class="form-title__part2">5G</div>
                 
               </div>
-            </div>
-            <div :class="'alert alert-dismissible fade show ' + alertType" v-if="alertShow" role="alert">
-              <strong>{{ alertMessage }}</strong> 
-            </div>
-            <form class="mb-3 form w-100" novalidate="novalidate" id="kt_login_signin_form">
-              <div class="login-form-content" id="login-form-content">
-                <div class="form-floating mb-3">
-                  <input type="text" ref="user" class="form-control" id="floatingInput" name="email"  placeholder="name@example.com">
-                  <label for="floatingInput">Correo electronico </label>
-                </div>
-                <div class="form-floating mb-3 input-goup d-flex align-items-center row">
-                  <input type="password" name="password" ref="password" class="form-control w-75 border-end-0 input-with-addons" id="floatingPassword" placeholder="Password">
-                  <label for="floatingPassword">Contraseña</label>
-                  <div class="w-25 addons-input form-control">
-                    <i class="fa fa-eye fa-md" @click="viewPassword()"></i>
-                  </div>
-                </div>
-  
-                <div class="form-check mb-3">
-                  <input class="form-check-input" type="checkbox" value="" id="rememberPasswordCheck">
-                  <label class="form-check-label" for="rememberPasswordCheck">
-                    Recordar Contraseña
-                  </label>
-                </div>
-                <div class="d-grid">
-                  <button class="btn btn-primary btn-login text-uppercase fw-bold" disabled="true" ref="kt_login_signin_submit">Ingresar</button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+            </VCardTitle>
+          </VCardItem>
+
+          <VCardText class="py-2 w-100">
+            <h5 class="text-h5 mb-1">
+              Bienvenido! 👋🏻
+            </h5>
+            <p class="mb-0">
+            Inicia sesion con tu cuenta ahora
+            </p>
+          </VCardText>
+          <VCardText class="mb-5  w-100 pa-0 px-md-5 px-2" v-if="alertShow">
+            <v-alert
+              :color="alertType"
+              :text="alertMessage"
+            ></v-alert>
+          </VCardText>
+          <VCardText class="w-100">
+            <VForm @submit.prevent="$router.push('/')" id="kt_login_signin_form">
+              <VRow>
+                <!-- email -->
+                <VCol cols="12" class="form-group">
+                  <VTextField
+                    v-model="form.email"
+                    autofocus
+                    placeholder="johndoe@email.com"
+                    label="Email"
+                    type="text"
+                    name="email"
+                  />
+                </VCol>
+
+                <!-- password -->
+                <VCol cols="12" class="form-group pb-0">
+                  <VTextField
+                    v-model="form.password"
+                    label="Password"
+                    placeholder="············"
+                    autocomplete="off"
+                    name="password"
+                    :type="isPasswordVisible ? 'text' : 'password'"
+                    :append-inner-icon="isPasswordVisible ? 'bx-hide' : 'bx-show'"
+                    @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                  />
+                  </VCol>
+                  <VCol cols="12" class="pt-0 mt-8">
+                    <!-- login button -->
+                    <VBtn
+                      block
+                      type="submit"
+                      id="kt_login_signin_submit"
+                    >
+                      Iniciar sesion
+                    </VBtn>
+                  </VCol>
+              </VRow>
+            </VForm>
+          </VCardText>
+        </VCard>
+      </v-col>
+    </v-row>
+    <v-overlay
+    :model-value="overlay"
+    :persistent="true"
+    :close-on-back="true"
+    class="align-center justify-center"
+  >
+    <v-progress-circular
+      color="primary"
+      indeterminate
+      size="64"
+    />
+  </v-overlay>
   </div>
 </template>
 
-<!-- Load login custom page styles -->
-<style lang="scss">
-  @import "@/assets/sass/login.scss";
- 
-</style>
-<style >
+<style lang="scss" scoped>
+@use "@core/scss/template/pages/page-auth.scss";
+@import "@/assets/sass/login.scss";
+// @import "@/assets/plugins/formvalidation/src/css/index.scss";
 </style>
 
 <script>
 import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
-// import 'bootstrap/scss/bootstrap'
-// FormValidation plugins
+import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
+
 import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
 import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
 import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
 import { LOGOUT, LOGIN } from "@/core/services/store/auth.module";
 
-
 export default {
-  data() {
-    return {
-      state: "signin",
-      fv: "",
-      alertShow:false,
-      alertMessage:'',
-      alertType:''
-    };
-  },
+  data: () => ({
+    overlay: false,
+    fv: "",
+    alertShow:false,
+    alertMessage:'',
+    alertType:'',
+    isPasswordVisible: false,
+    form:{
+      email: '',
+      password: '',
+      remember: false,
+    }
+  }),
   computed: {
   },
   mounted() {
+    document.querySelector("body").style.background ="url('"+import.meta.env.VITE_VUE_APP_BACKEND_URL+"images/background/login/01.jpg')"
+    
     this.fv = formValidation(document.getElementById('kt_login_signin_form'), {
       fields: {
         email: {
@@ -84,7 +133,7 @@ export default {
               message: "Por favor ingrese correo electrónico / nombre de usuario"
             },
             regexp: {
-              regexp: /^[A-Za-z0-9.#-+*/@$_]+$/i,
+              regexp: /^[A-Za-z0-9.*-+/@$_]+$/i,
               message: 'El Correo no debe contener espacios ni los siguientes caracteres: "[]{}!¡¿?=()&|',
             },
           }
@@ -112,69 +161,52 @@ export default {
               // Use this for enabling/changing valid/invalid class
               // eleInvalidClass: '',
               eleValidClass: '',
-              rowSelector: '.form-floating'
             }),
       }
     });
 
     this.fv.on("core.form.valid", () => {
-      const email = this.$refs.user.value
-      const password = this.$refs.password.value
-      // clear existing errors
+      const email = this.form.email
+      const password = this.form.password
+      const remember = 'true'
       this.$store.dispatch(LOGOUT);
-      
-      // set spinner to submit button
-      const submitButton = this.$refs["kt_login_signin_submit"];
+      const submitButton = document.getElementById('kt_login_signin_submit')
       submitButton.textContent = 'Cargando...'
-      
-      // dummy delay
-        this.$store
-        .dispatch(LOGIN, { email, password })
-        .then((data) => {
-          if(data.code === 500 ){
-            submitButton.textContent = 'Ingresar';
-            submitButton.blur();
-            this.showAlert('alert-danger',data.messagge)
-            return
-          }
-          this.showAlert('alert-success','Acceso Exitoso')
-          submitButton.textContent = 'Acceso Exitoso'
-          setTimeout(() => {
-            
-            this.$router.push('/dashboard') 
-          }, 1000);
-        })
-        .catch((e) => {
-
-          // console.log(e)
-        });
-   
+      this.$store
+      .dispatch(LOGIN, { email, password, remember })
+      .then((data) => {
+        if(data.code === 500 ){
+          submitButton.textContent = 'Ingresar';
+          submitButton.blur();
+          this.showAlert('error',data.messagge)
+          return
+        }
+        this.overlay = true
+        this.showAlert('success','Acceso Exitoso')
+        submitButton.textContent = 'Acceso Exitoso'
+        setTimeout(() => {
+          
+          this.$router.push('/dashboard') 
+        }, 500);
+      })
+      .catch((e) => {
+        submitButton.textContent = 'Ingresar';
+        submitButton.blur();
+        this.showAlert('error','Error desconocido')
+      });
+    
     }).on("core.form.invalid", () => {
-      this.$refs["kt_login_signin_submit"].disabled = true
+      document.getElementById('kt_login_signin_submit').disabled = true
       this.alertShow = false;
     }).on("core.field.valid", () => {
-      this.$refs["kt_login_signin_submit"].disabled = false
+      document.getElementById('kt_login_signin_submit').disabled = false
       this.alertShow = false;
     }).on("core.field.invalid", () => {
       this.alertShow = false;
-      this.$refs["kt_login_signin_submit"].disabled = true
+      document.getElementById('kt_login_signin_submit').disabled = true
     });
   },
   methods: {
-    viewPassword(){
-      const input = document.querySelector('.input-goup');
-      const formPasswordToggleIcon = input.querySelector('i')
-      const formPasswordToggleInput = input.querySelector('input')
-      if (formPasswordToggleInput.getAttribute('type') == 'text') {
-        formPasswordToggleInput.setAttribute('type', 'password')
-        formPasswordToggleIcon.classList.replace('ti-eye', 'ti-eye-off')
-        return;
-      }
-
-      formPasswordToggleInput.setAttribute('type', 'text')
-      formPasswordToggleIcon.classList.replace('ti-eye-off', 'ti-eye')
-      
-    },
     showAlert(type, messagge){
       this.alertShow = true;
       this.alertType = type
