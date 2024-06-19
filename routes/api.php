@@ -36,7 +36,6 @@ use App\Http\Controllers\Api\Auth\AuthController;
 
 // });
 
-Route::get('loginxx', [AuthController::class, 'loginx']);
 
 Route::post('login', [AuthController::class, 'login']);
 Route::middleware('jwt.verify')->post('/get-products',  [ProductController::class, 'getProductsTable']);
