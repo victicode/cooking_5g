@@ -4,7 +4,6 @@ import {createRouter, createWebHistory} from "vue-router";
 import guest from './middlewares/guest'
 import auth from './middlewares/auth'
 import isAdmin from './middlewares/isAdmin'
-import middlewarePipeline from './middlewares/middlewarePipeline'
 
 // components
 import defaultComponent from '@/layouts/default.vue';
@@ -32,9 +31,7 @@ const router = createRouter({
           path: 'dashboard',
           component: () => import('@/pages/dashboard.vue'),
           meta: {
-            middleware: [
-              auth
-            ],
+            middleware: auth,
             title : 'Dashboard'
           },
         },
@@ -42,41 +39,15 @@ const router = createRouter({
           path: "/products",
           component: productsComponent,
           meta: {
-            middleware: [
-              auth,
-              
-            ],
+            middleware: auth,
             title : 'Productos'
           },
         },
-        // {
-        //   path: "/products_client",
-        //   component: productsClientComponent,
-        //   meta: {
-        //     middleware: [
-        //       auth,
-        //     ],
-        //     title : 'Productos'
-        //   },
-        // },
-        // {
-        //   path: "/products_2",
-        //   component: products_2Component,
-        //   meta: {
-        //     middleware: [
-        //       auth
-        //     ],
-        //     title : 'Productos'
-        //   },
-        // },
-
         {
           path: "/orders",
           component: ordersComponent,
           meta: {
-            middleware: [
-              auth,
-            ],
+            middleware: auth,
             title : 'Ordenes'
           },
         },
@@ -84,10 +55,7 @@ const router = createRouter({
           path: "/user-list",
           component: clientComponent,
           meta: {
-            middleware: [
-              auth,
-              isAdmin
-            ],
+            middleware: isAdmin,
             title : 'Listado de clientes'
           },
         },
@@ -95,10 +63,7 @@ const router = createRouter({
           path: "/chef-list",
           component: chefComponent,
           meta: {
-            middleware: [
-              auth,
-              isAdmin
-            ],
+            middleware: isAdmin,
             title : 'Listado de chefs'
           },
         },
@@ -106,9 +71,7 @@ const router = createRouter({
           path: "/recipes",
           component: recipesComponent,
           meta: {
-            middleware: [
-              auth
-            ],
+            middleware: auth,
             title : 'Recetas'
           },
         },
@@ -116,9 +79,7 @@ const router = createRouter({
           path: "/support",
           component: supportComponent,
           meta: {
-            middleware: [
-              auth
-            ],
+            middleware: auth,
             title : 'Atención al cliente'
           },
         },
@@ -126,9 +87,7 @@ const router = createRouter({
           path: '/acount-settings',
           component: accountSettings,
           meta: {
-            middleware: [
-              auth
-            ],
+            middleware: auth,
             title : 'Ajustes de perfil',
           },
         },
@@ -139,7 +98,8 @@ const router = createRouter({
       name: "Login",
       component: loginPage,
       meta: {
-        title: 'Bienvenido'
+        title: 'Bienvenido',
+        middleware: guest,
       },
     },
     {

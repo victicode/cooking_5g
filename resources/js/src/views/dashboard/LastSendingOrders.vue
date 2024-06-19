@@ -12,17 +12,16 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
           class="py-3 border-bottom-4 px-1 px-md-2"
         >
           <VRow class="pa-0 m-0 align-center">
-            <VCol cols="4" md="4" class="text-center hide-text">
+            <VCol cols="4" md="4" class="text-center px-0 hide-text">
               Fecha
             </VCol>
-            <VCol cols="5" md="4" class="text-center hide-text">
+            <VCol cols="5" md="4" class="text-center px-0 hide-text">
               Tracker ID
             </VCol>
-            <VCol cols="3" md="4" class="text-center hide-text">
-              Opciones
+            <VCol cols="3" md="4" class="text-center px-0 hide-text">
+              N° Orden
             </VCol>
           </VRow>
-         
         </VListItem>
         <template v-if="orders.length > 0">
           <VListItem
@@ -31,33 +30,48 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
             class="py-3 border-bottom-4 px-1 px-md-2"
           >
             <VRow class="pa-0  align-center">
-              <VCol cols="4" md="4" class="text-center">
+              <VCol cols="4" md="4" class="text-center px-0">
                 {{moment(order.created_at ).format('DD/MM/YYYY') }}
               </VCol>
-              <VCol cols="5" md="4" class="text-center">
-                #{{ order.trancker }}
+              <VCol cols="5" md="4" class="text-center px-0" @click="copyOderNumber(order.trancker)" >
+                <div class="w-100 d-flex align-center justify-center text-decoration-underline">
+                  #{{ order.trancker }} <VIcon icon="fluent:document-copy-20-regular" class="ms-0"></VIcon>
+                </div>
               </VCol>
-              <VCol cols="3" md="4" class="text-center">
-                <VIcon icon="bx-show" />
+              <VCol cols="3" md="4" class="text-center px-0">
+                #{{ orderNumberFormat(order.id) }}
               </VCol>
-  
             </VRow>
-           
           </VListItem>
         </template>
         <template v-else>
-          <VListItem 
-          >
+          <VListItem>
             <VRow class="pa-0 m-0 align-center">
               <VCol cols="12" class=" mt-5 text-center">
                 <h3>No hay resultados</h3>
               </VCol>
             </VRow>
-           
           </VListItem>
         </template>
       </VList>
     </VCardText>
+    <v-snackbar
+      v-model="snackShow"
+      :color="snackType"
+      rounded="pill"
+      :timeout="snacktimeOut"
+      width="max-content"
+      class="text-center"
+    >
+      <h4 class="text-white w-100 text-center">
+        {{snackMessage}}
+      </h4>
+      <template
+        v-slot:actions
+      >
+        <VBtn  color="white" class="text-white" @click="snackShow=false"> Cerrar</VBtn>
+      </template>
+    </v-snackbar>
   </VCard>
 </template>
 
@@ -67,11 +81,14 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
   }
 </style>
 <script>
-import { mapGetters } from "vuex";
   export default {
     data(){
       return{
-        orders:[]
+        orders:[],
+        snackShow:false,
+        snackMessage:'',
+        snackType:'',
+        snacktimeOut:5000,
       }
     },
     methods:{
@@ -88,17 +105,41 @@ import { mapGetters } from "vuex";
         .catch((e) => {
           console.log(e)
         });
-      }
+      },
+      orderNumberFormat(id){
+        return '0000000'.slice( 0, 6 - id.toString().length ) + id 
+      },
+      async copyOderNumber(textToCopy){
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(textToCopy);
+        } else {
+          const textArea = document.createElement("textarea");
+          textArea.value = textToCopy;
+              
+          textArea.style.position = "absolute";
+          textArea.style.left = "-999999px";
+              
+          document.body.prepend(textArea);
+          textArea.select();
+
+          try {
+            document.execCommand('copy');
+          } catch (error) {
+            console.error(error);
+          } finally {
+            textArea.remove();
+            this.showSnackbar('success', 'Tracker ID copiado exitosamente')
+          }
+        }
+      },
+      showSnackbar(type, messagge){
+        this.snackShow = true;
+        this.snackType = type
+        this.snackMessage = messagge
+      },
     },
     mounted(){
       this.getOrders()
-    },
-    computed: {
-      ...mapGetters(["currentUser"]),
-
-      getCurrentAccount() {
-        return this.currentUser;
-      },
     },
   };
 </script>

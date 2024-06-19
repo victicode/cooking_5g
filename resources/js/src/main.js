@@ -36,7 +36,6 @@ router.beforeEach(async (to, from, next) => {
    } 
   });
 
-
   setTimeout(() => {
     let trashElement = [document.querySelectorAll('.modal-backdrop'), document.querySelectorAll('.tooltip')];
 
@@ -47,19 +46,7 @@ router.beforeEach(async (to, from, next) => {
 
   if(from.path !== to.path) emitter.emit('displayOverlayLoad', true)
 
-  
-  const middleware = to.meta.middleware
-  const context = {
-    to,
-    from,
-    next,
-    store
-  }
-
-  return middleware[0]({
-    ...context,
-    next: middlewarePipeline(context, middleware, 0)
-  })
+  return to.meta.middleware(to, from, next)
 });
 
 // 
@@ -70,7 +57,6 @@ router.beforeEach(async (to, from, next) => {
 
 
 
-app.use(VueAxios, axios);
 app.use(vuetify)
 app.use(router)
 app.use(store)
@@ -78,7 +64,5 @@ app.use(func)
 app.config.globalProperties.emitter = emitter
 
 
-// app.axios.defaults.baseURL = import.meta.env.VUE_APP_BACKEND_URL 
 app.config.globalProperties.$helper = func;
-// console.log(app)
 app.mount('#app')

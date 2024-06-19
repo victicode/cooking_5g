@@ -1,31 +1,29 @@
 <script setup >
-  import * as bootstrap from 'bootstrap'
   import { GET_MESSAGE, SEE_ALL_MESSAGE } from "@/core/services/store/message.module";
   import { mapGetters } from "vuex";
   import notificationTone4 from "@/assets/audio/notification2.mp3";
   import moment from 'moment-timezone';
   import 'moment/locale/es';
-
   moment.updateLocale('es-mx', {
-        relativeTime: {
-            future: 'en %s',
-            past: 'hace %s',
-            s: 'unos segundos',
-            ss: '%d segundos',
-            m: 'un minuto',
-            mm: '%d minutos',
-            h: 'una hora',
-            hh: '%d horas',
-            d: 'un día',
-            dd: '%d días',
-            w: 'una semana',
-            ww: '%d semanas',
-            M: 'un mes',
-            MM: '%d meses',
-            y: 'un año',
-            yy: '%d años',
-        },
-    });
+    relativeTime: {
+      future: 'en %s',
+      past: 'hace %s',
+      s: 'unos segundos',
+      ss: '%d segundos',
+      m: 'un minuto',
+      mm: '%d minutos',
+      h: 'una hora',
+      hh: '%d horas',
+      d: 'un día',
+      dd: '%d días',
+      w: 'una semana',
+      ww: '%d semanas',
+      M: 'un mes',
+      MM: '%d meses',
+      y: 'un año',
+      yy: '%d años',
+    },
+  });
   
 </script>
 <template>
@@ -35,8 +33,7 @@
     >
       <template v-slot:activator="{ props }">
         <div class="relative position-relative">
-
-          <IconBtn class="me-2"  v-bind="props" @click="this.messages_count=0">
+          <IconBtn class="me-2"  v-bind="props" @click="messages_count = 0 ">
             <VIcon  size="x-large" icon="mi:message-alt" />
           </IconBtn>
           <div class="message__count animate__animated" v-if="messages_count > 0">
@@ -60,7 +57,6 @@
           <v-list-item-title 
             class="d-flex flex-column  pt-0" 
             :class="item.read == 0 ?'bg-unread-notify' :''"  
-            
             style="border-bottom: 1px solid #cf6123; "
             @click="seeAllMessages(item.id)"
           >
@@ -147,7 +143,7 @@
       getMessages(){
         setTimeout(() => {
           this.$store
-          .dispatch(GET_MESSAGE, 1)
+          .dispatch(GET_MESSAGE)
           .then((data)=> {
             this.messages = data.all ; 
             this.messages_count = data.new_count ; 

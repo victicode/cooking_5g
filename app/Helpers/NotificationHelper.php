@@ -8,8 +8,6 @@ use App\Events\NotificationCooking;
 use App\Http\Controllers\Controller;
 
 function createNotification($data){
-
-  
   switch ($data['type']) {
     case 1:
       createOrderNotifiaction($data);
@@ -21,8 +19,6 @@ function createNotification($data){
       productStockNotifiaction($data);
       break;
   }
-  
-  
   event(new NotificationCooking);
 
   return 'succes';
@@ -121,12 +117,10 @@ function productStockNotifiaction($data){
     'product_id'    =>  $data['product'],
     'user_id'       =>  1,
     'read'          =>  0,
-    'type'          =>  1,
+    'type'          =>  2,
 
   ]);
 }
 function orderNumberFormat($id){
-
   return  substr('0000000',0, 7 - strlen(strval($id)) ) . strval($id) ;
-
 }

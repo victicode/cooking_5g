@@ -8,11 +8,11 @@ export const SEE_ALL_MESSAGE = "SEE_ALL_MESSAGE"
 
 
 const actions = {
-  [GET_MESSAGE](context,userId){
+  [GET_MESSAGE](context){
     return new Promise((resolve, reject) => {
       if (JwtService.getToken()) {
         ApiService.setHeader();
-        ApiService.get("api/message/"+userId)
+        ApiService.get("api/message/")
         .then(( { data } ) => {
             // console.log(data)
             resolve(data);

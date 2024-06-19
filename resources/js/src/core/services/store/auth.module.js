@@ -154,6 +154,7 @@ const mutations = {
   },
   [SET_IS_ADMIN](state, user) {
     window.localStorage.setItem("is_admin", user.rol_id !== 3 ? true : false);
+    window.localStorage.setItem("is_S_admin", user.rol_id == 1 ? true : false);
     window.localStorage.setItem("user_unique_id",user.id);
 
   },
@@ -171,6 +172,7 @@ const mutations = {
     state.errors = {};
     window.localStorage.removeItem("id_token");
     window.localStorage.removeItem("is_admin");
+    window.localStorage.removeItem("is_S_admin");
     window.localStorage.removeItem("user_unique_id");
 
     JwtService.destroyToken();

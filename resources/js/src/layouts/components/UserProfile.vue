@@ -57,7 +57,7 @@ import { LOGOUT } from "@/core/services/store/auth.module";
           <VDivider class="my-2" />
 
           <!-- 👉 Profile -->
-          <VListItem link>
+          <!-- <VListItem link>
             <template #prepend>
               <VIcon
                 class="me-2"
@@ -73,7 +73,7 @@ import { LOGOUT } from "@/core/services/store/auth.module";
               <VListItemTitle>Perfil</VListItemTitle>
             </Component>
             
-          </VListItem>
+          </VListItem> -->
 
           <!-- Divider -->
           <VDivider class="my-2" />

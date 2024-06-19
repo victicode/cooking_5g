@@ -17,12 +17,11 @@ import searchOrder from '@/views/dashboard/searchTrackOrder.vue'
         class="px-2 px-md-3"
       >
         <VRow>
-          <V-col
-          cols="12"
+          <VCol
+            cols="12"
           >
-          <GreetingsComponent />
-  
-          </V-col>
+            <GreetingsComponent />
+          </VCol>
           <VCol
             cols="12"
             md="12"
@@ -45,52 +44,49 @@ import searchOrder from '@/views/dashboard/searchTrackOrder.vue'
           </VCol>
         </VRow>
       </VCol>
-  
       <VCol
-          cols="12"
-          sm="4"
-          
-          order="1"
-          order-sm="2"
-          class="text-center px-2 px-md-3"
+        cols="12"
+        sm="4"
+        order="1"
+        order-sm="2"
+        class="text-center px-2 px-md-3"
+      >
+        <v-card
+          elevation="24"
+          max-width="444"
+          class="mx-auto"
         >
-          <v-card
-            elevation="24"
-            max-width="444"
-            class="mx-auto"
+          <v-carousel
+            :continuous="false"
+            :show-arrows="false"
+            hide-delimiter-background
+            delimiter-icon="mdi-square"
+            height="450"
+            cycle
+            direction="vertical"
+            progress="primary"
+            interval="8000000"
           >
-            <v-carousel
-              :continuous="false"
-              :show-arrows="false"
-              hide-delimiter-background
-              delimiter-icon="mdi-square"
-              height="450"
-              cycle
-              direction="vertical"
-              progress="primary"
-              interval="8000000"
+            <v-carousel-item
+              v-if="getCurrentAccount.rol_id == 1 "
             >
-              <v-carousel-item
-                v-if="getCurrentAccount.rol_id == 1 "
+              <VCol
+                class="pa-0"
+                cols="12 h-100"
               >
-                <VCol
-                  class="pa-0"
-                  cols="12 h-100"
-                  
-                >
-                  <CriticalStockProduct />
-                </VCol>
-              </v-carousel-item>
-              <v-carousel-item>
-                <VCol
-                  class="pa-0"
-                  cols="12 h-100"
-                >
-                  <LastSendingOrders />
-                </VCol>
-              </v-carousel-item>
-            </v-carousel>
-          </v-card>
+                <CriticalStockProduct />
+              </VCol>
+            </v-carousel-item>
+            <v-carousel-item>
+              <VCol
+                class="pa-0"
+                cols="12 h-100"
+              >
+                <LastSendingOrders />
+              </VCol>
+            </v-carousel-item>
+          </v-carousel>
+        </v-card>
       </VCol>
     </VRow>
   </div>

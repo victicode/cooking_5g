@@ -1,38 +1,35 @@
 <template>
-  <div class="auth-wrapper d-flex align-center justify-center pa-4 row">
+  <div class="auth-wrapper d-flex align-center justify-center pa-md-4 row ">
     <v-row
       align="start"
     >
       <v-col cols="12" md="4" offset-md="7"
       >
         <VCard
-          class="auth-card pa-4 pt-7 vh-70 d-flex flex-column"
+          class="auth-card pa-md-4 pt-md-12 vh-auto d-flex flex-column"
         >
-          <VCardItem class="justify-center w-100  py-2 py-md-6">
-
+          <VCardItem class="justify-center w-100  py-2 mt-12 mt-md-0 py-md-6">
             <VCardTitle class="text-2xl font-weight-bold">
               <div class="card-title d-flex ">
                 <div class="form-title__part1">Cooking</div> <div class="form-title__part2">5G</div>
-                
               </div>
             </VCardTitle>
           </VCardItem>
-
-          <VCardText class="py-2 w-100">
-            <h5 class="text-h5 mb-1">
-              Bienvenido! 👋🏻
-            </h5>
-            <p class="mb-0">
-            Inicia sesion con tu cuenta ahora
-            </p>
-          </VCardText>
-          <VCardText class="mb-5  w-100 pa-0 px-md-5 px-2" v-if="alertShow">
-            <v-alert
-              :color="alertType"
-              :text="alertMessage"
-            ></v-alert>
-          </VCardText>
           <VCardText class="w-100">
+            <div class="py-2 w-100 mb-1 mb-10  " >
+              <h5 class="text-h5 mb-1">
+                Bienvenido! 👋🏻
+              </h5>
+              <p class="mb-0">
+                Inicia sesion con tu cuenta ahora
+              </p>
+            </div>
+            <div class="mb-12 mb-5  w-100 pa-0 px-md-5" v-if="alertShow">
+              <v-alert
+                :color="alertType"
+                :text="alertMessage"
+              ></v-alert>
+            </div>
             <VForm @submit.prevent="$router.push('/')" id="kt_login_signin_form">
               <VRow>
                 <!-- email -->
@@ -40,10 +37,11 @@
                   <VTextField
                     v-model="form.email"
                     autofocus
-                    placeholder="johndoe@email.com"
-                    label="Email"
+                    placeholder="cooking5g_es_genial@cooking.com 🤘🏻"
+                    label="Correo electrónico"
                     type="text"
                     name="email"
+                    autocomplete="off"
                   />
                 </VCol>
 
@@ -51,8 +49,8 @@
                 <VCol cols="12" class="form-group pb-0">
                   <VTextField
                     v-model="form.password"
-                    label="Password"
-                    placeholder="············"
+                    label="Contraseña"
+                    placeholder="Tu cooking-contraseña"
                     autocomplete="off"
                     name="password"
                     :type="isPasswordVisible ? 'text' : 'password'"
@@ -66,8 +64,13 @@
                       block
                       type="submit"
                       id="kt_login_signin_submit"
+                      :loading="loading"
+                      
                     >
                       Iniciar sesion
+                      <template v-slot:loader>
+                        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+                      </template>
                     </VBtn>
                   </VCol>
               </VRow>
@@ -87,14 +90,29 @@
       indeterminate
       size="64"
     />
+    <!-- <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div> -->
   </v-overlay>
   </div>
 </template>
 
 <style lang="scss" scoped>
-@use "@core/scss/template/pages/page-auth.scss";
-@import "@/assets/sass/login.scss";
-// @import "@/assets/plugins/formvalidation/src/css/index.scss";
+  @use "@core/scss/template/pages/page-auth.scss";
+  @import "@/assets/sass/login.scss";
+  .vh-auto{
+    height: 68vh;
+  }
+  @media screen and (max-width: 780px){
+  .auth-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  .vh-auto{
+    height: 100vh;
+    padding: 0px!important;
+  }
+}
 </style>
 
 <script>
@@ -109,108 +127,106 @@ import { LOGOUT, LOGIN } from "@/core/services/store/auth.module";
 export default {
   data: () => ({
     overlay: false,
-    fv: "",
+    validation: '',
     alertShow:false,
     alertMessage:'',
     alertType:'',
     isPasswordVisible: false,
+    loading:false,
     form:{
       email: '',
       password: '',
-      remember: false,
     }
   }),
   computed: {
   },
   mounted() {
     document.querySelector("body").style.background ="url('"+import.meta.env.VITE_VUE_APP_BACKEND_URL+"images/background/login/01.jpg')"
-    
-    this.fv = formValidation(document.getElementById('kt_login_signin_form'), {
-      fields: {
-        email: {
-          validators: {
-            notEmpty: {
-              message: "Por favor ingrese correo electrónico / nombre de usuario"
-            },
-            regexp: {
-              regexp: /^[A-Za-z0-9.*-+/@$_]+$/i,
-              message: 'El Correo no debe contener espacios ni los siguientes caracteres: "[]{}!¡¿?=()&|',
-            },
-          }
-        },
-        password: {
-          validators: {
-            notEmpty: {
-              message: "Por favor, introduzca su contraseña"
-            },
-            regexp: {
-              regexp: /^[A-Za-z0-9.#-+*/@$ñ_€]+$/i,
-              message: 'La contraseña no debe contener espacios ni los siguientes caracteres: "[]{}!¡¿?=()&|',
-            },
-            stringLength: {
-              min: 8,
-              message: 'La contraseña debe contener minimo 8 caracteres',
-            },
-          }
-        }
-      },
-      plugins: {
-        trigger: new Trigger(),
-        submitButton: new SubmitButton(),
-        bootstrap: new Bootstrap({
-              // Use this for enabling/changing valid/invalid class
-              // eleInvalidClass: '',
-              eleValidClass: '',
-            }),
-      }
-    });
-
-    this.fv.on("core.form.valid", () => {
-      const email = this.form.email
-      const password = this.form.password
-      const remember = 'true'
-      this.$store.dispatch(LOGOUT);
-      const submitButton = document.getElementById('kt_login_signin_submit')
-      submitButton.textContent = 'Cargando...'
-      this.$store
-      .dispatch(LOGIN, { email, password, remember })
-      .then((data) => {
-        if(data.code === 500 ){
-          submitButton.textContent = 'Ingresar';
-          submitButton.blur();
-          this.showAlert('error',data.messagge)
-          return
-        }
-        this.overlay = true
-        this.showAlert('success','Acceso Exitoso')
-        submitButton.textContent = 'Acceso Exitoso'
-        setTimeout(() => {
-          
-          this.$router.push('/dashboard') 
-        }, 500);
-      })
-      .catch((e) => {
-        submitButton.textContent = 'Ingresar';
-        submitButton.blur();
-        this.showAlert('error','Error desconocido')
-      });
-    
-    }).on("core.form.invalid", () => {
-      document.getElementById('kt_login_signin_submit').disabled = true
-      this.alertShow = false;
-    }).on("core.field.valid", () => {
-      document.getElementById('kt_login_signin_submit').disabled = false
-      this.alertShow = false;
-    }).on("core.field.invalid", () => {
-      this.alertShow = false;
-      document.getElementById('kt_login_signin_submit').disabled = true
-    });
+    this.formValidation()
   },
   methods: {
     showAlert(type, messagge){
       this.alertShow = true;
       this.alertType = type
       this.alertMessage = messagge
+    },
+    formValidation(){
+      this.validation = formValidation(document.getElementById('kt_login_signin_form'), {
+        fields: {
+          email: {
+            validators: {
+              notEmpty: {
+                message: "Por favor ingrese correo electrónico"
+              },
+              regexp: {
+                regexp: /^[A-Za-z0-9.*-+/@$_]+$/i,
+                message: 'El Correo no debe contener espacios ni los siguientes caracteres: "[]{}!¡¿?=()&|',
+              },
+            }
+          },
+          password: {
+            validators: {
+              notEmpty: {
+                message: "Por favor, introduzca su contraseña"
+              },
+              regexp: {
+                regexp: /^[A-Za-z0-9.#-+*/@$ñ_€]+$/i,
+                message: 'La contraseña no debe contener espacios ni los siguientes caracteres: "[]{}!¡¿?=()&|',
+              },
+              stringLength: {
+                min: 8,
+                message: 'La contraseña debe contener minimo 8 caracteres',
+              },
+            }
+          }
+        },
+        plugins: {
+          trigger: new Trigger(),
+          submitButton: new SubmitButton(),
+          bootstrap: new Bootstrap(),
+        }
+      });
+
+      this.validation.on("core.form.valid", () => {
+        this.login()
+      }).on("core.form.invalid", () => {
+        document.getElementById('kt_login_signin_submit').disabled = true
+        this.alertShow = false;
+      }).on("core.field.valid", () => {
+        document.getElementById('kt_login_signin_submit').disabled = false
+        this.alertShow = false;
+      }).on("core.field.invalid", () => {
+        this.alertShow = false;
+        document.getElementById('kt_login_signin_submit').disabled = true
+      });
+    },
+    login(){
+      this.$store.dispatch(LOGOUT);
+      this.loadingState(true)
+      const submitButton = document.getElementById('kt_login_signin_submit')
+      this.$store
+      .dispatch(LOGIN, this.form)
+        .then((data) => {
+          if(data.code === 500 ){
+
+            this.loadingState(false)
+            this.showAlert('error',data.messagge)
+            return
+          }
+          this.overlay = true
+          this.showAlert('success','Acceso Exitoso')
+          this.loadingState(true)
+          setTimeout(() => {
+            this.$router.push('/dashboard') 
+          }, 500);
+        })
+        .catch((e) => {
+          this.loadingState(false)
+          this.showAlert('error','Error desconocido')
+        });
+    },
+    loadingState(state){
+      this.loading = state
     }
   }
 };

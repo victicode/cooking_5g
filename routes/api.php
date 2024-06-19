@@ -22,22 +22,14 @@ use App\Http\Controllers\Api\Auth\AuthController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-// Route::group([
-
-//     'middleware' => 'api',
-//     'prefix' => 'auth'
-
-// ], function ($router) {
-
-//     Route::post('login', 'AuthController@login');
-//     Route::post('logout', 'AuthController@logout');
-//     Route::post('refresh', 'AuthController@refresh');
-//     Route::post('me', 'AuthController@me');
-
-// });
 
 
 Route::post('login', [AuthController::class, 'login']);
+Route::get('recipes/client/print/{id}', [RecipeController::class, 'printRecipeTag']);
+Route::post('recipes/client/print/multiple', [RecipeController::class, 'printRecipeTag']);
+Route::get('/typing/{id}', [ChatController::class, 'typingFuction']);
+
+
 Route::middleware('jwt.verify')->post('/get-products',  [ProductController::class, 'getProductsTable']);
 Route::middleware('jwt.verify')->post('/get-lotes',     [ProductController::class, 'getlotesOfProductsTable']);
 Route::middleware('jwt.verify')->post('/get-orders',    [OrderController::class, 'getOrdersTable']);
@@ -58,8 +50,6 @@ Route::middleware('jwt.verify')->prefix('user')->name('user.')->group(function (
     Route::post('/delete/{id}',[UserController::class, 'deleteUser']);
     Route::get('/all-client', [UserController::class, 'getAllclient']);
     Route::get('/get-by-id/{id}',[UserController::class, 'getUserById']);
-
-
 });
 Route::middleware('jwt.verify')->prefix('order')->name('order.')->group(function () {
     Route::get('/', [OrderController::class, 'index'])->name('getOrders');
@@ -73,7 +63,6 @@ Route::middleware('jwt.verify')->prefix('order')->name('order.')->group(function
 Route::middleware('jwt.verify')->prefix('out_order')->name('out_order.')->group(function () {
     Route::post('/', [OrderController::class, 'createOutOrder']);
     Route::get('/print/{id}', [OrderController::class, 'printOutOrder']);
-
 });
 Route::prefix('products')->name('product.')->group(function () {
     Route::get('/', [ProductController::class, 'index']);
@@ -87,7 +76,6 @@ Route::prefix('products')->name('product.')->group(function () {
     Route::get('/get-by-search',[ProductController::class, 'getProductBySearch']);
     Route::get('/get-last-lote/{id}',[ProductController::class, 'getLastLoteFromProduct']);
     Route::get('/notify-out-stock/{id}',[ProductController::class, 'notifyOutStock']);
-
 });
 Route::middleware('jwt.verify')->prefix('lotes')->name('lotes.')->group(function () {
     Route::get('/get-by-id/{id}',[LoteController::class, 'getLoteById']);
@@ -105,7 +93,6 @@ Route::middleware('jwt.verify')->prefix('cart')->name('cart.')->group(function (
 Route::prefix('recipes')->name('recipes.')->group(function () {
     Route::get('/get-by-id/{id}',[RecipeController::class, 'getRecipeById']);
 });
-
 Route::middleware('jwt.verify')->prefix('recipes')->name('recipes.')->group(function () {
     Route::post('/',[RecipeController::class, 'storeRecipe']);
     Route::get('/',[RecipeController::class, 'index']);
@@ -122,7 +109,6 @@ Route::middleware('jwt.verify')->prefix('support')->name('supports.')->group(fun
     Route::post('/change-status/{id}',[ChatController::class, 'changeStatus']);
     Route::post('/{id}/newMessage',[ChatController::class, 'newMessage']);
     Route::post('/get-unread-messages', [ChatController::class, 'allUnReadMessages']);
-
 });
 
 Route::middleware('jwt.verify')->prefix('notification')->name('notification.')->group(function () {
@@ -135,19 +121,14 @@ Route::middleware('jwt.verify')->prefix('notification')->name('notification.')->
     Route::post('/',[Ordercontroller::class, 'newNotification']);
 });
 Route::middleware('jwt.verify')->prefix('message')->name('message.')->group(function () {
-    Route::get('/{id}',function($id){
-        return getAllMessage($id);
+    Route::get('/',function(){
+        return getAllMessage();
     });
-    Route::get('/see-all/{user}',function($user){
-        return seeAllMessage($user);
+    Route::get('/see-all/',function(){
+        return seeAllMessage();
     });
 });
 
-Route::get('recipes/client/print/{id}', [RecipeController::class, 'printRecipeTag']);
-Route::post('recipes/client/print/multiple', [RecipeController::class, 'printRecipeTag']);
-Route::get('/typing/{id}', [ChatController::class, 'typingFuction']);
 
-
-Route::get('/pruebas-sistema', [ProductController::class, 'viewEtiqueta']);
 
 

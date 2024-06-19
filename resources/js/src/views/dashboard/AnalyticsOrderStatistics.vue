@@ -73,29 +73,7 @@ return {
   },
 }
 })
-
-
 </script>
-<style lang="scss" >
-.mostProductsInRecipe{
-  & > .v-card-item{
-    padding-bottom: 0px;
-  }
-}
-</style>
-<style lang="scss" scoped>
-  
-  .square{
-    width: 10px;
-    height: 10px;
-    margin-right: 4px;
-  }
-  @media screen and (max-width: 780px){
-    h5{
-      font-size: 9px;
-    }
-  }
-</style>
 <template>
   <div v-if="Object.keys(stadistics).length > 0 ">
 
@@ -187,12 +165,11 @@ return {
     },
     methods:{
       getAll(){
-      this.$store.dispatch(GET_ALL_ORDER_STADISTICS)
+        this.$store.dispatch(GET_ALL_ORDER_STADISTICS)
         .then((data) => {
           if(data.code !== 200){
-            console.log('alert!!!')
+            
           }
-          console.log(data)
           this.stadistics = data.data
           this.series = [this.stadistics.allFinish, this.stadistics.allInTransit, this.stadistics.allPend, this.stadistics.allCancel]
 
@@ -213,3 +190,23 @@ return {
     }
   };
 </script>
+<style lang="scss" >
+.mostProductsInRecipe{
+  & > .v-card-item{
+    padding-bottom: 0px;
+  }
+}
+</style>
+<style lang="scss" scoped>
+  
+  .square{
+    width: 10px;
+    height: 10px;
+    margin-right: 4px;
+  }
+  @media screen and (max-width: 780px){
+    h5{
+      font-size: 9px;
+    }
+  }
+</style>

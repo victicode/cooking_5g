@@ -12,15 +12,15 @@ function createMessage($data){
 
   return 'succes';
 }
-function seeAllMessage($user){
-  Message::where('read', 0)->where('recept_id', $user)->update(['read' => 1]);
+function seeAllMessage(){
+  Message::where('read', 0)->update(['read' => 1]);
   return 'yes';
 }
-function getAllMessage($id){
+function getAllMessage(){
 
   return [
-   'all' => Message::take(10)->orderBy('created_at', 'DESC')->where('recept_id', $id)->with(['products', 'sender'])->get(),
-   'new_count' => Message::where('read', 0)->orderBy('created_at', 'DESC')->where('recept_id', $id)->take(10)->count(),
+   'all' => Message::take(10)->orderBy('created_at', 'DESC')->with(['products', 'sender'])->get(),
+   'new_count' => Message::where('read', 0)->orderBy('created_at', 'DESC')->take(10)->count(),
   ];
 
 }

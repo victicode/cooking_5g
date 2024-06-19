@@ -1,26 +1,20 @@
 <script setup>
 import { useTheme } from 'vuetify'
 import { GET_CHAT } from "@/core/services/store/chat.module"
-// import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTitle.vue'
 import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
 import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
 import VerticalDropdownNavLink from '@layouts/components/VerticalDropdownNavLink.vue'
 import VBreadcums from '@layouts/components/Breadcums.vue'
-
 import { mapGetters } from "vuex";
 
 // Components
-import Footer from '@/layouts/components/Footer.vue'
 import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
 import NotificationArea from '@/layouts/components/NotificationArea.vue'
 import MessageArea from '@/layouts/components/MessageArea.vue'
 
-
 const vuetifyTheme = useTheme()
-
 </script>
-
 <template>
   <div>
     <VerticalNavLayout>
@@ -32,7 +26,7 @@ const vuetifyTheme = useTheme()
             <IconBtn
               class="ms-n3 d-lg-none"
               @click="toggleVerticalOverlayNavActive(true)"
-              >
+            >
               <VIcon icon="bx-menu" />
             </IconBtn>
             <div class="unReadMessage-acitve bg-error d-md-none"  v-if="unReadMessages  > 0" />
@@ -40,15 +34,10 @@ const vuetifyTheme = useTheme()
   
           <!-- 👉 Search -->
           <VBreadcums class="d-none d-md-block" />
-        
           <VSpacer />
-  
-          
           <NotificationArea />
-          <MessageArea v-if="getCurrentAccount.rol_id !== 3"/>
-  
+          <MessageArea v-if="currentUser.rol_id !== 3"/>
           <NavbarThemeSwitcher class="me-2" />
-  
           <UserProfile />
         </div>
       </template>
@@ -63,7 +52,7 @@ const vuetifyTheme = useTheme()
           }"
         />
         <VerticalNavLink
-          v-if="getCurrentAccount.rol_id !== 3 "
+          v-if="currentUser.rol_id !== 3 "
           class="mt-3"
           :item="{
             title: 'Productos',
@@ -73,7 +62,7 @@ const vuetifyTheme = useTheme()
         />
         <VerticalDropdownNavLink 
           class="mt-3"
-          v-if="getCurrentAccount.rol_id == 1 "
+          v-if="currentUser.rol_id == 1 "
           :item="{
             title: 'Chefs',
             items:[
@@ -118,15 +107,8 @@ const vuetifyTheme = useTheme()
           }"
         />
       </template>
-  
       <!-- 👉 Pages -->
-      
       <slot />
-  
-      <!-- 👉 Footer -->
-      <!-- <template #footer>
-        <Footer />
-      </template> -->
     </VerticalNavLayout>
   </div>
 </template>
