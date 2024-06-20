@@ -36,7 +36,7 @@ import { GET_LAST_ORDERS } from "@/core/services/store/order.module";
                 {{moment(order.created_at ).format('DD/MM/YYYY') }}
               </VCol>
               <VCol cols="4" md="3" class="text-center text-decoration-underline" @click="copyOderNumber(order.trancker)">
-                <div class="w-100 d-flex align-center">
+                <div class="w-100 d-flex align-center justify-center">
                   #{{ order.trancker }} <VIcon icon="fluent:document-copy-20-regular" class="ms-0"></VIcon>
                 </div>
               </VCol>

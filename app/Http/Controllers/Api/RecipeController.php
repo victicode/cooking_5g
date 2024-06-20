@@ -23,7 +23,7 @@ class RecipeController extends Controller
     {
         //
 
-        $recipes = Recipe::withCount('cooking_ingredients')->with('cooking_ingredients')
+        $recipes = Recipe::withCount('cooking_ingredients')->with(['cooking_ingredients','cooking_ingredients.lotesRecipe'] )
                     ->where('title', 'like', '%'.$request->recipe_title.'%');
         
         // if($request->user()->rol_id !== 1){
@@ -33,10 +33,10 @@ class RecipeController extends Controller
         return $this->returnSuccess(200, $recipes->paginate(10) );
     }
     public function getRecipeById($id){
-        return $this->returnSuccess(200, Recipe::with(['cooking_ingredients.dismantling.products_pieces', 'cooking_ingredients.lotes' ])->find($id));
+        return $this->returnSuccess(200, Recipe::with(['cooking_ingredients.dismantling.products_pieces', 'cooking_ingredients.lotes', 'cooking_ingredients.lotesRecipe' ])->find($id));
     }
     public function getRecipeBySearch(Request $request){
-        $products = Recipe::query()->withCount('cooking_ingredients')->with('cooking_ingredients');
+        $products = Recipe::query()->withCount('cooking_ingredients')->with(['cooking_ingredients','cooking_ingredients.lotesRecipe'] );
 
         if(!empty($request->title)){
             $products->where('title', 'like', '%'.$request->title.'%');

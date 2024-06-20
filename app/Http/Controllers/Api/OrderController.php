@@ -111,7 +111,7 @@ class OrderController extends Controller
             $this->createOutOrder($requestOutOrder);
         }
         
-        return $this->returnSuccess(200,  json_decode($request->products,true));
+        return $this->returnSuccess(200, $order);
 
     }
     public function createOutOrder(Request $request)

@@ -1,35 +1,3 @@
-<script setup >
-  import DataTablesCore from 'datatables.net';
-  import 'datatables.net-responsive-dt';
-  import 'datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css';
-  import 'datatables.net-dt/css/jquery.dataTables.min.css';
-  import 'datatables.net-responsive-dt/css/responsive.dataTables.min.css';
-  
-  import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
-  import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
-  import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
-  import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
-  import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
-
-  import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue';
-  import viewOrderModal from '@/views/pages/modals/viewOrderModal.vue';
-  import viewCreateOutOrderModal from '@/views/pages/modals/viewCreateOutOrderModal.vue';
-  import viewTimelineOrderModal from '@/views/pages/modals/viewTimelineOrderModal.vue';
-  import * as bootstrap from 'bootstrap';
-  import debounce from 'debounce';
-
-  import moment from 'moment';
-  import flatpickr from "flatpickr";
-  import 'flatpickr/dist/flatpickr.min.css';
-  import { Spanish } from "flatpickr/dist/l10n/es.js";
-
-  import { GET_ORDER_BY_ID, CHANGE_STATUS, CREATE_ORDER, CREATE_OUT_ORDER } from "@/core/services/store/order.module";
-  import { GET_ALL_USER, GET_USER } from "@/core/services/store/user.module";
-  // import { GET_PRODUCT_BY_SEARCH } from "@/core/services/store/product.module";
-  import { GET_RECIPE_BY_SEARCH } from "@/core/services/store/recipe.module";
-
-</script>
-
 <template>
   <VRow class="">
     <VCol cols="12">
@@ -40,10 +8,9 @@
             md="3"
             class="ma-0 px-0 justify-center justify-md-end d-flex"
           >
-          <VBtn v-if="isUser" @click=" showModal('createOrder')" color="primary" class="w-100 "><VIcon icon="bx-plus"/>
-            {{ isUser ? 'Crear orden manual': 'Crear nueva orden'}}
-          </VBtn>
-
+            <VBtn v-if="isUser" @click=" showModal('createOrder')" color="primary" class="w-100 "><VIcon icon="bx-plus"/>
+              {{ isUser ? 'Crear orden manual': 'Crear nueva orden'}}
+            </VBtn>
           </VCol>
         </VRow>
         <VRow class="ma-0  justify-center align-center justify-md-start pa-2 px-0 mb-0 mb-md-2">
@@ -94,12 +61,12 @@
       </VCard>
       <VCard class="pt-8 pb-8 mt-5 px-2">
         <div class="card-datatable table-responsive ">
-          <table class="datatables-basic table display nowrap" id="data-table">
+          <table class="datatables-basic table display nowrap order-table" id="data-table">
           </table>
         </div>
       </VCard>
     </VCol>
-    <div v-if="Object.keys(selectedOrder).length > 2">
+    <div v-if="Object.keys(selectedOrder).length > 1">
       <viewOrderModal :order="selectedOrder"  @actionModal="modalAction" />
       <viewCreateOutOrderModal :order="selectedOrder"  @actionModal="modalAction"  @createOutOrder="createOutOrder"  />
       <viewTimelineOrderModal :order="selectedOrder"  @actionModal="hideInternalModal" />
@@ -232,177 +199,7 @@
         </div>
       </div>
     </div>
-
-    <div class="modal animate__animated animate__fadeInDown"  id="createOrder" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg mt-10" >
-        <div class="modal-content">
-          <VCol
-            cols="12"
-            class="pa-0 d-flex justify-center"
-            style="position: relative;"
-          >
-            <VCol
-              cols="12"
-            >
-              <VCard class="modal__content">
-                <div class="modal__close-button" >
-                  <v-col class="pa-0 pe-4">
-                    <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
-                  </v-col>
-                </div>
-                <div>
-                  <VCardItem class="justify-center w-100  py-md-6  py-4   ">
-                    <VCardTitle class="text-2xl font-weight-bold">
-                      <div class="card-title d-flex ">
-                        <div class="form-title__part1">Crear nueva orden</div>
-                        
-                      </div>
-                    </VCardTitle>
-                  </VCardItem>
-                  <VCardText class="mb-5  w-100 pa-0" v-if="alertShow">
-                    <v-alert
-                      :color="alertType"
-                      :text="alertMessage"
-                    ></v-alert>
-                  </VCardText>
-                  <VCardText class="w-100 pb-5 px-3 px-md-6">
-                    <VForm  id="new_order_form">
-                      <VRow class="align-center">
-                        <VCol cols="12" md="7" class="form-group">
-                          <v-combobox  
-                            v-if="!isUser"
-                            :items="userForOrder"
-                            item-title="name"
-                            item-value="id"
-                            placeholder="Usuario"
-                            label="Usuario"
-                            type="text"
-                            name="new_order_client"
-                            v-model="newOrder.user"  
-                            autocomplete="off"        
-                            @update:modelValue="forms.validateField('new_order_client')"
-                          ></v-combobox >
-                          <VTextField
-                             v-else 
-                            placeholder="Usuario"
-                            label="Usuario"
-                            type="text"
-                            disabled
-                            v-model="user.name"
-                          />
-                        </VCol>
-                        <VCol cols="12"  md="5" class="form-group px-3 my-2">
-                          <div class="d-flex align-center">
-                            <input type="checkbox"  @change="useClientAddress($event)" id="isUserAddress" value="1" style="height: 20px; width: 20px;">
-                            <label for="isUserAddress" class="mx-2">Usar dirección del usuario</label>
-                          </div>
-                        </VCol>
-                        <VCol cols="12" md="12" class="form-group mt-md-5">
-                          <v-textarea
-                            label="Dirección"
-                            auto-grow
-                            variant="outlined"
-                            rows="3"
-                            row-height="25"
-                            shaped
-                            name="new_order_address"
-                            v-model="newOrder.userAddress"
-                          ></v-textarea>
-                        </VCol>
-                      </VRow>
-                      <VRow 
-                        class="ma-0 pa-0  mt-5 align-center" 
-                        >
-                            <VCol cols="12" class="form-group">
-                              <h3>Productos:</h3>
-                            </VCol>
-                            <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
-                              <VRow  v-for="(item,index) in newOrder.products"  v-bind:key="item.id" class=" position-relative relative pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'new_order_product_'+index">
-                                <VCol cols="12"  :md="!isUser ? 4 : 6" class="form-group pb-md-0  mb-md-1">
-                                  <v-autocomplete
-                                    :model-value="item.id"
-                                    :items="productsForOrder[index] ?  productsForOrder[index] : item.id !== null ? [ {id: item.id, title: item.title, stock: item.quantity}] : []"
-                                    label="Nombre de la receta"
-                                    item-title="title"
-                                    item-value="id"
-                                    placeholder="Nombre de la receta"
-                                    variant="outlined"
-                                    :persistent-hint="!isUser ? true : false "
-                                    clearable
-                                    no-filter
-                                    :name="'product_in_order_'+index"
-                                    no-data-text="No se encontraron resultados"
-                                    @click="searchProductsForOrder($event,index )"
-                                    @keyup="searchProductsForOrder($event,index )"
-                                    @click:clear="clearProductSearch(index)"
-                                    @update:modelValue="selectedProduct($event, index)"
-                                  ></v-autocomplete>
-                                </VCol>
-                                <VCol cols="12"  md="5" class="form-group pb-md-0  mb-md-1" v-if="!isUser">
-                                  <v-combobox  
-                                    :items="item.lotes"
-                                    item-title="lote_code"
-                                    item-value="id"
-                                    placeholder="Número de lote"
-                                    label="Número de lote"
-                                    type="text"
-                                    name="new_order_client"
-                                    v-model="item.selected_lote"  
-                                    autocomplete="off"
-                                    persistent-hint
-                                    :hint="'Fecha venc: ' + (item.selected_lote.due_date ? moment(item.selected_lote.due_date).format('DD-MM-YYYY') : '----')"
-                                    :auto-select-first="true"
-                                    @update:modelValue="selectedLotes($event,index)"
-                                  ></v-combobox >
-                                </VCol>
-                                <VCol cols="12"  :md="!isUser ? 3 : 6 " :class=" !isUser ? 'form-group pb-md-0  mb-md-6' : 'form-group pb-md-0  mb-md-1' " >
-                                  <VTextField
-                                    placeholder="Unidades solicitadas"
-                                    label="Unidades solicitadas"
-                                    type="number"
-                                    :hint="  item.maxValue ? 'Max: ' + item.maxValue : 0"
-                                    persistent-hint
-                                    :name="'product_in_order_quantity_'+index"
-                                    v-model="item.quantity"
-                                  />
-                                </VCol>
-                                <div class="form-group pa-0 mb-md-5  small-delete-product-button ">
-                                  <v-tooltip text="Quitar producto">
-                                    <template v-slot:activator="{ props }">
-                                      <v-col cols="auto" class="pa-0">
-                                        <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeProductInput(index)"></v-btn>
-                                      </v-col>
-                                    </template>
-                                  </v-tooltip>
-                                </div>
-                              </VRow>
-                            </div>
-                      </VRow>
-                      <VRow class="ma-0 pa-0  mt-8 align-center">
-                        <VCol cols="12" md="6" class="mt-0 py-0 px-0">
-                          <v-tooltip text="Agregar producto">
-                              <template v-slot:activator="{ props }">
-                                <v-col cols="auto" class="">
-                                  <VBtn v-bind="props" color="secondary" class="w-100"  @click="addProductInput()"><VIcon icon="bx-plus"/> Agregar producto</VBtn>
-                                </v-col>
-                              </template>
-                            </v-tooltip>
-                        </VCol>
-                        <VCol cols="12" md="6"  class="mt-0 py-0 px-0">
-                          <v-col cols="auto" class="">
-                            <VBtn  color="primary" class="w-100 " type="submit" disabled id="new_order_form_button"> Guardar</VBtn>
-                          </v-col>
-                        </VCol>
-                      </VRow>
-                    </VForm>
-                  </VCardText>
-                </div>
-              </VCard>
-            </VCol>
-          </VCol>
-        </div>
-      </div>
-    </div>
+    <viewCreateOrder @hiddenModal="hideModal"  />
     <v-snackbar
       v-model="snackShow"
       :color="snackType"
@@ -424,6 +221,9 @@
   </VRow>
 </template>
 <style lang="scss" >
+  table.order-table{
+    width: 100%!important;
+  }
   .copyText{
     cursor: pointer;
   }
@@ -442,7 +242,7 @@
     .small-delete-product-button{
       position: absolute;
       top: -10px;
-      right: -10px;
+      right: 0px;
     }
     .copyText{
       font-size:15.5px
@@ -453,8 +253,34 @@
   }
 </style>
 <script>
+  import DataTablesCore from 'datatables.net';
+  import 'datatables.net-responsive-dt';
+  import 'datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css';
+  import 'datatables.net-dt/css/jquery.dataTables.min.css';
+  import 'datatables.net-responsive-dt/css/responsive.dataTables.min.css';
+
+  import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue';
+  import viewOrderModal from '@/views/pages/modals/viewOrderModal.vue';
+  import viewCreateOutOrderModal from '@/views/orders/viewCreateOutOrderModal.vue';
+  import viewTimelineOrderModal from '@/views/pages/modals/viewTimelineOrderModal.vue';
+  import viewCreateOrder from '@/views/orders/viewCreateOrder.vue';
+  import * as bootstrap from 'bootstrap';
+
+  import moment from 'moment';
+  import flatpickr from "flatpickr";
+  import 'flatpickr/dist/flatpickr.min.css';
+  import { Spanish } from "flatpickr/dist/l10n/es.js";
+
+  import { GET_ORDER_BY_ID, CHANGE_STATUS, CREATE_OUT_ORDER } from "@/core/services/store/order.module";
+  import { GET_ALL_USER, GET_USER } from "@/core/services/store/user.module";
 
   export default {
+    components:{
+      viewOrderModal,
+      viewCreateOrder,
+      viewCreateOutOrderModal,
+      viewTimelineOrderModal,
+    },
     data: () => ({
       modal: '',
       internalModal:'',
@@ -466,17 +292,7 @@
       selectedOrder:{},
       assignedProduct:{},
       table:'',
-      alertShow:false,
-      alertMessage:'',
-      alertType:'',
-      forms:[],
-      newOrder: {
-        user:'',
-        products:[],
-        userAddress:'',
-      },
-      userForOrder:[],
-      productsForOrder:[],
+      isUser:false,
       tableData:{
         ajax:{
           "url": import.meta.env.VITE_VUE_APP_BACKEND_URL+"api/get-orders",
@@ -737,23 +553,8 @@
           TableElement.dispatchEvent(event);
         },
       },
-      user:{},
-      isUser:false
     }),
     methods:{
-      getUser(){
-        this.$store.dispatch(GET_USER)
-          .then((data) => {
-            if(data.code !== 200){
-              console.log('alert!!!')
-            }
-            this.user = data.user;
-            if(data.user.rol_id == 3) this.isUser = true
-          })
-          .catch((e) => {
-            this.logout()
-          });
-      },
       initOptionsTable(){
         document.getElementById('data-table').addEventListener('OptionsActionTable', () => this.activeOptionsTable() )	
       },
@@ -840,32 +641,31 @@
               resolve(false);
           });
       },
-      getUsers(){
-        this.$store
-          .dispatch(GET_ALL_USER)
-          .then((data) => {
-            // console.log(data)
-            this.userForOrder = data
-          })
-          .catch((err) => {
-            console.log(err)
+      getUser(){
+      this.$store.dispatch(GET_USER)
+        .then((data) => {
+          if(data.code !== 200){
+            console.log('alert!!!')
+            return
+          }
+          if(data.user.rol_id == 3) this.isUser = true
+        })
+        .catch((e) => {
+        });
+      },
+      // getUsers(){
+      //   this.$store
+      //     .dispatch(GET_ALL_USER)
+      //     .then((data) => {
+      //       // console.log(data)
+      //       this.userForOrder = data
+      //     })
+      //     .catch((err) => {
+      //       console.log(err)
         
-          });
-      },
-      getProducts(search = "", index){
-        this.$store
-          .dispatch(GET_RECIPE_BY_SEARCH, search)
-          .then((response) => {
-            // console.log(response)
-            this.productsForOrder[index] = response.data
-          })
-          .catch((err) => {
-            return new Promise((resolve) => {
-              resolve(false);
-            });
-          })
-
-      },
+      //     });
+      // },
+      
       bootstrapOptions(){
         setTimeout(() => {
           const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
@@ -886,25 +686,6 @@
         this.table.clear();
         this.table.columns().search('').draw('full-hold')
       },
-      clearNewOrderForm(){
-        document.getElementById('isUserAddress').checked = false;
-        this.newOrder = {
-          user:'',
-          products:[],
-          userAddress:'',
-        }
-      },
-      useClientAddress(e){
-        this.newOrder.userAddress = this.user.user_address
-
-        if(!this.isUser){
-          this.newOrder.userAddress = e.target.checked 
-            ? this.newOrder.user.user_address
-            : this.newOrder.userAddress = ''
-        }
-          
-          this.forms.validateField('new_order_address')
-      },
       showModal(modal) {
         try {
           this.modal.hide()
@@ -920,12 +701,12 @@
       hideModal(){
         this.modal.hide()
         setTimeout(() => {
-              let trashElement = document.querySelectorAll('.modal-backdrop');
-              trashElement.forEach((item)=>{
-                document.querySelector('body').removeChild(item);
-              })
-            }, 200);
-        this.clearNewOrderForm()
+          let trashElement = document.querySelectorAll('.modal-backdrop');
+          trashElement.forEach((item)=>{
+            document.querySelector('body').removeChild(item);
+          })
+        }, 200);
+        this.filterColumn()
       },
       modalAction(action){ 
         if(action == 'close') {this.hideModal(); return}
@@ -980,35 +761,6 @@
           })
 
       },
-      createdNewOrder(){
-        if(!this.validateHaveProducts()) return ;
-
-        this.sendingButton('new_order_form_button')
-        const formData = new FormData();
-        const user = !this.isUser 
-        ? this.newOrder.user.id
-        : this.user.id
-        formData.append('client', user);
-        formData.append('address', this.newOrder.userAddress);
-        formData.append('products', JSON.stringify(this.newOrder.products));
-        formData.append('isManual', !this.isUser ? true : false);
-        console.log(this.newOrder)
-        this.$store
-          .dispatch(CREATE_ORDER, formData)
-          .then((response) => {
-            this.filterColumn()
-            this.hideModal()
-            this.showSnackbar('success', 'Orden creada con exito')
-            this.readyButton('new_order_form_button')
-            this.clearNewOrderForm()
-          })
-          .catch((err) => {
-            console.log(err)
-            // this.hideModal()
-            this.showSnackbar('error', err )
-            this.readyButton('new_order_form_button')
-          })
-      },
       createOutOrder(products){
         const formData = new FormData();
         formData.append('order', this.selectedOrder.id);
@@ -1035,198 +787,12 @@
         // this.$refs.newStatus.value = 0
         this.orderChangeStatus('0')
       },
-      sendingButton(id){
-        document.getElementById(id).disabled = true
-      },
-      readyButton(id){
-        document.getElementById(id).disabled = true
-        
-        document.getElementById(id).setAttribute('class','v-btn v-btn--disabled v-theme--light bg-primary v-btn--density-default v-btn--size-default v-btn--variant-elevated w-100')
-      },
-      removeProductInput(index){
-        this.removeValidate(index)
-
-        setTimeout(() => {
-          try{
-            this.newOrder.products.splice(index, 1)
-            this.productsForOrder.splice(index, 1)
-          }catch(e){
-
-          }
-        }, 200);
-        
-      },
-      addProductInput(){
-        let newProducInOrder = {
-          id:null,
-          title:'',
-          quantity:'',
-          maxValue:0,
-          recipe:'',
-          lotes:[],
-          selected_lote:''
-
-        }
-        this.newOrder.products.push(newProducInOrder)
-        setTimeout(() => {
-          if(!this.isUser){
-            // this.addValidate()
-          }
-
-        }, 200);
-
-      },
       selectedLotes(e, index){
         this.newOrder.products[index].maxValue = e.quantity
         setTimeout(() => {
             this.addValidate(this.newOrder.products[index].maxValue)
           }, 200);
       },
-      searchProductsForOrder(e, index){ 
-        debounce(this.getProducts, 200)(e.target.value, index)
-      },
-      clearProductSearch(index){
-        this.newOrder.products[index].id = null;
-        this.newOrder.products[index].maxValue = 0;
-        this.newOrder.products[index].lotes =[]
-        this.newOrder.products[index].selected_lote =''
-        this.newOrder.products[index].recipe = ''
-        this.getProducts('',index)
-      },
-      selectedProduct(e,index){
-        if(!e) return
-        if(!this.newOrder.products[index])return
-        this.newOrder.products[index] = this.productsForOrder[index].find(product => product.id == e)
-        this.newOrder.products[index].maxValue = this.maxStockRecipeInput(this.newOrder.products[index])
-        
-        if( this.newOrder.products[index].maxValue <= 0){
-          this.newOrder.products[index] = {
-          id:null,
-          title:'',
-          quantity:'',
-          maxValue:0,
-          recipe:'',
-          lotes:[],
-          selected_lote:''
-
-        }
-          alert('Esta producto no tiene Stock')
-          return
-        }
-        setTimeout(() => {
-          this.addValidate(this.newOrder.products[index].maxValue)
-
-        }, 200);
-        
-      },
-      maxStockRecipeInput(product){
-        let minus = 0;
-        product.cooking_ingredients.forEach((ingredient, index)=>{
-          if(index==0) minus = ingredient.total_stock /parseFloat(ingredient.pivot.quantity)
-
-          minus = minus > (ingredient.total_stock /parseFloat(ingredient.pivot.quantity) )
-          ? ingredient.total_stock /parseFloat(ingredient.pivot.quantity) 
-          : minus
-        })
-        return minus.toFixed(0)
-      },
-      validateFormItem(){
-        this.forms = formValidation(document.getElementById('new_order_form'), {
-          fields: {
-              new_order_address: {
-                validators: {
-                  notEmpty: {
-                    message: "Debes agregar la dirección"
-                  },
-                  regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@,$_ñ_ ]+$/i,
-                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
-                  },
-                }
-              },
-          },
-          plugins: {
-            trigger: new Trigger(),
-            submitButton: new SubmitButton(),
-            bootstrap: new Bootstrap({
-                  // Use this for enabling/changing valid/invalid class
-                  // eleInvalidClass: '',
-                  // eleValidClass: '',
-                }),
-          }
-        });
-        setTimeout( ()=> this.formsActions(), 500)
-      },
-      formsActions(){
-        const sendButton = document.getElementById('new_order_form_button')
-       
-        this.forms.on("core.form.valid", () => {
-          this.createdNewOrder()
-        }).on("core.field.valid", () => {
-          sendButton.disabled = false
-          sendButton.classList.remove('v-btn--disabled')
-
-        }).on("core.form.invalid", () => {
-          sendButton.disabled = true
-          sendButton.classList.add('v-btn--disabled')
-
-        }).on("core.field.invalid", () => {
-          sendButton.disabled = true
-          sendButton.classList.add('v-btn--disabled')
-
-        });
-      },
-      destroyFormVal(){
-        this.forms['edit_product_form'].destroy()
-        this.forms['add_stock_form'].destroy()
-        this.forms['new_product_form'].resetForm()
-          
-      },
-      addValidate(max){
-        // this.forms[id] 
-        
-        let form = document.getElementById('new_order_form'),
-        quantityInput = form.querySelectorAll('input[name*="product_in_order_quantity_"]')[ form.querySelectorAll('input[name*="product_in_order_quantity_"]').length - 1],
-        fieldOptions={
-          quantity: {
-            validators: {
-              notEmpty: {
-                message: "Agregar la cantidad unidades"
-              },
-              numeric: {
-                message: "Debe ser númerico"
-              },
-              lessThan: {
-                message: "Cantidad supera el stock",
-                max: max,
-              },
-            }
-          }
-        } 
-        this.forms.addField(quantityInput.name, fieldOptions.quantity)
-        return
-      },
-      removeValidate(){
-        let form = document.getElementById('new_order_form'),
-        quantityInput = form.querySelectorAll('input[name*="product_in_order_quantity_"]')[ form.querySelectorAll('input[name*="product_in_order_quantity_"]').length - 1]
-        try {
-          this.forms.removeField(quantityInput.name)
-        } catch (error) {
-          console.log('no hay validación activa')
-        }
-        
-      },
-      validateHaveProducts(){
-        if(this.newOrder.products.length == 0 ){
-          const sendButton = document.getElementById('new_order_form_button')
-          sendButton.disabled = true
-          sendButton.classList.add('v-btn--disabled')
-          alert('Debes ingresar los productos')
-          return false
-        } 
-        return true
-        
-      }, 
       copyOderNumber(element){
         console.log(element)
 
@@ -1258,13 +824,12 @@
       }
     },
     mounted(){
-      this.getUsers();
-      this.getUser();
+      // this.getUsers();
       this.initOptionsTable()
       this.table = new DataTablesCore('#data-table', this.tableData)
       this.initFlatpickr();
       this.bootstrapOptions();
-      this.validateFormItem();
+      this.getUser();
     },
     created(){
       this.emitter.emit('displayOverlayLoad', false)

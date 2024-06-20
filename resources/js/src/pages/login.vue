@@ -8,7 +8,7 @@
         <VCard
           class="auth-card pa-md-4 pt-md-12 vh-auto d-flex flex-column"
         >
-          <VCardItem class="justify-center w-100  py-2 mt-12 mt-md-0 py-md-6">
+          <VCardItem class="justify-center w-100  py-2 mt-5 mt-md-0 py-md-0 py-6">
             <VCardTitle class="text-2xl font-weight-bold">
               <div class="card-title d-flex ">
                 <div class="form-title__part1">Cooking</div> <div class="form-title__part2">5G</div>
@@ -16,19 +16,20 @@
             </VCardTitle>
           </VCardItem>
           <VCardText class="w-100">
-            <div class="py-2 w-100 mb-1 mb-10  " >
+            <div class="py-2 w-100  mb-md-4 mb-6" >
               <h5 class="text-h5 mb-1">
                 Bienvenido! 👋🏻
               </h5>
               <p class="mb-0">
-                Inicia sesion con tu cuenta ahora
+                Inicia sesión con tu cuenta ahora
               </p>
             </div>
-            <div class="mb-12 mb-5  w-100 pa-0 px-md-5" v-if="alertShow">
+            <div class="   w-100 pa-0 px-md-0" :class="{'py-4 mb-md-0': !alertShow, 'mb-md-7 mb-8':alertShow}" >
               <v-alert
+                v-if="alertShow"
                 :color="alertType"
                 :text="alertMessage"
-              ></v-alert>
+              />
             </div>
             <VForm @submit.prevent="$router.push('/')" id="kt_login_signin_form">
               <VRow>
@@ -37,7 +38,7 @@
                   <VTextField
                     v-model="form.email"
                     autofocus
-                    placeholder="cooking5g_es_genial@cooking.com 🤘🏻"
+                    placeholder="cooking5g@cooking.com ✉"
                     label="Correo electrónico"
                     type="text"
                     name="email"
@@ -65,11 +66,10 @@
                       type="submit"
                       id="kt_login_signin_submit"
                       :loading="loading"
-                      
                     >
                       Iniciar sesion
                       <template v-slot:loader>
-                        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+                        <loadingButton />
                       </template>
                     </VBtn>
                   </VCol>
@@ -102,28 +102,26 @@
     height: 68vh;
   }
   @media screen and (max-width: 780px){
-  .auth-wrapper {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+    .auth-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    .vh-auto{
+      height: 100vh;
+      padding: 0px!important;
+    }
   }
-  .vh-auto{
-    height: 100vh;
-    padding: 0px!important;
-  }
-}
 </style>
-
 <script>
 import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
 import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
-
 import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
 import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
 import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
 import { LOGOUT, LOGIN } from "@/core/services/store/auth.module";
-
+import loadingButton from "@/layouts/components/loadingButton.vue";
 export default {
   data: () => ({
     overlay: false,
@@ -138,7 +136,8 @@ export default {
       password: '',
     }
   }),
-  computed: {
+  components: {
+    loadingButton
   },
   mounted() {
     document.querySelector("body").style.background ="url('"+import.meta.env.VITE_VUE_APP_BACKEND_URL+"images/background/login/01.jpg')"

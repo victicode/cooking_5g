@@ -80,7 +80,6 @@ const vuetifyTheme = useTheme()
           }"
         />
         <VerticalNavLink
-  
           class="mt-3"
           :item="{
             title:  'Recetas',
@@ -89,7 +88,6 @@ const vuetifyTheme = useTheme()
           }"
         />
         <VerticalNavLink
-        
           class="mt-3"
           :item="{
             title: currentUser.rol_id !== 3 ?'Ordenes' : 'Mis Ordenes',
@@ -98,7 +96,6 @@ const vuetifyTheme = useTheme()
           }"
         />
         <VerticalNavLink
-        
           class="mt-16"
           :item="{
             title: 'Soporte',

@@ -91,4 +91,7 @@ class Product extends Model
     public function lotes(){
         return $this->hasMany(Lot::class, 'product_id', 'id')->orderBy('due_date', 'ASC');
     }
+    public function lotesRecipe(){
+        return $this->hasMany(Lot::class, 'product_id', 'id')->where('quantity', '>', 0)->orderBy('due_date', 'ASC');
+    }
 }
