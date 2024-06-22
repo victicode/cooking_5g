@@ -1,18 +1,3 @@
-<script setup>
-import moment from 'moment';
-import * as bootstrap from 'bootstrap';
-import CreateOutOrderProductsTables from '@/views/pages/tables/CreateOutOrderProductsTables.vue';
-import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
-import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
-import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
-import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
-import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
-const props = defineProps({
-  order: Object,
-})
-
-
-</script>
 <template>
   <div>
     <div class="modal animate__animated animate__slideInLeft" id="createOutOrder" tabindex="-1" aria-labelledby="showCartLabel" aria-hidden="true">
@@ -30,11 +15,11 @@ const props = defineProps({
               <VCard class="modal__content h-100 rounded-0">
                 <div class="modal__close-button__cart" >
                   <v-col  class="pa-0 pe-4">
-                    <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="actionModal('close')" ></v-btn>
+                    <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
                   </v-col>
                 </div>
-                <div class="d-flex justify-space-between  flex-column pa-2 px-3 pa-md-5 ">
-                  <VRow  class="mb-2 ma-0">
+                <div class="d-flex justify-space-between  flex-column pa-2 px-3 pa-md-5 pt-md-16 ">
+                  <VRow  class="mb-2 ma-0 mt-md-5">
                     <VCol
                       cols="12"
                       md="6"
@@ -100,8 +85,12 @@ const props = defineProps({
                         class="bg-secondary text-white w-75"
                         @click="createOutOrder()"
                         :id="'create_order_'+order.id"
+                        :loading="loading"
                       >
                         <span class="ms-2">Crear salida</span>
+                        <template v-slot:loader>
+                          <loadingButton />
+                        </template>
                       </VBtn>
                     </VCardActions>
                   </div>
@@ -127,7 +116,7 @@ const props = defineProps({
                   <VCard class="modal__content">
                     <div class="modal__close-button" >
                       <v-col class="pa-0 pe-4">
-                        <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
+                        <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideInternalModal()" ></v-btn>
                       </v-col>
                     </div>
                     <div class="internalModalOrder">
@@ -137,9 +126,9 @@ const props = defineProps({
                             <div class="form-title__part1"><h4>Asignar producto a la orden:</h4></div>
                             <div>
                               <h2 class="my-2">{{ selectedProduct.title }}</h2>
-                              <v-chip color="primary"  v-if="flagTitle(selectedProduct)" class="mb-2">
+                              <v-chip color="primary"  v-if="recipeTitleLabel(selectedProduct)" class="mb-2">
                                 <span class="font-italic">
-                                  {{ flagTitle(selectedProduct).title }}
+                                  {{ recipeTitleLabel(selectedProduct).title }}
                                 </span>
                               </v-chip>
                             </div>
@@ -165,65 +154,69 @@ const props = defineProps({
                         <VForm  id="select_lote_for_order">
                           <VRow 
                             class="ma-0 pa-0  mt-1 align-center" 
-                            >
-                              
-                              <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
-                                <VRow  v-for="(item,index) in selectedsLotes[loteModalName()]"  v-bind:key="item.id" class=" position-relative relative pa-0 ma-0 align-center w-100 mt-5 mt-md-4"  :id="'new_order_product_'+index">
-                                  <VCol cols="12"  md="6" class="form-group pb-md-0  mb-md-1">
-                                    <v-combobox  
-                                      :items="selectedProduct.lotes"
-                                      item-title="lote_code"
-                                      item-value="id"
-                                      placeholder="Número de lote"
-                                      label="Número de lote"
-                                      type="text"
-                                      :name="'product_in_order_lote_'+selectedProduct.title.replace(/ /g,'_')+'_'+index"
-                                      v-model="item.selected_lote"  
-                                      autocomplete="off"
-                                      persistent-hint
-                                      :hint="'Fecha venc: ' + (item.selected_lote ? moment(item.selected_lote.due_date).format('DD-MM-YYYY') : '----')"
-                                      :auto-select-first="true"
-                                      @update:modelValue="selectedLotes($event,index)"
-                                    ></v-combobox >
-                                  </VCol>
-                                  <VCol cols="12"  md="6" class="form-group pb-md-0  mb-md-1">
-                                    <VTextField
-                                      placeholder="Unidades solicitadas"
-                                      label="Unidades solicitadas"
-                                      type="number"
-                                      persistent-hint
-                                      :hint="'Stock de lote: ' + (item.selected_lote ? item.selected_lote.quantity  : '----')"
-                                      :name="'product_in_order_quantity_'+selectedProduct.title.replace(/ /g,'_')+'_'+index"
-                                      v-model="item.quantity"
-                                      :data-product-name="selectedProduct.title.replace(/ /g,'_')+'_'+index"
-                                      @keyup="calculateUnitOrders()"
-                                    />
-                                  </VCol>
-                                  <div class="form-group pa-0 mb-md-5  small-delete-product-button " style="right: -2px;">
-                                    <v-tooltip text="Quitar producto">
-                                      <template v-slot:activator="{ props }">
-                                        <v-col cols="auto" class="pa-0">
-                                          <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeLote(index)"></v-btn>
-                                        </v-col>
-                                      </template>
-                                    </v-tooltip>
-                                  </div>
-                                </VRow>
-                              </div>
+                          >
+                            <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
+                              <VRow  v-for="(item,index) in selectedLotes[loteModalName()]"  v-bind:key="item.id" class=" position-relative relative pa-0 ma-0 align-center w-100 mt-5 mt-md-4"  :id="'new_order_product_'+index">
+                                <VCol cols="12"  md="6" class="form-group pb-md-0  mb-md-1">
+                                  <v-combobox  
+                                    :items="selectedProduct.lotes"
+                                    item-title="lote_code"
+                                    item-value="id"
+                                    placeholder="Número de lote"
+                                    label="Número de lote"
+                                    type="text"
+                                    :name="'product_in_order_lote_'+selectedProduct.title.replace(/ /g,'_')+'_'+index"
+                                    v-model="item.selected_lote"  
+                                    autocomplete="off"
+                                    persistent-hint
+                                    :hint="'Fecha venc: ' + (item.selected_lote ? moment(item.selected_lote.due_date).format('DD-MM-YYYY') : '----')"
+                                    :auto-select-first="true"
+                                    @update:modelValue="selectLotes($event,index)"
+                                  ></v-combobox >
+                                </VCol>
+                                <VCol cols="12"  md="6" class="form-group pb-md-0  mb-md-1">
+                                  <VTextField
+                                    placeholder="Unidades solicitadas"
+                                    label="Unidades solicitadas"
+                                    type="number"
+                                    persistent-hint
+                                    :hint="'Stock de lote: ' + (item.selected_lote ? item.selected_lote.quantity  : '----')"
+                                    :name="'product_in_order_quantity_'+selectedProduct.title.replace(/ /g,'_')+'_'+index"
+                                    v-model="item.quantity"
+                                    :data-product-name="selectedProduct.title.replace(/ /g,'_')+'_'+index"
+                                    @keyup="calculateUnitOrders()"
+                                  />
+                                </VCol>
+                                <div class="form-group pa-0 mb-md-5  small-delete-product-button " style="right: -2px;">
+                                  <v-tooltip text="Quitar producto">
+                                    <template v-slot:activator="{ props }">
+                                      <v-col cols="auto" class="pa-0">
+                                        <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeInputLote(index)"></v-btn>
+                                      </v-col>
+                                    </template>
+                                  </v-tooltip>
+                                </div>
+                              </VRow>
+                            </div>
                           </VRow>
                           <VRow class="ma-0 pa-0  mt-8 align-center">
                             <VCol cols="12" md="6"  class="mt-0 py-0 px-0">
                               <v-tooltip text="Agregar lote">
                                   <template v-slot:activator="{ props }">
                                     <v-col cols="auto" class="">
-                                      <VBtn v-bind="props" color="secondary" class="w-100"  @click="addLoteInput()"><VIcon icon="bx-plus"/> Agregar lote</VBtn>
+                                      <VBtn v-bind="props" color="secondary" class="w-100"  @click="addInputLote()"><VIcon icon="bx-plus"/> Agregar lote</VBtn>
                                     </v-col>
                                   </template>
                                 </v-tooltip>
                             </VCol>
                             <VCol cols="12" md="6" class="mt-0 py-0 px-0">
                               <v-col cols="auto" class="">
-                                <VBtn  color="primary" class="w-100 " type="submit" disabled id="select_lote_for_order_button"> Guardar</VBtn>
+                                <VBtn  color="primary" class="w-100 " type="submit"  :loading="loading" disabled id="select_lote_for_order_button">
+                                  Guardar
+                                  <template v-slot:loader>
+                                    <loadingButton />
+                                  </template>
+                                 </VBtn>
                               </v-col>
                             </VCol>
                           </VRow>
@@ -267,20 +260,37 @@ const props = defineProps({
 }
 </style>
 <script>
+import moment from 'moment';
+import * as bootstrap from 'bootstrap';
+import CreateOutOrderProductsTables from '@/views/pages/tables/CreateOutOrderProductsTables.vue';
+import loadingButton from "@/layouts/components/loadingButton.vue";
+import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
+import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
+import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
+import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
+import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
+import { CREATE_OUT_ORDER } from "@/core/services/store/order.module";
+
 export default {
+  props:['order'],
+  components: {
+    CreateOutOrderProductsTables,
+    loadingButton,
+  },
   data: () => ({
+    loading:false,
     forms:'',
     modal:'', 
     alertShow:false,
     alertType:'',
     alertMessage:'',
     selectedProduct:'',
-    selectedsLotes:[
-    ],
+    selectedLotes:[],
     snackShow:false,
     snackMessage:'',
     snackType:'',
     snacktimeOut:5000,
+    moment,
   }),
   mounted(){
   },
@@ -298,6 +308,10 @@ export default {
         this.modal.show()
     },
     hideModal(){
+      this.$emit('hiddenModal');
+      this.selectedLotes = [];
+    },
+    hideInternalModal(){
       this.destroyFormVal()
       this.verifyCheckLotes()
       this.modal.hide()
@@ -317,69 +331,43 @@ export default {
       this.snackType = type
       this.snackMessage = messagge
     },
+    enableButton(id){
+      const sendButton = document.getElementById(id)
+      sendButton.disabled = false
+      sendButton.classList.remove('v-btn--disabled') 
+
+    },
+    disabledButton(id){
+      const sendButton = document.getElementById(id)
+      sendButton.disabled = true
+      sendButton.classList.add('v-btn--disabled')
+    },
+    cleanForm(){
+      this.selectedProduct = '';
+      this.selectedLotes = [];
+    },
+    loadingState(state){
+      this.loading = state
+    },
     selectProduct(id, index){
       this.selectedProduct = this.order.recipes[index].cooking_ingredients.find(product => product.id == id)
       this.selectedProduct.position = index
       setTimeout(() => {
         // console.log(this.selectedProduct)
         this.showModal('selectedProductLote')
-        this.validateFormItem()
+        this.initLotesFormsValidate()
       }, 300);
     },
-    removeLote(index){  
-      this.removeValidate()
+    selectLotes(e, index){
+      this.selectedLotes[this.loteModalName()][index].indexLote = index
+      this.selectedLotes[this.loteModalName()][index].product_id = this.selectedProduct.id
+      this.selectedLotes[this.loteModalName()][index]['inOrder'] = this.recipeTitleLabel(this.selectedProduct).id
       setTimeout(() => {
-        try{
-          this.selectedsLotes[this.loteModalName()].splice(index, 1)
-        }catch(e){
-
-        }
-      }, 200);
-      
-    },
-    removeValidate(){
-
-      let form = document.getElementById('select_lote_for_order'),
-      loteInput = "product_in_order_lote_"+this.selectedProduct.title.replace(/ /g,'_') +"_"+ (form.querySelectorAll('input[name*="product_in_order_lote_"]').length - 1),
-      quantityInput = "product_in_order_quantity_"+this.selectedProduct.title.replace(/ /g,'_') +"_"+ (form.querySelectorAll('input[name*="product_in_order_lote_"]').length - 1)
-      try {
-        this.forms.removeField(loteInput)
-        this.forms.removeField(quantityInput)
-        
-      } catch (error) {
-        console.log('no hay validación activa')
-      }
-
-    },
-    addLoteInput(){
-      let newLote = {selected_lote:'', quantity:'', selected_lote_id:''}
-
-      try {
-        this.selectedsLotes[this.loteModalName()].push(newLote)
-      } catch (error) {
-        this.selectedsLotes[this.loteModalName()] = [newLote]
-      }
-      this.selectedsLotes[this.loteModalName()]['idProduct'] = this.selectedProduct.id
-      this.selectedsLotes[this.loteModalName()]['recipePosition'] = this.selectedProduct.position
-      setTimeout(() => {
-        this.createValidate()
-
-      }, 200);
-
-    }, 
-    selectedLotes(e, index){
-      this.selectedsLotes[this.loteModalName()][index].indexLote = index
-      this.selectedsLotes[this.loteModalName()][index].product_id = this.selectedProduct.id
-      this.selectedsLotes[this.loteModalName()][index]['inOrder'] = this.flagTitle(this.selectedProduct).id
-      setTimeout(() => {
+        this.addLoteQuantityInputValidate(this.selectedLotes[this.loteModalName()][index])
         this.forms.validateField('product_in_order_lote_'+this.selectedProduct.title.replace(/ /g,'_')+'_'+index)
-          this.addValidate(this.selectedsLotes[this.loteModalName()][index])
-        }, 200);
+      }, 500);
     },
-    orderNumberFormat(id){
-        return '0000000'.slice( 0, 6 - id.toString().length ) + id 
-    },
-    validateFormItem(){
+    initLotesFormsValidate(){
       this.forms = formValidation(document.getElementById('select_lote_for_order'), {
         plugins: {
           trigger: new Trigger(),
@@ -391,43 +379,12 @@ export default {
               }),
         }
       });
-      let fields = {
-        validators: {
-          notEmpty: {
-            message: "El cliente es requerido"
-          },
-        }
-      };
-      this.forms.addField(
-        'product_in_order_lote_'+this.selectedProduct.title.replace(/ /g,'_')+'_0', fields
-      )
-      setTimeout( ()=> this.formsActions(), 500)
+      setTimeout( ()=> this.formsActionsValidate(), 500)
     },
-    formsActions(){
-      
-      this.forms.on("core.form.valid", () => {
-        this.addLote()
-      }).on("core.field.valid", () => {
-        this.enableButton('select_lote_for_order_button')
-
-      }).on("core.form.invalid", () => {
-        this.disabledButton('select_lote_for_order_button')
-
-      }).on("core.field.invalid", () => {
-        this.disabledButton('select_lote_for_order_button')
-
-      });
-    },
-    actionModal(action){
-      this.$emit('actionModal',action)
-    },
-    destroyFormVal(){
-      this.forms.destroy()
-    },
-    addValidate(lote){
-      let form = document.getElementById('select_lote_for_order'),
-      quantityInput = form.querySelector('input[name="product_in_order_quantity_'+this.selectedProduct.title.replace(/ /g,'_')+'_'+lote.indexLote+'"]'),
-      fieldOptions={
+    addLoteQuantityInputValidate(lote){
+      const form = document.getElementById('select_lote_for_order');
+      const quantityInput = form.querySelector('input[name="product_in_order_quantity_'+this.selectedProduct.title.replace(/ /g,'_')+'_'+lote.indexLote+'"]');
+      const fieldOptions  = {
         quantity: {
           validators: {
             notEmpty: {
@@ -442,33 +399,15 @@ export default {
             },
           }
         }
-      } 
+      };
       this.forms.addField(quantityInput.name, fieldOptions.quantity)
       return
     },
-    addLote(){
-    
-      // console.log(this.selectedProduct)
-      if(this.calculateUnitOrders()){
-        this.hideModal()
-        this.disabledButton('select_lote_for_order_button')
-        // this.$emit('checkProductOrder',this.selectedProduct.title.replace(/ /g,'_'))
-        // this.order.products.filter(product => product.id == this.selectedProduct.id)[0].in_order= true
-
-        this.order.recipes[this.selectedProduct.position].cooking_ingredients.find(product => product.id == this.selectedProduct.id).in_order = true
-        return
-      }
-      
-      this.disabledButton('select_lote_for_order_button')
-      this.showAlert('Cantidad ingresada es menor a lo solicitado', 'error')
-  
-    },
-    createValidate(){
-
-      let form = document.getElementById('select_lote_for_order'),
-      index = form.querySelectorAll('input[name*="product_in_order_lote_'+this.selectedProduct.title.replace(/ /g,'_')+'"]').length - 1,
-      input = form.querySelector('input[name="product_in_order_lote_'+this.selectedProduct.title.replace(/ /g,'_')+'_'+index+'"]'),
-      fieldOptions={
+    addLoteSelectInputValidate(){
+      const form = document.getElementById('select_lote_for_order');
+      const index = form.querySelectorAll('input[name*="product_in_order_lote_'+this.selectedProduct.title.replace(/ /g,'_')+'"]').length - 1;
+      const input = form.querySelector('input[name="product_in_order_lote_'+this.selectedProduct.title.replace(/ /g,'_')+'_'+index+'"]');
+      const fieldOptions={
         selectLote: {
           validators: {
             notEmpty: {
@@ -480,15 +419,88 @@ export default {
       this.forms.addField(input.name, fieldOptions.selectLote)
       return
     },
+    removeValidate(){
+      const form = document.getElementById('select_lote_for_order');
+      const loteInput = "product_in_order_lote_"+this.selectedProduct.title.replace(/ /g,'_') +"_"+ (form.querySelectorAll('input[name*="product_in_order_lote_"]').length - 1);
+      const quantityInput = "product_in_order_quantity_"+this.selectedProduct.title.replace(/ /g,'_') +"_"+ (form.querySelectorAll('input[name*="product_in_order_lote_"]').length - 1);
+      try {
+        this.forms.removeField(loteInput)
+        this.forms.removeField(quantityInput)
+      } catch (error) {
+        // console.log('no hay validación activa')
+      }
+    },
+    destroyFormVal(){
+      this.forms.destroy()
+    },
+    formsActionsValidate(){
+      this.forms.on("core.form.valid", () => {
+        this.addLoteInOrder()
+      }).on("core.field.valid", () => {
+        this.enableButton('select_lote_for_order_button')
+
+      }).on("core.form.invalid", () => {
+        this.disabledButton('select_lote_for_order_button')
+
+      }).on("core.field.invalid", () => {
+        this.disabledButton('select_lote_for_order_button')
+
+      });
+    },
+    verifyCheckLotes(){
+      let result = true
+      Object.values(this.selectedLotes).forEach( (lote) =>{
+        if (lote.length == 0 || !lote[0].product_id){
+          this.order.recipes[lote.recipePosition].cooking_ingredients.find( product => product.id == lote.idProduct).in_order= false
+          result =  false;
+        } 
+      })
+      if(Object.values(this.selectedLotes).length != this.totalProductsInOrder()) return false
+      this.enableButton('create_order_'+this.order.id)
+      return result;
+    },
+    
+    addInputLote(){
+      const newLote = {selected_lote:'', quantity:'', selected_lote_id:''}
+      try {
+        this.selectedLotes[this.loteModalName()].push(newLote)
+      } catch (error) {
+        this.selectedLotes[this.loteModalName()] = [newLote]
+      }
+      this.selectedLotes[this.loteModalName()]['idProduct'] = this.selectedProduct.id
+      this.selectedLotes[this.loteModalName()]['recipePosition'] = this.selectedProduct.position
+      setTimeout(() => {
+        this.addLoteSelectInputValidate()
+      }, 200);
+
+    }, 
+    removeInputLote(index){  
+      this.removeValidate()
+      setTimeout(() => {
+        try{
+          this.selectedLotes[this.loteModalName()].splice(index, 1)
+        }catch(e){
+          console.log('noni')
+        }
+      }, 200);
+      
+    },
+    orderNumberFormat(id){
+      return '0000000'.slice( 0, 6 - id.toString().length ) + id 
+    },
+    loteModalName(){
+      return this.selectedProduct.title.replace(/ /g,'_')+'_'+this.selectedProduct.position;
+    },
+    recipeTitleLabel(product){
+      return product.pivot.recipe_id 
+        ? this.order.recipes.find((recipe) => recipe.id == product.pivot.recipe_id )
+        :''
+    },
     calculateUnitOrders(){
-
       let total = 0
-      this.selectedsLotes[this.loteModalName()].forEach( el =>  total = (parseFloat(total) + parseFloat(el.quantity)))
+      this.selectedLotes[this.loteModalName()].forEach( lote =>  total = (parseFloat(total) + parseFloat(lote.quantity)))
 
-      console.log(this.totalQuantityOfProductInRecipe())
-      console.log(total)
       if(total <= parseFloat(this.totalQuantityOfProductInRecipe())){
-        
         this.enableButton('select_lote_for_order_button')
         this.closeAlert()
         return total == this.totalQuantityOfProductInRecipe()
@@ -503,56 +515,6 @@ export default {
       this.showAlert('Cantidad ingresada supera lo solicitado', 'error')
       return
     },
-    enableButton(id){
-      const sendButton = document.getElementById(id)
-      sendButton.disabled = false
-      sendButton.classList.remove('v-btn--disabled') 
-
-    },
-    disabledButton(id){
-      const sendButton = document.getElementById(id)
-      sendButton.disabled = true
-      sendButton.classList.add('v-btn--disabled')
-    },
-    verifyCheckLotes(){
-      let result = true
-      Object.values(this.selectedsLotes).forEach( (lote) =>{
-        if (lote.length == 0){
-          this.order.recipes[lote.recipePosition].cooking_ingredients.find( product => product.id == lote.idProduct).in_order= false
-          result =  false;
-        } 
-      })
-      
-      if(Object.values(this.selectedsLotes).length != this.totalProductsInOrder()) return false
-      this.enableButton('create_order_'+this.order.id)
-      return result;
-      
-    },
-    cleanForm(){
-      this.selectedProduct ='';
-      this.selectedsLotes =[
-      ];
-    
-    },
-    flagTitle(product){
-      return product.pivot.recipe_id 
-        ? this.order.recipes.find((recipe) => recipe.id == product.pivot.recipe_id )
-        :''
-    },
-    createOutOrder(){
-      if(this.verifyCheckLotes()){
-        this.disabledButton('create_order_'+this.order.id)
-        this.$emit('createOutOrder', Object.values(this.selectedsLotes))
-
-        this.cleanForm()
-        return
-
-      }
-      this.showSnackbar('error', 'Faltan productos')
-    },
-    loteModalName(){
-      return this.selectedProduct.title.replace(/ /g,'_')+'_'+this.selectedProduct.position;
-    },
     totalProductsInOrder(){
       let total = 0;
       this.order.recipes.forEach((recipe)=>{
@@ -563,10 +525,53 @@ export default {
     },
     totalQuantityOfProductInRecipe(){
       return (parseFloat(this.selectedProduct.pivot.quantity) * parseFloat(this.order.recipes[this.selectedProduct.position].pivot.quantity)).toFixed(2)
-    }
+    },
+    addLoteInOrder(){
+      this.loadingState(true)
+      if(this.calculateUnitOrders()){
+        setTimeout(() => {
+          
+          this.hideInternalModal()
+          this.disabledButton('select_lote_for_order_button')
+          this.loadingState(false)
+          this.order.recipes[this.selectedProduct.position].cooking_ingredients.find(product => product.id == this.selectedProduct.id).in_order = true
+        }, 200);
+        return
+      }
+      this.loadingState(false)
+      this.disabledButton('select_lote_for_order_button')
+      this.showAlert('Cantidad ingresada es menor a lo solicitado', 'error')
+  
+    },
+    createOutOrder(){
+      this.loadingState(true)
+
+      if(!this.verifyCheckLotes()) {
+        this.showSnackbar('error', 'Faltan productos')
+        this.loadingState(false)
+        return
+      }
+      this.disabledButton('create_order_'+this.order.id)
+      const formData = new FormData();
+      formData.append('order', this.order.id);
+      formData.append('products', JSON.stringify(this.selectedLotes));
+      formData.append('recipes', JSON.stringify(this.order.recipes));
+      this.$store
+        .dispatch(CREATE_OUT_ORDER, formData)
+        .then((response) => {
+          this.hideModal()
+          this.showSnackbar('success', 'Orden creada con exito')
+          this.cleanForm()
+          this.loadingState(false)
+        })
+        .catch((err) => {
+          this.showSnackbar('error', err )
+          this.loadingState(false)
+        })
+    },
+    
+
   }
-
-
 };
 
 </script>

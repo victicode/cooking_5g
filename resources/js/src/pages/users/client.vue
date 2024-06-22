@@ -17,7 +17,7 @@
   import debounce from 'debounce';
   import * as bootstrap from 'bootstrap'
   import { GET_USER_BY_ID, CREATE_USER, DELETE_USER, UPDATE_USER } from "@/core/services/store/user.module";
-  import viewOrderModal from '@/views/pages/modals/viewOrderModal.vue';
+  import viewOrderModal from '@/views/orders/viewOrderModal.vue';
  
 </script>
 

@@ -27,7 +27,7 @@ const token = localStorage.getItem('id_token')
                     <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="actionModal('close')" ></v-btn>
                   </v-col>
                 </div>
-                <div class="d-flex justify-space-between  flex-column pa-2 px-3 pa-md-5 ">
+                <div class="d-flex justify-space-between  flex-column pa-2 px-3 pa-md-5 pt-md-16 ">
                   <VRow  class="mb-2 ma-0">
                     <VCol
                       cols="12"

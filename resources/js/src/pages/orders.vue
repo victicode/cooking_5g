@@ -68,156 +68,12 @@
     </VCol>
     <div v-if="Object.keys(selectedOrder).length > 1">
       <viewOrderModal :order="selectedOrder"  @actionModal="modalAction" />
-      <viewCreateOutOrderModal :order="selectedOrder"  @actionModal="modalAction"  @createOutOrder="createOutOrder"  />
+      <viewCreateOutOrderModal :order="selectedOrder"  @hiddenModal="hideModal"  />
       <viewTimelineOrderModal :order="selectedOrder"  @actionModal="hideInternalModal" />
-      <div class="modal animate__animated animate__slideInLeft" id="confirmOrder" tabindex="-1" aria-labelledby="showCartLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg mt-0 ma-0" style="width: 100%; height: 100vh;">
-          <div class="modal-content h-100">
-            <VCol
-              cols="12"
-              class="pa-0 d-flex justify-center"
-              style="position: relative;"
-            >
-              <VCol
-                cols="12"
-                class="pa-0"
-              >
-                <VCard class="modal__content h-100 rounded-0">
-                  <div class="modal__close-button__cart" >
-                    <v-col  class="pa-0 pe-4">
-                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
-                    </v-col>
-                  </div>
-                  <div class="d-flex justify-space-between  flex-column pa-2 px-3 pa-md-5 ">
-                    <VRow  class="mb-2 ma-0 mt-15">
-                      <VCol
-                        cols="12"
-                        class="py-0"
-                      >
-                        <div class="my-md-4 my-2 text-center">
-                          <h2>Finalizar Orden #{{ orderNumberFormat(selectedOrder.id) }}</h2>
-                          <h3 class="mt-2">
-                            <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
-                              {{ selectedOrder.status_label.status }}
-                            </v-chip>
-
-                          </h3>
-                        </div>
-                      </VCol>
-                      <VCol
-                        cols="12"
-                        class="px-md-10 px-0 text-center"
-                        style=""
-                      >
-                        <h2>¿Desea confirmar la recepción de la orden #{{orderNumberFormat(selectedOrder.id)}}?</h2>
-                      </VCol>
-                    </VRow>
-                      
-
-                    <VDivider  />
-                    <div class="mt-5 w-100 d-md-flex  d-block justify-center">
-                      <VCardActions class=" justify-center w-100 d-flex ">
-                        <VBtn
-                          color="white"
-                          class="bg-success text-white w-50 mx-0 mx-md-5 my-2"
-                          @click="orderChangeStatus('3')"
-                          v-if="selectedOrder.status == 1 || selectedOrder.status == 2"
-                        >
-                          <span class="">Confirmar</span>
-                        </VBtn>
-                      </VCardActions>
-                    </div>
-                  </div>
-                </VCard>
-              </VCol>
-            </VCol>
-          </div>
-        </div>
-      </div>
-      <div class="modal animate__animated animate__fadeInDown" id="cancelOrder" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg mt-10" >
-          <div class="modal-content">
-            <VCol
-              cols="12"
-              class="pa-0 d-flex justify-center"
-              style="position: relative;"
-            >
-            
-              <VCol
-                cols="12"
-              >
-                <VCard class="modal__content">
-                  <div class="modal__close-button" >
-                    <v-col  class="pa-0 pe-4">
-                      <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
-                    </v-col>
-                  </div>
-                  <div class="d-flex justify-space-between  flex-column pa-2 pa-md-5 ">
-                    <VRow  class="mb-2 ma-0">
-                      <VCol
-                        cols="12"
-                        class="py-0"
-                      >
-                        <div class="my-md-4 my-2 text-center">
-                          <h2>Cancelar orden #{{ orderNumberFormat(selectedOrder.id) }}</h2>
-                          <h3 class="mt-2">
-                            <v-chip :class="{'bg-error': selectedOrder.status == 0, 'bg-warning': selectedOrder.status == 1, 'bg-secondary': selectedOrder.status == 2, 'bg-success': selectedOrder.status == 3, }">
-                              {{ selectedOrder.status_label.status }}
-                            </v-chip>
-
-                          </h3>
-                        </div>
-                      </VCol>
-                      <VCol
-                        cols="12"
-                        class="px-md-10 px-0 text-center"
-                        style=""
-                      >
-                        <h2>¿Seguro que deseas cancelar la orden #{{orderNumberFormat(selectedOrder.id)}}?</h2>
-                      </VCol>
-                    </VRow>
-                      
-
-                    <VDivider  />
-                    <div class="mt-5 w-100 d-md-flex  d-block justify-center">
-                      <VCardActions class=" justify-center w-100 d-md-flex  d-block">
-                        <VBtn
-                          color="white"
-                          class="bg-error text-white w-30 mx-0 mx-md-5 my-2"
-                          @click="cancelOrder()"
-                          v-if="selectedOrder.status == 1 || selectedOrder.status == 2"
-                        >
-                          <span class="">Cancelar</span>
-                        </VBtn>
-                      </VCardActions>
-                    </div>
-                  </div>
-                </VCard>
-              </VCol>
-            </VCol>
-          </div>
-        </div>
-      </div>
+      <viewCancelOrder :order="selectedOrder"  @hiddenModal="hideModal"  />
+      <viewConfirmOrder :order="selectedOrder"  @hiddenModal="hideModal" />
     </div>
     <viewCreateOrder @hiddenModal="hideModal"  />
-    <v-snackbar
-      v-model="snackShow"
-      :color="snackType"
-      rounded="pill"
-      :timeout="snacktimeOut"
-      width="max-content"
-      class="text-center"
-    >
-     <h4 class="text-white w-100 text-center">
-
-       {{snackMessage}}
-     </h4>
-        <template
-          v-slot:actions
-        >
-        <VBtn  color="white" class="text-white" @click="snackShow=false"> Cerrar</VBtn>
-        </template>
-    </v-snackbar>
   </VRow>
 </template>
 <style lang="scss" >
@@ -260,7 +116,9 @@
   import 'datatables.net-responsive-dt/css/responsive.dataTables.min.css';
 
   import DemoSimpleTableBasics from '@/views/pages/tables/DemoSimpleTableBasics.vue';
-  import viewOrderModal from '@/views/pages/modals/viewOrderModal.vue';
+  import viewOrderModal from '@/views/orders/viewOrderModal.vue';
+  import viewCancelOrder from '@/views/orders/viewCancelOrder.vue';
+  import viewConfirmOrder from '@/views/orders/viewConfirmOrder.vue';
   import viewCreateOutOrderModal from '@/views/orders/viewCreateOutOrderModal.vue';
   import viewTimelineOrderModal from '@/views/pages/modals/viewTimelineOrderModal.vue';
   import viewCreateOrder from '@/views/orders/viewCreateOrder.vue';
@@ -271,14 +129,16 @@
   import 'flatpickr/dist/flatpickr.min.css';
   import { Spanish } from "flatpickr/dist/l10n/es.js";
 
-  import { GET_ORDER_BY_ID, CHANGE_STATUS, CREATE_OUT_ORDER } from "@/core/services/store/order.module";
+  import { GET_ORDER_BY_ID } from "@/core/services/store/order.module";
   import { GET_ALL_USER, GET_USER } from "@/core/services/store/user.module";
 
   export default {
     components:{
-      viewOrderModal,
+      viewCancelOrder,
+      viewConfirmOrder,
       viewCreateOrder,
       viewCreateOutOrderModal,
+      viewOrderModal,
       viewTimelineOrderModal,
     },
     data: () => ({
@@ -633,7 +493,7 @@
               setTimeout(() => { 
                 this.emitter.emit('displayOverlayLoad', false)
                 resolve(response.data);
-              }, 300);
+              }, 200);
             })
           })
           .catch((err) => {
@@ -738,88 +598,28 @@
         this.snackType = type
         this.snackMessage = messagge
       },
-      orderChangeStatus(newStatus){
-        const message = newStatus == 3 
-        ? 'Orden completada exitosamente'
-        :'Orden cancelada';
+      sendingButton(id){
+        document.getElementById(id).disabled = true
+      },
+      readyButton(id){
+        document.getElementById(id).disabled = true
         
-        const type =  newStatus == 3 
-        ? 'success'
-        : 'error';
-
-        this.$store
-          .dispatch(CHANGE_STATUS, {id:this.selectedOrder.id, newStatus: newStatus})
-          .then((response) => {
-            this.filterColumn()
-            this.hideModal()
-            this.showSnackbar(type, message)
-          })
-          .catch((err) => {
-            console.log(err)
-            this.hideModal()
-            this.showSnackbar('error', err )
-          })
-
-      },
-      createOutOrder(products){
-        const formData = new FormData();
-        formData.append('order', this.selectedOrder.id);
-        formData.append('products', JSON.stringify(products));
-        formData.append('recipes', JSON.stringify(this.selectedOrder.recipes));
-        this.$store
-          .dispatch(CREATE_OUT_ORDER, formData)
-          .then((response) => {
-            console.log(response)
-            this.filterColumn()
-            this.hideModal()
-            this.showSnackbar('success', 'Orden creada con exito')
-            this.readyButton('new_order_form_button')
-            // this.clearNewOrderForm()
-          })
-          .catch((err) => {
-            console.log(err)
-            // this.hideModal()
-            this.showSnackbar('error', err )
-            this.readyButton('new_order_form_button')
-          })
-      },
-      cancelOrder(){
-        // this.$refs.newStatus.value = 0
-        this.orderChangeStatus('0')
-      },
-      selectedLotes(e, index){
-        this.newOrder.products[index].maxValue = e.quantity
-        setTimeout(() => {
-            this.addValidate(this.newOrder.products[index].maxValue)
-          }, 200);
+        document.getElementById(id).setAttribute('class','v-btn v-btn--disabled v-theme--light bg-primary v-btn--density-default v-btn--size-default v-btn--variant-elevated w-100')
       },
       copyOderNumber(element){
-        console.log(element)
-
-        let texto = element.innerHTML.trim().substring(1);
-        console.log(texto)
-        // console.log(navigator)
-        // texto.select()
-        // document.execCommand('copy');
-        // try {
-        //   navigator.clipboard.writeText(texto)
-        //   console.log('Contenido copiado al portapapeles');
-        // } catch (err) {
-        //   console.error('Error al copiar: ', err);
-        // }
-          const textArea = document.createElement('textarea');
-          textArea.value = texto;
-          textArea.style.opacity = 0;
-          document.body.appendChild(textArea);
-          // textArea.focus();
-          textArea.select();
-          try {
-            const success = document.execCommand('copy');
-            this.showSnackbar('success', 'Tracker ID copiado exitosamente')
-          } catch (err) {
-            console.error(err.name, err.message);
-          }
-          document.body.removeChild(textArea);
+        const texto = element.innerHTML.trim().substring(1);
+        const textArea = document.createElement('textarea');
+        textArea.value = texto;
+        textArea.style.opacity = 0;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+          const success = document.execCommand('copy');
+          this.showSnackbar('success', 'Tracker ID copiado exitosamente')
+        } catch (err) {
+          console.error(err.name, err.message);
+        }
+        document.body.removeChild(textArea);
         
       }
     },
