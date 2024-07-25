@@ -73,8 +73,7 @@
                             <VRow class="align-center position-relative"  >
                               <VCol cols="4" class="pe-2 d-flex justify-center">
                                 <VImg
-                            
-                                  class="rounded client_product_list_cart"
+                                  class="rounded client_product_list_cart fit"
                                   :src="product.image_url"
                                 />
                               </VCol>
@@ -89,9 +88,9 @@
                                       <div class="text-subtitle-2 ms-2" >
                                         - {{ ingredient.title }}: 
                                         {{ 
-                                        ingredient.type_of_unit == 'KG'
-                                        ?(parseFloat(ingredient.pivot.quantity) * parseFloat(product.quantity)).toFixed(3) 
-                                        :(parseFloat(ingredient.pivot.quantity) * parseFloat(product.quantity)).toFixed(0) 
+                                          ingredient.type_of_unit == 'KG'
+                                          ?(parseFloat(ingredient.pivot.quantity) * parseFloat(product.quantity)).toFixed(3) 
+                                          :(parseFloat(ingredient.pivot.quantity) * parseFloat(product.quantity)).toFixed(0) 
                                         }} 
                                         {{ ingredient.type_of_unit }}
                                       </div>
@@ -216,10 +215,11 @@
 }
 .modal__close-button__cart{
   position: absolute;
-  right: -2%;
-  top: 15px;
+  right: -5%;
+  top: 5px;
 
 }
+
 .client_product_list_cart {
   width:200px;
   height:200px;
@@ -252,6 +252,12 @@
 }
 
 @media screen and (max-width: 780px){
+  .modal__close-button__cart{
+    position: absolute;
+    right: -2%;
+    top: 15px;
+  
+  }
   .delete_item_in_cart{
     right: -14px;
     display: flex !important;

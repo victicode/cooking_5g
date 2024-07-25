@@ -73,15 +73,14 @@
         <VCard class="mt-3" v-for="recipe in recipes" :key="recipe.id" >
           <VRow class="ma-0  justify-center align-center justify-md-start pa-0 px-md-5 px-0 mb-0 mb-md-0">
             <VCol cols="12"  class="d-flex align-center px-1">
-              <div  class=" cursor-pointer" @click="getCurrentAccount.rol_id !== 3 ? selectRecipe(recipe.id) : showAction(recipe.id,'viewRecipe')" >
-                <img :src="recipe.image_url" width="100" height="100" style="border-radius: 20%;">
+              <div  class=" cursor-pointer" @click="showAction(recipe.id,'viewRecipe')" >
+                <img :src="recipe.image_url" width="100" height="100" class="fit" style="border-radius: 20%;">
               </div>
               <div class="px-2 w-100">
                 <div>
 
-                  <div class="d-flex text-md-start " @click="getCurrentAccount.rol_id !== 3 ? selectRecipe(recipe.id) : showAction(recipe.id,'viewRecipe')" >
+                  <div class="d-flex text-md-start " @click="showAction(recipe.id,'viewRecipe')" >
                     <h3 class="w-100 text-decoration-underline cursor-pointer"> {{ recipe.title }} </h3>
-                    
                   </div>
                   <div class="ms-1  d-flex justify-space-between align-end">
                     <div>
@@ -108,7 +107,6 @@
                     <div class="d-flex">
                       <div v-if="getCurrentAccount.rol_id == 3">
                         <div v-if="updateInCart"  >
-
                           <v-btn 
                             v-if="maxStockRecipeInput(recipe) > 0 && isAllIngredientsInStock(recipe)"
                             size="small" 
@@ -195,7 +193,7 @@
                             <VImg
                               width="200"
                               height="200"
-                              class="rounded"
+                              class="rounded fit"
                               :src="selectedRecipe.image_url "
                             />
                           </div>
@@ -463,7 +461,7 @@
             </div>
           </div>
       </div>
-      <div class="modal animate__animated nimate__slideInLeft pe-0"  id="updateRecipe" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+      <div class="modal animate__animated animate__slideInLeft pe-0"  id="updateRecipe" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg mt-0 ma-0" style="width: 100%; height: 100vh;">
           <div class="modal-content h-100">
             <VCol
@@ -530,14 +528,14 @@
                               >
                                 <template class="d-block" >
                                   <VForm  id="update_recipe_form">
-                                    <VRow>
+                                    <VRow>s
                                       <VCol cols="12"  class=" ">
                                         <div class="img-content mx-auto">
                                           <label for="update-img">
                                             <VImg
                                               width="200"
                                               height="200"
-                                              class="rounded"
+                                              class="rounded fit"
                                               :src="selectedRecipe.image_url"
                                               style="border-radius:10%!important"
                                               id="update-img-content"
@@ -1000,7 +998,7 @@
                                           <VImg
                                             width="200"
                                             height="200"
-                                            class="rounded"
+                                            class="rounded fit"
                                             :src="newRecipe.img"
                                             style="border-radius:10%!important"
                                             id="newRecipe-img-content"
@@ -1278,123 +1276,6 @@
     <printTags @hide="hideModal()" v-if="getCurrentAccount.rol_id && getCurrentAccount.rol_id !== 3" />
   </VRow>
 </template>
-<style lang="scss" >
-  .drawer-bottom{
-    height: 180px; 
-    background: #f1f1f1; 
-    border-top-right-radius: 20px; 
-    border-top-left-radius: 20px; 
-    overflow-y: visible;
-  }
-  svg{
-    outline:none
-  }
-  .cart-skeleton-button{
-    width: 40px;
-    height: 40px;
-    border-radius: 10%!important;
-    & > .v-skeleton-loader__bone{
-      margin: 0px!important;
-      border-radius: 50%!important;
-
-    }
-  }
-  .cart-skeleton-buttonx{
-    width: 40px;
-    height: 40px;
-    border-radius: 10%!important;
-    & > .v-skeleton-loader__bone{
-      margin: 0px!important;
-      border-radius: 10%!important;
-
-    }
-  }
-  .recipe-cart-button > .v-skeleton-loader__button{
-    max-width:100%!important
-  }
-  .losv .v-stepper-item__avatar.v-avatar{
-    width: 40px!important;
-    height: 40px!important;
-    & > svg{
-      width: 20px!important;
-      height: 20px!important;
-    }
-  }
-  .shadow-button{
-    box-shadow: 0px 2px 10px 2px #57575775;
-  }
-  table.recipes-table > thead > tr > th:nth-child(n+1){
-    width: max-content!important
-  }
-
-  .item-list-drawer{
-    border-bottom: 1px solid rgba(165, 165, 165, 0.822); border-radius: 0px;
-  }
-  .drawer__close-button{
-    position: absolute;
-    top: 0px;
-    right: -20px;
-    transition: all 0.5s ease;
-    &.active{
-    top:-20px!important
-  }
-
-  }
-  .v-navigation-drawer__content{
-    overflow: visible!important;
-    overflow-x: hidden;
-  }
-  .v-navigation-drawer{
-    height: 190px!important;
-    
-  }
-  .small-delete-product-button_recipe{
-      position: absolute;
-      top: -10px;
-      right: 6px;
-    }
-  .stock-notify{
-    border-radius: 15px;
-    background: #dce7ef;
-    & > p{
-      font-size: smaller;
-    }
-  }
-  .no-stock-notify{
-    background: #ffe0db;
-    border-radius: 15px;
-    & > p{
-      font-size: smaller;
-    }
-  }
-  
-  @media screen and (max-width: 780px){
-    .small-delete-product-button_recipe{
-      position: absolute;
-      top: -10px;
-      right: 5px;
-    }
-    thead > tr > th:last-child{
-      width: 10%!important;
-    }
-  }
-  .fz-10{
-    font-size: 0.85rem;
-  }
-  .w-80{
-    width: 80%;
-  }
-
-  .recipe-notproduct{
-    font-weight: bolder;
-    color:#4d5f71;
-    &:hover{
-      color:#4d5f71
-    }
-  }
-  
-</style>
-
 <script>
 
   export default {
@@ -1822,6 +1703,7 @@
         this.$store.dispatch(GET_RECIPES, data ).then((data)=>{
           this.recipes = data.data.data
           this.pagination.totalPage = data.data.last_page
+          console.log(this.recipes)
 
         })
       },
@@ -1986,11 +1868,8 @@
         recipeFormData.append('ingredients', JSON.stringify(this.selectedRecipe.ingredients))
         recipeFormData.append('cooking_ingredients', JSON.stringify(this.selectedRecipe.cooking_ingredients))
         recipeFormData.append('preparation', JSON.stringify(this.selectedRecipe.preparation))
-
         recipeFormData.append('image_url', this.$refs.updateImg.files[0])
-
         recipeFormData.append('video_url', this.selectedRecipe.video ? this.selectedRecipe.video  : false)
- 
 
         this.$store
         .dispatch(UPDATE_RECIPE, {id:this.selectedRecipe.id, data:recipeFormData})
@@ -2086,10 +1965,10 @@
         if(!ingredient.lotes_recipe) return messageBad  ;
         if(ingredient.lotes_recipe.length == 0) return messageBad == '(Sin stock)*' ? 'Eliminado' : 'recipe-notproduct text-decoration-line-through'
         if(ingredient.total_stock < 1) return messageBad
-        if(ingredient.lotes_recipe[0].quantity <=0 || Math.round(moment.duration(moment(ingredient.lotes_recipe[0].due_date).diff(new moment())).as('days') ) < 0 ){
+        if(ingredient.lotes_recipe[0].quantity <= 0 || Math.round(moment.duration(moment(ingredient.lotes_recipe[0].due_date).diff(new moment())).as('days') ) < 0 ){
           return messageBad 
         }
-       return ingredient.deleted_at==null 
+       return ingredient.deleted_at == null 
         ? messageGood 
         : messageBad 
 
@@ -2253,3 +2132,126 @@
     
   };
 </script>
+
+<style lang="scss" >
+  img.fit{
+    object-fit: cover!important;
+  }
+  .fit > .v-img__img--contain{
+    object-fit: cover!important;
+  }
+  .drawer-bottom{
+    height: 180px; 
+    background: #f1f1f1; 
+    border-top-right-radius: 20px; 
+    border-top-left-radius: 20px; 
+    overflow-y: visible;
+  }
+  svg{
+    outline:none
+  }
+  .cart-skeleton-button{
+    width: 40px;
+    height: 40px;
+    border-radius: 10%!important;
+    & > .v-skeleton-loader__bone{
+      margin: 0px!important;
+      border-radius: 50%!important;
+
+    }
+  }
+  .cart-skeleton-buttonx{
+    width: 40px;
+    height: 40px;
+    border-radius: 10%!important;
+    & > .v-skeleton-loader__bone{
+      margin: 0px!important;
+      border-radius: 10%!important;
+
+    }
+  }
+  .recipe-cart-button > .v-skeleton-loader__button{
+    max-width:100%!important
+  }
+  .losv .v-stepper-item__avatar.v-avatar{
+    width: 40px!important;
+    height: 40px!important;
+    & > svg{
+      width: 20px!important;
+      height: 20px!important;
+    }
+  }
+  .shadow-button{
+    box-shadow: 0px 2px 10px 2px #57575775;
+  }
+  table.recipes-table > thead > tr > th:nth-child(n+1){
+    width: max-content!important
+  }
+
+  .item-list-drawer{
+    border-bottom: 1px solid rgba(165, 165, 165, 0.822); border-radius: 0px;
+  }
+  .drawer__close-button{
+    position: absolute;
+    top: 0px;
+    right: -20px;
+    transition: all 0.5s ease;
+    &.active{
+    top:-20px!important
+  }
+
+  }
+  .v-navigation-drawer__content{
+    overflow: visible!important;
+    overflow-x: hidden;
+  }
+  .v-navigation-drawer{
+    height: 190px!important;
+    
+  }
+  .small-delete-product-button_recipe{
+      position: absolute;
+      top: -10px;
+      right: 6px;
+    }
+  .stock-notify{
+    border-radius: 15px;
+    background: #dce7ef;
+    & > p{
+      font-size: smaller;
+    }
+  }
+  .no-stock-notify{
+    background: #ffe0db;
+    border-radius: 15px;
+    & > p{
+      font-size: smaller;
+    }
+  }
+  
+  @media screen and (max-width: 780px){
+    .small-delete-product-button_recipe{
+      position: absolute;
+      top: -10px;
+      right: 5px;
+    }
+    thead > tr > th:last-child{
+      width: 10%!important;
+    }
+  }
+  .fz-10{
+    font-size: 0.85rem;
+  }
+  .w-80{
+    width: 80%;
+  }
+
+  .recipe-notproduct{
+    font-weight: bolder;
+    color:#4d5f71;
+    &:hover{
+      color:#4d5f71
+    }
+  }
+  
+</style>

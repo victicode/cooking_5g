@@ -15,9 +15,12 @@
   import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
   import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
   import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
+  
   import viewProductModal from '@/views/pages/modals/viewProductModal.vue';
   import viewCreateNewLoteModal from '@/views/pages/modals/viewCreateNewLoteModal.vue';
   import viewUpdateLoteModal from '@/views/pages/modals/viewUpdateLoteModal.vue';
+  import viewCreateProduct from '@/views/products/viewCreateProduct.vue';
+
   import moment from 'moment';
   import flatpickr from "flatpickr";
   import 'flatpickr/dist/flatpickr.min.css'
@@ -71,7 +74,6 @@
         </VRow>
         
       </VCard>
-
       <VCard class="mt-2">
         <div class="card-datatable table-responsive">
           <table class="max-width-700 datatables-basic display table" id="data-table">
@@ -417,8 +419,7 @@
           </div>
         </div>
       </div>
-      <div class="modal animate__animated animate__fadeInDown" id="deleteProduct" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-        
+      <div class="modal animate__animated animate__fadeInDown" id="deleteProduct" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">   
         <div class="modal-dialog modal-lg mt-10">
           <div class="modal-content">
             <VCol
@@ -486,287 +487,7 @@
       </div>
       <viewUpdateLoteModal @hiddenModal="updateAndHidden" :lote="selectedProduct" />
     </div>
-    <div class="modal animate__animated animate__slideInLeft" id="createProduct" tabindex="-1" aria-labelledby="showCartLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg mt-0 ma-0" style="width: 100%; height: 100vh;">
-        <div class="modal-content h-100">
-          <VCol
-            cols="12"
-            class="pa-0 d-flex justify-center"
-            style="position: relative;"
-          >
-            <VCol
-              cols="12"
-              class="pa-0"
-            >
-              <VCard class="modal__content h-100 rounded-0">
-                <div class="modal__close-button__cart" >
-                  <v-col  class="pa-0 pe-4">
-                    <v-btn icon="mingcute:close-fill" class="bg-secondary" @click="hideModal()" ></v-btn>
-                  </v-col>
-                </div>
-                <div class="d-flex justify-space-between  flex-column pa-2 px-4 pa-md-5 ">
-                  <VCardItem class="justify-center w-100  py-md-6  py-4   ">
-                    <VCardTitle class="text-2xl font-weight-bold">
-                      <div class="card-title d-flex ">
-                        <div class="form-title__part1">Crear Nuevo Producto</div>
-                        
-                      </div>
-                    </VCardTitle>
-                  </VCardItem>
-                  <VCardText class="mb-5  w-100 pa-0" v-if="alertShow">
-                    <v-alert
-                      :color="alertType"
-                      :text="alertMessage"
-                    ></v-alert>
-                  </VCardText>
-                  <VCardText class="w-100 pb-5 px-3 px-md-6">
-                    <VRow class="productStepper">  
-                      <v-stepper v-model="stepperNewProduct">
-                        <template v-slot:default="">
-                          <v-stepper-header class="">
-                            <v-stepper-item
-                                :complete="stepperNewProduct > 1"
-                                step="Detalles del producto"
-                                :value="1"
-                                icon="fluent-mdl2:product"
-                                size="large"
-                              >
-                                Producto
-                              </v-stepper-item>
-
-                              <v-stepper-item
-                                :complete="stepperNewProduct > 2"
-                                step="Detalles del producto"
-                                :value="2"
-                                icon="fluent-mdl2:work-item"
-                                size="large"
-                              >
-                                Stock
-                              </v-stepper-item>
-                          </v-stepper-header>
-                          <v-stepper-window class="mx-2" >
-                            <v-stepper-window-item
-                              :value="1"
-                            >
-                              <template class="d-block" >
-                                <VForm  id="new_product_form">
-                                  <VRow>
-                                    <VCol cols="12"  class=" ">
-                                      <div class="img-content mx-auto">
-                                        <label for="newProduct-img">
-                                          <VImg
-                                            width="200"
-                                            height="200"
-                                            class="rounded"
-                                            :src="newProduct.img"
-                                            style="border-radius:10%!important"
-                                            id="newProduct-img-content"
-                                          />
-                                          <div class="overlay-img">
-                                            <VIcon color="white" size="x-large" icon="majesticons:image-plus"/>
-                                          </div>
-                                        </label>
-                                        <VCol cols="12" md="12"  class="form-group text-center ma-0 mt-0 pa-0">
-                                          <input type="file"  id="newProduct-img" ref="newProductImg" name="new_product_img" class="d-none" @change="onFileChange" >
-                                        </VCol>
-                                      </div>
-                                    </VCol>
-                                    <VCol cols="12" md="6" class="form-group">
-                                        <VTextField
-                                          placeholder="Nombre del producto"
-                                          label="Nombre del producto"
-                                          type="text"
-                                          name="new_product_title"
-                                          autocomplete="off"
-                                          v-model="newProduct.title"
-                                          @change="formatLoteName($event)"
-                                        />
-                                    </VCol>
-                                    <VCol cols="12" md="6" class="form-group">
-                                      <VTextField
-                                        placeholder="Descripción corta"
-                                        label="Descripción corta"
-                                        type="text"
-                                        name="new_product_short_description"
-                                        autocomplete="off"
-                                        v-model="newProduct.short_description"
-                                      />
-                                    </VCol>
-                                    <VCol cols="12" class="form-group">
-                                      <v-textarea
-                                        label="Descripcion larga"
-                                        auto-grow
-                                        variant="outlined"
-                                        rows="3"
-                                        row-height="25"
-                                        shaped
-                                        name="new_product_description"
-                                        v-model="newProduct.description"
-                                      ></v-textarea>
-                                    </VCol>
-                                    <VCol cols="6" md="4" class="form-group">
-                                      <v-select
-                                          label="Tipo de unidad"
-                                          :items="['KG', 'UNI', 'PZAS']"
-                                          variant="outlined"
-                                          v-model="newProduct.unit"
-                                      ></v-select>
-                                    </VCol>
-                                    <VCol cols="12" md="4" class="px-5">
-                                      <v-switch
-                                        color="primary"
-                                        label="Tiene despieces" 
-                                        :value="1" 
-                                        v-model="newProduct.isDismantling"
-                                        @change="validateSwitch($event)"
-                                      />
-                                    </VCol>
-                                  </VRow>
-                                  <VRow 
-                                    class="ma-0 pa-0  mt-4 align-center" 
-                                    v-if="newProduct.isDismantling"
-                                    >
-                                        <VCol cols="12" class="form-group">
-                                          <h3>Despieces:</h3>
-                                        </VCol>
-                                        <VCol cols="12" md="4" class="mt-0 py-0 px-0">
-                                          <v-tooltip text="Agregar nuevo despiece">
-                                              <template v-slot:activator="{ props }">
-                                                <v-col cols="auto" class="">
-                                                  <VBtn v-bind="props" color="primary" class="w-100"  @click="addDismantlingInput(2)"><VIcon icon="bx-plus"/> Agregar despiece</VBtn>
-                                                </v-col>
-                                              </template>
-                                            </v-tooltip>
-                                        </VCol>
-                                        <div id="" class="pa-0 ma-0 align-center w-100 desmantling_items" >
-                                          <VRow  v-for="(item,index) in newProduct.dismantling"  v-bind:key="item.id" class="pa-0 ma-0 align-center w-100 mt-5 mt-md-0"  :id="'new_product_desmantling_'+index">
-                                            <VCol cols="12"  md="6" class="form-group">
-                                              <v-autocomplete
-                                                :model-value="item.piece_product_id"
-                                                :items="productOption[index] ?  productOption[index] :item.piece_product_id !== null ? [ {id: item.piece_product_id, title: item.products_pieces.title}] : []"
-                                                label="Nombre del despiece"
-                                                item-props="stock"
-                                                item-title="title"
-                                                item-value="id"
-                                                placeholder="Nombre del despiece"
-                                                variant="outlined"
-                                                clearable
-                                                autocomplete="off"
-                                                no-filter
-                                                :name="'product_desmantling_id_'+index"
-                                                no-data-text="No se encontraron resultados"
-                                                :menu-props="{'content-class':'dismantling_select'}"
-                                                @keyup="searchDismantling($event,index)"
-                                                @click:clear="clearSearchDismantling(index)"
-                                                @update:modelValue="selectDismantling($event, index,2)"
-                                                @update:menu="true"
-                                              ></v-autocomplete>
-                                            </VCol>
-                                            <VCol cols="8"  md="4" class="form-group">
-                                              <VTextField
-                                                placeholder="Unidades que trae"
-                                                label="Unidades que trae"
-                                                type="number"
-                                                :name="'product_desmantling_quantity_'+index"
-                                                v-model="item.quantity"
-                                                
-                                              />
-                                            </VCol>
-                                            <VCol cols="4" md="1" class="form-group pa-0">
-                                              <v-tooltip text="Eliminar despiece">
-                                                <template v-slot:activator="{ props }">
-                                                  <v-col cols="auto" class="">
-                                                    <v-btn icon="mdi-cancel-bold" v-bind="props" size="small" @click="removeDismantlingInput(2, index)"></v-btn>
-                                                  </v-col>
-                                                </template>
-                                              </v-tooltip>
-                                            </VCol> 
-                                          </VRow>
-                                        </div>
-                                  </VRow>
-                                  <VRow class="ma-0 pa-0  mt-8 align-center">
-                                    <VCol cols="12" md="4" offset-md="4" class="mt-0 py-0 px-0">
-                                      <v-col cols="auto" class="">
-                                        <VBtn  color="primary" class="w-100" type="submit"  disabled id="new_product_form_button" > Siguente</VBtn>
-                                      </v-col>
-                                    </VCol>
-                                  </VRow>
-                                </VForm>
-                                
-                              </template>
-                            </v-stepper-window-item>
-                            <v-stepper-window-item
-                              :value="2"
-                            >
-                              <template class="d-block">
-                                <VForm  id="new_product_form_2">
-                                  <VRow>
-                                    <VCol cols="6" md="4" class="form-group">
-                                      <VTextField
-                                        placeholder="Número de lote"
-                                        label="Número de lote"
-                                        type="text"
-                                        name="new_product_init_lot"
-                                        autocomplete="off"
-                                        variant="underlined"
-                                        v-model="newProduct.init_lote"
-                                        disabled
-                                      />
-                                    </VCol>
-                                    <VCol cols="6" md="4" class="form-group">
-                                      <VTextField
-                                        placeholder="Stock"
-                                        label="Stock"
-                                        type="number"
-                                        name="new_product_stock"
-                                        autocomplete="off"
-                                        v-model="newProduct.stock"
-                                      />
-                                    </VCol>
-                                    
-                                    <VCol cols="12" md="4" class="form-group">
-                                      <VTextField
-                                        id="dueDateNewProduct"
-                                        placeholder="Fecha de vencimiento"
-                                        label="Fecha de vencimiento"
-                                        type="text"
-                                        name="new_product_due_date"
-                                      />
-                                      <input type="hidden" id="date-input-val-dueDateNewProduct" ref="due_date_dueDateNewProduct" >
-                                    </VCol>
-                                  </VRow>
-                                  <VRow class="ma-0 pa-0  mt-8 align-center">
-                                    <VCol cols="5" md="4"  class="mt-0 py-0 px-0">
-                                      <v-col cols="auto" class="">
-                                        <VBtn  color="secondary" class="w-100" @click="backStep()" >
-                                          <span class="d-block d-md-hidden ">
-                                            <VIcon icon="ion:arrow-back-outline" color="white"></VIcon>  
-                                          </span>
-                                          <span class="d-md-block d-none ">Volver</span>
-                                        </VBtn>
-                                      </v-col>
-                                    </VCol>
-                                    <VCol cols="5" md="4" offset="2" offset-md="4" class="mt-0 py-0 px-0">
-                                      <v-col cols="auto" class="">
-                                        <VBtn  color="primary" class="w-100 " type="submit" disabled id="new_product_form_2_button"> Guardar</VBtn>
-                                      </v-col>
-                                    </VCol>
-                                  </VRow>
-                                </VForm>
-                              </template>
-                            </v-stepper-window-item>
-                          </v-stepper-window>
-                        </template>
-                      </v-stepper>
-                    </VRow>
-                  </VCardText>
-                </div>
-              </VCard>
-            </VCol>
-          </VCol>
-        </div>
-      </div>
-    </div>
+    <viewCreateProduct />
     <viewCreateNewLoteModal @hiddenModal="updateAndHidden"/>
     <viewNewDismantlingModal @hiddenModal="hideNewDismantlingForm"  v-if="newDismantling"  />
     <v-snackbar
@@ -789,68 +510,7 @@
     </v-snackbar>
   </VRow>
 </template>
-<style lang="scss">
-  .dismantling_select .v-list-item {
-      color:#cf6123   
-  }
- .dismantling_select .v-list-item:nth-last-child(n+3) {
-      color:#616161
-  }
-  .productStepper > .v-stepper.v-sheet {
-    box-shadow: none!important;
-  }
-  table.dataTable > thead > tr > th.title-th{
-    width: 40%!important;
-  }
-  table.dataTable > thead > tr > th:nth-child(n+2){
-    width: 20%!important;
-  }
-  .v-messages__message{
-    color: #cf6123;
-    font-weight: 500;
-    text-align: start;
-    font-size: 13px!important;
 
-  }
-  .v-stepper.v-sheet{
-    width:100%
-  }
-  .v-stepper-window{
-    margin-right: 8px !important;
-    margin-left: 8px !important;
-  }
-  .v-stepper-window-item{
-    padding: 5px;
-  }
-  .dataTables_scrollBody{
-    overflow: hidden!important;
-  }
-  .max-width-700{
-    width: 100%!important;
-  }
-  @media screen and (max-width: 780px){
-    .dataTables_scrollHeadInner{
-      width: 650px!important;
-    }
-    .max-width-700{
-      width:600px!important;
-      margin-top: 30px!important;
-    }
-    table.dataTable > thead > tr > th.title-th, table.dataTable > tbody > tr > td.title-th{
-      width: 36%!important;
-    }
-    table.dataTable > thead > tr > th:nth-child(n+2), table.dataTable > tbody > tr > td:nth-child(n+2){
-        width: 27%!important;
-    }
-    table.dataTable > thead > tr > th.laste_item, table.dataTable > tbody > tr > td.laste_item{
-      width: 10%!important;
-    }
-
-    .dataTables_scrollBody{
-      overflow: auto!important;
-    }
-  }
-</style>
 <script>
   export default {
     data: () => ({
@@ -924,9 +584,9 @@
         ],
         columns: [
           { 
-            title: '<div class="d-none d-md-block">Nombre del producto</div><div class="d-md-none d-block">Producto</div>', class:'text-start title-th',
+            title: '<div class="d-none d-md-block ms-md-2">Nombre del producto</div><div class="d-md-none d-block">Producto</div>', class:'text-start title-th',
             render: ( data, type, row, meta ) =>{ 
-                return `<div data-lote="${row.id_lote}"  class="view text-decoration-underline" >${row.product.title} (${row.lote_code})</div>`
+                return `<div  data-lote="${row.id_lote}"  class="view text-decoration-underline ms-md-2" >${row.product.title} (${row.lote_code})</div>`
               }   
           },
           // { 
@@ -1231,6 +891,7 @@
       },
       hideModal(){
         this.modal.hide()
+        this.deleteProductToo = false;
         this.destroyFormVal();
         this.resetNewProductForm()
         this.resetStockForm();
@@ -1386,71 +1047,6 @@
           
         }
       },
-      resetNewProductForm(){     
-        this.newProduct = {
-          img:'images/product/default.png',
-          title:'',
-          short_description:'',
-          stock:'',
-          unit:'KG',
-          isDismantling: 0 ,
-          dismantling:[],
-          init_due_date:'',
-          init_lote:''
-        }
-        
-        this.$refs.newProductImg.value =''
-        this.stepperNewProduct = 1
-        try {
-          this.inputDate['dueDateNewProduct'].clear();
-        } catch (error) {
-          // console.log(error)
-        }
-      },
-      nextStep(){
-        this.stepperNewProduct = 2;
-        setTimeout(() => {
-          this.validateFormItem('new_product_form_2')
-
-          this.initDueDate('dueDateNewProduct')
-        }, 500);
-      },
-      backStep(){
-        this.stepperNewProduct = 1;
-        setTimeout(() => {
-          this.forms['new_product_form_2'].destroy()
-        }, 300)
-      },
-      createdProduct(){
-        this.sendingButton('new_product_form_2_button')
-        let formData = new FormData();
-        formData.append('title', this.newProduct.title);
-        formData.append('description', this.newProduct.description);
-        formData.append('short_description', this.newProduct.short_description);
-        formData.append('initial_stock', this.newProduct.stock);
-        formData.append('type_unit', this.newProduct.unit);
-        formData.append('img', this.$refs.newProductImg.files[0]);
-        formData.append('is_dismantling', this.newProduct.isDismantling ? 1 : 0);
-        formData.append('due_date', this.$refs.due_date_dueDateNewProduct.value);
-        formData.append('initial_lote', this.newProduct.init_lote);
-        if (this.newProduct.isDismantling) {
-          formData.append('dismantling', JSON.stringify(this.newProduct.dismantling) );
-        }
-
-        this.$store
-          .dispatch(STORE_PRODUCT, formData)
-          .then((response) => {
-            this.filterColumn()
-            this.showSnackbar('success', 'Producto creado con exito')
-            this.readyButton('new_product_form_2_button')
-            this.hideModal()
-          })
-          .catch((err) => {
-            this.showSnackbar('error', err )
-            this.readyButton('new_product_form_2_button')
-          })
-        
-      },
       updatedProduct(){
         this.sendingButton('edit_product_form_button')
         let formData = new FormData();
@@ -1511,6 +1107,7 @@
             this.filterColumn()
             this.hideModal()
             this.showSnackbar('error', 'Producto Eliminado con exito')
+            this.deleteProductToo = false;
             this.emitter.emit('updateList', false)
           })
           .catch((err) => {
@@ -1746,15 +1343,6 @@
         } catch (error) {
           
         }
-        try{
-          this.forms['new_product_form_2'].destroy()
-
-        }catch(error){
-
-        }
-        
-        this.forms['new_product_form'].resetForm()
-          
       },
       sendingButton(id){
         document.getElementById(id).disabled = true
@@ -1768,7 +1356,6 @@
         document.getElementById(id).setAttribute('class','v-btn v-btn--disabled v-theme--light bg-primary v-btn--density-default v-btn--size-default v-btn--variant-elevated w-100')
       },
       disabledButton(element, action){
-
         element.disabled = true;
         element.classList.add('v-btn--disabled')
 
@@ -1931,10 +1518,71 @@
       this.initOptionsTable()
       this.table = new DataTablesCore('#data-table', this.tableData)
       setTimeout(()=> this.bootstrapOptions(),2000)
-      this.validateFormItem('new_product_form')
     },
     created(){
       this.emitter.emit('displayOverlayLoad', false)
     }
   };
 </script>
+<style lang="scss">
+  .dismantling_select .v-list-item {
+      color:#cf6123   
+  }
+ .dismantling_select .v-list-item:nth-last-child(n+3) {
+      color:#616161
+  }
+  .productStepper > .v-stepper.v-sheet {
+    box-shadow: none!important;
+  }
+  table.dataTable > thead > tr > th.title-th{
+    width: 40%!important;
+  }
+  table.dataTable > thead > tr > th:nth-child(n+2){
+    width: 20%!important;
+  }
+  .v-messages__message{
+    color: #cf6123;
+    font-weight: 500;
+    text-align: start;
+    font-size: 13px!important;
+
+  }
+  .v-stepper.v-sheet{
+    width:100%
+  }
+  .v-stepper-window{
+    margin-right: 8px !important;
+    margin-left: 8px !important;
+  }
+  .v-stepper-window-item{
+    padding: 5px;
+  }
+  .dataTables_scrollBody{
+    overflow: hidden!important;
+  }
+  .max-width-700{
+    width: 100%!important;
+  }
+  @media screen and (max-width: 780px){
+    .dataTables_scrollHeadInner{
+      width: 650px!important;
+    }
+    .max-width-700{
+      width:600px!important;
+      margin-top: 30px!important;
+    }
+    table.dataTable > thead > tr > th.title-th, table.dataTable > tbody > tr > td.title-th{
+      width: 36%!important;
+    }
+    table.dataTable > thead > tr > th:nth-child(n+2), table.dataTable > tbody > tr > td:nth-child(n+2){
+        width: 27%!important;
+    }
+    table.dataTable > thead > tr > th.laste_item, table.dataTable > tbody > tr > td.laste_item{
+      width: 10%!important;
+    }
+
+    .dataTables_scrollBody{
+      overflow: auto!important;
+    }
+  }
+</style>

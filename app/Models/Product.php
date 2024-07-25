@@ -30,8 +30,12 @@ class Product extends Model
     {
         $stockInLotes= 0;
         foreach ($this->lotes as $lote) {
+
             try {
-                $stockInLotes = $stockInLotes +  floatval($lote->quantity);
+                if(strtotime($lote->due_date) > strtotime(date('Y-m-d')) ){
+                    
+                    $stockInLotes = $stockInLotes +  floatval($lote->quantity);
+                }
             } catch ( Exception $r) {
                 $stockInLotes = $r->getMessage();
             }
@@ -92,6 +96,9 @@ class Product extends Model
         return $this->hasMany(Lot::class, 'product_id', 'id')->orderBy('due_date', 'ASC');
     }
     public function lotesRecipe(){
-        return $this->hasMany(Lot::class, 'product_id', 'id')->where('quantity', '>', 0)->orderBy('due_date', 'ASC');
+        return $this->hasMany(Lot::class, 'product_id', 'id')
+            ->where('quantity', '>', 0)
+                ->whereDate('due_date', '>' , date('Y-m-d'))
+                    ->orderBy('due_date', 'ASC');
     }
 }
