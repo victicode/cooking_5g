@@ -128,7 +128,7 @@ class ProductController extends Controller
     }
 
     public function getProductBySearch(Request $request){
-        $products = Product::query()->with(['dismantling.products_pieces','lotes']);
+        $products = Product::query()->with(['dismantling.products_pieces','lotes', 'lotesRecipe']);
 
         if(!empty($request->title)){
             $products->where('title', 'like', '%'.$request->title.'%');

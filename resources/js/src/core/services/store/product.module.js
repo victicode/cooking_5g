@@ -175,7 +175,7 @@ const actions = {
           ApiService.setHeader();
           ApiService.post("api/lotes/delete/"+data.id, data)
           .then(( { data } ) => {
-              console.log(data)
+              // console.log(data)
               resolve(data);
               
           })

@@ -253,13 +253,13 @@
                                     <v-tooltip text="Notificar al admin" >
                                       <template v-slot:activator="{ props }">
                                         <v-btn 
-                                        v-if="getCurrentAccount.rol_id == 3" 
-                                        v-bind="props" 
-                                        color="error"
-                                         icon="gg:danger" 
-                                         @click.once="notifyOutStockProduct(ingredient.id)"
-                                         variant="tonal"
-                                         density="compact"
+                                          v-if="getCurrentAccount.rol_id == 3" 
+                                          v-bind="props" 
+                                          color="error"
+                                          icon="gg:danger" 
+                                          @click.once="notifyOutStockProduct(ingredient.id)"
+                                          variant="tonal"
+                                          density="compact"
                                         />
                                       </template>
                                     </v-tooltip>
@@ -634,7 +634,6 @@
                                               :items="productsForRecipe[index] ?  productsForRecipe[index] : item.id !== null ? [ {id: item.id, title: item.title, stock: item.quantity}] : []"
                                               :label="`Ingrediente ${(index+1)}`"
                                               :name="`update_recipe_cooking_product_${(index+1)}`"
-                                              item-title="title"
                                               item-value="id"
                                               placeholder="EJ: Lomo de cerdo, Pollo entero"
                                               variant="outlined"
@@ -645,9 +644,26 @@
                                               data-actionTipe="update"
                                               @click="searchProductsForRecipe($event,index )"
                                               @keyup="searchProductsForRecipe($event,index )"
-                                              @click:clear="clearProductSearch(index)"
+                                              @click:clear="clearProductSearch(index, 'update')"
                                               @update:modelValue="selectedProduct($event, index, 'update')"
-                                            ></v-autocomplete>
+                                            >
+                                              <template v-slot:item="{ props, item }">
+                                                <v-list-item
+                                                  v-bind="props"
+                                                  title=""
+                                                  class="d-flex flex"
+                                                > 
+                                                  <div class="d-flex my-1">
+                                                    <span>
+                                                      {{item.title}}
+                                                    </span>
+                                                    <span class="text-error ms-1">
+                                                    {{  validateIsgoodProduct(item, '', '(Sin stock)*') }}
+                                                    </span>
+                                                  </div>
+                                                </v-list-item>
+                                              </template>
+                                            </v-autocomplete>
                                           </VCol>
                                           <VCol cols="6" class="form-group">
                                             <VTextField
@@ -1096,7 +1112,6 @@
                                             :items="productsForRecipe[index] ?  productsForRecipe[index] : item.id !== null ? [ {id: item.id, title: item.title, stock: item.quantity}] : []"
                                             :label="`Ingrediente ${(index+1)}`"
                                             :name="`new_recipe_cooking_product_${(index+1)}`"
-                                            item-title="title"
                                             item-value="id"
                                             placeholder="EJ: Lomo de cerdo, Pollo entero"
                                             variant="outlined"
@@ -1104,11 +1119,28 @@
                                             clearable
                                             no-filter
                                             no-data-text="No se encontraron resultados"
-                                            @click="searchProductsForRecipe($event,index )"
-                                            @keyup="searchProductsForRecipe($event,index )"
-                                            @click:clear="clearProductSearch(index)"
+                                            @click="searchProductsForRecipe($event,index)"
+                                            @keyup="searchProductsForRecipe($event,index)"
+                                            @click:clear="clearProductSearch(index, 'create')"
                                             @update:modelValue="selectedProduct($event, index)"
-                                          ></v-autocomplete>
+                                          >
+                                            <template v-slot:item="{ props, item }">
+                                              <v-list-item
+                                                v-bind="props"
+                                                title=""
+                                                class="d-flex flex"
+                                              > 
+                                                <div class="d-flex my-1">
+                                                  <span>
+                                                    {{item.title}}
+                                                  </span>
+                                                  <span class="text-error ms-1">
+                                                  {{  validateIsgoodProduct(item, '', '(Sin stock)*') === '' ? '' : '(Agotado)' }}
+                                                  </span>
+                                                </div>
+                                              </v-list-item>
+                                            </template>
+                                          </v-autocomplete>
                                         </VCol>
                                         <VCol cols="6" class="form-group d-flex">
                                           <VTextField
@@ -1276,6 +1308,7 @@
     <printTags @hide="hideModal()" v-if="getCurrentAccount.rol_id && getCurrentAccount.rol_id !== 3" />
   </VRow>
 </template>
+
 <script>
 
   export default {
@@ -1415,6 +1448,7 @@
           .dispatch(GET_PRODUCT_BY_SEARCH, search)
           .then((response) => {
             this.productsForRecipe[index] = response.data
+            console.log(response.data)
           })
           .catch((err) => {
             return new Promise((resolve) => {
@@ -1426,7 +1460,11 @@
       searchProductsForRecipe(e, index){ 
         debounce(this.getProducts, 200)(e.target.value, index)
       },
-      clearProductSearch(index){
+      clearProductSearch(index, type){
+
+        if(type=='create') this.newRecipe.cooking_ingredients[index] = {id: null, name: '', quantity: ''}
+        else this.selectedRecipe.cooking_ingredients[index].id = null
+      
         this.getProducts('',index)
       },
       selectedProduct(e,index, type="new"){
@@ -1703,7 +1741,7 @@
         this.$store.dispatch(GET_RECIPES, data ).then((data)=>{
           this.recipes = data.data.data
           this.pagination.totalPage = data.data.last_page
-          console.log(this.recipes)
+          // console.log(this.recipes)
 
         })
       },
@@ -2099,7 +2137,7 @@
         .then((data)=> {
           this.showSnackbar('success','Notificación enviada con exito')
         })
-      }
+      },
     },
     mounted(){
       this.getRecipes()
