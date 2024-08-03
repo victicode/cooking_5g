@@ -238,10 +238,10 @@
                                 <div class="d-flex align-center">
 
                                   <a  class="word-break w-80"
-                                    :class="validateIsgoodProduct(ingredient, 'blank-modal', '' ) " 
+                                    :class="validateIsgoodProduct(ingredient, 'blank-modal', 'recipe-notproduct text-decoration-line-through' ) " 
                                     @click="selectProductView(index)" 
                                   > 
-                                    - {{ `${ingredient.pivot.quantity} ${ingredient.type_of_unit} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }}
+                                    - {{ `${ingredient.pivot.quantity} ${ingredient.type_of_unit} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }} 
                                     
                                   </a>
                                   <div class="w-50 d-flex align-center" v-if="validateIsgoodProduct(ingredient, '', '(Sin stock)*') !== ''">
@@ -379,7 +379,7 @@
                                           <div class="font-weight-bold my-2" v-for="(ingredient, index) in selectedRecipe.cooking_ingredients" :key="index">
                                             <div>
                                               <a 
-                                                :class="validateIsgoodProduct(ingredient, 'blank-modal', 'recipe-notproduct' ) " 
+                                                :class="validateIsgoodProduct(ingredient, 'blank-modal', 'recipe-notproduct text-decoration-line-through' ) " 
                                                 @click="selectProductView(index)" 
                                               > 
                                                 - {{ `${ingredient.pivot.quantity} ${ingredient.type_of_unit} ${ingredient.pivot.quantity.length > 1 ?'de':''}`}} {{ ingredient.title }}
@@ -642,6 +642,7 @@
                                               no-filter
                                               no-data-text="No se encontraron resultados"
                                               data-actionTipe="update"
+                                              return-object
                                               @click="searchProductsForRecipe($event,index )"
                                               @keyup="searchProductsForRecipe($event,index )"
                                               @click:clear="clearProductSearch(index, 'update')"
@@ -658,7 +659,7 @@
                                                       {{item.title}}
                                                     </span>
                                                     <span class="text-error ms-1">
-                                                    {{  validateIsgoodProduct(item, '', '(Sin stock)*') }}
+                                                    {{  validateIsgoodProduct(item.raw, '', '(Sin stock)*') === '' ? '' : '(Agotado)' }}
                                                     </span>
                                                   </div>
                                                 </v-list-item>
@@ -1118,6 +1119,7 @@
                                             persistent-hint
                                             clearable
                                             no-filter
+                                            return-object
                                             no-data-text="No se encontraron resultados"
                                             @click="searchProductsForRecipe($event,index)"
                                             @keyup="searchProductsForRecipe($event,index)"
@@ -1135,7 +1137,7 @@
                                                     {{item.title}}
                                                   </span>
                                                   <span class="text-error ms-1">
-                                                  {{  validateIsgoodProduct(item, '', '(Sin stock)*') === '' ? '' : '(Agotado)' }}
+                                                  {{  validateIsgoodProduct(item.raw, '', '(Sin stock)*') === '' ? '' : '(Agotado)' }}
                                                   </span>
                                                 </div>
                                               </v-list-item>
@@ -1469,11 +1471,17 @@
       },
       selectedProduct(e,index, type="new"){
         if(!e) return
+
+        if(this.validateIsgoodProduct(e, '', '(Sin stock)*') !== '') {
+          alert('Este producto se encuentra agotado')
+          return
+        }
+
         try {
          
          type=='new'
-          ? this.newRecipe.cooking_ingredients[index].id = e
-          : this.selectedRecipe.cooking_ingredients[index].id = e
+          ? this.newRecipe.cooking_ingredients[index].id = e.id
+          : this.selectedRecipe.cooking_ingredients[index].id = e.id
           
         } catch (error) {
           
@@ -1850,8 +1858,6 @@
         : this.selectedRecipe.image_url = URL.createObjectURL(file)
       },
       getPreparation(preparation, type){
-
-
         if(type=="new"){
           this.newRecipe.preparation = preparation.steps; 
           this.newRecipe.video = preparation.video; 
