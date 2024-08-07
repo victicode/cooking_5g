@@ -528,7 +528,7 @@
                               >
                                 <template class="d-block" >
                                   <VForm  id="update_recipe_form">
-                                    <VRow>s
+                                    <VRow>
                                       <VCol cols="12"  class=" ">
                                         <div class="img-content mx-auto">
                                           <label for="update-img">
@@ -1889,7 +1889,7 @@
 
         this.$store
         .dispatch(STORE_RECIPE, recipeFormData)
-        .then((data) =>{
+        .then((data) => {
           setTimeout(() => {
             this.getRecipes()
             this.clearNewRecipeForm()
