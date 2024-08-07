@@ -42,11 +42,11 @@ const actions = {
       }
     });
   },
-  [SEE_ALL_MESSAGE](context, userId){
+  [SEE_ALL_MESSAGE](context){
     return new Promise((resolve, reject) => {
       if (JwtService.getToken()) {
         ApiService.setHeader();
-        ApiService.get("api/message/see-all/"+userId)
+        ApiService.get("api/message/see-all")
         .then(( { data } ) => {
             // console.log(data)
             resolve(data);

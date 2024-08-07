@@ -68,7 +68,7 @@
                         <div class="my-2  text-start text-md-end">
                           Fecha de pedio: <a class="text-secondary fw-600">{{ moment(order.created_at).format('DD/MM/YYYY HH:mm:ss') }}</a>
                         </div>
-                        <div class="my-2  text-start text-md-end" @click="showModal('createOutOrderx')">
+                        <div class="my-2  text-start text-md-end" >
                           Tracker ID: <a class="text-secondary fw-600">{{ order.trancker }}</a>
                         </div>
                       </div>
@@ -159,7 +159,7 @@
                               <VRow  v-for="(item,index) in selectedLotes[loteModalName()]"  v-bind:key="item.id" class=" position-relative relative pa-0 ma-0 align-center w-100 mt-5 mt-md-4"  :id="'new_order_product_'+index">
                                 <VCol cols="12"  md="6" class="form-group pb-md-0  mb-md-1">
                                   <v-combobox  
-                                    :items="selectedProduct.lotes"
+                                    :items="selectedProduct.lotes_recipe"
                                     item-title="lote_code"
                                     item-value="id"
                                     placeholder="Número de lote"
@@ -286,6 +286,7 @@ export default {
     alertMessage:'',
     selectedProduct:'',
     selectedLotes:[],
+    products: [],
     snackShow:false,
     snackMessage:'',
     snackType:'',
@@ -350,6 +351,7 @@ export default {
       this.loading = state
     },
     selectProduct(id, index){
+      console.log(this.order.recipes[index])
       this.selectedProduct = this.order.recipes[index].cooking_ingredients.find(product => product.id == id)
       this.selectedProduct.position = index
       setTimeout(() => {
@@ -469,6 +471,9 @@ export default {
       }
       this.selectedLotes[this.loteModalName()]['idProduct'] = this.selectedProduct.id
       this.selectedLotes[this.loteModalName()]['recipePosition'] = this.selectedProduct.position
+
+      this.products.push(newLote)
+
       setTimeout(() => {
         this.addLoteSelectInputValidate()
       }, 200);
@@ -524,7 +529,11 @@ export default {
       return total;
     },
     totalQuantityOfProductInRecipe(){
-      return (parseFloat(this.selectedProduct.pivot.quantity) * parseFloat(this.order.recipes[this.selectedProduct.position].pivot.quantity)).toFixed(2)
+
+      return Number.isInteger((parseFloat(this.selectedProduct.pivot.quantity) * parseFloat(this.order.recipes[this.selectedProduct.position].pivot.quantity)))  
+        ? (parseFloat(this.selectedProduct.pivot.quantity) * parseFloat(this.order.recipes[this.selectedProduct.position].pivot.quantity)).toFixed(0) 
+        : (parseFloat(this.selectedProduct.pivot.quantity) * parseFloat(this.order.recipes[this.selectedProduct.position].pivot.quantity)).toFixed(2) 
+      
     },
     addLoteInOrder(){
       this.loadingState(true)
@@ -551,10 +560,9 @@ export default {
         this.loadingState(false)
         return
       }
-      this.disabledButton('create_order_'+this.order.id)
       const formData = new FormData();
       formData.append('order', this.order.id);
-      formData.append('products', JSON.stringify(this.selectedLotes));
+      formData.append('products', JSON.stringify(this.products));
       formData.append('recipes', JSON.stringify(this.order.recipes));
       this.$store
         .dispatch(CREATE_OUT_ORDER, formData)
@@ -569,7 +577,6 @@ export default {
           this.loadingState(false)
         })
     },
-    
 
   }
 };

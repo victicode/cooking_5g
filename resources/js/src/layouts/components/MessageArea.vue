@@ -58,7 +58,7 @@
             class="d-flex flex-column  pt-0" 
             :class="item.read == 0 ?'bg-unread-notify' :''"  
             style="border-bottom: 1px solid #cf6123; "
-            @click="seeAllMessages(item.id)"
+            @click="seeAllMessages()"
           >
             <Component
               :is="'RouterLink'"
@@ -72,7 +72,8 @@
                   <div>
                     <a href="" >{{ item.sender ? item.sender.name : 'Un usuario'}} </a>
                     te ha notificado que: 
-                    <a>{{ item.products.title }}</a> <span v-html="item.message"> </span>
+                    
+                    <a>{{  item.products.title }} <b class="text-error"> {{ item.products.deleted_at ? '(Producto Eliminado)' : ''  }} </b> </a> <span v-html="item.message"> </span>
                   </div>
                 </div>
             </Component>
@@ -151,9 +152,9 @@
           })
         }, 1200);
       },
-      seeAllMessages(type){
+      seeAllMessages(){
         this.$store
-        .dispatch(SEE_ALL_MESSAGE, 1)
+        .dispatch(SEE_ALL_MESSAGE)
         .then((data)=> {
           setTimeout(() => {
             this.getMessages()

@@ -61,13 +61,11 @@ const actions = {
     });
   },
   [CREATE_ORDER](context, body){
-    console.log(body)
     return new Promise((resolve, reject) => {
       if (JwtService.getToken()) {
         ApiService.setHeader();
         ApiService.post("api/order", body)
         .then(( { data } ) => {
-          console.log(data)
           resolve(data);
             
         })
@@ -79,13 +77,11 @@ const actions = {
     });
   },
   [CREATE_OUT_ORDER](context, body){
-    console.log(body)
     return new Promise((resolve, reject) => {
       if (JwtService.getToken()) {
         ApiService.setHeader();
         ApiService.post("api/out_order", body)
         .then(( { data } ) => {
-          console.log(data)
           resolve(data);
             
         })

@@ -124,7 +124,7 @@ Route::middleware('jwt.verify')->prefix('message')->name('message.')->group(func
     Route::get('/',function(){
         return getAllMessage();
     });
-    Route::get('/see-all/',function(){
+    Route::get('/see-all',function(){
         return seeAllMessage();
     });
 });

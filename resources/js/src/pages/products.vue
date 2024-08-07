@@ -662,7 +662,8 @@
                   </span>
                   <span data-bs-toggle="tooltip" data-lote="${row.id_lote}" class="delete" data-bs-placement="top" data-bs-title="Eliminar producto">
                     <svg data-lote="${row.id_lote}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--bx" aria-describedby="v-tooltip-22" " viewBox="0 0 24 24">
-                      <g data-lote="${row.id_lote}" fill="none" stroke="#808080" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M5.47 6.015v12.514a2.72 2.72 0 0 0 2.721 2.721h7.618a2.72 2.72 0 0 0 2.72-2.72V6.014m-15.235.001h17.412"/>
+                      <g data-lote="${row.id_lote}" fill="none" stroke="#808080" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">
+                        <path data-lote="${row.id_lote}" d="M5.47 6.015v12.514a2.72 2.72 0 0 0 2.721 2.721h7.618a2.72 2.72 0 0 0 2.72-2.72V6.014m-15.235.001h17.412"/>
                         <path data-lote="${row.id_lote}" d="M8.735 6.015V4.382a1.632 1.632 0 0 1 1.633-1.632h3.264a1.632 1.632 0 0 1 1.633 1.632v1.633M9.824 16.992v-5.439m4.353 5.439v-5.439"/>
                       </g>
                     </svg>
@@ -698,7 +699,8 @@
                       </span>
                       <span data-bs-toggle="tooltip" data-lote="${row.id_lote}" class="delete" data-bs-placement="top" data-bs-title="Eliminar producto">
                         <svg data-lote="${row.id_lote}" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" role="img" tag="i" class="v-icon notranslate v-theme--light v-icon--size-default iconify iconify--bx" aria-describedby="v-tooltip-22" " viewBox="0 0 24 24">
-                          <g data-lote="${row.id_lote}" fill="none" stroke="#808080" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M5.47 6.015v12.514a2.72 2.72 0 0 0 2.721 2.721h7.618a2.72 2.72 0 0 0 2.72-2.72V6.014m-15.235.001h17.412"/>
+                          <g data-lote="${row.id_lote}" fill="none" stroke="#808080" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">
+                            <path data-lote="${row.id_lote}" d="M5.47 6.015v12.514a2.72 2.72 0 0 0 2.721 2.721h7.618a2.72 2.72 0 0 0 2.72-2.72V6.014m-15.235.001h17.412"/>
                             <path data-lote="${row.id_lote}" d="M8.735 6.015V4.382a1.632 1.632 0 0 1 1.633-1.632h3.264a1.632 1.632 0 0 1 1.633 1.632v1.633M9.824 16.992v-5.439m4.353 5.439v-5.439"/>
                           </g>
                         </svg>

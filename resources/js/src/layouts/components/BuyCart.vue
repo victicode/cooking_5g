@@ -435,8 +435,10 @@
               
               this.readyButton('create_order_of_cart_button')
               this.showSnackbar('success', 'Orden creada con exito')
+              
               this.destroyCart()
               setTimeout(() => {
+                this.emitter.emit('updateRecipesInCart')
                 this.emitter.emit('updateRecipes')
               }, 500);
             }

@@ -64,7 +64,7 @@ class OrderController extends Controller
         
         try {
             //code...
-            $order = Order::withCount('products')->with(['user', 'products', 'client', 'outOrder', 'recipes.cooking_ingredients'])->find($id);
+            $order = Order::withCount('products')->with(['user', 'products', 'client', 'outOrder', 'recipes.cooking_ingredients.lotesRecipe'])->find($id);
             // $order->getStatusLabelAttribute();
         } catch (Exception $th) {
             return $this->returnFail(400, $th->getMessage());
@@ -126,7 +126,7 @@ class OrderController extends Controller
             $this->addProductforOrder($out_order->id,json_decode( $request->recipes, true), 'out_order');
             $this->decreaseStockInProduct(json_decode($request->products,true));
         }catch(Exception $e){
-            return $this->returnFail(400, $e->getMessage());
+            return $this->returnFail(400, json_decode($request->products,true));
         }
 
 
@@ -232,11 +232,9 @@ class OrderController extends Controller
     }
     private function decreaseStockInProduct($products){
         foreach ($products as $product) {
-            foreach ($product as $lotes) {
-                $lote = Lot::find($lotes['selected_lote']['id_lote']);
-                $lote->quantity = intval($lote->quantity) - intval($lotes['quantity']);
-                $lote->save();
-            }
+            $lote = Lot::find($product['selected_lote']['id_lote']);
+            $lote->quantity = intval($lote->quantity) - intval($product['quantity']);
+            $lote->save();
         }
     }
     private function notifyOutStock($product){
