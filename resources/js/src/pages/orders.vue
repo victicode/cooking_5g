@@ -421,7 +421,7 @@
       activeOptionsTable() {
         document.querySelectorAll('.copyText').forEach(item => {
           item.addEventListener('click', event => {
-            this.copyOderNumber(event.target)
+            this.copyOrderNumber(event.target)
           })	
         })
         document.querySelectorAll('.view').forEach(item => {
@@ -606,7 +606,7 @@
         
         document.getElementById(id).setAttribute('class','v-btn v-btn--disabled v-theme--light bg-primary v-btn--density-default v-btn--size-default v-btn--variant-elevated w-100')
       },
-      copyOderNumber(element){
+      copyOrderNumber(element){
         const texto = element.innerHTML.trim().substring(1);
         const textArea = document.createElement('textarea');
         textArea.value = texto;
