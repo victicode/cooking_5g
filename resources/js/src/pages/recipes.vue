@@ -2006,9 +2006,11 @@
 
       },
       validateIsgoodProduct(ingredient, messageGood, messageBad){
-        if(!ingredient.lotes_recipe) return messageBad  ;
+        console.log(ingredient)
+        if(!ingredient.lotes_recipe) return messageBad;
+        if(ingredient.deleted_at) return messageBad == '(Sin stock)*' ? 'Eliminado' : 'recipe-notproduct text-decoration-line-through'
+        if(ingredient.total_stock < 1) return messageBad       
         if(ingredient.lotes_recipe.length == 0) return messageBad == '(Sin stock)*' ? 'Eliminado' : 'recipe-notproduct text-decoration-line-through'
-        if(ingredient.total_stock < 1) return messageBad
         if(ingredient.lotes_recipe[0].quantity <= 0 || Math.round(moment.duration(moment(ingredient.lotes_recipe[0].due_date).diff(new moment())).as('days') ) < 0 ){
           return messageBad 
         }
