@@ -46,14 +46,6 @@
     <body class="antialiased" >
         <div id="app">
           <div class="row m-0 px-0">
-            @if($spaces > 0 )
-              @for ($i = 1; $i <= $spaces; $i++)
-              <div class="col-sm-6 px-0 height-tag" data-id="1">
-                <div class="card py-1 px-0">
-                </div>
-              </div>
-              @endfor
-            @endif
             @foreach($recipes as $key)
               @for ($i = 1; $i < $key->quantity+1; $i++)
                 <div class="col-sm-6 px-0 height-tag"   data-id="2">

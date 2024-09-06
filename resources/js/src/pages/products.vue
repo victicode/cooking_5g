@@ -26,7 +26,6 @@
   import 'flatpickr/dist/flatpickr.min.css'
   import { Spanish } from "flatpickr/dist/l10n/es.js"
   import { GET_LOTE_OF_PRODUCT, GET_PRODUCT_BY_SEARCH, STORE_PRODUCT, UPDATE_PRODUCT, ADD_STOCK, DELETE_LOTE_OF_PRODUCT, GET_LAST_LOTE, } from "@/core/services/store/product.module";
-  import viewNewDismantlingModal from '@/views/pages/modals/viewNewDismantlingModal.vue';
 
 </script>
 <template>
@@ -485,11 +484,11 @@
           </div>
         </div>
       </div>
-      <viewUpdateLoteModal @hiddenModal="updateAndHidden" :lote="selectedProduct" />
+      <viewUpdateLoteModal @hiddenModal="updateAndHidden" :lote="selectedProduct" @updateProducts="filterColumn()" />
     </div>
-    <viewCreateProduct />
+    <viewCreateProduct @hiddenModal="updateAndHidden" />
     <viewCreateNewLoteModal @hiddenModal="updateAndHidden"/>
-    <viewNewDismantlingModal @hiddenModal="hideNewDismantlingForm"  v-if="newDismantling"  />
+
     <v-snackbar
       v-model="snackShow"
       :color="snackType"
@@ -895,7 +894,7 @@
         this.modal.hide()
         this.deleteProductToo = false;
         this.destroyFormVal();
-        this.resetNewProductForm()
+        // this.resetNewProductForm()
         this.resetStockForm();
       },
       showInterModal(modal){

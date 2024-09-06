@@ -256,7 +256,7 @@ export default {
       this.$store.dispatch(GET_USER)
         .then((data) => {
           if(data.code !== 200){
-            console.log('alert!!!')
+            // console.log('alert!!!')
           }
           this.user = data.user;
           if(data.user.rol_id == 3) {

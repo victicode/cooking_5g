@@ -1450,7 +1450,7 @@
           .dispatch(GET_PRODUCT_BY_SEARCH, search)
           .then((response) => {
             this.productsForRecipe[index] = response.data
-            console.log(response.data)
+            // console.log(response.data)
           })
           .catch((err) => {
             return new Promise((resolve) => {
@@ -2006,7 +2006,7 @@
 
       },
       validateIsgoodProduct(ingredient, messageGood, messageBad){
-        console.log(ingredient)
+        // console.log(ingredient)
         if(!ingredient.lotes_recipe) return messageBad;
         if(ingredient.deleted_at) return messageBad == '(Sin stock)*' ? 'Eliminado' : 'recipe-notproduct text-decoration-line-through'
         if(ingredient.total_stock < 1) return messageBad       
