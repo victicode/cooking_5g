@@ -1,7 +1,7 @@
 <script setup >
   import * as bootstrap from 'bootstrap'
   import { mapGetters } from "vuex";  
-  import { GET_RECIPES, GET_RECIPE_BY_ID, STORE_RECIPE, DELETE_RECIPE, UPDATE_RECIPE} from "@/core/services/store/recipe.module";
+  import { GET_RECIPES, GET_RECIPE_BY_ID, STORE_RECIPE, DELETE_RECIPE, UPDATE_RECIPE, GET_ALLERGEN} from "@/core/services/store/recipe.module";
   import { CREATE_MESSAGE } from "@/core/services/store/message.module";
   import recipeVideo from '@/views/pages/player/recipePlayer.vue';
   import formValidation from "@/assets/plugins/formvalidation/dist/es6/core/Core";
@@ -20,6 +20,7 @@
   import flatpickr from "flatpickr";
   import 'flatpickr/dist/flatpickr.min.css'
   import { Spanish } from "flatpickr/dist/l10n/es.js"
+
 </script>
 
 <template>
@@ -320,6 +321,17 @@
                                 - {{ `${ingredient.quantity} ${ingredient.quantity.length > 1 ?'de':''}`}} {{ ingredient.name }}
                               </div>
                             </VCardText>
+                            <VCardText class="text-subtitle-1 py-4 px-1 mt-4">
+                              <div class="font-weight-medium"><h3>Alérgenos en la receta:</h3> </div> 
+                              <div v-if="selectedRecipe.allergens.length > 0">
+                                <div class="font-weight-medium my-2" v-for="(allergen, index) in selectedRecipe.allergens" :key="index">
+                                  • {{ allergen.name }}
+                                </div>
+                              </div>
+                              <div v-else class="font-weight-bold my-2 text-subtitle-1" >
+                                Esta receta no contiene alérgenos.
+                              </div>
+                            </VCardText>
                           </div>
                         </VCol>
                       </VRow>
@@ -396,6 +408,17 @@
                                           <div class="font-weight-medium"> <h3>Otros ingredientes:</h3> </div> 
                                           <div class="font-weight-medium my-3" v-for="(ingredient, index) in selectedRecipe.ingredients" :key="index">
                                             - {{ `${ingredient.quantity} ${ingredient.quantity.length > 1 ?'de':''}`}} {{ ingredient.name }}
+                                          </div>
+                                        </VCardText>
+                                        <VCardText class="text-subtitle-1 py-4 px-1 mt-4">
+                                          <div class="font-weight-medium"><h3>Alérgenos en la receta:</h3> </div> 
+                                          <div v-if="selectedRecipe.allergens.length > 0">
+                                            <div class="font-weight-medium my-2" v-for="(allergen, index) in selectedRecipe.allergens" :key="index">
+                                              • {{ allergen.name }}
+                                            </div>
+                                          </div>
+                                          <div v-else class="font-weight-bold my-2 text-subtitle-1" >
+                                            Esta receta no contiene alérgenos.
                                           </div>
                                         </VCardText>
                                       </div>
@@ -700,7 +723,8 @@
                                       </VCol>
                                     </VRow>
                                     <VRow 
-                                    class="ma-0 pa-0  mt-4 align-center" 
+                                      class="ma-0 pa-0  mt-4 align-center" 
+                                      style="border-bottom: 1px solid rgba(90, 90, 90, 0.288);"
                                     >
                                       <VCol cols="12" class="form-group mb-4">
                                         <h3>Ingrendientes</h3>
@@ -747,6 +771,21 @@
                                             </template>
                                           </v-tooltip>
                                       </VCol>
+                                    </VRow>
+                                    <VRow>
+                                      <VCol cols="12" class="form-group mb-4 mt-2">
+                                        <h3>Alérgenos en la receta</h3>
+                                      </VCol>
+                                      <VRow class="mx-0 px-4">
+                                        <VCol cols="6" md="4" class=" py-1 mb-0" v-for="(allergen, index) in allergens" :key="index">
+                                          <v-checkbox
+                                            class="allergen"
+                                            v-model="selectedAllergens"
+                                            :label="allergen.name"
+                                            :value="allergen.id"
+                                          />
+                                        </VCol>
+                                      </VRow>
                                     </VRow>
                                     <VRow class="ma-0 pa-0  mt-8 align-center">
                                       <VCol cols="5" md="4"  class="mt-0 py-0 px-0">
@@ -981,26 +1020,25 @@
                                 class="pb-5"
                               >
                                 Datos
-                              </v-stepper-item>
-
-                              <v-stepper-item
-                                :complete="stepperNewProduct > 2"
-                                step="ingredientes"
-                                :value="2"
-                                icon="bi:basket"
-                                class="pb-5"
-                              >
-                                Ingredientes
-                              </v-stepper-item>
-                              <v-stepper-item
-                                :complete="stepperNewProduct > 3"
-                                step="perparación"
-                                :value="3"
-                                icon="material-symbols:cooking"
-                                class="pb-5"
-                              >
-                                Preparación
-                              </v-stepper-item>
+                            </v-stepper-item>
+                            <v-stepper-item
+                              :complete="stepperNewProduct > 2"
+                              step="ingredientes"
+                              :value="2"
+                              icon="bi:basket"
+                              class="pb-5"
+                            >
+                              Ingredientes
+                            </v-stepper-item>
+                            <v-stepper-item
+                              :complete="stepperNewProduct > 3"
+                              step="perparación"
+                              :value="3"
+                              icon="material-symbols:cooking"
+                              class="pb-5"
+                            >
+                              Preparación
+                            </v-stepper-item>
                           </v-stepper-header>
                           <v-stepper-window class="mx-2" >
                             <v-stepper-window-item
@@ -1178,7 +1216,8 @@
                                     </VCol>
                                   </VRow>
                                   <VRow 
-                                  class="ma-0 pa-0  mt-4 align-center" 
+                                  class="ma-0 pa-0  mt-4 align-center pb-4" 
+                                  style="border-bottom: 1px solid rgba(90, 90, 90, 0.288);"
                                   >
                                     <VCol cols="12" class="form-group mb-4">
                                       <h3>Ingrendientes</h3>
@@ -1226,6 +1265,21 @@
                                         </v-tooltip>
                                     </VCol>
                                   </VRow>
+                                  <VRow>
+                                    <VCol cols="12" class="form-group mb-4 mt-2">
+                                      <h3>Alérgenos en la receta</h3>
+                                    </VCol>
+                                    <VRow class="mx-0 px-4">
+                                      <VCol cols="6" md="4" class=" py-1 mb-0" v-for="(allergen, index) in allergens" :key="index">
+                                        <v-checkbox
+                                          class="allergen"
+                                          v-model="selectedAllergens"
+                                          :label="allergen.name"
+                                          :value="allergen.id"
+                                        />
+                                      </VCol>
+                                    </VRow>
+                                  </VRow>
                                   <VRow class="ma-0 pa-0  mt-8 align-center">
                                     <VCol cols="5" md="4"  class="mt-0 py-0 px-0">
                                       <v-col cols="auto" class="">
@@ -1234,8 +1288,6 @@
                                             <VIcon icon="ion:arrow-back-outline" color="white"></VIcon>  
                                           </span>
                                           <span class="d-md-block d-none ">Volver</span>
-
-                                          
                                         </VBtn>
                                       </v-col>
                                     </VCol>
@@ -1274,7 +1326,6 @@
       class="text-center"
     >
      <h4 class="text-white w-100 text-center">
-
        {{snackMessage}}
      </h4>
         <template
@@ -1375,6 +1426,8 @@
       selectedProductInRecipe:{},
       url:import.meta.env.VITE_VUE_APP_BACKEND_URL,
       printDates:{},
+      allergens: [],
+      selectedAllergens:[],
     }),
     methods:{
       isAdmin(){
@@ -1742,15 +1795,18 @@
         });
       },
       getRecipes(){
-        const data ={
+        const data = {
           page:this.pagination.currentPage,
           search:this.$refs.recipe_title_search.value
         }
-        this.$store.dispatch(GET_RECIPES, data ).then((data)=>{
+        this.$store.dispatch(GET_RECIPES, data )
+        .then((data)=>{
+          if(data.code !== 200) throw data
           this.recipes = data.data.data
           this.pagination.totalPage = data.data.last_page
-          // console.log(this.recipes)
 
+        }).catch(() => {
+          this.showSnackbar('danger','Error al obtener las recetas')
         })
       },
       searchRecipe(){
@@ -1810,8 +1866,10 @@
           backdrop:'static'
         })
         
-        if(modal=='updateRecipe')this.validateFormItem('update_recipe_form')
-
+        if(modal=='updateRecipe') {
+          this.validateFormItem('update_recipe_form')
+          this.allergensFormat()
+        }
         this.modal.show()
 
       },
@@ -1842,6 +1900,16 @@
           }, 100);
         }
         this.clearNewRecipeForm()
+        try {
+          this.destroyValidate('new_recipe_form_2')
+        } catch (error) {
+          
+        }
+        try {
+          this.destroyValidate('update_recipe_form_2')
+        } catch (error) {
+          
+        }
         // this.clearUpdateRecipeForm()
 
       },
@@ -1864,7 +1932,6 @@
           
           setTimeout(() => {
             this.createRecipe()
-            
           }, 1000);
           return
         }
@@ -1885,7 +1952,7 @@
         recipeFormData.append('preparation', JSON.stringify(this.newRecipe.preparation))
         recipeFormData.append('image_url', this.$refs.newRecipeImg.files[0])
         recipeFormData.append('video_url', this.newRecipe.video)
- 
+        recipeFormData.append('allergens', JSON.stringify(this.selectedAllergens))
 
         this.$store
         .dispatch(STORE_RECIPE, recipeFormData)
@@ -1914,7 +1981,8 @@
         recipeFormData.append('preparation', JSON.stringify(this.selectedRecipe.preparation))
         recipeFormData.append('image_url', this.$refs.updateImg.files[0])
         recipeFormData.append('video_url', this.selectedRecipe.video ? this.selectedRecipe.video  : false)
-
+        recipeFormData.append('allergens', JSON.stringify(this.selectedAllergens))
+        
         this.$store
         .dispatch(UPDATE_RECIPE, {id:this.selectedRecipe.id, data:recipeFormData})
         .then((data) =>{
@@ -1961,6 +2029,7 @@
       },
       clearNewRecipeForm(){
           this.productsForRecipe = [];
+          this.selectedAllergens = []
           this.stepperNewProduct = 1;
           this.newRecipe = {
             img:'images/product/default.png',
@@ -2146,9 +2215,26 @@
           this.showSnackbar('success','Notificación enviada con exito')
         })
       },
+      getAllergens(){
+        this.$store
+          .dispatch(GET_ALLERGEN)
+          .then((data) =>{
+            if(data.code !== 200) throw data
+            this.allergens = data.data
+          }).catch((err) => {
+            console.log('error')
+          });
+      },
+      allergensFormat(){
+        
+        this.selectedRecipe.allergens.forEach(allergen => {
+          this.selectedAllergens.push(allergen.id)
+        });
+      }
     },
     mounted(){
       this.getRecipes()
+      this.getAllergens()
       this.validateFormItem('new_recipe_form')
       setTimeout(() => {
         this.updateInCart = true
@@ -2180,6 +2266,13 @@
 </script>
 
 <style lang="scss" >
+  .allergen .v-selection-control__input input{
+    opacity: 1;
+    height: 55%;
+    width: 55%;
+    margin-top: 7px;
+    margin-left: 5px;
+  }
   img.fit{
     object-fit: cover!important;
   }

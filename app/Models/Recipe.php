@@ -39,4 +39,8 @@ class Recipe extends Model
     {
         return $this->belongsToMany(OutOrder::class, 'products_x_out_order');
     }
+    public function allergens()
+    {
+        return $this->belongsToMany(Allergen::class, 'allergens_x_recipes');
+    }
 }

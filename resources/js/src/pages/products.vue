@@ -569,6 +569,10 @@
           "beforeSend": function (xhr) {
             xhr.setRequestHeader("Authorization","Bearer" + window.localStorage.getItem('id_token'))
           },
+          error: function() {
+            alert('Sesión caducada')
+            location.reload()
+          }
         },
         scrollX: true,
         dataType:'json',
@@ -588,14 +592,6 @@
                 return `<div  data-lote="${row.id_lote}"  class="view text-decoration-underline ms-md-2" >${row.product.title} (${row.lote_code})</div>`
               }   
           },
-          // { 
-          //   title: 'Lote', class:'text-center',
-          //   orderable: false, 
-          //   searchable: false, 
-          //   render: ( data, type, row, meta ) =>{ 
-          //       return ` ${row.lote_code}`
-          //     }   
-          // },
           {
             title:' <div class="d-none d-md-block">Fecha venc.</div><div class="d-md-none d-block">Fecha venc</div>',
             class:'text-center ',
@@ -741,33 +737,6 @@
           
         },
         order:[[1, 'asc']],
-        buttons: [
-          {
-            extend: 'collection',
-            className: 'v-btn v-btn--elevated v-theme--light bg-secondary v-btn--density-default v-btn--size-default v-btn--variant-elevated w-100',
-            text: '<i class="ti ti-screen-share me-1 ti-xs text-white"></i>Exportar',
-            buttons: [
-              {
-                extend: 'csv',
-                text: '<i class="ti ti-file-text me-2" ></i>Csv',
-                className: 'dropdown-item',
-                title: 'Reporte de movimientos',
-              },
-              {
-                extend: 'excel',
-                text: '<i class="ti ti-file-text me-2" ></i>Excel',
-                className: 'dropdown-item',
-                title: 'Reporte de movimientos',
-              },
-              {
-                extend: 'pdf',
-                text: '<i class="ti ti-file-code-2 me-2"></i>Pdf',
-                className: 'dropdown-item',
-                title: 'Reporte de movimientos',
-              },
-            ]
-          },
-        ],
         drawCallback: function( settings ) {
           const TableElement = document.getElementById('data-table');
           const event = new Event("OptionsActionTable")
@@ -1516,9 +1485,14 @@
       },
     },
     mounted(){
-      this.initOptionsTable()
-      this.table = new DataTablesCore('#data-table', this.tableData)
-      setTimeout(()=> this.bootstrapOptions(),2000)
+      try {
+        this.initOptionsTable()
+        this.table = new DataTablesCore('#data-table', this.tableData)
+        setTimeout(()=> this.bootstrapOptions(),2000)
+      } catch (error) {
+        
+      }
+      
     },
     created(){
       this.emitter.emit('displayOverlayLoad', false)

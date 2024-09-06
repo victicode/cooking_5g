@@ -48,7 +48,12 @@ class OrderController extends Controller
         if(!empty(request('order_sort_date')))   $order->orderBy('created_at', request('order_sort_date'));
         if(!empty(request('order_sort_status')))  $order->orderBy('status', request('order_sort_status'));
 
-        return DataTables::of($order)->toJson();
+        
+        try{
+            return DataTables::of($order)->toJson();
+        }catch(Exception $e){
+            return 'error';
+        }
     }
     public function getLastByType(Request $request) {
         

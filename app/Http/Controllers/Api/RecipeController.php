@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Recipe;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Allergen;
 use Exception;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -23,17 +24,14 @@ class RecipeController extends Controller
     {
         //
 
-        $recipes = Recipe::withCount('cooking_ingredients')->with(['cooking_ingredients','cooking_ingredients.lotesRecipe'] )
-                    ->where('title', 'like', '%'.$request->recipe_title.'%');
-        
-        // if($request->user()->rol_id !== 1){
-        //     $recipes->where('created_by', $request->user()->id );
-        // }
+        $recipes = Recipe::withCount('cooking_ingredients')->with(['cooking_ingredients','cooking_ingredients.lotesRecipe',] )
+        ->where('title', 'like', '%'.$request->recipe_title.'%');
+
 
         return $this->returnSuccess(200, $recipes->paginate(10) );
     }
     public function getRecipeById($id){
-        return $this->returnSuccess(200, Recipe::with(['cooking_ingredients.dismantling.products_pieces', 'cooking_ingredients.lotes', 'cooking_ingredients.lotesRecipe' ])->find($id));
+        return $this->returnSuccess(200, Recipe::with(['cooking_ingredients.dismantling.products_pieces', 'cooking_ingredients.lotes', 'cooking_ingredients.lotesRecipe','allergens'])->find($id));
     }
     public function getRecipeBySearch(Request $request){
         $products = Recipe::query()->withCount('cooking_ingredients')->with(['cooking_ingredients','cooking_ingredients.lotesRecipe'] );
@@ -87,7 +85,8 @@ class RecipeController extends Controller
         }
         
         try {
-            $this->addProductforRecipe ($newRecipe->id, json_decode($request->cooking_ingredients,true) );
+            $this->addProductforRecipe($newRecipe->id, json_decode($request->cooking_ingredients,true) );
+            $this->addAllergen($newRecipe->id, json_decode($request->allergens,true) );
         } catch (Exception $th) {
              return [
                 'message' => $th->getMessage(),
@@ -95,7 +94,6 @@ class RecipeController extends Controller
 
              ];
         }
-        
 
         return $this->returnSuccess(200, $newRecipe);
     }
@@ -126,7 +124,8 @@ class RecipeController extends Controller
             return $th->getMessage();
         }
         try {
-            $this->addProductforRecipe ($recipe->id, json_decode($request->cooking_ingredients,true) );
+            $this->addProductforRecipe($recipe->id, json_decode($request->cooking_ingredients,true) );
+            $this->addAllergen($recipe->id, json_decode($request->allergens,true) );
         } catch (Exception $th) {
             return $this->returnFail(400, ['message'=>$th->getMessage(),  'data'=> json_decode($request->cooking_ingredients,true)]  ) ;
         }
@@ -168,6 +167,10 @@ class RecipeController extends Controller
             'create' => $request->created,
             'consumo'=> $request->consumo,
         ] , 'spaces' => $request->init ]);
+    }
+    public function getAllergens(){
+        $allergens = Allergen::all();
+        return $this->returnSuccess(200, $allergens);
     }
     private function validateFieldsFromInput($inputs, $type = 'new'){
 
@@ -220,13 +223,30 @@ class RecipeController extends Controller
         } catch (\Throwable $th) {
 
         }
-
-
         foreach ($products as $key) {
             DB::table('products_x_recipes')->insert([
                 'recipe_id'     => $recipeId,
                 'product_id'    => $key['id'],
                 'quantity'      => $key['pivot']['quantity'] ?? $key['quantity']  ,
+            ]);
+        }
+        return ;
+        
+    }
+    private function addAllergen($recipeId, $allergens) {
+
+        try {
+            $recipe = DB::table('allergens_x_recipes')->where('recipe_id', $recipeId)->delete();
+
+        } catch (\Throwable $th) {
+
+        }
+
+
+        foreach ($allergens as $key) {
+            DB::table('allergens_x_recipes')->insert([
+                'recipe_id'     => $recipeId,
+                'allergen_id'   => $key,
             ]);
         }
         return ;

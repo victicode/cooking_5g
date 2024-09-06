@@ -64,7 +64,7 @@ Route::middleware('jwt.verify')->prefix('out_order')->name('out_order.')->group(
     Route::post('/', [OrderController::class, 'createOutOrder']);
     Route::get('/print/{id}', [OrderController::class, 'printOutOrder']);
 });
-Route::prefix('products')->name('product.')->group(function () {
+Route::middleware('jwt.verify')->prefix('products')->name('product.')->group(function () {
     Route::get('/', [ProductController::class, 'index']);
     Route::get('/lotes', [ProductController::class, 'index']);
     Route::post('/',[ProductController::class, 'storeProduct']);
@@ -99,6 +99,9 @@ Route::middleware('jwt.verify')->prefix('recipes')->name('recipes.')->group(func
     Route::post('/{id}',[RecipeController::class, 'updateRecipe']);
     Route::post('/delete/{id}',[RecipeController::class, 'deleteRecipe']);
     Route::get('/get-by-search',[RecipeController::class, 'getRecipeBySearch']);
+});
+Route::middleware('jwt.verify')->prefix('allergen')->name('allergen.')->group(function () {
+    Route::get('/',[RecipeController::class, 'getAllergens']);
 });
 
 Route::middleware('jwt.verify')->prefix('support')->name('supports.')->group(function () {

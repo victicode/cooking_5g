@@ -169,6 +169,10 @@
           "beforeSend": function (xhr) {
             xhr.setRequestHeader("Authorization","Bearer" + window.localStorage.getItem('id_token'))
           },
+          error: function() {
+            alert('Sesión caducada')
+            location.reload()
+          }
         },
         dataType:'json',
         processing: true,

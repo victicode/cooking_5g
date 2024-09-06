@@ -6,6 +6,7 @@ import "@/assets/plugins/formvalidation/dist/css/formValidation.min.css";
 import Trigger from "@/assets/plugins/formvalidation/dist/es6/plugins/Trigger";
 import Bootstrap from "@/assets/plugins/formvalidation/dist/es6/plugins/Bootstrap";
 import SubmitButton from "@/assets/plugins/formvalidation/dist/es6/plugins/SubmitButton";
+import loadingButton from "@/layouts/components/loadingButton.vue";
 
 const props = defineProps({
   preparation: Object,
@@ -62,11 +63,15 @@ const props = defineProps({
         </VCol>
         <VCol cols="5" md="4" offset="2" offset-md="4" class="mt-0 py-0 px-0">
           <v-col cols="auto" class="">
-            <VBtn  id="new_recipe_form_3_button" color="primary" class="w-100 "  :disabled="!isValidateSteps" @click="sendPreration()"> Guardar</VBtn>
+            <VBtn  color="primary" class="w-100" block  :disabled="!isValidateSteps" @click="sendPreration()" id="new_recipe_form_3_button"  :loading="loading" >
+              Guardar 
+              <template v-slot:loader>
+                <loadingButton />
+              </template>
+            </VBtn>
           </v-col>
         </VCol>
       </VRow>
-  
     </VForm>
     <div class="modal animate__animated animate__fadeInDown pe-0" id="Pasos" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
         
@@ -249,7 +254,8 @@ export default {
     isValidateSteps:false,
     isValidateVideoUpload:false,
     forms:'',
-    video:null
+    video:null,
+    loading:false
   }),
   methods:{
     addVideo(id){
@@ -375,7 +381,7 @@ export default {
       return fieldByForm
     }, 
     sendPreration(){
-      
+      this.loading = true
       this.$emit('preparation',{
         steps: this.preparation,
         video: this.$refs.recipe_video.files[0]

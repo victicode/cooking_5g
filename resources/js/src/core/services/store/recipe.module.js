@@ -8,24 +8,25 @@ export const STORE_RECIPE     = "STORE_RECIPE";
 export const UPDATE_RECIPE    = "UPDATE_RECIPE";
 export const DELETE_RECIPE    = "DELETE_RECIPE";
 export const GET_RECIPE_BY_SEARCH  ="GET_RECIPE_BY_SEARCH "
+export const GET_ALLERGEN = "GET_ALLERGEN";
+
 const actions = {
     [GET_RECIPES](context, query) {
-
-        return new Promise((resolve, reject) => {
-          if (JwtService.getToken()) {
-            ApiService.setHeader();
-            ApiService.get("api/recipes?page="+query.page+"&recipe_title="+query.search+"&")
-            .then(( { data } ) => {
-                // console.log(data)
-                resolve(data);
-                
-            })
-            .catch(( { response } ) => {
-                console.log(response )
-                reject('Ocurrió un error desconocido al intentar obtener las ordenes');
-            });
-          }
-        });
+      return new Promise((resolve, reject) => {
+        if (JwtService.getToken()) {
+          ApiService.setHeader();
+          ApiService.get("api/recipes?page="+query.page+"&recipe_title="+query.search+"&")
+          .then(( { data } ) => {
+              // console.log(data)
+              resolve(data);
+              
+          })
+          .catch(( { response } ) => {
+              console.log(response )
+              reject('Ocurrió un error desconocido al intentar obtener las ordenes');
+          });
+        }
+      });
     },
     [STORE_RECIPE](context, body) {
       return new Promise((resolve, reject) => {
@@ -111,6 +112,23 @@ const actions = {
         }
       });
     },
+    [GET_ALLERGEN](context,search){
+      return new Promise((resolve, reject) => {
+        if (JwtService.getToken()) {
+          ApiService.setHeader();
+          ApiService.get("api/allergen")
+          .then(( { data } ) => {
+              // console.log(data)
+              resolve(data);
+              
+          })
+          .catch(( { response } ) => {
+              console.log(response )
+              reject('Ocurrió un error desconocido al intentar obtener las ordenes');
+          });
+        }
+      });
+    }
 
     
 };
