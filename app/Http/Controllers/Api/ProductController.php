@@ -139,15 +139,14 @@ class ProductController extends Controller
     public function deleteProduct($productId)
     {
         if (!$productId) {
-            return $this->returnFail(400, "El identificador del usuario.");
+            return $this->returnFail(400, "Producto no enviado.");
         }
 
         $product = Product::find($productId);
         $dismantlingsOfProducts= Dismantling::where('piece_product_id', $productId)->delete();
 
-
         if (!$product) {
-            return $this->returnFail(404, "Usuario no encontrado.");
+            return $this->returnFail(404, "Producto no encontrado.");
         }
 
         $product->delete();

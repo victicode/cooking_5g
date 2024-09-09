@@ -18,6 +18,8 @@
   
   import viewProductModal from '@/views/pages/modals/viewProductModal.vue';
   import viewCreateNewLoteModal from '@/views/pages/modals/viewCreateNewLoteModal.vue';
+  import viewDeleteProduct from '@/views/pages/modals/viewDeleteProduct.vue';
+
   import viewUpdateLoteModal from '@/views/pages/modals/viewUpdateLoteModal.vue';
   import viewCreateProduct from '@/views/products/viewCreateProduct.vue';
 
@@ -38,16 +40,21 @@
             md="3"
             class="ma-0 px-0 justify-center justify-md-end d-flex"
           >
-          <VBtn @click=" showModal('createProduct'); getProducts('', 0)" color="primary" class="w-100 "><VIcon icon="bx-plus"/> Agregar nuevo producto</VBtn>
-
+            <VBtn @click=" showModal('createProduct'); getProducts('', 0)" color="primary" class="w-100 "><VIcon icon="bx-plus"/> Agregar nuevo producto</VBtn>
           </VCol>
           <VCol
             cols="11"
             md="2"
             class="ma-0 mx-2 px-0 justify-center justify-md-end d-flex"
           >
-          <VBtn @click=" showModal('addStockInProduct')" color="secondary" class="w-100 "><VIcon icon="bx-plus"/> Agregar Lote</VBtn>
-
+            <VBtn @click=" showModal('addStockInProduct')" color="secondary" class="w-100 "><VIcon icon="bx-plus"/> Agregar Lote</VBtn>
+          </VCol>
+          <VCol
+            cols="11"
+            md="2"
+            class="ma-0 mx-2 px-0 justify-center justify-md-end d-flex"
+          >
+            <VBtn @click=" showModal('deleteProductQuick')" color="error" class="w-100 "><VIcon icon="bx-trash" class="me-1"/> Eliminar producto</VBtn>
           </VCol>
         </VRow>
         <VRow class="ma-0  justify-center align-center justify-md-start pa-2 px-0 mb-10 mb-md-2 py-0 my-0">
@@ -488,6 +495,8 @@
     </div>
     <viewCreateProduct @hiddenModal="updateAndHidden" />
     <viewCreateNewLoteModal @hiddenModal="updateAndHidden"/>
+    <viewDeleteProduct @hiddenModal="updateAndHidden"/>
+
 
     <v-snackbar
       v-model="snackShow"
