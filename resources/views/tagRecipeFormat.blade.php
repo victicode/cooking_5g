@@ -97,7 +97,7 @@
                       </div>
                     </div>
                     <div class="col-sm-2 d-flex justify-content-end">
-                      {!!QrCode::size(120)->generate('https://10.10.10.69:8085/client/recipe/'.$recipe->id) !!}  
+                      {!!QrCode::size(120)->generate('http://victorriverodev.infinityfreeapp.com/client/recipe/'.$recipe->id) !!}  
                     </div>
                   </div>
                 </div>

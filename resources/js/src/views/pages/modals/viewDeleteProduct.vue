@@ -27,15 +27,15 @@
                     </VCardTitle>
                   </VCardItem>
                   <div>
-                    <VCardItem class="w-100  py-md-0  py-4 text-center" >
+                    <VCardItem class="w-100  py-md-0  py-4 text-center px-0" >
                       <VCardTitle class="text-2xl font-weight-bold">
                         <div class="card-title ">
                           <div class="form-title__part1 mx-4 my-2 " style="text-wrap:wrap">
                               {{ validateSelect() ? selectedProduct.title  :'-----'   }}
                           </div>
-                          <VCardText class="w-100 pb-5 px-4 px-md-6"  >
+                          <VCardText class="w-100 pb-5 "  >
                             <VForm  id="add_stock_form_unique">
-                              <VRow class="my-0">
+                              <VRow class="my-0 px-md-6">
                                 <VCol cols="12" md="12"  class="form-group" >
           
                                   <v-autocomplete

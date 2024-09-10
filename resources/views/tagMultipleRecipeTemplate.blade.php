@@ -90,9 +90,9 @@
                           </div>
                         </div>
                         <div class="col-sm-2 d-flex justify-content-end">
-                          {!!QrCode::size(120)->generate('https://10.10.10.69:8085/client/recipe/'.$key->recipe->id) !!}
+                          {!!QrCode::size(120)->generate('http://victorriverodev.infinityfreeapp.com/client/recipe/'.$key->recipe->id) !!}
                         </div>
-                      </div>
+                      </div>allergens
                     </div>
                   </div>
                 </div>

@@ -110,6 +110,25 @@
                     </div>
                   </div>
                 </div>
+                <div class="px-2">
+                  <div class="border-md rounded mt-5 py-1 border-black">
+                    <h4 class="text-center">Alérgenos:</h4>
+                    <div class="my-1 px-5" v-if="selectedRecipe.allergens.length > 0">
+                      <div class="text-justify " v-for="(allergen, index) in selectedRecipe.allergens" v-bind:key="index">
+                        <h4 class=" font-weight-bold">
+                          - {{ allergen.name }}
+                        </h4>
+                      </div>  
+                    </div>
+                    <div class="my-1 px-5" v-else>
+                      <div class="text-justify ">
+                        <h4 class=" font-weight-bold">
+                          Esta receta no contiene alérgenos. 🧡✅
+                        </h4>
+                      </div>  
+                    </div>
+                  </div>
+                </div>
               </VCol>
             </VRow>
           </VCard>

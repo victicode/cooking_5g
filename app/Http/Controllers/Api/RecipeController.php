@@ -23,11 +23,8 @@ class RecipeController extends Controller
     public function index(Request $request)
     {
         //
-
         $recipes = Recipe::withCount('cooking_ingredients')->with(['cooking_ingredients','cooking_ingredients.lotesRecipe',] )
         ->where('title', 'like', '%'.$request->recipe_title.'%');
-
-
         return $this->returnSuccess(200, $recipes->paginate(10) );
     }
     public function getRecipeById($id){
@@ -154,11 +151,10 @@ class RecipeController extends Controller
     public function printRecipeTag(Request $request, $id=''){
 
         if($request->path() == 'api/recipes/client/print/multiple'){
-
-            // return json_decode($request->recipes);
             return view('tagMultipleRecipeTemplate', [ 'recipes' => json_decode($request->recipes), 'spaces' => $request->init] );
         }
-        $recipe = Recipe::with(['cooking_ingredients.dismantling.products_pieces', 'cooking_ingredients.lotes' ])->find($id);
+
+        $recipe = Recipe::with(['cooking_ingredients.dismantling.products_pieces', 'cooking_ingredients.lotes', 'allergens'])->find($id);
     
         if(!$recipe) return $this->returnFail(400, 'algo ha salido mal');
         
