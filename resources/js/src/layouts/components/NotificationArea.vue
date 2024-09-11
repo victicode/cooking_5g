@@ -65,8 +65,8 @@
           >
             <Component
               :is="'RouterLink'"
-              :to="item.type == 1 ? '/orders': item.type == 2 ? '/products' : '/orders'"
-              :href="item.type == 1 ? '/orders': item.type == 2 ? '/products ' : '/orders'"
+              :to="item.type == 1 ? '/orders' : item.type == 2 ? '/products' : '/orders'"
+              :href="item.type == 1 ? '/orders' : item.type == 2 ? '/products ' : '/orders'"
             >
                 <div class="w-100 text-right notification-time_text text-secondary">
                   {{  moment(item.created_at).fromNow()   }}
