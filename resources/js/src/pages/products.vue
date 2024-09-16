@@ -52,7 +52,7 @@
           <VCol
             cols="11"
             md="2"
-            class="ma-0 mx-2 px-0 justify-center justify-md-end d-flex"
+            class="ma-0 me-0 px-0 justify-center justify-md-end d-flex"
           >
             <VBtn @click=" showModal('deleteProductQuick')" color="error" class="w-100 "><VIcon icon="bx-trash" class="me-1"/> Eliminar producto</VBtn>
           </VCol>
@@ -1116,79 +1116,7 @@
       itemsValidateByForm(id){
         let fieldByForm = {}
         switch (id) {
-          case 'new_product_form':
-            fieldByForm = {
-              new_product_img: {
-                validators: {
-                  notEmpty: {
-                    message: "Debes subir una foto"
-                  },
-                }
-              },
-              new_product_title: {
-                validators: {
-                  notEmpty: {
-                    message: "El campo de titulo es obligatorio"
-                  },
-                  regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@,$_ñ_ ]+$/i,
-                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
-                  },
-                }
-              },
-              new_product_description: {
-                validators: {
-                  notEmpty: {
-                    message: "La descripción es necesaria"
-                  },
-                  regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+,/&@$_ñ_ ]+$/i,
-                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
-                  },
-                }
-              },
-              new_product_short_description: {
-                validators: {
-                  notEmpty: {
-                    message: "La descripción corta es necesaria"
-                  },
-                  regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@,$_ñ_ ]+$/i,
-                    message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
-                  },
-                }
-              },
-            }
-            break;
-          case 'new_product_form_2':
-            fieldByForm = {
-              new_product_init_lot:{
-                validators: {
-                  notEmpty: {
-                    message: "El lote inicial es requerido"
-                  }
-                }
-              },
-              new_product_stock: {
-                validators: {
-                  notEmpty: {
-                    message: "Debes agregar un stock Inicial"
-                  },
-                  regexp: {
-                    regexp: /^[0-9]+$/i,
-                    message: "Debe ser númerico",
-                  },
-                }
-              },
-              new_product_due_date:{
-                validators: {
-                  notEmpty: {
-                    message: "La fecha de vencimiento es requerida"
-                  }
-                }
-              },
-            }
-            break;
+
           case 'edit_product_form':
             fieldByForm = {
               
@@ -1216,7 +1144,7 @@
                     message: "La descripción es necesaria"
                   },
                   regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+/&@$,_ñ_ ]+$/i,
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+,°\n:/z\-&@$_ñ_ ]+$/i,
                     message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
                   },
                 }

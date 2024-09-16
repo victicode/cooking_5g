@@ -611,7 +611,7 @@
                     message: "La descripción es necesaria"
                   },
                   regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+,/&@$_ñ_ ]+$/i,
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+,°\n:/z\-&@$_ñ_ ]+$/i,
                     message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
                   },
                 }

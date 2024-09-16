@@ -1,12 +1,10 @@
 <script setup >
-  import * as bootstrap from 'bootstrap'
   import moment from 'moment';
   import {GET_RECIPE_BY_SEARCH} from "@/core/services/store/recipe.module";
   import debounce from 'debounce';
   import flatpickr from "flatpickr";
   import 'flatpickr/dist/flatpickr.min.css'
   import { Spanish } from "flatpickr/dist/l10n/es.js"
-import date from '../../assets/plugins/formvalidation/src/js/validators/date';
 </script>
 <template>
   <div>
@@ -95,7 +93,6 @@ import date from '../../assets/plugins/formvalidation/src/js/validators/date';
                       </VCol>
                     </VRow>
                   </VForm>
-                  
                   <div class="mt-5 w-100  d-block justify-center">
                     <VRow class="mb-2">
                       <VCol cols="12" md="6"  class="form-group">
@@ -107,6 +104,36 @@ import date from '../../assets/plugins/formvalidation/src/js/validators/date';
                           v-model="init"
                           
                         />
+                      </VCol>
+                      <VCol cols="12"  class="form-group px-5">
+                        <div class="mb-2 mt-2">
+                          <div class="stock-notify px-5 py-4">
+                            <p class="text-secondary pa-0 ma-0">
+                              <b class="text-primary text-decoration-underline">Recomendaciones de impresion de etiquetas:</b> 
+                            </p>
+                            <p class="text-secondary pa-0 ma-0 mt-2">
+                              <b class=""> • Margen superior: 8,5mm</b> 
+                            </p>
+                            <p class="text-secondary pa-0 ma-0 mt-2">
+                              <b class=""> • Margen derecho: 0mm</b> 
+                            </p>
+                            <p class="text-secondary pa-0 ma-0 mt-2">
+                              <b class=""> • Margen inferior: 8,5mm</b> 
+                            </p>
+                            <p class="text-secondary pa-0 ma-0 mt-2">
+                              <b class=""> • Margen izquierdo: 0mm</b> 
+                            </p>
+                            <p class="text-secondary pa-0 ma-0 mt-2">
+                              <b class=""> • Tamaño de papel: A4</b> 
+                            </p>
+                            <p class="text-secondary pa-0 ma-0 mt-2">
+                              <b class=""> •  Escala: 63%</b> 
+                            </p>
+                            <p class="text-primary text-decoration-underline font-weight-bold pa-0 ma-0 mt-2 cursor-pointer"> 
+                              Ver Guia
+                            </p>
+                          </div>
+                        </div>
                       </VCol>
                     </VRow>
                     <VCardActions class=" justify-center w-100 d-md-flex  pb-1 pb-md-3   d-block">

@@ -344,7 +344,6 @@
         </div>
       </div>
       <div class="modal animate__animated animate__slideInLeft pe-0" id="stepsRecipe" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-          
           <div class="modal-dialog modal-lg pt-0 ma-0" style="width: 100%; height: 100vh;">
             <div class="modal-content h-100">
               <VCol
@@ -441,8 +440,6 @@
                                     <VCol cols="12" class="justify-center pa-0">
                                       <div class="mt-0" style="border-top: 1px solid rgba(119, 119, 119, 0.356)">
                                         <VCardText class=" py-4 px-1" style="line-height:1.5">
-
-                                          
                                           <div v-html="step.description.replace(/\n/gi, '<br>')"></div>
                                         </VCardText>
                                       </div>
@@ -463,9 +460,7 @@
                                       <div class="mt-0" style="border-top: 1px solid rgba(119, 119, 119, 0.356)">
                                         <VCardText class="text-subtitle-1 py-4 px-1">
                                           <div class="font-weight-bold my-3" >
-                                            
                                             <recipeVideo :video="selectedRecipe.video_url" />
-                                            
                                           </div>
                                         </VCardText>
                                       </div>
@@ -884,7 +879,6 @@
           </div>
       </div>
       <div class="modal animate__animated animate__fadeInDown pe-0" id="printTag" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
-          
           <div class="modal-dialog modal-lg mt-10">
             <div class="modal-content">
               <VCol
@@ -949,7 +943,7 @@
                             />
                           </VCol>
                         </VRow>
-                        <VRow class="ma-0 pa-0  mt-8 align-center">
+                        <VRow class="ma-0 pa-0  mt-3 align-center">
                           <VCol cols="12" md="4" class="form-group ms-0 ps-0">
                             <VTextField
                               placeholder="Iniciar en posicion"
@@ -959,6 +953,33 @@
                               autocomplete="off"
                               v-model="initPrint"
                             />
+                          </VCol>
+                          <VCol cols="12"  class="form-group ms-0 ps-0">
+                            <div class="mb-2 mt-2">
+                              <div class="stock-notify px-5 py-4">
+                                <p class="text-secondary pa-0 ma-0">
+                                  <b class="text-primary text-decoration-underline">Recomendaciones de impresion de etiquetas:</b> 
+                                </p>
+                                <p class="text-secondary pa-0 ma-0 mt-2">
+                                  <b class=""> • Margen superior: 8,5mm</b> 
+                                </p>
+                                <p class="text-secondary pa-0 ma-0 mt-2">
+                                  <b class=""> • Margen inferior: 8,5mm</b> 
+                                </p>
+                                <p class="text-secondary pa-0 ma-0 mt-2">
+                                  <b class=""> • Margen derecho: 0mm</b> 
+                                </p>
+                                <p class="text-secondary pa-0 ma-0 mt-2">
+                                  <b class=""> • Margen izquierdo: 0mm</b> 
+                                </p>
+                                <p class="text-secondary pa-0 ma-0 mt-2">
+                                  <b class=""> • Tamaño de papel: A4</b> 
+                                </p>
+                                <p class="text-secondary pa-0 ma-0 mt-2">
+                                  <b class=""> •  Escala: 63%</b> 
+                                </p>
+                              </div>
+                            </div>
                           </VCol>
                           <VCol cols="12" md="6" offset-md="3" class="mt-0 py-0 px-0">
                             <v-col cols="auto" class="">
@@ -1610,7 +1631,7 @@
                     message: "La descripción es necesaria"
                   },
                   regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+,/&@$_\s+ñ_ ]+$/i,
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+,°\n:/z\-&@$_ñ_ ]+$/i,
                     message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
                   },
                 }
@@ -1695,7 +1716,7 @@
                     message: "La descripción es necesaria"
                   },
                   regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+,/&@$_\s+ñ_ ]+$/i,
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+,°\n:/z\-&@$_ñ_ ]+$/i,
                     message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
                   },
                 }

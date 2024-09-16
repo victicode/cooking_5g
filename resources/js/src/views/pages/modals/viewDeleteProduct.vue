@@ -83,7 +83,7 @@
                                       Stock total:
                                       <span class=" ms-2" >
                                         <v-chip :class="!validateSelect() ? 'bg-secondary' : totalStockByLotes(selectedProduct)  < 1 ? 'bg-error' : 'bg-success' ">
-                                          {{ !validateSelect() ? '---- ':totalStockByLotes(selectedProduct)  }}
+                                          {{ !validateSelect() ? '---- ':totalStockByLotes(selectedProduct)  }} {{ selectedProduct.type_of_unit }}
                                         </v-chip>
             
                                       </span>
@@ -94,7 +94,7 @@
                                       Stock vencido:
                                       <span class=" ms-2" >
                                         <v-chip :class="!validateSelect() ? 'bg-secondary' : vencStock(selectedProduct)  < 1 ? 'bg-success' : 'bg-error'">
-                                          {{ !validateSelect() ? '---- ':vencStock(selectedProduct)  }}
+                                          {{ !validateSelect() ? '---- ':vencStock(selectedProduct)  }} {{ selectedProduct.type_of_unit }}
                                         </v-chip>
             
                                       </span>
@@ -105,7 +105,7 @@
                                       Stock activo:
                                       <span class=" ms-2" >
                                         <v-chip :class="!validateSelect() ? 'bg-secondary' : activeStock(selectedProduct)  < 1 ? 'bg-error' : 'bg-success'">
-                                          {{ !validateSelect() ? '---- ': activeStock(selectedProduct)  }}
+                                          {{ !validateSelect() ? '---- ': activeStock(selectedProduct)  }} {{ selectedProduct.type_of_unit }}
                                         </v-chip>
             
                                       </span>
@@ -146,7 +146,12 @@
                                   </v-col>
                                   <v-col cols="12" md="6">
                                     <div class="form-title__part1  text-h6 px-2 d-flex align-center justify-start font-weight-bold">
-                                      Fecha de venc. proxima:
+                                      <div class="d-block d-md-none">
+                                        Fecha de venc. prox:
+                                      </div>
+                                      <div class="d-none d-md-block">
+                                        Fecha de venc. proxima:
+                                      </div>
                                       <span class=" ms-2" >
                                         <v-chip :class="!validateSelect() ? 'bg-secondary' : isDueDate(selectedProduct)  < 1 ? 'bg-error' : 'bg-success' ">
                                           {{ 
