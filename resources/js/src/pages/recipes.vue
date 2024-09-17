@@ -17,6 +17,7 @@
   import { ADD_TO_CART } from "@/core/services/store/cart.module";
   import buyCart from "@/layouts/components/BuyCart.vue";
   import printTags from "@/layouts/components/PrintTags.vue";
+  import printGuide from '@/views/recipes/printGuide.vue';
   import flatpickr from "flatpickr";
   import 'flatpickr/dist/flatpickr.min.css'
   import { Spanish } from "flatpickr/dist/l10n/es.js"
@@ -163,7 +164,6 @@
           <h2>No tienes recetas creadas</h2>
         </VCard>
       </template>
-
     </VCol>
     <div v-if="isRecipe" >
       <div class="modal animate__animated animate__slideInLeft"  id="viewRecipe" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
@@ -978,6 +978,9 @@
                                 <p class="text-secondary pa-0 ma-0 mt-2">
                                   <b class=""> •  Escala: 63%</b> 
                                 </p>
+                                <p class="text-primary text-decoration-underline font-weight-bold pa-0 ma-0 mt-2 cursor-pointer" @click="viewGuide()"> 
+                                  Ver Guia
+                                </p>
                               </div>
                             </div>
                           </VCol>
@@ -1380,6 +1383,7 @@
     </v-navigation-drawer>  
     <buyCart v-if="getCurrentAccount.rol_id == 3" />  
     <printTags @hide="hideModal()" v-if="getCurrentAccount.rol_id && getCurrentAccount.rol_id !== 3" />
+    <printGuide />
   </VRow>
 </template>
 
@@ -1533,6 +1537,9 @@
           })
 
       },
+      viewGuide(){
+        this.emitter.emit('showOnGuide')
+      },
       searchProductsForRecipe(e, index){ 
         debounce(this.getProducts, 200)(e.target.value, index)
       },
@@ -1631,7 +1638,7 @@
                     message: "La descripción es necesaria"
                   },
                   regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+,°\n:/z\-&@$_ñ_ ]+$/i,
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+,º°ª\n:/z\-&@$_ñ_ ]+$/i,
                     message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
                   },
                 }
@@ -1716,7 +1723,7 @@
                     message: "La descripción es necesaria"
                   },
                   regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+,°\n:/z\-&@$_ñ_ ]+$/i,
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+,º°ª\n:/z\-&@$_ñ_ ]+$/i,
                     message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
                   },
                 }

@@ -129,7 +129,7 @@
                             <p class="text-secondary pa-0 ma-0 mt-2">
                               <b class=""> •  Escala: 63%</b> 
                             </p>
-                            <p class="text-primary text-decoration-underline font-weight-bold pa-0 ma-0 mt-2 cursor-pointer"> 
+                            <p class="text-primary text-decoration-underline font-weight-bold pa-0 ma-0 mt-2 cursor-pointer" @click="viewGuide()"> 
                               Ver Guia
                             </p>
                           </div>
@@ -217,6 +217,9 @@
             });
           })
 
+      },
+      viewGuide(){
+        this.emitter.emit('showOnGuide')
       },
       searchRecipeToPrint(e, index){ 
         debounce(this.getRecipeToPrint, 200)(e.target.value, index)

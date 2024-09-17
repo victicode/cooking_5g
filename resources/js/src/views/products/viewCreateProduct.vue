@@ -345,8 +345,6 @@
       stepperNewProduct: 1,
       steps: 2,
       modal:''
-
-
     }),
     methods:{
       getProducts(search = "", index){
@@ -611,7 +609,7 @@
                     message: "La descripción es necesaria"
                   },
                   regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+,°\n:/z\-&@$_ñ_ ]+$/i,
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+,º°ª\n:/z\-&@$_ñ_ ]+$/i,
                     message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
                   },
                 }

@@ -1116,7 +1116,6 @@
       itemsValidateByForm(id){
         let fieldByForm = {}
         switch (id) {
-
           case 'edit_product_form':
             fieldByForm = {
               
@@ -1144,7 +1143,7 @@
                     message: "La descripción es necesaria"
                   },
                   regexp: {
-                    regexp: /^[A-Za-z0-9À-ÿ .*-+,°\n:/z\-&@$_ñ_ ]+$/i,
+                    regexp: /^[A-Za-z0-9À-ÿ .*-+,º°ª\n:/z\-&@$_ñ_ ]+$/i,
                     message: 'No debe contener los siguientes caracteres: "[]{}!¡¿?=()|;',
                   },
                 }
