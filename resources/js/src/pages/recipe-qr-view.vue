@@ -5,202 +5,277 @@
   import recipeVideo from '@/views/pages/player/recipePlayer.vue';
   import { GET_PRODUCT_BY_SEARCH } from "@/core/services/store/product.module";
   import viewProductModal from '@/views/pages/modals/viewProductModal.vue';
-  import moment from 'moment';
 
 </script>
 
 <template>
-  <VRow class="d-flex flex-column align-center ma-0 " style="height: 100%;">
-    <VCol v-if="ready" cols="12" class="d-flex flex-column align-center justify-top mt-0 px-0">
-
-
-      <v-carousel
-        :continuous="false"
-        :show-arrows="false"
-        :touch="true"
-        hide-delimiter-background
-        delimiter-icon="pepicons-pencil:square-filled"
-        :height="'93%'"
-        v-model="sliderPosition"
-        
-      >
-        <v-carousel-item
-          :value="1"
+  <div class="content_qr px- px-md-0">
+    <VRow class="d-flex flex-column align-center ma-0 " style="height: 91vh;">
+      <VCol v-if="ready" cols="12" class="d-flex flex-column align-center justify-top mt-0 px-0 pb-0 pt-0" style="height: 100%;">
+        <v-carousel
+          :continuous="false"
+          :show-arrows="false"
+          :touch="true"
+          hide-delimiter-background
+          delimiter-icon="pepicons-pencil:square-filled"
+          :height="'95%'"
+          v-model="sliderPosition"
+          class="px-md-16  cc-qr"
+          
         >
-          <VCard class="px-15 py-2 mb-5 text-center">
-            <div>
-              <h2>Recetario</h2>
-              <h6>by: <b class="text-primary">Cooking 5G</b></h6>
-            </div>
-          </VCard>
-          <VCard class="pa-5 text-center w-100 ">
-            <div  class="d-flex flex-column align-center h-100">
-              <div>
-                <v-img
-                  :width="199"
-                  aspect-ratio="1/1"
-                  cover
-                  class="rounded" 
-                  :src="'/'+selectedRecipe.image_url"
-                ></v-img>
-              </div>
-              <div class="mt-2">
-                <h2>
-                  {{ selectedRecipe.title }}
-                </h2>
-                <h6 class="text-justify mt-1">{{ selectedRecipe.description }} </h6>
-              </div>
-            </div>
-          </VCard>
-        </v-carousel-item>
-        <v-carousel-item
-          :value="2"
-        >
-          <VCard class="pa-5 text-center w-100 mt-5" >
-            <VRow  class="">
-              <VCol cols="12" class="mt-">
+          <v-carousel-item
+            :value="1"
+          >
+            <div class="px-3">
+              <VCard class="px-15 py-2 mb-5 text-center mt-5 ">
                 <div>
-                  <h2>
-                    {{ selectedRecipe.title }}
-                  </h2>
+                  <h2>Recetario</h2>
+                  <h6>by: <b class="text-primary">Cooking 5G</b></h6>
                 </div>
-                <div class="border-t-md border-b-md border-dashed mt-5 py-1 border-primary">
-                  <div class="d-flex my-1 justify-center">
-                    <div class="d-flex align-center">
-                      <VIcon icon="fluent-emoji-flat:timer-clock"  size="large" />
-                      <h5 class=" my-1 ms-1 text-primary"> 
-                        <b>{{selectedRecipe.total_time}} </b> 
-                      </h5>
-                    </div>
-                    <div class="d-flex align-center ms-5">
-                      <VIcon icon="fa6-solid:person"  size="large" />
-                      <h5 class=" my-1 ms-1 text-primary"> 
-                        <b>{{selectedRecipe.person_count}} {{ selectedRecipe.person_count == 1 ? 'Persona' : 'Personas' }} </b> 
-                      </h5>
-                    </div>
-                    <div class="d-flex align-center ms-5">
-                      <VIcon icon="twemoji:pot-of-food"  size="large" />
-                      <h5 class=" my-1 ms-1 text-primary"> 
-                        <b>{{selectedRecipe.type}}</b> 
-                      </h5>
-                    </div>
+              </VCard>
+              <VCard class="pa-5 text-center w-100 ">
+                <div  class="d-flex flex-column align-center h-100">
+                  <div>
+                    <v-img
+                      :width="199"
+                      aspect-ratio="1/1"
+                      cover
+                      class="rounded" 
+                      :src="'/'+selectedRecipe.image_url"
+                    ></v-img>
+                  </div>
+                  <div class="mt-2">
+                    <h2>
+                      {{ selectedRecipe.title }}
+                    </h2>
+                    <h6 class="text-justify mt-1">{{ selectedRecipe.description }} </h6>
                   </div>
                 </div>
-                <div class="px-2">
-                  <div class="border-md rounded mt-5 py-1 border-black">
-                    <h4 class="text-center">Nuestros ingredientes:</h4>
-                    <div class="my-1 px-5">
-                      <div class="text-justify " v-for="(ingredient, index) in selectedRecipe.cooking_ingredients" v-bind:key="index">
-                        <a class="text-decoration-underline text-subtitle-1 font-weight-bold text-primary" @click="selectProductView(index)">
-                          - {{ ingredient.title }}
-                        </a>
-                      </div>  
-                    </div>
-                  </div>
-                </div>
-                <div class="px-2">
-                  <div class="border-md rounded mt-5 py-1 border-black">
-                    <h4 class="text-center">Otros ingredientes:</h4>
-                    <div class="my-1 px-5">
-                      <div class="text-justify " v-for="(ingredient, index) in selectedRecipe.ingredients" v-bind:key="index">
-                        <h4 class=" font-weight-bold">
-                          - {{ ingredient.name }}
-                        </h4>
-                      </div>  
-                    </div>
-                  </div>
-                </div>
-                <div class="px-2">
-                  <div class="border-md rounded mt-5 py-1 border-black">
-                    <h4 class="text-center">Alérgenos:</h4>
-                    <div class="my-1 px-5" v-if="selectedRecipe.allergens.length > 0">
-                      <div class="text-justify " v-for="(allergen, index) in selectedRecipe.allergens" v-bind:key="index">
-                        <h4 class=" font-weight-bold">
-                          - {{ allergen.name }}
-                        </h4>
-                      </div>  
-                    </div>
-                    <div class="my-1 px-5" v-else>
-                      <div class="text-justify ">
-                        <h4 class=" font-weight-bold">
-                          Esta receta no contiene alérgenos. 🧡✅
-                        </h4>
-                      </div>  
-                    </div>
-                  </div>
-                </div>
-              </VCol>
-            </VRow>
-          </VCard>
-        </v-carousel-item>
-        <v-carousel-item
-          v-for="(step, index) in selectedRecipe.preparation"
-          v-bind:key="index"
-          :value="index+3"
-        >
-          <VCard class="pa-5 text-center w-100 mt-5" >
-            <VRow  class="">
-              <VCol cols="12" class="">
-                <div>
-                  <h2>
-                    {{ selectedRecipe.title }}
-                  </h2>
-                </div>
-                <div class="border-t-md border-b-md border-dashed mt-5 py-1 border-primary">
-                  <h3 class="text-center  ">Prepación - Paso {{ index+1 }}:</h3>
-                  <h3 class="text-center mt-2 text-primary">{{ step.title}}:</h3>
-                  
-                </div>
-                <div class="px-0 mt-5">
-                  <div class="">
-                    <h4 class="my-2 px-5 text-justify" >
-                      {{ step.description }} 
-                    </h4>
-                  </div>
-                </div>
-              </VCol>
-            </VRow>
-          </VCard>
-        </v-carousel-item>
-        <v-carousel-item
-          :value="selectedRecipe.preparation.length+3"
-        >
-          <VCard class="px-15 py-2 mb-5 text-center">
-            <div>
-              <h2>{{selectedRecipe.title}}</h2>
-              <h6>by: <b class="text-primary">Cooking 5G</b></h6>
+              </VCard>
             </div>
-          </VCard>
-          <VCard class="pa-5 text-center w-100 ">
-            <div  class="d-flex flex-column align-center h-100">
+          </v-carousel-item>
+          <v-carousel-item
+            :value="2"
+          >
+            <VCard class="pa-5 text-center w-100 mt-0" style="height: 100%;" >
+              <VRow  class="">
+                <VCol cols="12" class="mt-">
+                  <div>
+                    <h2>
+                      {{ selectedRecipe.title }}
+                    </h2>
+                  </div>
+                  <div class="border-t-md border-b-md border-dashed mt-5 py-1 border-primary mb-8">
+                    <div class="d-flex my-1 justify-center">
+                      <div class="d-flex align-center">
+                        <VIcon icon="fluent-emoji-flat:timer-clock"  size="large" />
+                        <h5 class=" my-1 ms-1 text-primary"> 
+                          <b>{{selectedRecipe.total_time}} </b> 
+                        </h5>
+                      </div>
+                      <div class="d-flex align-center ms-5">
+                        <VIcon icon="fa6-solid:person"  size="large" />
+                        <h5 class=" my-1 ms-1 text-primary"> 
+                          <b>{{selectedRecipe.person_count}} {{ selectedRecipe.person_count == 1 ? 'Persona' : 'Personas' }} </b> 
+                        </h5>
+                      </div>
+                      <div class="d-flex align-center ms-5">
+                        <VIcon icon="twemoji:pot-of-food"  size="large" />
+                        <h5 class=" my-1 ms-1 text-primary"> 
+                          <b>{{selectedRecipe.type}}</b> 
+                        </h5>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="height: 80%; overflow-y: auto;" class="items__content" >
+                    <div style="height: 100%; " class="mb-md-15 mb-0">
+                      <div class="px-2">
+                        <div class="border-md rounded mt-5 py-1 border-black">
+                          <h4 class="text-center">Nuestros ingredientes:</h4>
+                          <div class="my-1 px-5">
+                            <div class="text-justify " v-for="(ingredient, index) in selectedRecipe.cooking_ingredients" v-bind:key="index">
+                              <a class="text-decoration-underline text-subtitle-1 font-weight-bold text-primary" @click="selectProductView(index)">
+                                - {{ ingredient.title }}
+                              </a>
+                            </div>  
+                          </div>
+                        </div>
+                      </div>
+                      <div class="px-2">
+                        <div class="border-md rounded mt-5 py-1 border-black">
+                          <h4 class="text-center">Otros ingredientes:</h4>
+                          <div class="my-1 px-5">
+                            <div class="text-justify " v-for="(ingredient, index) in selectedRecipe.ingredients" v-bind:key="index">
+                              <h4 class=" font-weight-bold">
+                                - {{ ingredient.name }}
+                              </h4>
+                            </div>  
+                          </div>
+                        </div>
+                      </div>
+                      <div class="px-2">
+                        <div class="border-md rounded mt-5 py-1 border-black">
+                          <h4 class="text-center">Alérgenos:</h4>
+                          <div class="my-1 px-5" v-if="selectedRecipe.allergens.length > 0">
+                            <div class="text-justify " v-for="(allergen, index) in selectedRecipe.allergens" v-bind:key="index">
+                              <h4 class=" font-weight-bold">
+                                - {{ allergen.name }}
+                              </h4>
+                            </div>  
+                          </div>
+                          <div class="my-1 px-5" v-else>
+                            <div class="text-justify ">
+                              <h4 class=" font-weight-bold">
+                                Esta receta no contiene alérgenos. 🧡✅
+                              </h4>
+                            </div>  
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </VCol>
+              </VRow>
+            </VCard>
+          </v-carousel-item>
+          <v-carousel-item
+            v-for="(step, index) in selectedRecipe.preparation"
+            v-bind:key="index"
+            :value="index+3"
+          >
+            <VCard class="pa-5 text-center w-100 mt-0" style="height: 100%;" >
+              <VRow  class="">
+                <VCol cols="12" class="">
+                  <div>
+                    <h2>
+                      {{ selectedRecipe.title }}
+                    </h2>
+                  </div>
+                  <div class="border-t-md border-b-md border-dashed mt-5 py-1 border-primary">
+                    <h3 class="text-center  ">Prepación - Paso {{ index+1 }}:</h3>
+                    <h3 class="text-center mt-2 text-primary">{{ step.title}}:</h3>
+                    
+                  </div>
+                  <div class="px-0 mt-5">
+                    <div class="">
+                      <h4 class="my-2 px-5 text-justify" >
+                        {{ step.description }} 
+                      </h4>
+                    </div>
+                  </div>
+                </VCol>
+              </VRow>
+            </VCard>
+          </v-carousel-item>
+          <v-carousel-item
+            v-if="selectedRecipe.video_url"
+            :value="selectedRecipe.preparation.length+3"
+          >
+            <VCard class="pa-5 text-center w-100 mt-0" style="height: 100%;">
+              <VRow  class="">
+                <VCol cols="12" class="">
+                  <div>
+                    <h2>
+                      {{ selectedRecipe.title }}
+                    </h2>
+                  </div>
+                  <div class="border-t-md border-b-md border-dashed mt-5 py-1 border-primary">
+                    <h3 class="text-center  ">Prepación - Video:</h3>
+                    <h3 class="text-center mt-2 text-primary">Video tutorial:</h3>
+                  </div>
+                  <div class="px-0 mt-5">
+                    <div style="height: 100%;">
+                      <recipeVideo :video="selectedRecipe.video_url" />
+                    </div>
+                  </div>
+                </VCol>
+              </VRow>
+            </VCard>
+          </v-carousel-item>       
+          <v-carousel-item
+            :value="selectedRecipe.preparation.length+4"
+          >
+            <VCard class="px-15 py-2 mb-5 text-center mt-5">
               <div>
-                <v-img
-                  :width="199"
-                  aspect-ratio="1/1"
-                  cover
-                  class="rounded" 
-                  :src="'/'+selectedRecipe.image_url"
-                ></v-img>
+                <h2>{{selectedRecipe.title}}</h2>
+                <h6>by: <b class="text-primary">Cooking 5G</b></h6>
               </div>
-              <div class="mt-4">
-                <h2>
-                  ¡BUEN PROVECHO!👨‍🍳
-                </h2>
-                <h4 class="text-decoration-underline mt-5" @click="sliderPosition = 1">Volver</h4>
+            </VCard>
+            <VCard class="pa-5 text-center w-100 ">
+              <div  class="d-flex flex-column align-center h-100">
+                <div>
+                  <v-img
+                    :width="199"
+                    aspect-ratio="1/1"
+                    cover
+                    class="rounded" 
+                    :src="'/'+selectedRecipe.image_url"
+                  ></v-img>
+                </div>
+                <div class="mt-4">
+                  <h2>
+                    ¡BUEN PROVECHO!👨‍🍳
+                  </h2>
+                  <h4 class="text-decoration-underline mt-5" @click="sliderPosition = 1">Volver</h4>
+                </div>
               </div>
-            </div>
-          </VCard>
-        </v-carousel-item>
-      </v-carousel>
-    </VCol>
-    <div v-if="Object.keys(selectedProductInRecipe).length > 2" >
-      <viewProductModal :product="selectedProductInRecipe" @hiddenModal="hideModal" />
-    </div>
-  </VRow>
+            </VCard>
+          </v-carousel-item>
+        </v-carousel>
+      </VCol>
+      <div v-if="Object.keys(selectedProductInRecipe).length > 2" >
+        <viewProductModal :product="selectedProductInRecipe" @hiddenModal="hideModal" />
+      </div>
+    </VRow>
+  </div>
 </template>
 <style lang="scss" >
+  .content_qr {
+    width: 50%; margin: auto; position: relative;
+  }
   .border-black{
     border-color:rgb(77 95 113) !important;
+  }
+  .items__content::-webkit-scrollbar {
+    width: 0px;
+  }
+
+  .cc-qr {
+   & .v-carousel__controls{
+    height: 10%;
+    padding-inline-end: 64px !important;
+   }
+   & .v-carousel-item {
+    height: 98%;
+   }
+   & .v-responsive{
+    height: 100%;
+   }
+   & .v-window__container{
+    height: 90%;
+   }
+  }
+
+  @media screen and (max-width: 780px){
+    .content_qr {
+      width: 100%; margin: auto; position: relative;
+
+    }
+    .cc-qr {
+      & .v-carousel__controls{
+        height: 5%;
+        padding-inline-end: 0px !important;
+      }
+      & .v-carousel-item {
+        height: 98%;
+      }
+      & .v-responsive{
+        height: 100%;
+      }
+      & .v-window__container{
+        height: 95%;
+      }
+    }
   }
 </style>
 

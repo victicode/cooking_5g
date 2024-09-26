@@ -22,7 +22,6 @@ class RecipeController extends Controller
      */
     public function index(Request $request)
     {
-        //
         $recipes = Recipe::withCount('cooking_ingredients')->with(['cooking_ingredients','cooking_ingredients.lotesRecipe',] )
         ->where('title', 'like', '%'.$request->recipe_title.'%');
         return $this->returnSuccess(200, $recipes->paginate(10) );
@@ -103,6 +102,13 @@ class RecipeController extends Controller
             $imgPath = 'images/product/' . trim(str_replace(' ', '_', $request->title )).'.'.$request->File('image_url')->extension();
             $request->file('image_url')->move(public_path() . '/images/product/', $imgPath);
         }
+        $videoUrl = '';
+        if ($request->File('video_url')) {
+            if ($request->video_url) {
+                $videoUrl = 'public/images/recipe/video/' . trim(str_replace(' ', '_', $request->title)).'.'.$request->File('video_url')->extension();
+                $request->file('video_url')->move(public_path() . '/images/recipe/video/', $videoUrl);
+            }
+        }
         try {
             $recipe->title         =  $request->title;
             $recipe->description   =  $request->description;
@@ -112,7 +118,7 @@ class RecipeController extends Controller
             $recipe->total_time    =  $request->total_time;
             $recipe->ingredients   =  $request->ingredients;
             $recipe->image_url     =  $imgPath;
-            $recipe->video_url     =  null;
+            $recipe->video_url     =  $videoUrl == '' ? null : $videoUrl;
             $recipe->created_by    =  1; 
 
 

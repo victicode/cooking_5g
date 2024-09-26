@@ -14,7 +14,7 @@ const props = defineProps({
   >
     <VCol cols="12" class="form-group d-flex justify-center mb-5"  >
       <video controls >
-        <source  type="video/mp4" :src="video" />
+        <source  type="video/mp4" :src="'/'+video" />
       </video>
     </VCol>
   </VRow>

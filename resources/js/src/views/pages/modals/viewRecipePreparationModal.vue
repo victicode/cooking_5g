@@ -212,8 +212,8 @@ const props = defineProps({
                           label="Sube tu video aquí"
                           variant="outlined"
                           ref="recipe_video"
-                          :prepend-icon=" !video ?  'ic:round-attach-file' : 'icon-park-outline:check-one' "
-                        ></v-file-input>
+                          :prepend-icon=" !video ?  'ic:round-attach-file' : 'icon-park-outline:check-one'"
+                        />
                       </div>
                     </VCol>
                   </VRow>

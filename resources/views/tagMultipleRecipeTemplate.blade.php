@@ -92,7 +92,7 @@
                         <div class="col-sm-2 d-flex justify-content-end">
                           {!!QrCode::size(120)->generate('http://victorriverodev.infinityfreeapp.com/client/recipe/'.$key->recipe->id) !!}
                         </div>
-                      </div>allergens
+                      </div>
                     </div>
                   </div>
                 </div>
